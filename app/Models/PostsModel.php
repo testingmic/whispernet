@@ -74,11 +74,7 @@ class PostsModel extends Model {
 
             $postId = $this->db->insertID();
 
-            return [
-                'success' => true,
-                'post_id' => $postId,
-                'message' => 'Post created successfully'
-            ];
+            return $postId;
         } catch (DatabaseException $e) {
             return $e->getMessage();
         }
@@ -101,10 +97,7 @@ class PostsModel extends Model {
                 throw new DatabaseException('Post not found');
             }
 
-            return [
-                'success' => true,
-                'post' => $post
-            ];
+            return $post;
         } catch (DatabaseException $e) {
             return $e->getMessage();
         }
@@ -125,10 +118,7 @@ class PostsModel extends Model {
                 throw new DatabaseException('Post not found or unauthorized');
             }
 
-            return [
-                'success' => true,
-                'message' => 'Post updated successfully'
-            ];
+            return true;
         } catch (DatabaseException $e) {
             return $e->getMessage();
         }
@@ -149,10 +139,7 @@ class PostsModel extends Model {
                 throw new DatabaseException('Post not found or unauthorized');
             }
 
-            return [
-                'success' => true,
-                'message' => 'Post deleted successfully'
-            ];
+            return true;
         } catch (DatabaseException $e) {
             return $e->getMessage();
         }
@@ -184,10 +171,7 @@ class PostsModel extends Model {
                 $offset
             ])->getResultArray();
 
-            return [
-                'success' => true,
-                'posts' => $posts
-            ];
+            return $posts;
         } catch (DatabaseException $e) {
             return $e->getMessage();
         }
@@ -209,10 +193,7 @@ class PostsModel extends Model {
             $sql = "UPDATE posts SET $column = $column + 1 WHERE post_id = ?";
             $this->db->query($sql, [$this->payload['postId']]);
 
-            return [
-                'success' => true,
-                'message' => 'Vote recorded successfully'
-            ];
+            return true;
         } catch (DatabaseException $e) {
             return $e->getMessage();
         }
@@ -235,10 +216,7 @@ class PostsModel extends Model {
                     LIMIT ? OFFSET ?";
             $posts = $this->db->query($sql, [$this->payload['limit'], $offset])->getResultArray();
 
-            return [
-                'success' => true,
-                'posts' => $posts
-            ];
+            return $posts;
         } catch (DatabaseException $e) {
             return $e->getMessage();
         }

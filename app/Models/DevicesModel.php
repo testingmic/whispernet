@@ -10,7 +10,7 @@ class DevicesModel extends Model {
 
     public $payload = [];
     protected $table;
-    protected $primaryKey = "post_id";
+    protected $primaryKey = "device_id";
 
     public function __construct() {
         parent::__construct();

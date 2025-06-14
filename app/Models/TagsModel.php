@@ -10,7 +10,7 @@ class TagsModel extends Model {
 
     public $payload = [];
     protected $table;
-    protected $primaryKey = "post_id";
+    protected $primaryKey = "tag_id";
 
     public function __construct() {
         parent::__construct();
@@ -23,6 +23,12 @@ class TagsModel extends Model {
         }
     }
 
+    /**
+     * Create tag
+     * 
+     * @param string $name
+     * @return int
+     */
     public function createTag($name) {
         try {
             // Validate tag name
@@ -44,16 +50,19 @@ class TagsModel extends Model {
                 'name' => $name
             ]);
 
-            return [
-                'success' => true,
-                'tag_id' => $tagId,
-                'message' => 'Tag created successfully'
-            ];
+            return $tagId;
         } catch (DatabaseException $e) {
             return $e->getMessage();
         }
     }
 
+    /**
+     * Add tag to post
+     * 
+     * @param int $postId
+     * @param string $tagName
+     * @return bool
+     */
     public function addTagToPost($postId, $tagName) {
         try {
             // First ensure tag exists
@@ -90,28 +99,35 @@ class TagsModel extends Model {
                 'tag_id' => $tagId
             ]);
 
-            return [
-                'success' => true,
-                'message' => 'Tag assigned to post successfully'
-            ];
+            return true;
         } catch (DatabaseException $e) {
             return $e->getMessage();
         }
     }
 
+    /**
+     * Remove tag from post
+     * 
+     * @param int $postId
+     * @param int $tagId
+     * @return bool
+     */
     public function removeTagFromPost($postId, $tagId) {
         try {
             $this->db->table('post_tags')->where('post_id', $postId)->where('tag_id', $tagId)->delete();
 
-            return [
-                'success' => true,
-                'message' => 'Tag removed from post successfully'
-            ];
+            return true;
         } catch (DatabaseException $e) {
             return $e->getMessage();
         }
     }
 
+    /**
+     * Get post tags
+     * 
+     * @param int $postId
+     * @return array
+     */
     public function getPostTags($postId) {
         try {
             $sql = "SELECT t.* FROM tags t 
@@ -128,6 +144,14 @@ class TagsModel extends Model {
         }
     }
 
+    /**
+     * Get posts by tag
+     * 
+     * @param string $tagName
+     * @param int $page
+     * @param int $limit
+     * @return array
+     */
     public function getPostsByTag($tagName, $page = 1, $limit = 20) {
         try {
             $offset = ($page - 1) * $limit;
@@ -162,6 +186,12 @@ class TagsModel extends Model {
         }
     }
 
+    /**
+     * Get popular tags
+     * 
+     * @param int $limit
+     * @return array
+     */
     public function getPopularTags($limit = 10) {
         try {
             $tags = $this->db->query("SELECT t.*, COUNT(pt.post_id) as usage_count 
@@ -171,15 +201,19 @@ class TagsModel extends Model {
                     ORDER BY usage_count DESC 
                     LIMIT ?", [$limit])->getResultArray();
 
-            return [
-                'success' => true,
-                'tags' => $tags
-            ];
+            return $tags;
         } catch (DatabaseException $e) {
             return $e->getMessage();
         }
     }
 
+    /**
+     * Search tags
+     * 
+     * @param string $query
+     * @param int $limit
+     * @return array
+     */
     public function searchTags($query, $limit = 10) {
         try {
             $sql = "SELECT * FROM tags 
@@ -188,15 +222,18 @@ class TagsModel extends Model {
                     LIMIT ?";
             $tags = $this->db->query($sql, [$query, $limit])->getResultArray();
 
-            return [
-                'success' => true,
-                'tags' => $tags
-            ];
+            return $tags;
         } catch (DatabaseException $e) {
             return $e->getMessage();
         }
     }
 
+    /**
+     * Delete tag
+     * 
+     * @param int $tagId
+     * @return bool
+     */
     public function deleteTag($tagId) {
         try {
             // Check if tag exists
@@ -211,15 +248,19 @@ class TagsModel extends Model {
             // Delete tag (post_tags entries will be automatically deleted due to foreign key constraint)
             $this->db->table('tags')->where('tag_id', $tagId)->delete();
 
-            return [
-                'success' => true,
-                'message' => 'Tag deleted successfully'
-            ];
+            return true;
         } catch (DatabaseException $e) {
             return $e->getMessage();
         }
     }
 
+    /**
+     * Get related tags
+     * 
+     * @param int $tagId
+     * @param int $limit
+     * @return array
+     */
     public function getRelatedTags($tagId, $limit = 5) {
         try {
             $sql = "SELECT t2.*, COUNT(*) as co_occurrence 
@@ -232,10 +273,7 @@ class TagsModel extends Model {
                     LIMIT ?";
             $tags = $this->db->query($sql, [$tagId, $tagId, $limit])->getResultArray();
 
-            return [
-                'success' => true,
-                'tags' => $tags
-            ];
+            return $tags;
         } catch (DatabaseException $e) {
             return $e->getMessage();
         }

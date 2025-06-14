@@ -63,14 +63,3 @@ function generateUniqId()
 {
     return bin2hex(random_bytes(16));
 }
-
-/**
- * Hash the password
- * 
- * @param string $password
- * 
- * @return string
- */
-function hash_password($password) {
-    return password_hash(md5($password), PASSWORD_DEFAULT);
-}

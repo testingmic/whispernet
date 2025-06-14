@@ -10,7 +10,7 @@ class ChatsModel extends Model {
 
     public $payload = [];
     protected $table;
-    protected $primaryKey = "post_id";
+    protected $primaryKey = "chat_id";
 
     public function __construct() {
         parent::__construct();
