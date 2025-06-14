@@ -1,27 +1,10 @@
-<?php 
+<?php
 
-namespace App\Models;
+namespace App\Controllers\Users;
 
-use CodeIgniter\Model;
-use App\Models\DbTables;
-use CodeIgniter\Database\Exceptions\DatabaseException;
+use App\Controllers\LoadController;
 
-class UsersModel extends Model {
-
-    public $payload = [];
-    protected $table;
-    protected $primaryKey = "user_id";
-
-    public function __construct() {
-        parent::__construct();
-        
-        $this->table = DbTables::$userTable;
-        foreach(DbTables::initTables() as $key) {
-            if (property_exists($this, $key)) {
-                $this->{$key} = DbTables::${$key};
-            }
-        }
-    }
+class Users extends LoadController {
 
     public function register($username, $email, $password, $fullName = null) {
         try {
@@ -284,5 +267,4 @@ class UsersModel extends Model {
             return $this->handleError($e);
         }
     }
-
-}
+} 
