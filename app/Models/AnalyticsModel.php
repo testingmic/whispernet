@@ -1,20 +1,60 @@
-<?php
+<?php 
 
-namespace App\Controllers\Analytics;
+namespace App\Models;
 
-use App\Controllers\LoadController;
+use CodeIgniter\Model;
+use App\Models\DbTables;
+use CodeIgniter\Database\Exceptions\DatabaseException;
 
-class Analytics extends LoadController {
-    
-    public function trackEvent() {
+class AnalyticsModel extends Model {
+
+    public $payload = [];
+    protected $table;
+    protected $primaryKey = "id";
+
+    public function __construct() {
+        parent::__construct();
+        
+        $this->table = DbTables::$userTable;
+        foreach(DbTables::initTables() as $key) {
+            if (property_exists($this, $key)) {
+                $this->{$key} = DbTables::${$key};
+            }
+        }
+    }
+
+    /**
+     * Track event
+     * 
+     * @param string $eventType
+     * @param string $deviceId
+     * @param float $latitude
+     * @param float $longitude
+     * @param array $metadata
+     * @return int
+     */
+    public function trackEvent($eventType, $deviceId = null, $latitude = null, $longitude = null, $metadata = []) {
         try {
-            $this->analyticsModel->trackEvent($this->payload['event_type'], $this->payload['device_id'], $this->payload['latitude'], $this->payload['longitude'], $this->payload['metadata']);
-            return $this->success();
+            $this->db->table('analytics')->insert([
+                'event_type' => $eventType,
+                'device_id' => $deviceId,
+                'latitude' => $latitude,
+                'longitude' => $longitude,
+                'metadata' => json_encode($metadata)
+            ]);
+
+            return $this->db->insertID();
         } catch (\Exception $e) {
             return $this->handleError($e);
         }
     }
 
+    /**
+     * Get activity heatmap
+     * 
+     * @param string $timeframe
+     * @return array
+     */
     public function getActivityHeatmap($timeframe = '24h') {
         try {
             $timeCondition = $this->getTimeframeCondition($timeframe);
@@ -32,14 +72,19 @@ class Analytics extends LoadController {
                 HAVING activity_count > 0
             ";
 
-            $stmt = $this->db->prepare($query);
-            $stmt->execute();
-            return $this->success($stmt->fetchAll(\PDO::FETCH_ASSOC));
+            return $this->db->query($query)->getResultArray();
         } catch (\Exception $e) {
             return $this->handleError($e);
         }
     }
 
+    /**
+     * Get user activity
+     * 
+     * @param string $deviceId
+     * @param string $timeframe
+     * @return array
+     */
     public function getUserActivity($deviceId, $timeframe = '24h') {
         try {
             $timeCondition = $this->getTimeframeCondition($timeframe);
@@ -55,14 +100,18 @@ class Analytics extends LoadController {
                 ORDER BY hour DESC
             ";
 
-            $stmt = $this->db->prepare($query);
-            $stmt->execute([$deviceId]);
-            return $this->success($stmt->fetchAll(\PDO::FETCH_ASSOC));
+            return $this->db->query($query, [$deviceId])->getResultArray();
         } catch (\Exception $e) {
             return $this->handleError($e);
         }
     }
 
+    /** 
+     * Get system metrics
+     * 
+     * @param string $timeframe
+     * @return array
+     */
     public function getSystemMetrics($timeframe = '24h') {
         try {
             $timeCondition = $this->getTimeframeCondition($timeframe);
@@ -80,6 +129,12 @@ class Analytics extends LoadController {
         }
     }
 
+    /**
+     * Get user activity metrics
+     * 
+     * @param string $timeCondition
+     * @return array
+     */
     private function getUserActivityMetrics($timeCondition) {
         $query = "
             SELECT 
@@ -89,11 +144,15 @@ class Analytics extends LoadController {
             WHERE {$timeCondition}
         ";
 
-        $stmt = $this->db->prepare($query);
-        $stmt->execute();
-        return $stmt->fetch(\PDO::FETCH_ASSOC);
+        return $this->db->query($query)->getRowArray();
     }
 
+    /**
+     * Get content metrics
+     * 
+     * @param string $timeCondition
+     * @return array
+     */
     private function getContentMetrics($timeCondition) {
         $query = "
             SELECT 
@@ -104,11 +163,15 @@ class Analytics extends LoadController {
             WHERE {$timeCondition}
         ";
 
-        $stmt = $this->db->prepare($query);
-        $stmt->execute();
-        return $stmt->fetch(\PDO::FETCH_ASSOC);
+        return $this->db->query($query)->getRowArray();
     }
 
+    /**
+     * Get chat metrics
+     * 
+     * @param string $timeCondition
+     * @return array
+     */
     private function getChatMetrics($timeCondition) {
         $query = "
             SELECT 
@@ -119,11 +182,15 @@ class Analytics extends LoadController {
             WHERE {$timeCondition}
         ";
 
-        $stmt = $this->db->prepare($query);
-        $stmt->execute();
-        return $stmt->fetch(\PDO::FETCH_ASSOC);
+        return $this->db->query($query)->getRowArray();
     }
 
+    /**
+     * Get moderation metrics
+     * 
+     * @param string $timeCondition
+     * @return array
+     */
     private function getModerationMetrics($timeCondition) {
         $query = "
             SELECT 
@@ -134,11 +201,15 @@ class Analytics extends LoadController {
             WHERE {$timeCondition}
         ";
 
-        $stmt = $this->db->prepare($query);
-        $stmt->execute();
-        return $stmt->fetch(\PDO::FETCH_ASSOC);
+        return $this->db->query($query)->getRowArray();
     }
 
+    /**
+     * Get timeframe condition
+     * 
+     * @param string $timeframe
+     * @return string
+     */
     private function getTimeframeCondition($timeframe) {
         switch ($timeframe) {
             case '1h':
@@ -154,6 +225,13 @@ class Analytics extends LoadController {
         }
     }
 
+    /**
+     * Get popular tags
+     * 
+     * @param string $timeframe
+     * @param int $limit
+     * @return array
+     */
     public function getPopularTags($timeframe = '24h', $limit = 10) {
         try {
             $timeCondition = $this->getTimeframeCondition($timeframe);
@@ -171,14 +249,19 @@ class Analytics extends LoadController {
                 LIMIT ?
             ";
 
-            $stmt = $this->db->prepare($query);
-            $stmt->execute([$limit]);
-            return $this->success($stmt->fetchAll(\PDO::FETCH_ASSOC));
+            return $this->db->query($query, [$limit])->getResultArray();
         } catch (\Exception $e) {
             return $this->handleError($e);
         }
     }
 
+    /**
+     * Get active regions
+     * 
+     * @param string $timeframe
+     * @param int $limit
+     * @return array
+     */
     public function getActiveRegions($timeframe = '24h', $limit = 10) {
         try {
             $timeCondition = $this->getTimeframeCondition($timeframe);
@@ -198,11 +281,10 @@ class Analytics extends LoadController {
                 LIMIT ?
             ";
 
-            $stmt = $this->db->prepare($query);
-            $stmt->execute([$limit]);
-            return $this->success($stmt->fetchAll(\PDO::FETCH_ASSOC));
+            return $this->db->query($query, [$limit])->getResultArray();
         } catch (\Exception $e) {
             return $this->handleError($e);
         }
     }
-} 
+
+}

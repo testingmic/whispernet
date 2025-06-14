@@ -92,3 +92,4 @@ composer.phar
 frontend/.env
 writable/websites.json
 writable/imf.json
+whispernet_db*

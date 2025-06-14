@@ -102,6 +102,11 @@ abstract class BaseController extends Controller
     public $defaultLimit = 1200;
 
     /**
+     * @var int
+     */
+    public $defaultOffset = 0;
+
+    /**
      * @var bool
      */
     public $routingInfo = [];
@@ -161,7 +166,7 @@ abstract class BaseController extends Controller
      * @var list<string>
      */
     protected $helpers = [
-       'configs', 'text', 'auth', 'database', 'utilities'
+       'configs', 'text', 'auth', 'database', 'utilities', 'users'
     ];
 
     /**

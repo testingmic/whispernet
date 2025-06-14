@@ -81,7 +81,7 @@ class Database extends Config
         try {
             
             // set the cache database
-            foreach(['tests' => 'hospital_db', 'cache' =>'hospital_db_cache', 'apiCache' => 'hospital_db_api'] as $group => $db) {
+            foreach(['tests' => 'whispernet_db', 'cache' =>'whispernet_db_cache', 'apiCache' => 'whispernet_db_api'] as $group => $db) {
                 $this->{$group} = [
                     'hostname'    => '127.0.0.1',
                     'database'    => $db,

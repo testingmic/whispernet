@@ -5,23 +5,36 @@ namespace App\Controllers;
 use App\Models\AuthModel;
 use App\Libraries\Caching;
 use App\Libraries\Encryptions;
+use App\Models\DBModel;
+
+use App\Models\PostsModel;
+use App\Models\AnalyticsModel;
+use App\Models\TagsModel;
+use App\Models\ChatsModel;
 
 class LoadController extends BaseController
 {
-    
+ 
+    protected $dbModel;
     protected $usersModel;
     protected $accessModel;
     protected $authModel;
-    protected $categoriesModel;
-    protected $analyticsObject;
-    protected $notesModel;
-    protected $supportModel;
     protected $encryptions;
     
-    public function __construct($model = [])
+    protected $postsModel;
+    protected $analyticsModel;
+    protected $tagsModel;
+    protected $chatsModel;
+
+    public function __construct($payload = [])
     {
         // initialize the models
         $this->authModel = new AuthModel();
+        $this->dbModel = new DBModel();
+
+        if(empty($this->payload)) {
+            $this->payload = $payload;
+        }
         
         // initialize the cache object
         if(empty($this->cacheObject)) {
@@ -49,13 +62,19 @@ class LoadController extends BaseController
         $models = stringToArray($model);
         
         // Define a mapping of model names to their corresponding model classes
-        $modelMap = [];
+        $modelMap = [
+            'posts' => PostsModel::class,
+            'analytics' => AnalyticsModel::class,
+            'tags' => TagsModel::class,
+            'chats' => ChatsModel::class,
+        ];
         
         // Loop through the requested models and initialize them
         foreach ($models as $modelName) {
             if (isset($modelMap[$modelName])) {
                 $propertyName = $modelName . 'Model';
                 $this->{$propertyName} = !empty($this->{$propertyName}) ? $this->{$propertyName} : new $modelMap[$modelName]();
+                $this->{$propertyName}->payload = $this->payload;
             }
         }
     }

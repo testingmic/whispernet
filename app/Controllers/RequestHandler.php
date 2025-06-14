@@ -37,6 +37,12 @@ class RequestHandler extends BaseController
 
         // if the class does not exist, return true
         if (!class_exists($validationClass)) {
+            // set the parsed payload
+            $this->parsedPayload = $payload;
+            $this->cleanPayload = $payload;
+            $this->payload = $payload;
+
+            // set the status code to 200
             return true;
         }
 
@@ -224,7 +230,6 @@ class RequestHandler extends BaseController
             // set the access groups if the logged in user is not an admin
             if (!empty($authModel->accessGroups) && !$userToken['isAdmin']) {
                 $classObject->accessGroups = $authModel->accessGroups;
-                $classObject->siteAccessGrouping = $authModel->siteAccessGrouping;
             }
         }
 

@@ -195,6 +195,14 @@ class Api extends BaseController
                 $payload[$key] = $payload[$value];
             }
         }
+
+        if(empty($payload['limit'])) {
+            $payload['limit'] = $this->defaultLimit;
+        }
+
+        if(empty($payload['offset'])) {
+            $payload['offset'] = $this->defaultOffset;
+        }
         
         // get the split path
         $splitPath = explode('/', rtrim($this->req_path, '/?'));
@@ -221,7 +229,7 @@ class Api extends BaseController
         }
 
         // create a new class for handling the resource
-        $classObject = new $classname();
+        $classObject = new $classname($payload);
 
         // set the unique id
         $classObject->uniqueId = $this->uniqueId;
@@ -274,7 +282,7 @@ class Api extends BaseController
             return $validPayload;
         }
 
-        try {
+        // try {
             // if the unique id is set, set the method to view, update or delete
             if ($this->uniqueId && preg_match('/^[0-9]+$/', $method)) {
                 if ($this->requestMethod == 'GET') {
@@ -360,16 +368,13 @@ class Api extends BaseController
                     $classObject->payload[$key] = $finalResponse['data'][$key];
                 }
             }
-
-            // log the api request
-            $cacheObject->logApiRequest($this->req_path, $this->requestMethod, $this->statusCode, $classObject->payload, $start_time, $end_time, $finalResponse);
-
+            
             // return the final response
             return $finalResponse;
-        } catch (\Exception $e) {
-            $this->statusCode = 500;
+        // } catch (\Exception $e) {
+        //     $this->statusCode = 500;
 
-            return Routing::error($e->getMessage());
-        }
+        //     return Routing::error($e->getMessage());
+        // }
     }
 }
