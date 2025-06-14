@@ -1,0 +1,136 @@
+CHAT SYSTEM - WhisperNet
+Project Documentation: Hyperlocal Anonymous Social Media App
+1. Project Overview
+Project Name: WhisperNet (Placeholder)
+Description: WhisperNet is a hyperlocal, anonymous social media mobile application that enables users to share posts, images, and experiences with others within their geographical radius. It promotes real-time, candid, and community-centric interactions without the burden of personal profiles or follower counts.
+
+2. Core Features
+2.1 User Features
+* Anonymous Posting: No login required. Device-based session ID to track karma.
+* Local Feed: See posts from users within a set radius (e.g., 10km).
+* Upvote/Downvote: Engage with content to determine visibility.
+* Comment System: Threaded comments under each post.
+* Media Support: Text, image, and short video posts.
+* Tag System: Posts can be tagged (e.g., #event, #lost&found).
+* Karma System: Reputation points based on user activity and votes.
+* Reporting/Moderation: Flag inappropriate content; auto-hide low-rated posts.
+* Anonymous Chat System:
+    * One-on-one chat (ephemeral or persistent)
+    * Temporary anonymous usernames per conversation
+    * Chat requests with accept/reject option
+    * Location-based discovery or post-to-chat flow
+    * Typing indicators, message read receipts (optional)
+    * Push notifications for new messages
+    * Block/mute/report user in chat
+    * End-to-end encryption
+    * Self-destruct timers for messages
+
+2.2 Admin Features
+* User Reports Dashboard
+* Content Moderation Queue
+* Geo-tagged Analytics (Heatmaps, Active Areas)
+* Ban/Mute Users by Device ID/IP
+* Push Notifications for Announcements
+* Chat Moderation Tools (e.g., keyword filters, abuse flags)
+
+3. Technical Architecture
+3.1 Mobile App (Frontend)
+* Platform: Flutter (iOS + Android), alternatively React Native
+* State Management: Bloc / Provider / Redux
+* Local Storage: SharedPreferences / SecureStorage
+* Geolocation: Google Location Services / CoreLocation
+* Chat: WebSockets (using Socket.IO, Firebase Realtime DB, or similar)
+3.2 Backend (Server-side)
+* Framework: Node.js (Express) or Laravel (PHP) or Django (Python)
+* Database: PostgreSQL / MongoDB
+* Authentication: UUID/session management via device fingerprinting
+* Media Storage: AWS S3 / Firebase Storage
+* Notifications: Firebase Cloud Messaging (FCM)
+* Chat Infrastructure: Redis Pub/Sub, Socket.IO server, or Firebase Realtime DB
+3.3 API Design
+* RESTful API with JSON responses
+* Authentication: Token-based
+* Rate Limiting: To prevent spam
+* Real-time API: WebSocket endpoints for messaging
+3.4 Moderation Engine
+* Auto-ban rules for flagged content
+* Threshold downvotes hide content
+* Optional ML content classifier (Toxicity detection)
+* Chat abuse reporting and keyword flagging
+
+4. Data Models
+4.1 Post
+* ID
+* Content (text/media)
+* Timestamp
+* Geolocation
+* Upvotes / Downvotes
+* Tags
+4.2 Comment
+* ID
+* Post ID
+* Content
+* Timestamp
+* Votes
+4.3 Device/User
+* UUID
+* Karma
+* Ban/Mute Status
+* Reported Count
+4.4 Chat Message
+* ID
+* Sender UUID
+* Receiver UUID or Chat Room ID
+* Content (text/media)
+* Timestamp
+* Self-destruct time (optional)
+* Status (sent/delivered/read)
+4.5 Chat Room
+* ID
+* Participant UUIDs
+* Created timestamp
+* Block status
+* Last message summary
+
+5. Security & Privacy
+* No personal data collected
+* Device ID encryption
+* End-to-End encryption for media uploads and messages
+* Rate limiting & spam protection
+* Content visibility based on votes and moderation
+* Ephemeral chat options
+* Message encryption keys rotated per session
+
+6. Development Timeline
+Phase	Task	Timeline
+Phase 1	Requirements & Prototyping	2 weeks
+Phase 2	Mobile UI Development	3 weeks
+Phase 3	Backend API & DB Setup	3 weeks
+Phase 4	Integrations (Geo, Media, Notifications, Chat)	3 weeks
+Phase 5	Testing & QA	2 weeks
+Phase 6	Deployment & Release	1 week
+7. Tools & Stack
+Purpose	Tool
+Mobile App	Flutter or React Native
+Backend	Node.js or Laravel or Django
+DB	PostgreSQL / MongoDB
+Geolocation	Google Maps API
+Cloud	Firebase / AWS
+Media Storage	AWS S3 / Firebase Storage
+Chat	Socket.IO / Firebase Realtime DB / Redis PubSub
+Analytics	Firebase Analytics / Mixpanel
+8. Future Enhancements
+* Campus or workplace verification
+* Trending posts per location
+* Location-based notifications
+* Event calendars / groups
+* Group chat rooms for local topics
+* Verified channels for schools, clubs, local authorities
+* AI chat moderation assistant
+
+9. Legal & Compliance
+* Comply with GDPR / CCPA (no personal data storage)
+* User-generated content disclaimer
+* Community guidelines
+* In-app moderation notice system
+* Chat usage terms and abuse policy
