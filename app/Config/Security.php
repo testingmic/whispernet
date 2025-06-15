@@ -117,5 +117,5 @@ class Security extends BaseConfig
      *
      * Salt to use for hashing the token.
      */
-    public string $salt = '35c26ecdf1b2ca2fb2e7368af552dff4';
+    public string $salt = '35c26uwjasb2ca2fb2e7368afjaksjf4';
 }

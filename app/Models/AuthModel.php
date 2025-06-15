@@ -11,7 +11,7 @@ class AuthModel extends Model {
     public $payload = [];
     protected $table;
     protected $authTokenTable;
-    protected $primaryKey = "idusertokenauth";
+    protected $primaryKey = "token_id";
     protected $allowedFields = ["login", "description", "password", "date_created", "date_expired", "system_token", "hash_algo"];
 
     public function __construct() {
@@ -88,7 +88,7 @@ class AuthModel extends Model {
      */
     public function deleteByLogin($login) {
         try {
-            $this->db->table($this->table)->delete(['login' => $login]);
+            $this->db->table($this->authTokenTable)->delete(['login' => $login]);
         } catch(DatabaseException $e) {
             return false;
         }

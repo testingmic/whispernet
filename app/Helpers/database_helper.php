@@ -5,8 +5,7 @@ use CodeIgniter\Database\Exceptions\DatabaseException;
 
 // Create the databases
 $databases = [
-    "-- Users Table
-    CREATE TABLE IF NOT EXISTS users (
+    "CREATE TABLE IF NOT EXISTS users (
         user_id INTEGER PRIMARY KEY,
         username TEXT NOT NULL UNIQUE,
         email TEXT NOT NULL UNIQUE,
@@ -20,8 +19,18 @@ $databases = [
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     );",
-    "-- User Devices
-    CREATE TABLE IF NOT EXISTS user_devices (
+    "CREATE TABLE IF NOT EXISTS user_token_auth (
+        token_id INTEGER PRIMARY KEY AUTOINCREMENT,
+        login TEXT,
+        description TEXT,
+        password TEXT UNIQUE,
+        hash_algo TEXT,
+        system_token INTEGER NOT NULL DEFAULT 0,
+        last_used DATETIME DEFAULT NULL,
+        date_created DATETIME NOT NULL,
+        date_expired DATETIME DEFAULT NULL
+    );",
+    "CREATE TABLE IF NOT EXISTS user_devices (
         device_id TEXT PRIMARY KEY,
         user_id INTEGER NOT NULL,
         device_hash TEXT NOT NULL,
@@ -33,8 +42,7 @@ $databases = [
         FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE
     );",
 
-    "-- User Locations
-    CREATE TABLE IF NOT EXISTS user_locations (
+    "CREATE TABLE IF NOT EXISTS user_locations (
         id INTEGER PRIMARY KEY,
         user_id INTEGER NOT NULL,
         latitude REAL NOT NULL,
@@ -44,8 +52,7 @@ $databases = [
         FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE
     );",
 
-    "-- Media Table
-    CREATE TABLE IF NOT EXISTS media (
+    "CREATE TABLE IF NOT EXISTS media (
         media_id INTEGER PRIMARY KEY,
         user_id INTEGER NOT NULL,
         file_name TEXT NOT NULL,
@@ -64,8 +71,7 @@ $databases = [
         FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE
     );",
 
-    "-- Posts Table
-    CREATE TABLE IF NOT EXISTS posts (
+    "CREATE TABLE IF NOT EXISTS posts (
         post_id INTEGER PRIMARY KEY,
         user_id INTEGER NOT NULL,
         content TEXT,
@@ -81,15 +87,13 @@ $databases = [
         FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE
     );",
 
-    "-- Tags Table
-    CREATE TABLE IF NOT EXISTS tags (
+    "CREATE TABLE IF NOT EXISTS tags (
         tag_id INTEGER PRIMARY KEY,
         name TEXT NOT NULL UNIQUE,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     );",
 
-    "-- Post-Tag Relationship
-    CREATE TABLE IF NOT EXISTS post_tags (
+    "CREATE TABLE IF NOT EXISTS post_tags (
         post_id INTEGER NOT NULL,
         tag_id INTEGER NOT NULL,
         PRIMARY KEY (post_id, tag_id),
@@ -97,8 +101,7 @@ $databases = [
         FOREIGN KEY (tag_id) REFERENCES tags(tag_id) ON DELETE CASCADE
     );",
 
-    "-- Comments Table
-    CREATE TABLE IF NOT EXISTS comments (
+    "CREATE TABLE IF NOT EXISTS comments (
         comment_id INTEGER PRIMARY KEY,
         post_id INTEGER NOT NULL,
         user_id INTEGER NOT NULL,
@@ -112,16 +115,14 @@ $databases = [
         FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE
     );",
 
-    "-- Chat Rooms Table
-    CREATE TABLE IF NOT EXISTS chat_rooms (
+    "CREATE TABLE IF NOT EXISTS chat_rooms (
         room_id INTEGER PRIMARY KEY,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         last_message_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         is_active BOOLEAN DEFAULT 1
     );",
 
-    "-- Chat Participants Table
-    CREATE TABLE IF NOT EXISTS chat_participants (
+    "CREATE TABLE IF NOT EXISTS chat_participants (
         room_id INTEGER NOT NULL,
         user_id INTEGER NOT NULL,
         is_blocked BOOLEAN DEFAULT 0,
@@ -132,8 +133,7 @@ $databases = [
         FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE
     );",
 
-    "-- Chat Messages Table
-    CREATE TABLE IF NOT EXISTS chat_messages (
+    "CREATE TABLE IF NOT EXISTS chat_messages (
         message_id INTEGER PRIMARY KEY,
         room_id INTEGER NOT NULL,
         user_id INTEGER NOT NULL,
@@ -147,8 +147,7 @@ $databases = [
         FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE
     );",
 
-    "-- Message Status Table
-    CREATE TABLE IF NOT EXISTS message_status (
+    "CREATE TABLE IF NOT EXISTS message_status (
         message_id INTEGER NOT NULL,
         user_id INTEGER NOT NULL,
         status TEXT CHECK(status IN ('sent', 'delivered', 'read')) DEFAULT 'sent',
@@ -158,8 +157,7 @@ $databases = [
         FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE
     );",
 
-    "-- Reports Table
-    CREATE TABLE IF NOT EXISTS reports (
+    "CREATE TABLE IF NOT EXISTS reports (
         report_id INTEGER PRIMARY KEY,
         reporter_id INTEGER NOT NULL,
         reported_type TEXT CHECK(reported_type IN ('post', 'comment', 'message', 'user')) NOT NULL,
@@ -172,8 +170,7 @@ $databases = [
         FOREIGN KEY (reporter_id) REFERENCES users(user_id) ON DELETE CASCADE
     );",
 
-    "-- Notifications Table
-    CREATE TABLE IF NOT EXISTS notifications (
+    "CREATE TABLE IF NOT EXISTS notifications (
         notification_id INTEGER PRIMARY KEY,
         user_id INTEGER NOT NULL,
         type TEXT CHECK(type IN ('chat', 'comment', 'vote', 'system')) NOT NULL,
@@ -184,8 +181,7 @@ $databases = [
         FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE
     );",
 
-    "-- Analytics Table
-    CREATE TABLE IF NOT EXISTS analytics (
+    "CREATE TABLE IF NOT EXISTS analytics (
         id INTEGER PRIMARY KEY,
         event_type TEXT CHECK(event_type IN ('post_created', 'comment_created', 'chat_started', 'user_joined', 'user_left')) NOT NULL,
         user_id INTEGER,
@@ -196,8 +192,7 @@ $databases = [
         FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE SET NULL
     );",
 
-    "-- Rate Limits Table
-    CREATE TABLE IF NOT EXISTS rate_limits (
+    "CREATE TABLE IF NOT EXISTS rate_limits (
         id INTEGER PRIMARY KEY,
         user_id INTEGER NOT NULL,
         action_type TEXT CHECK(action_type IN ('post', 'comment', 'chat', 'vote')) NOT NULL,

@@ -8,6 +8,7 @@ class DbTables {
     public static $accessTable = 'access';
     public static $testimonialsTable = 'testimonials';
     public static $webhookTable = 'webhooks';
+    public static $userTokenAuthTable = 'user_token_auth';
 
     /**
      * Initialize the tables
@@ -16,7 +17,7 @@ class DbTables {
      */
     public static function initTables() {
         return [
-            'userTable', 'accessTable', 'testimonialsTable', 'webhookTable'
+            'userTable', 'accessTable', 'testimonialsTable', 'webhookTable', 'userTokenAuthTable'
         ];
     }
 }

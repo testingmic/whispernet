@@ -16,6 +16,9 @@ function configs($key) {
         'is_local' => config('Database')?->defaultGroup == 'tests',
         'login_attempts' => 5,
 
+        'algo' => config('Security')?->algo,
+        'salt' => config('Security')?->salt,
+
         // email config
         'email.port' => getenv('email.SMTP_PORT'),
         'email.host' => getenv('email.SMTP_HOST'),

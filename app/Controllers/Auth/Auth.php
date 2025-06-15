@@ -32,16 +32,14 @@ class Auth extends LoadController {
         $this->payload['password'] = html_entity_decode($this->payload['password'] ?? $password);
 
         // Verify password
-        if(!password_verify(md5($this->payload['password'] ?? $password), $user['password'])) {
+        if(!password_verify(md5($this->payload['password'] ?? $password), $user['password_hash'])) {
             return Routing::error('Invalid login credentials.');
         }
 
         // Generate response
         $response = [
-            'user_id'   => (int) $user['id'],
-            'firstname' => $user['firstname'],
-            'lastname' => $user['lastname'],
-            'user_type' => $user['user_type'],
+            'user_id'   => (int) $user['user_id'],
+            'full_name' => $user['full_name'],
             'username' => $user['username'],
             'two_factor_setup' => false,
             'email' => $user['email']
@@ -49,7 +47,7 @@ class Auth extends LoadController {
 
         // update the user last login date
         if(!$isLogger) {
-            $this->usersModel->updateRecord($user['id'], ['last_login' => date('Y-m-d H:i:s')]);
+            $this->usersModel->updateRecord($user['user_id'], ['last_login' => time()]);
         }
 
         // Check if two factor setup
@@ -67,9 +65,6 @@ class Auth extends LoadController {
 
         // Delete the user token hash
         $this->authModel->deleteByLogin(md5($user['email']));
-
-        // Insert the user token hash
-        $response['hash'] = $this->generateHash($user['username']);
         
         // Return the response
         return [
@@ -231,29 +226,6 @@ class Auth extends LoadController {
     }
 
     /**
-     * Generate a login hash
-     *
-     * @param string        $login
-     * @param AuthModel     $authModel
-     *
-     * @return string
-     */
-    private function generateHash($login)
-    {
-        // Generate a login hash
-        $loginHash = md5(getRandomString(32));
-
-        // Insert the user token hash
-        $this->authModel->insert([
-            'login' => $login,
-            'hash' => $loginHash,
-            'created_at' => date('Y-m-d H:i:s')
-        ]);
-
-        return $loginHash;
-    }
-
-    /**
      * Forgotten password
      * 
      * @return array
@@ -289,26 +261,6 @@ class Auth extends LoadController {
         ]);
 
         return Routing::success('A 6 digits OTP have been sent to your email.');
-    }
-
-    /**
-     * Verify the code
-     * 
-     * @return array
-     */
-    public function verify() {
-
-        $checkAltUser = $this->usersModel->getAltUser([
-            'ver_code' => md5($this->payload['code']),
-            'email' => $this->payload['email'],
-            'auth' => 'password_reset'
-        ]);
-
-        if(empty($checkAltUser)) {
-            return Routing::error('Invalid reset code was provided.');
-        }
-
-        return Routing::success('Reset code verified.');
     }
 
     /**
@@ -406,11 +358,6 @@ class Auth extends LoadController {
                 $getRecord['date_expired'] = date('Y-m-d H:i:s', strtotime("+1 day"));
             }
         }
-
-        // process the user record
-        $getRecord['isInstructor'] = $getRecord['user_type'] == 'Instructor';
-        $getRecord['isStudent'] = $getRecord['user_type'] == 'Student';
-        $getRecord['isAdmin'] = $getRecord['user_type'] == 'Admin';
 
         // set the current user
         $this->currentUser = $getRecord;

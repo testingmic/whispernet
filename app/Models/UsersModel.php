@@ -117,6 +117,20 @@ class UsersModel extends Model {
     }
 
     /**
+     * Find user by email
+     * 
+     * @param string $email
+     * @return array
+     */
+    public function findByEmail($email) {
+        try {
+            return $this->db->table($this->table)->where(['email' => $email, 'is_active' => '1'])->get()->getRowArray();
+        } catch (DatabaseException $e) {
+            return $e->getMessage();
+        }
+    }
+
+    /**
      * Search users
      * 
      * @param string $query
