@@ -349,12 +349,23 @@ class PostsModel extends Model {
      * @return array
      */
     public function connectToDb($db = 'votes') {
+
+        // if the database group is production, use the default database
+        if(configs('db_group') == 'production') {
+            $this->votesDb = $this->db;
+            $this->notifDb = $this->db;
+            return;
+        }
+
         // connect to the votes and comments databases
         if($db == 'votes') {
             $this->votesDb = db_connect('votes');
+            setDatabaseSettings($this->votesDb);
         }
+        
         if($db == 'notification') {
             $this->notifDb = db_connect('notification');
+            setDatabaseSettings($this->notifDb);
         }
     }
 
