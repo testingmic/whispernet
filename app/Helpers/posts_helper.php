@@ -11,8 +11,11 @@ function formatPosts($posts = [], $single = false) {
         return $single ? [] : [];
     }
 
+    $key = 0;
+
     foreach($posts as $post) {
-        $formattedPosts[] = [
+
+        $formattedPosts[$key] = [
             'post_id' => $post['post_id'],
             'content' => $post['content'],
             'created_at' => $post['created_at'],
@@ -24,12 +27,18 @@ function formatPosts($posts = [], $single = false) {
             'longitude' => $post['longitude'],
             'latitude' => $post['latitude'],
             'username' => $post['username'],
+            'comments_count' => $post['comments_count'] ?? 0,
             'profile_image' => $post['profile_image'],
             'score' => $post['score'] ?? 0,
             'distance' => $post['distance'] ?? 0,
             'upvotes' => $post['upvotes'],
             'downvotes' => $post['downvotes'],
         ];
+
+        if(!empty($post['comments'])) {
+            $formattedPosts[$key]['comments'] = $post['comments'];
+        }
+        $key++;
     }
 
     return $single ? $formattedPosts[0] : $formattedPosts;

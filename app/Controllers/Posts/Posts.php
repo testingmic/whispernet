@@ -7,6 +7,8 @@ use App\Libraries\Routing;
 
 class Posts extends LoadController {
 
+    public $addComments = true;
+
     /**
      * List posts
      * 
@@ -18,7 +20,9 @@ class Posts extends LoadController {
         $this->postsModel->payload = $this->payload;
         
         // make the call to the posts model
-        return $this->postsModel->list();
+        $posts = $this->postsModel->list();
+
+        return Routing::success(formatPosts($posts['posts']), $posts['pagination']);
 
     }
 
@@ -28,14 +32,6 @@ class Posts extends LoadController {
      * @return array
      */
     public function create() {
-
-        // generate random longitude and latitude for Accra, Ghana
-        $location = generateRandomLocationAndSentence();
-        $this->payload['longitude'] = $location['longitude'];
-        $this->payload['latitude'] = $location['latitude'];
-        $this->payload['city'] = $location['city'];
-
-        $this->payload['content'] .= ' ' . $location['sentence'] . " ({$this->payload['longitude']}, {$this->payload['latitude']})";
 
         // set the payload to the posts model
         $this->postsModel->payload = $this->payload;
@@ -47,6 +43,98 @@ class Posts extends LoadController {
         
         // return the post id
         return Routing::created(['data' => 'Post created successfully', 'record' => $this->view()['data']]);
+
+    }
+
+    /**
+     * View comments
+     * 
+     * @return array
+     */
+    public function viewComments() {
+        // set the payload to the posts model
+        $this->postsModel->payload = $this->payload;
+        
+        // make the call to the posts model
+        return $this->postsModel->viewComments($this->payload['postId']);
+    }
+
+    /**
+     * View a comment
+     * 
+     * @return array
+     */
+    public function viewSingleComment() {
+        // set the payload to the posts model
+        $this->postsModel->payload = $this->payload;
+
+        // if the comment id is not set, return an error
+        if(empty($this->payload['commentId'])) {
+            return Routing::error('Comment ID is required');
+        }
+
+        // make the call to the posts model
+        $comment = $this->postsModel->viewSingleComment($this->payload['commentId']);
+
+        return Routing::success($comment);
+    }
+
+    /**
+     * Delete a comment
+     * 
+     * @return array
+     */
+    public function deletecomment() {
+        // set the payload to the posts model
+        $this->postsModel->payload = $this->payload;
+        
+        // make the call to the posts model
+        $comment = $this->viewSingleComment();
+
+        // if the comment is not deleted, return not found
+        if(empty($comment['data']['created_at'])) {
+            return Routing::notFound();
+        }
+
+        $this->postsModel->deleteComment($this->payload["commentId"]);
+
+        // update the comments count
+        $this->postsModel->updateCommentsCount($comment['data']['post_id'], "-");
+
+        return Routing::success('Comment deleted successfully');
+    }
+
+    /**
+     * Comment on a post
+     * 
+     * @return array
+     */
+    public function comment() {
+
+        // disable adding comments
+        $this->addComments = false;
+
+        // set the payload to the posts model
+        $this->postsModel->payload = $this->payload;
+
+        // make the call to the posts model
+        $postCheck = $this->postsModel->view();
+
+        if(!isset($postCheck['created_at'])) {
+            return Routing::notFound();
+        }
+
+        // make the call to the posts model
+        $commentId = $this->postsModel->comment();
+
+        // return the comment id
+        $this->payload['commentId'] = $commentId;
+
+        // update the comments count
+        $this->postsModel->updateCommentsCount($this->payload['postId']);
+
+        // return the comment id
+        return Routing::created(['data' => 'Comment created successfully', 'record' => $this->viewSingleComment()['data']]);
 
     }
 
@@ -64,6 +152,10 @@ class Posts extends LoadController {
 
         if(empty($post)) {
             return Routing::notFound();
+        }
+
+        if($this->addComments) {
+            $post['comments'] = $this->postsModel->viewComments($post['post_id']);
         }
 
         return Routing::success(formatPosts([$post], true));
@@ -126,11 +218,25 @@ class Posts extends LoadController {
      * @return array
      */
     public function vote() {
+
+        // disable adding comments
+        $this->addComments = false;
+
+        if(!empty($this->payload['section'])) {
+            if(!in_array($this->payload['section'], ['posts', 'comments'])) {
+                return Routing::error('Invalid section');
+            }
+        }
+
+        // set the section to posts if not set
+        $section = $this->payload['section'] ?? 'posts';
+        $column = $section == "posts" ? "post_id" : "comment_id";
+
         // set the payload to the posts model
         $this->postsModel->payload = $this->payload;
         
         // make the call to the posts model
-        return $this->postsModel->vote();
+        return $this->postsModel->vote($section, $column);
 
     }
 

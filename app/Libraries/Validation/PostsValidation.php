@@ -55,7 +55,27 @@ class PostsValidation {
                 'latitude' => 'permit_empty|max_length[12]',
                 'longitude' => 'permit_empty|max_length[12]',
             ]
-        ]
+        ],
+        'comment' => [
+            'method' => 'POST',
+            'authenticate' => true,
+            'payload' => [
+                'postId' => 'required|numeric|max_length[10]',
+                'content' => 'required|max_length[1000]',
+                'mediaUrl' => 'permit_empty|max_length[255]',
+                'mediaType' => 'permit_empty|max_length[255]',
+                'latitude' => 'permit_empty|max_length[12]',
+                'longitude' => 'permit_empty|max_length[12]',
+            ]
+        ],
+
+        'deletecomment:commentId' => [
+            'method' => 'DELETE',
+            'authenticate' => true,
+            'payload' => [
+                'commentId' => 'required|numeric|max_length[10]',
+            ]
+        ],
     ];
 
 }

@@ -81,6 +81,7 @@ $databases = [
         latitude REAL NOT NULL,
         longitude REAL NOT NULL,
         city TEXT,
+        comments_count INTEGER DEFAULT 0,
         country TEXT,
         upvotes INTEGER DEFAULT 0,
         downvotes INTEGER DEFAULT 0,
@@ -208,7 +209,7 @@ $databases = [
 
 // alter tables
 $alterTables = [
-    // "ALTER TABLE users ADD COLUMN two_factor_setup BOOLEAN DEFAULT 0;",
+    // "ALTER TABLE posts ADD COLUMN comments_count INTEGER DEFAULT 0;",
 ];
 
 function createDatabaseStructure() {

@@ -97,6 +97,100 @@ class PostsModel extends Model {
     }
 
     /**
+     * Comment on a post
+     * 
+     * @return array
+     */
+    public function comment() {
+        try {
+            $sql = "INSERT INTO comments (post_id, user_id, content) VALUES (?, ?, ?)";
+            $this->db->query($sql, [$this->payload['postId'], $this->payload['userId'], $this->payload['content']]);
+
+            return $this->db->insertID();
+        } catch (DatabaseException $e) {
+            return $e->getMessage();
+        }
+    }
+
+    /**
+     * View comments
+     * 
+     * @return array
+     */
+    public function viewComments($postId) {
+        try {
+            $sql = "SELECT c.*, u.username, u.profile_image 
+                    FROM comments c 
+                    INNER JOIN users u ON c.user_id = u.user_id 
+                    WHERE c.post_id = ?
+                    ORDER BY c.created_at DESC";
+            $comments = $this->db->query($sql, [$postId])->getResultArray();
+
+            return $comments;
+        } catch (DatabaseException $e) {
+            return $e->getMessage();
+        }
+    }
+
+    /**
+     * View a post
+     * 
+     * @return array
+     */
+    public function viewSingleComment($commentId) {
+        try {
+            $sql = "SELECT c.*, u.username, u.profile_image 
+                    FROM comments c 
+                    INNER JOIN users u ON c.user_id = u.user_id 
+                    WHERE c.comment_id = ?";
+            $comment = $this->db->query($sql, [$commentId])->getRowArray();
+
+            if (!$comment) {
+                return false;
+            }
+
+            return $comment;
+        } catch (DatabaseException $e) {
+            return $e->getMessage();
+        }
+    }
+
+    /**
+     * Update a column
+     * 
+     * @return array
+     */
+    public function updateCommentsCount($postId, $sign = "+") {
+        try {
+            $sql = "UPDATE posts SET comments_count = comments_count {$sign} 1 WHERE post_id = ?";
+            $this->db->query($sql, [$postId]);
+        } catch (DatabaseException $e) {
+            return $e->getMessage();
+        }
+    }
+
+    /**
+     * Delete a post
+     * 
+     * @return array
+     */
+    public function deleteComment($commentId) {
+        try {
+
+            $sql = "DELETE FROM comments WHERE comment_id = ?";
+            $this->db->query($sql, [$commentId]);
+
+            if ($this->db->affectedRows() === 0) {
+                return false;
+            }
+
+            return true;
+        } catch (DatabaseException $e) {
+            return $e->getMessage();
+        }
+    }
+
+    /**
      * View a post
      * 
      * @return array
@@ -228,7 +322,7 @@ class PostsModel extends Model {
      * 
      * @return array
      */
-    public function vote() {
+    public function vote($table = 'posts', $whereColumn = 'upvotes') {
         try {
 
             if (!in_array($this->payload['voteType'], ['up', 'down'])) {
@@ -236,7 +330,7 @@ class PostsModel extends Model {
             }
 
             $column = $this->payload['voteType'] === 'up' ? 'upvotes' : 'downvotes';
-            $sql = "UPDATE posts SET $column = $column + 1 WHERE post_id = ?";
+            $sql = "UPDATE {$table} SET {$column} = {$column} + 1 WHERE {$whereColumn} = ?";
             $this->db->query($sql, [$this->payload['postId']]);
 
             return true;
