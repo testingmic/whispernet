@@ -1,5 +1,5 @@
 <?php
-global $databases, $alterTables;
+global $databases, $alterTables, $votesTables, $notificationTables;
 
 use CodeIgniter\Database\Exceptions\DatabaseException;
 
@@ -106,20 +106,6 @@ $databases = [
     CREATE INDEX IF NOT EXISTS city ON posts (city);
     CREATE INDEX IF NOT EXISTS country ON posts (country);",
 
-    "CREATE TABLE IF NOT EXISTS votes (
-        vote_id INTEGER PRIMARY KEY AUTOINCREMENT,
-        record_id INTEGER NOT NULL,
-        user_id INTEGER NOT NULL,
-        section TEXT CHECK(section IN ('posts', 'comments')) NOT NULL,
-        direction TEXT CHECK(direction IN ('up', 'down')) NOT NULL,
-        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-        FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE
-    );
-    CREATE INDEX IF NOT EXISTS record_id ON votes (record_id);
-    CREATE INDEX IF NOT EXISTS user_id ON votes (user_id);
-    CREATE INDEX IF NOT EXISTS section ON votes (section);
-    CREATE INDEX IF NOT EXISTS direction ON votes (direction);",
-
     "CREATE TABLE IF NOT EXISTS tags (
         tag_id INTEGER PRIMARY KEY,
         name TEXT NOT NULL UNIQUE,
@@ -220,22 +206,6 @@ $databases = [
     CREATE INDEX IF NOT EXISTS reported_id ON reports (reported_id);
     CREATE INDEX IF NOT EXISTS status ON reports (status);",
 
-    "CREATE TABLE IF NOT EXISTS notifications (
-        notification_id INTEGER PRIMARY KEY,
-        user_id INTEGER NOT NULL,
-        type TEXT CHECK(type IN ('chat', 'comment', 'vote', 'system')) NOT NULL,
-        reference_id INTEGER,
-        content TEXT NOT NULL,
-        is_read BOOLEAN DEFAULT 0,
-        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-        FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE
-    );
-    CREATE UNIQUE INDEX IF NOT EXISTS notification_id ON notifications (notification_id);
-    CREATE INDEX IF NOT EXISTS user_id ON notifications (user_id);
-    CREATE INDEX IF NOT EXISTS type ON notifications (type);
-    CREATE INDEX IF NOT EXISTS reference_id ON notifications (reference_id);
-    CREATE INDEX IF NOT EXISTS is_read ON notifications (is_read);",
-
     "CREATE TABLE IF NOT EXISTS analytics (
         id INTEGER PRIMARY KEY,
         event_type TEXT CHECK(event_type IN ('post_created', 'comment_created', 'chat_started', 'user_joined', 'user_left')) NOT NULL,
@@ -267,13 +237,48 @@ $alterTables = [
     // "ALTER TABLE posts ADD COLUMN comments_count INTEGER DEFAULT 0;",
 ];
 
+$votesTables = [
+    "CREATE TABLE IF NOT EXISTS votes (
+        vote_id INTEGER PRIMARY KEY AUTOINCREMENT,
+        record_id INTEGER NOT NULL,
+        user_id INTEGER NOT NULL,
+        section TEXT CHECK(section IN ('posts', 'comments')) NOT NULL,
+        direction TEXT CHECK(direction IN ('up', 'down')) NOT NULL,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    );
+    CREATE INDEX IF NOT EXISTS record_id ON votes (record_id);
+    CREATE INDEX IF NOT EXISTS user_id ON votes (user_id);
+    CREATE INDEX IF NOT EXISTS section ON votes (section);
+    CREATE INDEX IF NOT EXISTS direction ON votes (direction);",
+];
+
+$notificationTables = [
+    "CREATE TABLE IF NOT EXISTS notifications (
+        notification_id INTEGER PRIMARY KEY,
+        user_id INTEGER NOT NULL,
+        type TEXT CHECK(type IN ('chat', 'comment', 'vote', 'system')) NOT NULL,
+        reference_id INTEGER,
+        content TEXT NOT NULL,
+        is_read BOOLEAN DEFAULT 0,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    );
+    CREATE UNIQUE INDEX IF NOT EXISTS notification_id ON notifications (notification_id);
+    CREATE INDEX IF NOT EXISTS user_id ON notifications (user_id);
+    CREATE INDEX IF NOT EXISTS type ON notifications (type);
+    CREATE INDEX IF NOT EXISTS reference_id ON notifications (reference_id);
+    CREATE INDEX IF NOT EXISTS is_read ON notifications (is_read);",
+];
+
 function createDatabaseStructure() {
-    global $databases, $alterTables;
-    $db = \Config\Database::connect();
-    foreach(array_merge($databases, $alterTables) as $query) {
-        try {
-            $db->query($query);
-        } catch(DatabaseException $e) { }
+    global $databases, $alterTables, $votesTables, $notificationTables;
+
+    foreach(['tests' => $databases, 'votes' => $votesTables, 'notification' => $notificationTables] as $idb => $tables) {
+        $db = \Config\Database::connect($idb);
+        foreach(array_merge($tables, $alterTables) as $query) {
+            try {
+                $db->query($query);
+            } catch(DatabaseException $e) { }
+        }
     }
 }
 

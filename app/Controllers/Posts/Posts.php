@@ -239,6 +239,9 @@ class Posts extends LoadController {
         // disable adding comments
         $this->addComments = false;
 
+        // connect to the votes database
+        $this->postsModel->connectToDb('votes');
+
         // check if the section is valid
         if(!empty($this->payload['section'])) {
             if(!in_array($this->payload['section'], ['posts', 'comments'])) {
@@ -272,12 +275,12 @@ class Posts extends LoadController {
 
         // set the payload to the posts model
         $this->postsModel->payload = $this->payload;
-        
-        // make the call to the posts model
-        $this->postsModel->vote($section, $column);
 
         // update the votes count
         $this->postsModel->recordVotes($this->payload['recordId'], $this->payload['userId'], $section, $this->payload['direction']);
+
+        // make the call to the posts model
+        $this->postsModel->vote($section, $column);
 
         return Routing::success('Vote successful');
 

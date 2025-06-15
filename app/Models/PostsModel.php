@@ -10,6 +10,8 @@ class PostsModel extends Model {
 
     public $payload = [];
     protected $table;
+    protected $votesDb;
+    protected $notifDb;
     protected $primaryKey = "post_id";
 
     public function __construct() {
@@ -340,6 +342,23 @@ class PostsModel extends Model {
     }
 
     /**
+     * Connect to the votes and comments databases
+     * 
+     * @param string $db
+     * 
+     * @return array
+     */
+    public function connectToDb($db = 'votes') {
+        // connect to the votes and comments databases
+        if($db == 'votes') {
+            $this->votesDb = db_connect('votes');
+        }
+        if($db == 'notification') {
+            $this->notifDb = db_connect('notification');
+        }
+    }
+
+    /**
      * Vote on a post
      * 
      * @return array
@@ -389,7 +408,7 @@ class PostsModel extends Model {
     public function recordVotes($recordId, $userId, $section, $direction) {
         try {
             $sql = "INSERT INTO votes (record_id, user_id, section, direction) VALUES (?, ?, ?, ?)";
-            $this->db->query($sql, [$recordId, $userId, $section, $direction]);
+            $this->votesDb->query($sql, [$recordId, $userId, $section, $direction]);
         } catch (DatabaseException $e) {
             return [];
         }
@@ -403,7 +422,7 @@ class PostsModel extends Model {
     public function deleteVotes($voteId) {
         try {
             $sql = "DELETE FROM votes WHERE vote_id = ?";
-            $this->db->query($sql, [$voteId]);
+            $this->votesDb->query($sql, [$voteId]);
         } catch (DatabaseException $e) {
             return [];
         }
@@ -417,8 +436,8 @@ class PostsModel extends Model {
     public function checkVotes($recordId, $userId, $section) {
         try {
             $sql = "SELECT * FROM votes WHERE record_id = ? AND user_id = ? AND section = ?";
-            $vote = $this->db->query($sql, [$recordId, $userId, $section])->getRowArray();
-
+            $vote = $this->votesDb->query($sql, [$recordId, $userId, $section])->getRowArray();
+            
             return $vote;
         } catch (DatabaseException $e) {
             return [];
