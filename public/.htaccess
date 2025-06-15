@@ -67,17 +67,5 @@ Options All -Indexes
 	Deny from all
 </FilesMatch>
 
-# ----------------------------------------------------------------------
-# Allow CSV file downloads in the tmp/ directory
-# ----------------------------------------------------------------------
-<Directory "/tmp">
-    <FilesMatch "\.csv$">
-        Order Allow,Deny
-        Allow from all
-        ForceType application/octet-stream
-        Header set Content-Disposition attachment
-    </FilesMatch>
-</Directory>
-
 # Disable server signature
 ServerSignature Off
