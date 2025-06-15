@@ -54,6 +54,30 @@ function generateRandomLocationAndSentence() {
             'maxLat' => 6.8,
             'minLng' => -1.8,
             'maxLng' => -1.5
+        ],
+        'Tema' => [
+            'minLat' => 5.6,
+            'maxLat' => 5.7,
+            'minLng' => 0.0,
+            'maxLng' => 0.05
+        ],
+        'Takoradi' => [
+            'minLat' => 4.9,
+            'maxLat' => 5.1,
+            'minLng' => -1.8,
+            'maxLng' => -1.6
+        ],
+        'Sunyani' => [
+            'minLat' => 7.3,
+            'maxLat' => 7.4,
+            'minLng' => -2.4,
+            'maxLng' => -2.3
+        ],
+        'Tamale' => [
+            'minLat' => 9.3,
+            'maxLat' => 9.5,
+            'minLng' => -0.9,
+            'maxLng' => -0.8
         ]
     ];
 

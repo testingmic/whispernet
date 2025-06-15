@@ -94,8 +94,14 @@ class Posts extends LoadController {
         $this->postsModel->payload = $this->payload;
         
         // make the call to the posts model
-        return $this->postsModel->deleteRecord();
-        
+        $deleted = $this->postsModel->deleteRecord();
+
+        if(!$deleted) {
+            return Routing::notFound();
+        }
+
+        return Routing::success('Post deleted successfully');
+
     }
 
     /**

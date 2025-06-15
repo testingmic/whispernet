@@ -8,7 +8,16 @@ class PostsValidation {
         'list' => [
             'method' => 'POST,GET',
             'authenticate' => true,
-            'payload' => []
+            'payload' => [
+                'location' => 'permit_empty|max_length[32]'
+            ]
+        ],
+        'delete:postId' => [
+            'method' => 'DELETE',
+            'authenticate' => true,
+            'payload' => [
+                'postId' => 'required|numeric|max_length[10]',
+            ]
         ],
         'view:postId' => [
             'method' => 'GET',
@@ -20,12 +29,15 @@ class PostsValidation {
         'trending' => [
             'method' => 'GET',
             'authenticate' => true,
-            'payload' => []
+            'payload' => [
+                'location' => 'permit_empty|max_length[32]'
+            ]
         ],
         'nearby' => [
             'method' => 'GET',
             'authenticate' => true,
             'payload' => [
+                'location' => 'permit_empty|max_length[32]',
                 'latitude' => 'permit_empty|max_length[12]',
                 'longitude' => 'permit_empty|max_length[12]',
                 'radius' => 'permit_empty|numeric|max_length[10]',

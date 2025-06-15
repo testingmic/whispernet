@@ -33,16 +33,24 @@ class PostsModel extends Model {
         try {
 
             $offset = ($this->payload['offset'] - 1) * $this->payload['limit'];
-            $sql = "SELECT p.*, u.username, u.profile_image 
-                    FROM posts p 
-                    INNER JOIN users u ON p.user_id = u.user_id 
-                    WHERE p.user_id = ? 
-                    ORDER BY p.created_at DESC 
-                    LIMIT ? OFFSET ?";
-            $posts = $this->db->query($sql, [$this->payload['userId'], $this->payload['limit'], $offset])->getResultArray();
 
-            $sql = "SELECT COUNT(*) FROM posts WHERE user_id = ?";
-            $total = $this->db->query($sql, [$this->payload['userId']])->getRowArray()['COUNT(*)'];
+            $userPosts = $this->db->table('posts p')
+                        ->select("p.*, u.username, u.profile_image")
+                        ->join('users u', 'p.user_id = u.user_id')
+                        ->where('p.user_id', $this->payload['userId'])
+                        ->orderBy('p.created_at DESC')
+                        ->limit($this->payload['limit'])
+                        ->offset($offset);
+
+            $totalPosts = $this->db->table('posts p')->where('p.user_id', $this->payload['userId']);
+
+            if(!empty($this->payload['location'])) {
+                $userPosts->like('p.city', $this->payload['location'], 'both');
+                $totalPosts->like('p.city', $this->payload['location'], 'both');
+            }
+
+            $total = $totalPosts->countAllResults();
+            $posts = $userPosts->get()->getResultArray();
 
             return [
                 'posts' => $posts,
@@ -144,7 +152,7 @@ class PostsModel extends Model {
             $this->db->query($sql, [$this->payload['postId'], $this->payload['userId']]);
 
             if ($this->db->affectedRows() === 0) {
-                throw new DatabaseException('Post not found or unauthorized');
+                return false;
             }
 
             return true;
@@ -170,11 +178,13 @@ class PostsModel extends Model {
                         ->where('p.created_at >=', date('Y-m-d H:i:s', strtotime("-{$hours} hours")))
                         ->orderBy('score DESC, p.created_at DESC')
                         ->limit($this->payload['limit'])
-                        ->offset($offset)
-                        ->get()
-                        ->getResultArray();
+                        ->offset($offset);
 
-            return $posts;
+            if(!empty($this->payload['location'])) {
+                $posts->like('p.city', $this->payload['location'], 'both');
+            }
+
+            return $posts->get()->getResultArray();
 
         } catch (DatabaseException $e) {
             return $e->getMessage();
@@ -191,7 +201,7 @@ class PostsModel extends Model {
         try {
 
             $offset = ($this->payload['offset'] - 1) * $this->payload['limit'];
-            $query = $this->db->table('posts p')
+            $posts = $this->db->table('posts p')
                         ->select("p.*, u.username, u.profile_image,
                            (6371 * acos(cos(radians({$this->payload['latitude']})) * cos(radians(latitude)) * 
                             cos(radians(longitude) - radians({$this->payload['longitude']})) + 
@@ -200,11 +210,13 @@ class PostsModel extends Model {
                         ->where('distance <= ', $this->payload['radius'])
                         ->orderBy('distance, p.created_at DESC')
                         ->limit($this->payload['limit'])
-                        ->offset($offset)
-                        ->get()
-                        ->getResultArray();
+                        ->offset($offset);
 
-            return $query;
+            if(!empty($this->payload['location'])) {
+                $posts->like('p.city', $this->payload['location'], 'both');
+            }
+
+            return $posts->get()->getResultArray();
             
         } catch (DatabaseException $e) {
             return $e->getMessage();
