@@ -10,7 +10,7 @@ class AuthModel extends Model {
 
     public $payload = [];
     protected $table;
-    protected $authTokenTable;
+    protected $userTokenAuthTable;
     protected $primaryKey = "token_id";
     protected $allowedFields = ["login", "description", "password", "date_created", "date_expired", "system_token", "hash_algo"];
 
@@ -38,7 +38,7 @@ class AuthModel extends Model {
      */
     public function insertToken($data) {
         try {
-            $this->db->table($this->authTokenTable)->insert($data);
+            $this->db->table($this->userTokenAuthTable)->insert($data);
             // return the insert id
             return $this->db->insertID();
         } catch(DatabaseException $e) {
@@ -54,7 +54,7 @@ class AuthModel extends Model {
      */
     public function findRecordByToken($token) {
         try {
-            return $this->db->table($this->authTokenTable)->select('login, hash_algo, date_expired, description')->where([
+            return $this->db->table($this->userTokenAuthTable)->select('login, hash_algo, date_expired, description')->where([
                 'password' => $token
             ])->groupStart()
                 ->where('date_expired', null)
@@ -88,7 +88,7 @@ class AuthModel extends Model {
      */
     public function deleteByLogin($login) {
         try {
-            $this->db->table($this->authTokenTable)->delete(['login' => $login]);
+            $this->db->table($this->userTokenAuthTable)->delete(['login' => $login]);
         } catch(DatabaseException $e) {
             return false;
         }

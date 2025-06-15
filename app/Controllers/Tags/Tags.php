@@ -3,6 +3,7 @@ namespace App\Controllers\Tags;
 
 use Exception;
 use App\Controllers\LoadController;
+use App\Libraries\Routing;
 
 class Tags extends LoadController {
 

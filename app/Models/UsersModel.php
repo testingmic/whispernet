@@ -11,6 +11,7 @@ class UsersModel extends Model {
     public $payload = [];
     protected $table;
     protected $primaryKey = "user_id";
+    protected $allowedFields = ['username', 'email', 'password_hash', 'full_name', 'is_verified', 'is_active', 'last_login', 'bio', 'profile_image'];
 
     public function __construct() {
         parent::__construct();
@@ -122,9 +123,9 @@ class UsersModel extends Model {
      * @param string $email
      * @return array
      */
-    public function findByEmail($email) {
+    public function findByEmail($email, $column = 'email') {
         try {
-            return $this->db->table($this->table)->where(['email' => $email, 'is_active' => '1'])->get()->getRowArray();
+            return $this->db->table($this->table)->where([$column => $email, 'is_active' => '1'])->get()->getRowArray();
         } catch (DatabaseException $e) {
             return $e->getMessage();
         }

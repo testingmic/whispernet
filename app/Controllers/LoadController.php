@@ -11,6 +11,7 @@ use App\Models\PostsModel;
 use App\Models\AnalyticsModel;
 use App\Models\TagsModel;
 use App\Models\ChatsModel;
+use App\Models\UsersModel;
 
 class LoadController extends BaseController
 {
@@ -30,6 +31,7 @@ class LoadController extends BaseController
     {
         // initialize the models
         $this->authModel = new AuthModel();
+        $this->usersModel = new UsersModel();
         $this->dbModel = new DBModel();
 
         if(empty($this->payload)) {

@@ -3,6 +3,7 @@
 namespace App\Controllers\Media;
 
 use App\Controllers\LoadController;
+use App\Libraries\Routing;
 use Exception;
 
 class Media extends LoadController {

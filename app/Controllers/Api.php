@@ -116,13 +116,10 @@ class Api extends BaseController
 
         // set the request id
         $handler['requestId'] = random_string('alnum', 12);
-        $handler['cused'] = $this->cacheUse; // whether the cache was used or not
 
         if(strpos($this->req_path, 'surveys') !== false) {
             $handler['success'] = $handler['status'] == 'success';
         }
-
-        $handler['host'] = $_SERVER['HTTP_HOST'] ?? ($_SERVER['SERVER_NAME'] ?? null);
 
         // return the response
         return $this->fromBaseRoute ? $handler : $this->respond($handler, $this->statusCode);
@@ -194,6 +191,10 @@ class Api extends BaseController
             if (isset($payload[$value])) {
                 $payload[$key] = $payload[$value];
             }
+        }
+
+        if(empty($payload['radius'])) {
+            $payload['radius'] = 50;
         }
 
         if(empty($payload['limit'])) {

@@ -3,6 +3,7 @@
 namespace App\Controllers\Moderation;
 
 use App\Controllers\LoadController;
+use App\Libraries\Routing;
 
 class Moderation extends LoadController {
     public function createReport($data) {

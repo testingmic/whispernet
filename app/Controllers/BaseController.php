@@ -99,12 +99,12 @@ abstract class BaseController extends Controller
     /**
      * @var int
      */
-    public $defaultLimit = 1200;
+    public $defaultLimit = 100;
 
     /**
      * @var int
      */
-    public $defaultOffset = 0;
+    public $defaultOffset = 1;
 
     /**
      * @var bool
@@ -166,7 +166,7 @@ abstract class BaseController extends Controller
      * @var list<string>
      */
     protected $helpers = [
-       'configs', 'text', 'auth', 'database', 'utilities', 'users'
+       'configs', 'text', 'auth', 'database', 'utilities', 'users', 'posts'
     ];
 
     /**

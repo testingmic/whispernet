@@ -10,6 +10,15 @@ class AuthValidation {
             'authenticate' => true,
             'payload' => []
         ],
+        'register' => [
+            'method' => 'POST',
+            'payload' => [
+                'full_name' => 'required|max_length[100]',
+                'email' => 'required|valid_email|max_length[100]',
+                'password' => 'required|valid_password|min_length[8]|max_length[32]',
+                'password_confirm' => 'required|matches[password]',
+            ]
+        ],
         'login' => [
             'method' => 'POST',
             'payload' => [
@@ -37,13 +46,6 @@ class AuthValidation {
                 'password' => 'required|valid_password|min_length[8]|max_length[32]',
                 'password_confirm' => 'required|matches[password]',
                 'code' => 'required|max_length[6]|numeric'
-            ]
-        ],
-        'verify' => [
-            'method' => 'POST',
-            'payload' => [
-                'code' => 'required|max_length[6]|numeric',
-                'email' => 'required|valid_email|max_length[100]'
             ]
         ],
         'setup2fa' => [

@@ -3,6 +3,7 @@
 namespace App\Controllers\Devices;
 
 use App\Controllers\LoadController;
+use App\Libraries\Routing;
 
 class Devices extends LoadController {
     public function list($filters = []) {

@@ -4,6 +4,7 @@ namespace App\Controllers\Chats;
 
 use Exception;
 use App\Controllers\LoadController;
+use App\Libraries\Routing;
 
 class Chats extends LoadController {
 

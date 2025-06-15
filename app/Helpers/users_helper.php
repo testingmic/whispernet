@@ -1,6 +1,29 @@
 <?php
 
 /**
+ * Get the location by IP
+ * 
+ * @return array
+ */
+function getLocationByIP() {
+    // Fetch location data from ipapi.co
+    $url = "https://ipinfo.io/?token=2d64e9f7d9e7a2";
+    // $url = "https://ipapi.co/json/?token=2d64e9f7d9e7a2";
+
+    // use curl to get the data
+    $ch = curl_init();
+    curl_setopt($ch, CURLOPT_URL, $url);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    $response = curl_exec($ch);
+    curl_close($ch);
+
+    if ($response !== false) {
+        $data = json_decode($response, true);
+        return $data;
+    }
+}
+
+/**
  * Format the user response
  * 
  * @param array $user

@@ -45,11 +45,10 @@ class PostsModel extends Model {
             $total = $this->db->query($sql, [$this->payload['userId']])->getRowArray()['COUNT(*)'];
 
             return [
-                'success' => true,
                 'posts' => $posts,
                 'pagination' => [
                     'total' => $total,
-                    'page' => $this->payload['page'],
+                    'page' => $this->payload['offset'] ?? 1,
                     'limit' => $this->payload['limit'],
                     'pages' => ceil($total / $this->payload['limit'])
                 ]
@@ -68,9 +67,18 @@ class PostsModel extends Model {
     public function create() {
         try {
 
-            $sql = "INSERT INTO posts (user_id, content, media_url, media_type, latitude, longitude) 
-                    VALUES (?, ?, ?, ?, ?, ?)";
-            $this->db->query($sql, [$this->payload['userId'], $this->payload['content'], $this->payload['mediaUrl'], $this->payload['mediaType'], $this->payload['latitude'], $this->payload['longitude']]);
+            $sql = "INSERT INTO posts (user_id, content, city, country, media_url, media_type, latitude, longitude) 
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+            $this->db->query($sql, [
+                $this->payload['userId'], 
+                $this->payload['content'], 
+                $this->payload['city'] ?? null,
+                $this->payload['country'] ?? null,
+                $this->payload['mediaUrl'] ?? null, 
+                $this->payload['mediaType'] ?? null, 
+                $this->payload['latitude'] ?? null, 
+                $this->payload['longitude'] ?? null
+            ]);
 
             $postId = $this->db->insertID();
 
@@ -94,7 +102,7 @@ class PostsModel extends Model {
             $post = $this->db->query($sql, [$this->payload['postId']])->getRowArray();
 
             if (!$post) {
-                throw new DatabaseException('Post not found');
+                return false;
             }
 
             return $post;
@@ -146,32 +154,58 @@ class PostsModel extends Model {
     }
 
     /**
+     * Get trending posts
+     * 
+     * @return array
+     */
+    public function trending() {
+        try {
+
+            $offset = ($this->payload['offset'] - 1) * $this->payload['limit'];
+            $hours = $this->payload['hours'] ?? 1;
+            
+            $posts = $this->db->table('posts p')
+                        ->select("p.*, u.username, u.profile_image, (p.upvotes - p.downvotes) as score")
+                        ->join('users u', 'p.user_id = u.user_id')
+                        ->where('p.created_at >=', date('Y-m-d H:i:s', strtotime("-{$hours} hours")))
+                        ->orderBy('score DESC, p.created_at DESC')
+                        ->limit($this->payload['limit'])
+                        ->offset($offset)
+                        ->get()
+                        ->getResultArray();
+
+            return $posts;
+
+        } catch (DatabaseException $e) {
+            return $e->getMessage();
+        }
+    }
+
+    /**
      * Get nearby posts
      * 
      * @return array
      */
     public function nearby() {
-        try {
-            $offset = ($this->payload['offset'] - 1) * $this->payload['limit'];
-            $sql = "SELECT p.*, u.username, u.profile_image,
-                           (6371 * acos(cos(radians(?)) * cos(radians(latitude)) * 
-                            cos(radians(longitude) - radians(?)) + 
-                            sin(radians(?)) * sin(radians(latitude)))) AS distance 
-                    FROM posts p 
-                    INNER JOIN users u ON p.user_id = u.user_id 
-                    HAVING distance <= ? 
-                    ORDER BY distance, p.created_at DESC 
-                    LIMIT ? OFFSET ?";
-            $posts = $this->db->query($sql, [
-                $this->payload['latitude'], 
-                $this->payload['longitude'], 
-                $this->payload['latitude'], 
-                $this->payload['radius'], 
-                $this->payload['limit'], 
-                $offset
-            ])->getResultArray();
 
-            return $posts;
+        try {
+
+            $offset = ($this->payload['offset'] - 1) * $this->payload['limit'];
+            $query = $this->db->table('posts p')
+                        ->select("p.*, u.username, u.profile_image,
+                           (6371 * acos(cos(radians({$this->payload['latitude']})) * cos(radians(latitude)) * 
+                            cos(radians(longitude) - radians({$this->payload['longitude']})) + 
+                            sin(radians({$this->payload['latitude']})) * sin(radians(latitude)))) AS distance")
+                        ->join('users u', 'p.user_id = u.user_id')
+                        ->where('distance <= ', $this->payload['radius'])
+                        ->orderBy('distance, p.created_at DESC')
+                        ->limit($this->payload['limit'])
+                        ->offset($offset)
+                        ->get()
+                        ->getResultArray();
+
+            return $query;
+            
         } catch (DatabaseException $e) {
             return $e->getMessage();
         }
@@ -194,29 +228,6 @@ class PostsModel extends Model {
             $this->db->query($sql, [$this->payload['postId']]);
 
             return true;
-        } catch (DatabaseException $e) {
-            return $e->getMessage();
-        }
-    }
-
-    /**
-     * Get trending posts
-     * 
-     * @return array
-     */
-    public function trending() {
-        try {
-            $offset = ($this->payload['offset'] - 1) * $this->payload['limit'];
-            $sql = "SELECT p.*, u.username, u.profile_image,
-                           (p.upvotes - p.downvotes) as score 
-                    FROM posts p 
-                    INNER JOIN users u ON p.user_id = u.user_id 
-                    WHERE p.created_at >= DATE_SUB(NOW(), INTERVAL 24 HOUR) 
-                    ORDER BY score DESC, p.created_at DESC 
-                    LIMIT ? OFFSET ?";
-            $posts = $this->db->query($sql, [$this->payload['limit'], $offset])->getResultArray();
-
-            return $posts;
         } catch (DatabaseException $e) {
             return $e->getMessage();
         }

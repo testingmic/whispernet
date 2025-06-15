@@ -194,6 +194,9 @@ class RequestHandler extends BaseController
                 Routing::$must_login = true;
                 return Routing::unauthorized('The token you provided is invalid.');
             }
+
+            // set the user id in the payload
+            $payload['userId'] = $userToken['userId'];
             
             // if the authenticate user is not 1, return an error
             $forceAuth = getenv('AUTHENTICATE_USER');
@@ -221,6 +224,31 @@ class RequestHandler extends BaseController
             } catch (\Exception $e) {
                 // set the stripe object to null
                 $classObject->stripeObject = null;
+            }
+
+            // if the latitude and longitude are not set, get the location by IP
+            if(empty($payload['latitude']) && empty($payload['longitude'])) {
+
+                // get the cache key
+                $cacheKey = create_cache_key('user', 'location', ['user_id' => $payload['userId']]);
+                $locationInfo = $this->cacheObject->get($cacheKey);
+
+                if(!empty($locationInfo)) {
+                    $location = $locationInfo;
+                } else {
+                    // get the location by IP
+                    $location = getLocationByIP();
+                    // save the location to the cache for 5 minutes
+                    $this->cacheObject->save($cacheKey, $location, 'user.location', null, 60 * 10);
+                }
+
+                if(!empty($location['loc'])) {
+                    $longs = explode(',', $location['loc']);
+                }
+                $payload['city'] = $location['city'];
+                $payload['country'] = $location['country'] ?? null;
+                $payload['latitude'] = $location['latitude'] ?? $longs[0];
+                $payload['longitude'] = $location['longitude'] ?? $longs[1];
             }
 
             // set the current user

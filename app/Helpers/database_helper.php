@@ -12,6 +12,7 @@ $databases = [
         password_hash TEXT NOT NULL,
         full_name TEXT,
         bio TEXT,
+        two_factor_setup BOOLEAN DEFAULT 0,
         profile_image TEXT,
         is_verified BOOLEAN DEFAULT 0,
         is_active BOOLEAN DEFAULT 1,
@@ -79,6 +80,8 @@ $databases = [
         media_type TEXT CHECK(media_type IN ('image', 'video', 'none')) DEFAULT 'none',
         latitude REAL NOT NULL,
         longitude REAL NOT NULL,
+        city TEXT,
+        country TEXT,
         upvotes INTEGER DEFAULT 0,
         downvotes INTEGER DEFAULT 0,
         is_hidden BOOLEAN DEFAULT 0,
@@ -205,8 +208,7 @@ $databases = [
 
 // alter tables
 $alterTables = [
-    // "ALTER TABLE funnels ADD COLUMN created_at DATETIME;"
-    // "ALTER TABLE funnels ADD COLUMN updated_at DATETIME;"
+    // "ALTER TABLE users ADD COLUMN two_factor_setup BOOLEAN DEFAULT 0;",
 ];
 
 function createDatabaseStructure() {

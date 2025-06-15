@@ -47,7 +47,7 @@ class Auth extends LoadController {
 
         // update the user last login date
         if(!$isLogger) {
-            $this->usersModel->updateRecord($user['user_id'], ['last_login' => time()]);
+            $this->usersModel->update($user['user_id'], ['last_login' => time()]);
         }
 
         // Check if two factor setup
@@ -68,10 +68,39 @@ class Auth extends LoadController {
         
         // Return the response
         return [
-            'status' => 'success',
-            'message' => 'Login successful',
+            'message' => !empty($email) && !empty($password) ? 'Registration successful' : 'Login successful',
             'data' => $response
         ];
+
+    }
+
+    /**
+     * Register the user
+     * 
+     * @return array
+     */
+    public function register() {
+        // Find user by email
+        $user = $this->usersModel->findByEmail($this->payload['email']);
+        if(!empty($user)) {
+            return Routing::error('User already exists.');
+        }
+
+        $payload = [
+            'username' => $this->payload['email'],
+            'email' => $this->payload['email'],
+            'password_hash' => hash_password($this->payload['password']),
+            'full_name' => $this->payload['full_name'],
+            'is_verified' => 0,
+            'is_active' => 1,
+            'last_login' => time(),
+        ];
+
+        // Insert the user
+        $this->usersModel->insert($payload);
+
+        // Login the user
+        return $this->login($this->payload['email'], $this->payload['password']);
 
     }
 
@@ -345,11 +374,13 @@ class Auth extends LoadController {
             }
 
             // get the user record
-            $getRecord = $this->usersModel->findByLogin($getRecord['login'], ['Active']);
+            $getRecord = $this->usersModel->findByEmail($getRecord['login'], 'username');
 
             if(empty($getRecord)) {
                 return false;
             }
+
+            $getRecord['userId'] = $getRecord['user_id'];
 
         } else {
             $getRecord = $cacheData;

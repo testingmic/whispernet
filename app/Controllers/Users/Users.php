@@ -3,6 +3,7 @@
 namespace App\Controllers\Users;
 
 use App\Controllers\LoadController;
+use App\Libraries\Routing;
 
 class Users extends LoadController {
 
