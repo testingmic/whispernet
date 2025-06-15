@@ -56,6 +56,22 @@ class PostsValidation {
                 'longitude' => 'permit_empty|max_length[12]',
             ]
         ],
+        'comments:postId' => [
+            'method' => 'GET',
+            'authenticate' => true,
+            'payload' => [
+                'postId' => 'permit_empty|numeric|max_length[10]',
+            ]
+        ],
+        'vote' => [
+            'method' => 'POST',
+            'authenticate' => true,
+            'payload' => [
+                'recordId' => 'required|numeric|max_length[10]',
+                'section' => 'required|in_list[posts,comments]',
+                'direction' => 'required|in_list[up,down]',
+            ]
+        ],
         'comment' => [
             'method' => 'POST',
             'authenticate' => true,

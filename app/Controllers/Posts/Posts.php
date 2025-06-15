@@ -51,6 +51,23 @@ class Posts extends LoadController {
      * 
      * @return array
      */
+    public function comments() {
+        // set the payload to the posts model
+        $this->postsModel->payload = $this->payload;
+
+        $whereClause = !empty($this->payload['postId']) ? "AND c.post_id = {$this->payload['postId']}" : "";
+        
+        // make the call to the posts model
+        $comments = $this->postsModel->viewComments($this->payload['userId'], 'user_id', $whereClause);
+
+        return Routing::success($comments);
+    }
+
+    /**
+     * View comments
+     * 
+     * @return array
+     */
     public function viewComments() {
         // set the payload to the posts model
         $this->postsModel->payload = $this->payload;
@@ -222,21 +239,47 @@ class Posts extends LoadController {
         // disable adding comments
         $this->addComments = false;
 
+        // check if the section is valid
         if(!empty($this->payload['section'])) {
             if(!in_array($this->payload['section'], ['posts', 'comments'])) {
                 return Routing::error('Invalid section');
             }
         }
 
+        if(!in_array($this->payload['direction'], ['up', 'down'])) {
+            return Routing::error('Invalid direction');
+        }
+
         // set the section to posts if not set
         $section = $this->payload['section'] ?? 'posts';
         $column = $section == "posts" ? "post_id" : "comment_id";
+
+        // check if the user has already voted
+        $vote = $this->postsModel->checkVotes($this->payload['recordId'], $this->payload['userId'], $this->payload['section']);
+        if(!empty($vote)) {
+
+            if($vote['direction'] == $this->payload['direction']) {
+                return Routing::error("You have already voted in the {$this->payload['direction']} direction");
+            }
+            $this->postsModel->deleteVotes($vote['vote_id']);
+
+            // get the opposite direction
+            $oppositeDirection = $this->payload['direction'] == 'up' ? 'downvotes' : 'upvotes';
+
+            // record the vote
+            $this->postsModel->reduceVotes($this->payload['recordId'], $section, $oppositeDirection, $column);
+        }
 
         // set the payload to the posts model
         $this->postsModel->payload = $this->payload;
         
         // make the call to the posts model
-        return $this->postsModel->vote($section, $column);
+        $this->postsModel->vote($section, $column);
+
+        // update the votes count
+        $this->postsModel->recordVotes($this->payload['recordId'], $this->payload['userId'], $section, $this->payload['direction']);
+
+        return Routing::success('Vote successful');
 
     }
 

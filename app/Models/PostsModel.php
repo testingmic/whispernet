@@ -35,7 +35,7 @@ class PostsModel extends Model {
             $offset = ($this->payload['offset'] - 1) * $this->payload['limit'];
 
             $userPosts = $this->db->table('posts p')
-                        ->select("p.*, u.username, u.profile_image")
+                        ->select("p.*, u.full_name as username, u.profile_image")
                         ->join('users u', 'p.user_id = u.user_id')
                         ->where('p.user_id', $this->payload['userId'])
                         ->orderBy('p.created_at DESC')
@@ -117,12 +117,12 @@ class PostsModel extends Model {
      * 
      * @return array
      */
-    public function viewComments($postId) {
+    public function viewComments($postId, $column = 'post_id', $whereClause = '') {
         try {
-            $sql = "SELECT c.*, u.username, u.profile_image 
+            $sql = "SELECT c.*, u.full_name as username, u.profile_image 
                     FROM comments c 
                     INNER JOIN users u ON c.user_id = u.user_id 
-                    WHERE c.post_id = ?
+                    WHERE c.{$column} = ? {$whereClause}
                     ORDER BY c.created_at DESC";
             $comments = $this->db->query($sql, [$postId])->getResultArray();
 
@@ -256,6 +256,29 @@ class PostsModel extends Model {
     }
 
     /**
+     * Load trending posts
+     * 
+     * @return array
+     */
+    public function loadTrending($offset, $hours) {
+        
+        $posts = $this->db->table('posts p')
+                    ->select("p.*, u.full_name as username, u.profile_image, (p.upvotes - p.downvotes) as score")
+                    ->join('users u', 'p.user_id = u.user_id')
+                    ->where('p.created_at >=', date('Y-m-d H:i:s', strtotime("-{$hours} hours")))
+                    ->orderBy('score DESC, p.created_at DESC')
+                    ->limit($this->payload['limit'])
+                    ->offset($offset);
+
+        if(!empty($this->payload['location'])) {
+            $posts->like('p.city', $this->payload['location'], 'both');
+        }
+
+        return $posts->get()->getResultArray();
+
+    }
+
+    /**
      * Get trending posts
      * 
      * @return array
@@ -263,22 +286,21 @@ class PostsModel extends Model {
     public function trending() {
         try {
 
+            // set the offset and hours
             $offset = ($this->payload['offset'] - 1) * $this->payload['limit'];
             $hours = $this->payload['hours'] ?? 1;
             
-            $posts = $this->db->table('posts p')
-                        ->select("p.*, u.username, u.profile_image, (p.upvotes - p.downvotes) as score")
-                        ->join('users u', 'p.user_id = u.user_id')
-                        ->where('p.created_at >=', date('Y-m-d H:i:s', strtotime("-{$hours} hours")))
-                        ->orderBy('score DESC, p.created_at DESC')
-                        ->limit($this->payload['limit'])
-                        ->offset($offset);
+            // load posts from the last 1 hour
+            $initPosts = $this->loadTrending($offset, $hours);
 
-            if(!empty($this->payload['location'])) {
-                $posts->like('p.city', $this->payload['location'], 'both');
+            if(!empty($initPosts)) {
+                return $initPosts;
             }
 
-            return $posts->get()->getResultArray();
+            // if no posts are found, load posts from the last 6 hours
+            $posts = $this->loadTrending($offset, $hours * 6);
+
+            return $posts;
 
         } catch (DatabaseException $e) {
             return $e->getMessage();
@@ -296,7 +318,7 @@ class PostsModel extends Model {
 
             $offset = ($this->payload['offset'] - 1) * $this->payload['limit'];
             $posts = $this->db->table('posts p')
-                        ->select("p.*, u.username, u.profile_image,
+                        ->select("p.*, u.full_name as username, u.profile_image,
                            (6371 * acos(cos(radians({$this->payload['latitude']})) * cos(radians(latitude)) * 
                             cos(radians(longitude) - radians({$this->payload['longitude']})) + 
                             sin(radians({$this->payload['latitude']})) * sin(radians(latitude)))) AS distance")
@@ -325,17 +347,81 @@ class PostsModel extends Model {
     public function vote($table = 'posts', $whereColumn = 'upvotes') {
         try {
 
-            if (!in_array($this->payload['voteType'], ['up', 'down'])) {
+            if (!in_array($this->payload['direction'], ['up', 'down'])) {
                 throw new DatabaseException('Invalid vote type');
             }
 
-            $column = $this->payload['voteType'] === 'up' ? 'upvotes' : 'downvotes';
+            $column = $this->payload['direction'] === 'up' ? 'upvotes' : 'downvotes';
             $sql = "UPDATE {$table} SET {$column} = {$column} + 1 WHERE {$whereColumn} = ?";
-            $this->db->query($sql, [$this->payload['postId']]);
+            $this->db->query($sql, [$this->payload['recordId']]);
 
             return true;
         } catch (DatabaseException $e) {
-            return $e->getMessage();
+            return [];
+        }
+    }
+
+    /**
+     * Reduce votes
+     * 
+     * @param string $recordId
+     * @param string $table
+     * @param string $column
+     * 
+     * @return array
+     */
+    public function reduceVotes($recordId, $table, $column, $whereColumn) {
+        try {
+            $sql = "UPDATE {$table} SET {$column} = {$column} - 1 WHERE {$whereColumn} = {$recordId}";
+            $this->db->query($sql);
+
+            return true;
+        } catch (DatabaseException $e) {
+            return [];
+        }
+    }
+
+    /**
+     * Record votes
+     * 
+     * @return array
+     */
+    public function recordVotes($recordId, $userId, $section, $direction) {
+        try {
+            $sql = "INSERT INTO votes (record_id, user_id, section, direction) VALUES (?, ?, ?, ?)";
+            $this->db->query($sql, [$recordId, $userId, $section, $direction]);
+        } catch (DatabaseException $e) {
+            return [];
+        }
+    }
+
+    /**
+     * Delete votes
+     * 
+     * @return array
+     */
+    public function deleteVotes($voteId) {
+        try {
+            $sql = "DELETE FROM votes WHERE vote_id = ?";
+            $this->db->query($sql, [$voteId]);
+        } catch (DatabaseException $e) {
+            return [];
+        }
+    }
+
+    /**
+     * Check votes
+     * 
+     * @return array
+     */
+    public function checkVotes($recordId, $userId, $section) {
+        try {
+            $sql = "SELECT * FROM votes WHERE record_id = ? AND user_id = ? AND section = ?";
+            $vote = $this->db->query($sql, [$recordId, $userId, $section])->getRowArray();
+
+            return $vote;
+        } catch (DatabaseException $e) {
+            return [];
         }
     }
     

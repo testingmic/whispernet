@@ -1,5 +1,11 @@
 <?php
-
+/**
+ * Format posts
+ * 
+ * @param array $posts
+ * @param bool $single
+ * @return array
+ */
 function formatPosts($posts = [], $single = false) {
     $formattedPosts = [];
 
@@ -24,13 +30,13 @@ function formatPosts($posts = [], $single = false) {
             'city' => $post['city'],
             'media_url' => $post['media_url'],
             'media_type' => $post['media_type'],
-            'longitude' => $post['longitude'],
-            'latitude' => $post['latitude'],
+            // 'longitude' => $post['longitude'],
+            // 'latitude' => $post['latitude'],
             'username' => $post['username'],
             'comments_count' => $post['comments_count'] ?? 0,
             'profile_image' => $post['profile_image'],
             'score' => $post['score'] ?? 0,
-            'distance' => $post['distance'] ?? 0,
+            'distance' => round($post['distance'] ?? 0, 2),
             'upvotes' => $post['upvotes'],
             'downvotes' => $post['downvotes'],
         ];

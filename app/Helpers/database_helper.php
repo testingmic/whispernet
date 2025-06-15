@@ -19,7 +19,8 @@ $databases = [
         last_login TIMESTAMP,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-    );",
+    );
+    CREATE UNIQUE INDEX IF NOT EXISTS user_id ON users (user_id);",
     "CREATE TABLE IF NOT EXISTS user_token_auth (
         token_id INTEGER PRIMARY KEY AUTOINCREMENT,
         login TEXT,
@@ -30,7 +31,9 @@ $databases = [
         last_used DATETIME DEFAULT NULL,
         date_created DATETIME NOT NULL,
         date_expired DATETIME DEFAULT NULL
-    );",
+    );
+    CREATE INDEX IF NOT EXISTS login ON user_token_auth (login);
+    CREATE INDEX IF NOT EXISTS password ON user_token_auth (password);",
     "CREATE TABLE IF NOT EXISTS user_devices (
         device_id TEXT PRIMARY KEY,
         user_id INTEGER NOT NULL,
@@ -41,17 +44,21 @@ $databases = [
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE
-    );",
+    );
+    CREATE INDEX IF NOT EXISTS user_id ON user_devices (user_id);
+    CREATE INDEX IF NOT EXISTS device_hash ON user_devices (device_hash);
+    CREATE INDEX IF NOT EXISTS device_type ON user_devices (device_type);",
 
     "CREATE TABLE IF NOT EXISTS user_locations (
-        id INTEGER PRIMARY KEY,
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
         user_id INTEGER NOT NULL,
         latitude REAL NOT NULL,
         longitude REAL NOT NULL,
         accuracy REAL,
         last_updated TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE
-    );",
+    );
+    CREATE INDEX IF NOT EXISTS user_id ON user_locations (user_id);",
 
     "CREATE TABLE IF NOT EXISTS media (
         media_id INTEGER PRIMARY KEY,
@@ -70,7 +77,11 @@ $databases = [
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE
-    );",
+    );
+    CREATE INDEX IF NOT EXISTS user_id ON media (user_id);
+    CREATE INDEX IF NOT EXISTS file_type ON media (file_type);
+    CREATE INDEX IF NOT EXISTS is_processed ON media (is_processed);
+    CREATE INDEX IF NOT EXISTS processing_status ON media (processing_status);",
 
     "CREATE TABLE IF NOT EXISTS posts (
         post_id INTEGER PRIMARY KEY,
@@ -89,7 +100,25 @@ $databases = [
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE
-    );",
+    );
+    CREATE INDEX IF NOT EXISTS user_id ON posts (user_id);
+    CREATE INDEX IF NOT EXISTS media_type ON posts (media_type);
+    CREATE INDEX IF NOT EXISTS city ON posts (city);
+    CREATE INDEX IF NOT EXISTS country ON posts (country);",
+
+    "CREATE TABLE IF NOT EXISTS votes (
+        vote_id INTEGER PRIMARY KEY AUTOINCREMENT,
+        record_id INTEGER NOT NULL,
+        user_id INTEGER NOT NULL,
+        section TEXT CHECK(section IN ('posts', 'comments')) NOT NULL,
+        direction TEXT CHECK(direction IN ('up', 'down')) NOT NULL,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE
+    );
+    CREATE INDEX IF NOT EXISTS record_id ON votes (record_id);
+    CREATE INDEX IF NOT EXISTS user_id ON votes (user_id);
+    CREATE INDEX IF NOT EXISTS section ON votes (section);
+    CREATE INDEX IF NOT EXISTS direction ON votes (direction);",
 
     "CREATE TABLE IF NOT EXISTS tags (
         tag_id INTEGER PRIMARY KEY,
@@ -103,7 +132,9 @@ $databases = [
         PRIMARY KEY (post_id, tag_id),
         FOREIGN KEY (post_id) REFERENCES posts(post_id) ON DELETE CASCADE,
         FOREIGN KEY (tag_id) REFERENCES tags(tag_id) ON DELETE CASCADE
-    );",
+    );
+    CREATE INDEX IF NOT EXISTS post_id ON post_tags (post_id);
+    CREATE INDEX IF NOT EXISTS tag_id ON post_tags (tag_id);",
 
     "CREATE TABLE IF NOT EXISTS comments (
         comment_id INTEGER PRIMARY KEY,
@@ -114,10 +145,11 @@ $databases = [
         downvotes INTEGER DEFAULT 0,
         is_hidden BOOLEAN DEFAULT 0,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         FOREIGN KEY (post_id) REFERENCES posts(post_id) ON DELETE CASCADE,
         FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE
-    );",
+    );
+    CREATE INDEX IF NOT EXISTS post_id ON comments (post_id);
+    CREATE INDEX IF NOT EXISTS user_id ON comments (user_id);",
 
     "CREATE TABLE IF NOT EXISTS chat_rooms (
         room_id INTEGER PRIMARY KEY,
@@ -135,7 +167,9 @@ $databases = [
         PRIMARY KEY (room_id, user_id),
         FOREIGN KEY (room_id) REFERENCES chat_rooms(room_id) ON DELETE CASCADE,
         FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE
-    );",
+    );
+    CREATE INDEX IF NOT EXISTS room_id ON chat_participants (room_id);
+    CREATE INDEX IF NOT EXISTS user_id ON chat_participants (user_id);",
 
     "CREATE TABLE IF NOT EXISTS chat_messages (
         message_id INTEGER PRIMARY KEY,
@@ -149,7 +183,11 @@ $databases = [
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         FOREIGN KEY (room_id) REFERENCES chat_rooms(room_id) ON DELETE CASCADE,
         FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE
-    );",
+    );
+    CREATE UNIQUE INDEX IF NOT EXISTS message_id ON chat_messages (message_id);
+    CREATE INDEX IF NOT EXISTS room_id ON chat_messages (room_id);
+    CREATE INDEX IF NOT EXISTS user_id ON chat_messages (user_id);
+    CREATE INDEX IF NOT EXISTS media_type ON chat_messages (media_type);",
 
     "CREATE TABLE IF NOT EXISTS message_status (
         message_id INTEGER NOT NULL,
@@ -159,7 +197,10 @@ $databases = [
         PRIMARY KEY (message_id, user_id),
         FOREIGN KEY (message_id) REFERENCES chat_messages(message_id) ON DELETE CASCADE,
         FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE
-    );",
+    );
+    CREATE INDEX IF NOT EXISTS message_id ON message_status (message_id);
+    CREATE INDEX IF NOT EXISTS user_id ON message_status (user_id);
+    CREATE INDEX IF NOT EXISTS status ON message_status (status);",
 
     "CREATE TABLE IF NOT EXISTS reports (
         report_id INTEGER PRIMARY KEY,
@@ -172,7 +213,12 @@ $databases = [
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         FOREIGN KEY (reporter_id) REFERENCES users(user_id) ON DELETE CASCADE
-    );",
+    );
+    CREATE UNIQUE INDEX IF NOT EXISTS report_id ON reports (report_id);
+    CREATE INDEX IF NOT EXISTS reporter_id ON reports (reporter_id);
+    CREATE INDEX IF NOT EXISTS reported_type ON reports (reported_type);
+    CREATE INDEX IF NOT EXISTS reported_id ON reports (reported_id);
+    CREATE INDEX IF NOT EXISTS status ON reports (status);",
 
     "CREATE TABLE IF NOT EXISTS notifications (
         notification_id INTEGER PRIMARY KEY,
@@ -183,7 +229,12 @@ $databases = [
         is_read BOOLEAN DEFAULT 0,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE
-    );",
+    );
+    CREATE UNIQUE INDEX IF NOT EXISTS notification_id ON notifications (notification_id);
+    CREATE INDEX IF NOT EXISTS user_id ON notifications (user_id);
+    CREATE INDEX IF NOT EXISTS type ON notifications (type);
+    CREATE INDEX IF NOT EXISTS reference_id ON notifications (reference_id);
+    CREATE INDEX IF NOT EXISTS is_read ON notifications (is_read);",
 
     "CREATE TABLE IF NOT EXISTS analytics (
         id INTEGER PRIMARY KEY,
@@ -194,7 +245,9 @@ $databases = [
         metadata TEXT, -- SQLite has no native JSON type
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE SET NULL
-    );",
+    );
+    CREATE INDEX IF NOT EXISTS event_type ON analytics (event_type);
+    CREATE INDEX IF NOT EXISTS user_id ON analytics (user_id);",
 
     "CREATE TABLE IF NOT EXISTS rate_limits (
         id INTEGER PRIMARY KEY,
@@ -203,7 +256,9 @@ $databases = [
         count INTEGER DEFAULT 1,
         window_start TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE
-    );",
+    );
+    CREATE INDEX IF NOT EXISTS user_id ON rate_limits (user_id);
+    CREATE INDEX IF NOT EXISTS action_type ON rate_limits (action_type);",
 
 ];
 
