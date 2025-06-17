@@ -1,4 +1,5 @@
 const CACHE_NAME = 'whispernet-v1';
+const baseUrl = 'http://localhost:8085/public';
 const ASSETS_TO_CACHE = [
     `${baseUrl}/`,
     `${baseUrl}/assets/css/app.css`,

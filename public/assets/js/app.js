@@ -31,6 +31,9 @@ const AppState = {
             this.user = JSON.parse(userData);
         }
     },
+    getToken() {
+        return localStorage.getItem('token');
+    },
     loadTheme() {
         const theme = localStorage.getItem('theme') || 'light';
         this.setTheme(theme);
@@ -106,7 +109,17 @@ const ChatManager = {
         this.setupMessageHandlers();
     },
     setupWebSocket() {
-        this.ws = new WebSocket('ws://localhost:3000/');
+        let userId = AppState.user.user_id;
+        let token = AppState.getToken();
+        this.ws = new WebSocket(`ws://localhost:3000?userId=${userId}&token=${token}`);
+        this.ws.onopen = () => {
+            this.ws.send(JSON.stringify({
+                endpoint: 'setup/login',
+                type: 'setup',
+                baseUrl: baseUrl
+            }));
+        };
+          
         this.ws.onmessage = (event) => this.handleIncomingMessage(event);
         this.ws.onclose = () => this.handleConnectionClose();
     },

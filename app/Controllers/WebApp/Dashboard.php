@@ -12,7 +12,7 @@ class Dashboard extends WebAppController {
      * @return void
      */
     public function index() {
-        return $this->templateObject->loadPage('dashboard', ['pageTitle' => 'Dashboard']);
+        return $this->templateObject->loadPage('feed', ['pageTitle' => 'Dashboard']);
     }
 
 }

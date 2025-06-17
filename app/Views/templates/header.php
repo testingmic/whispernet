@@ -12,6 +12,10 @@
   <link rel="apple-touch-icon" href="<?= $baseUrl ?>/assets/images/icons/icon-192x192.png">
   <!-- <link rel="stylesheet" href="<?= $baseUrl ?>/assets/css/tailwind.min.css"> -->
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script>
+    localStorage.setItem('baseUrl', '<?= $baseUrl ?>');
+    const baseUrl = '<?= $baseUrl ?>', userLoggedin = <?= $userLoggedin ? 'true' : 'false' ?>;
+  </script>
   <link rel="stylesheet" href="<?= $baseUrl ?>/assets/css/app.css">
 </head>
 
@@ -36,4 +40,4 @@
         </div>
       </div>
     </nav>
-    <main class="flex-grow">
+    <main class="flex-grow pt-16">

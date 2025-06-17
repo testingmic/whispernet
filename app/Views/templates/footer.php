@@ -32,9 +32,6 @@
 </nav>
 </div>
 <!-- PWA Service Worker Registration -->
-<script>
-  const baseUrl = '<?= $baseUrl ?>', userLoggedin = <?= $userLoggedin ? 'true' : 'false' ?>;
-</script>
 <script src="<?= $baseUrl ?>/assets/js/app.js" defer></script>
 <?php if($userLoggedin) { ?>
   <script>
