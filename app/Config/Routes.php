@@ -2,14 +2,19 @@
 
 use CodeIgniter\Router\RouteCollection;
 
-// $routes->setAutoRoute(true);
+$routes->setAutoRoute(true);
 
 /**
  * @var RouteCollection $routes
  */
-$routes->get("/", "Home::index");
-$routes->get("/rates", "Rates::index");
-$routes->set404Override("\App\Controllers\BaseRoute::control");
+$routes->get("/", "Landing::index");
+
+// Handle 404 errors and pass URL segments to Landing::routing
+$routes->set404Override(function() {
+    $uri = service('uri');
+    $segments = $uri->getSegments();
+    return (new \App\Controllers\Landing())->routing($segments);
+});
 
 use App\Controllers\Api;
 

@@ -1,0 +1,109 @@
+{
+    "name": "WhisperNet",
+    "short_name": "WhisperNet",
+    "description": "Connect with your local community anonymously",
+    "start_url": "/",
+    "display": "standalone",
+    "background_color": "#ffffff",
+    "theme_color": "#2196F3",
+    "orientation": "portrait",
+    "icons": [
+        {
+            "src": "/assets/images/icons/icon-72x72.png",
+            "sizes": "72x72",
+            "type": "image/png",
+            "purpose": "any maskable"
+        },
+        {
+            "src": "/assets/images/icons/icon-96x96.png",
+            "sizes": "96x96",
+            "type": "image/png",
+            "purpose": "any maskable"
+        },
+        {
+            "src": "/assets/images/icons/icon-128x128.png",
+            "sizes": "128x128",
+            "type": "image/png",
+            "purpose": "any maskable"
+        },
+        {
+            "src": "/assets/images/icons/icon-144x144.png",
+            "sizes": "144x144",
+            "type": "image/png",
+            "purpose": "any maskable"
+        },
+        {
+            "src": "/assets/images/icons/icon-152x152.png",
+            "sizes": "152x152",
+            "type": "image/png",
+            "purpose": "any maskable"
+        },
+        {
+            "src": "/assets/images/icons/icon-192x192.png",
+            "sizes": "192x192",
+            "type": "image/png",
+            "purpose": "any maskable"
+        },
+        {
+            "src": "/assets/images/icons/icon-384x384.png",
+            "sizes": "384x384",
+            "type": "image/png",
+            "purpose": "any maskable"
+        },
+        {
+            "src": "/assets/images/icons/icon-512x512.png",
+            "sizes": "512x512",
+            "type": "image/png",
+            "purpose": "any maskable"
+        }
+    ],
+    "screenshots": [
+        {
+            "src": "/assets/images/screenshots/feed.png",
+            "sizes": "1080x1920",
+            "type": "image/png",
+            "platform": "narrow",
+            "label": "Local Feed"
+        },
+        {
+            "src": "/assets/images/screenshots/chat.png",
+            "sizes": "1080x1920",
+            "type": "image/png",
+            "platform": "narrow",
+            "label": "Chat Interface"
+        },
+        {
+            "src": "/assets/images/screenshots/create.png",
+            "sizes": "1080x1920",
+            "type": "image/png",
+            "platform": "narrow",
+            "label": "Create Post"
+        }
+    ],
+    "shortcuts": [
+        {
+            "name": "Create Post",
+            "short_name": "Post",
+            "description": "Create a new post",
+            "url": "/create",
+            "icons": [{ "src": "/assets/images/icons/post-96x96.png", "sizes": "96x96" }]
+        },
+        {
+            "name": "Chat",
+            "short_name": "Chat",
+            "description": "Open chat",
+            "url": "/chat",
+            "icons": [{ "src": "/assets/images/icons/chat-96x96.png", "sizes": "96x96" }]
+        }
+    ],
+    "categories": ["social", "communication"],
+    "prefer_related_applications": false,
+    "related_applications": [],
+    "scope": "/",
+    "dir": "ltr",
+    "lang": "en-US",
+    "iarc_rating_id": "e84b072d-71b3-4d3e-86ae-31a8ce4e53b7",
+    "edge_side_panel": {
+        "preferred_width": 400
+    }
+} 
