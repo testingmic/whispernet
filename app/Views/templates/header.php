@@ -27,7 +27,9 @@
         <div class="flex justify-between h-16">
           <div class="flex">
             <div class="flex-shrink-0 flex items-center">
-              <img class="h-8 w-auto" src="<?= $baseUrl ?>/assets/images/logo.svg" alt="WhisperNet">
+              <a href="<?= $baseUrl ?>">
+                <img class="h-8 w-auto" src="<?= $baseUrl ?>/assets/images/logo.svg" alt="WhisperNet">
+              </a>
             </div>
           </div>
           <div class="flex items-center">

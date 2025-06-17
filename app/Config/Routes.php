@@ -26,3 +26,9 @@ $routes->match(["PUT", "DELETE", "GET", "POST", "OPTIONS"], "/api(:any)", [Api::
 
 // crontab requests
 $routes->cli('userjourney/(:segment)', 'Dashboard\Dashboard::journey/$1');
+
+// Profile routes
+$routes->get('profile', 'Profile::index');
+$routes->get('profile/edit', 'Profile::edit');
+$routes->post('profile/update', 'Profile::update');
+$routes->post('profile/settings', 'Profile::updateSettings');

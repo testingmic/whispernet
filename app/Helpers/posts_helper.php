@@ -51,6 +51,33 @@ function formatPosts($posts = [], $single = false) {
 }
 
 /**
+ * Format time ago
+ * 
+ * @param string $datetime
+ * @return string
+ */
+function formatTimeAgo($datetime) {
+    $time = strtotime($datetime);
+    $now = time();
+    $diff = $now - $time;
+
+    if ($diff < 60) {
+        return 'just now';
+    } elseif ($diff < 3600) {
+        $mins = floor($diff / 60);
+        return $mins . ' minute' . ($mins > 1 ? 's' : '') . ' ago';
+    } elseif ($diff < 86400) {
+        $hours = floor($diff / 3600);
+        return $hours . ' hour' . ($hours > 1 ? 's' : '') . ' ago';
+    } elseif ($diff < 604800) {
+        $days = floor($diff / 86400);
+        return $days . ' day' . ($days > 1 ? 's' : '') . ' ago';
+    } else {
+        return date('M j, Y', $time);
+    }
+}
+
+/**
  * Generate random location and sentence
  * 
  * @return array

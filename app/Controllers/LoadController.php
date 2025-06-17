@@ -56,12 +56,16 @@ class LoadController extends BaseController
     /**
      * Trigger model
      * 
-     * @param array $model
+     * @param string $model
      * @return void
      */
     public function triggerModel($model) {
         
-        $models = stringToArray($model);
+        if(function_exists('setDatabaseSettings')) {
+            $models = stringToArray($model);
+        } else {
+            $models = is_array($model) ? $model : explode(',', $model);
+        }
         
         // Define a mapping of model names to their corresponding model classes
         $modelMap = [

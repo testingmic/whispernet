@@ -208,7 +208,9 @@ class Caching {
             CREATE INDEX IF NOT EXISTS idx_recorder ON events_log (recorder);");
 
             // update some few connection settings
-            setDatabaseSettings($this->dbObject);
+            if(function_exists('setDatabaseSettings')) {
+                setDatabaseSettings($this->dbObject);
+            }
 
         } catch(DatabaseException $e) {}
 

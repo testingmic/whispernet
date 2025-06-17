@@ -103,255 +103,194 @@ const AppState = {
 // Chat Manager
 const ChatManager = {
     init() {
+        // Only initialize chat features if we're on a chat page
+        if (!document.querySelector('.chat-container')) return;
+
         this.setupChatList();
         this.setupMessageInput();
         this.setupMediaUpload();
         this.setupAudioRecording();
         this.setupEmojiPicker();
-        this.setupSearch();
     },
 
     setupChatList() {
         const chatItems = document.querySelectorAll('.chat-item');
-        const chatList = document.getElementById('chatList');
-        const chatView = document.getElementById('chatView');
-        const backButton = document.getElementById('backToList');
+        const chatList = document.querySelector('.chat-list');
+        const chatView = document.querySelector('.chat-view');
+        const backButton = document.querySelector('.back-button');
+
+        if (!chatItems.length || !chatList || !chatView) return;
 
         chatItems.forEach(item => {
             item.addEventListener('click', () => {
-                if (window.innerWidth < 768) {
-                    chatList.classList.add('hidden');
-                    chatView.classList.remove('hidden');
-                }
-                // Add active state to clicked item
-                chatItems.forEach(i => i.classList.remove('bg-blue-50', 'dark:bg-blue-900/20'));
-                item.classList.add('bg-blue-50', 'dark:bg-blue-900/20');
+                // Hide chat list and show chat view
+                chatList.classList.add('hidden');
+                chatView.classList.remove('hidden');
+                
+                // Update active state
+                chatItems.forEach(i => i.classList.remove('bg-gray-100', 'dark:bg-gray-700'));
+                item.classList.add('bg-gray-100', 'dark:bg-gray-700');
+                
+                // Update chat header
+                const name = item.querySelector('.font-medium').textContent;
+                const status = item.querySelector('.text-xs').textContent;
+                document.querySelector('.chat-header h2').textContent = name;
+                document.querySelector('.chat-header p').textContent = status;
             });
         });
 
         if (backButton) {
             backButton.addEventListener('click', () => {
-                chatView.classList.add('hidden');
                 chatList.classList.remove('hidden');
+                chatView.classList.add('hidden');
             });
         }
     },
 
     setupMessageInput() {
-        const messageForm = document.getElementById('messageForm');
-        const messageInput = document.getElementById('messageInput');
-        const submitButton = messageForm.querySelector('button[type="submit"]');
+        const messageForm = document.querySelector('#messageForm');
+        const messageInput = document.querySelector('#messageInput');
+        const submitButton = document.querySelector('#messageSubmit');
 
-        if (!messageForm || !messageInput) return;
+        if (!messageForm || !messageInput || !submitButton) return;
 
         // Auto-resize textarea
         messageInput.addEventListener('input', () => {
             messageInput.style.height = 'auto';
             messageInput.style.height = messageInput.scrollHeight + 'px';
+        });
+
+        // Enable/disable submit button based on input
+        messageInput.addEventListener('input', () => {
             submitButton.disabled = !messageInput.value.trim();
         });
 
         // Handle form submission
         messageForm.addEventListener('submit', async (e) => {
             e.preventDefault();
-            
-            const content = messageInput.value.trim();
-            if (!content) return;
+            const message = messageInput.value.trim();
+            if (!message) return;
 
             try {
                 submitButton.disabled = true;
-                submitButton.innerHTML = `
-                    <svg class="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                    </svg>
-                `;
-
                 const response = await fetch('/api/chat/message', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
-                        'X-Requested-With': 'XMLHttpRequest'
                     },
-                    body: JSON.stringify({
-                        content: content,
-                        type: 'text'
-                    })
+                    body: JSON.stringify({ message })
                 });
 
-                if (!response.ok) {
-                    throw new Error('Failed to send message');
-                }
+                if (!response.ok) throw new Error('Failed to send message');
 
-                const data = await response.json();
-                this.addMessageToUI(data.message, 'sent');
-                
-                // Clear the input
+                // Add message to UI
+                this.addMessageToUI({
+                    content: message,
+                    is_sent: true,
+                    created_at: new Date().toISOString()
+                });
+
+                // Clear input
                 messageInput.value = '';
                 messageInput.style.height = 'auto';
                 submitButton.disabled = true;
-                submitButton.innerHTML = `
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/>
-                    </svg>
-                `;
-
             } catch (error) {
                 console.error('Error sending message:', error);
+                NotificationManager.show('Failed to send message', 'error');
+            } finally {
                 submitButton.disabled = false;
-                submitButton.innerHTML = `
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/>
-                    </svg>
-                `;
-                NotificationManager.show('Failed to send message. Please try again.', 'error');
             }
         });
     },
 
     setupMediaUpload() {
-        const attachButton = document.getElementById('attachButton');
-        const fileInput = document.getElementById('fileInput');
-        const mediaPreview = document.getElementById('mediaPreview');
-        const previewImage = document.getElementById('previewImage');
-        const removeMedia = document.getElementById('removeMedia');
+        const mediaButton = document.querySelector('#mediaButton');
+        const mediaInput = document.querySelector('#mediaInput');
+        const mediaPreview = document.querySelector('#mediaPreview');
 
-        if (!attachButton || !fileInput || !mediaPreview) return;
+        if (!mediaButton || !mediaInput || !mediaPreview) return;
 
-        attachButton.addEventListener('click', () => {
-            fileInput.click();
+        mediaButton.addEventListener('click', () => {
+            mediaInput.click();
         });
 
-        fileInput.addEventListener('change', (e) => {
+        mediaInput.addEventListener('change', (e) => {
             const file = e.target.files[0];
-            if (file) {
-                if (file.type.startsWith('image/')) {
-                    const reader = new FileReader();
-                    reader.onload = (e) => {
-                        previewImage.src = e.target.result;
-                        mediaPreview.classList.remove('hidden');
-                    };
-                    reader.readAsDataURL(file);
-                } else if (file.type.startsWith('video/')) {
-                    const video = document.createElement('video');
-                    video.src = URL.createObjectURL(file);
-                    video.controls = true;
-                    mediaPreview.innerHTML = '';
-                    mediaPreview.appendChild(video);
-                    mediaPreview.classList.remove('hidden');
-                }
-            }
-        });
+            if (!file) return;
 
-        if (removeMedia) {
-            removeMedia.addEventListener('click', () => {
-                mediaPreview.classList.add('hidden');
-                fileInput.value = '';
-                mediaPreview.innerHTML = '';
-            });
-        }
+            // Show preview
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                if (file.type.startsWith('image/')) {
+                    mediaPreview.innerHTML = `
+                        <img src="${e.target.result}" class="max-h-48 rounded-lg" alt="Preview">
+                    `;
+                } else if (file.type.startsWith('video/')) {
+                    mediaPreview.innerHTML = `
+                        <video src="${e.target.result}" class="max-h-48 rounded-lg" controls></video>
+                    `;
+                }
+                mediaPreview.classList.remove('hidden');
+            };
+            reader.readAsDataURL(file);
+        });
     },
 
     setupAudioRecording() {
-        const recordButton = document.getElementById('recordButton');
-        const audioRecorder = document.getElementById('audioRecorder');
-        const stopRecording = document.getElementById('stopRecording');
+        const recordButton = document.querySelector('#recordButton');
+        const audioRecorder = document.querySelector('#audioRecorder');
+        const stopButton = document.querySelector('#stopButton');
+        const audioPreview = document.querySelector('#audioPreview');
+
+        if (!recordButton || !audioRecorder || !stopButton || !audioPreview) return;
+
         let mediaRecorder;
         let audioChunks = [];
-
-        if (!recordButton || !audioRecorder || !stopRecording) return;
 
         recordButton.addEventListener('click', async () => {
             try {
                 const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
                 mediaRecorder = new MediaRecorder(stream);
-                audioChunks = [];
-
-                mediaRecorder.addEventListener('dataavailable', (event) => {
-                    audioChunks.push(event.data);
+                
+                mediaRecorder.addEventListener('dataavailable', (e) => {
+                    audioChunks.push(e.data);
                 });
 
-                mediaRecorder.addEventListener('stop', async () => {
+                mediaRecorder.addEventListener('stop', () => {
                     const audioBlob = new Blob(audioChunks, { type: 'audio/wav' });
-                    await this.sendAudioMessage(audioBlob);
-                    audioRecorder.classList.add('hidden');
+                    const audioUrl = URL.createObjectURL(audioBlob);
+                    
+                    audioPreview.innerHTML = `
+                        <audio src="${audioUrl}" controls class="w-full"></audio>
+                    `;
+                    audioPreview.classList.remove('hidden');
                 });
 
                 mediaRecorder.start();
+                recordButton.classList.add('hidden');
                 audioRecorder.classList.remove('hidden');
             } catch (error) {
-                console.error('Error accessing microphone:', error);
-                NotificationManager.show('Could not access microphone. Please check permissions.', 'error');
+                console.error('Error starting recording:', error);
+                NotificationManager.show('Failed to start recording', 'error');
             }
         });
 
-        stopRecording.addEventListener('click', () => {
-            if (mediaRecorder && mediaRecorder.state === 'recording') {
-                mediaRecorder.stop();
-                mediaRecorder.stream.getTracks().forEach(track => track.stop());
-            }
+        stopButton.addEventListener('click', () => {
+            mediaRecorder.stop();
+            recordButton.classList.remove('hidden');
+            audioRecorder.classList.add('hidden');
         });
-    },
-
-    async sendAudioMessage(audioBlob) {
-        try {
-            const formData = new FormData();
-            formData.append('audio', audioBlob, 'recording.wav');
-
-            const response = await fetch('/api/chat/audio', {
-                method: 'POST',
-                body: formData
-            });
-
-            if (!response.ok) {
-                throw new Error('Failed to send audio message');
-            }
-
-            const data = await response.json();
-            this.addMessageToUI(data.message, 'sent');
-            NotificationManager.show('Audio message sent successfully', 'success');
-        } catch (error) {
-            console.error('Error sending audio message:', error);
-            NotificationManager.show('Failed to send audio message. Please try again.', 'error');
-        }
     },
 
     setupEmojiPicker() {
-        const emojiButton = document.getElementById('emojiButton');
-        const emojiPicker = document.getElementById('emojiPicker');
-        const messageInput = document.getElementById('messageInput');
+        const emojiButton = document.querySelector('#emojiButton');
+        const emojiPicker = document.querySelector('#emojiPicker');
+        const messageInput = document.querySelector('#messageInput');
 
         if (!emojiButton || !emojiPicker || !messageInput) return;
 
-        // Simple emoji list - you might want to use a proper emoji picker library
-        const emojis = ['😊', '😂', '❤️', '👍', '🎉', '🔥', '👏', '🙌', '🤔', '😎'];
-        
-        emojiPicker.innerHTML = `
-            <div class="grid grid-cols-5 gap-2">
-                ${emojis.map(emoji => `
-                    <button class="emoji-btn p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg text-2xl">
-                        ${emoji}
-                    </button>
-                `).join('')}
-            </div>
-        `;
-
         emojiButton.addEventListener('click', () => {
             emojiPicker.classList.toggle('hidden');
-        });
-
-        emojiPicker.addEventListener('click', (e) => {
-            const emojiBtn = e.target.closest('.emoji-btn');
-            if (emojiBtn) {
-                const emoji = emojiBtn.textContent.trim();
-                const start = messageInput.selectionStart;
-                const end = messageInput.selectionEnd;
-                const text = messageInput.value;
-                messageInput.value = text.substring(0, start) + emoji + text.substring(end);
-                messageInput.focus();
-                messageInput.selectionStart = messageInput.selectionEnd = start + emoji.length;
-                emojiPicker.classList.add('hidden');
-            }
         });
 
         // Close emoji picker when clicking outside
@@ -360,91 +299,46 @@ const ChatManager = {
                 emojiPicker.classList.add('hidden');
             }
         });
+
+        // Add emoji to input
+        emojiPicker.addEventListener('click', (e) => {
+            if (e.target.classList.contains('emoji')) {
+                const emoji = e.target.textContent;
+                const start = messageInput.selectionStart;
+                const end = messageInput.selectionEnd;
+                const text = messageInput.value;
+                messageInput.value = text.substring(0, start) + emoji + text.substring(end);
+                messageInput.focus();
+                messageInput.selectionStart = messageInput.selectionEnd = start + emoji.length;
+            }
+        });
     },
 
-    addMessageToUI(message, type = 'received') {
-        const messagesContainer = document.querySelector('.messages-area');
+    addMessageToUI(message) {
+        const messagesContainer = document.querySelector('.messages-container');
         if (!messagesContainer) return;
 
         const messageElement = document.createElement('div');
-        messageElement.className = `flex items-start space-x-2 ${type === 'sent' ? 'justify-end' : ''}`;
-        
-        const timestamp = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        messageElement.className = `flex ${message.is_sent ? 'justify-end' : 'justify-start'} mb-4`;
         
         messageElement.innerHTML = `
-            ${type === 'received' ? `
-                <div class="flex-shrink-0">
-                    <div class="w-8 h-8 rounded-full bg-blue-100 dark:bg-blue-900 flex items-center justify-center">
-                        <span class="text-blue-600 dark:text-blue-300 text-xs">${message.sender.initials}</span>
-                    </div>
+            <div class="flex items-end ${message.is_sent ? 'flex-row-reverse' : 'flex-row'}">
+                <div class="w-8 h-8 rounded-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center mr-2">
+                    <span class="text-sm font-medium text-gray-600 dark:text-gray-300">
+                        ${message.is_sent ? 'You' : 'User'[0]}
+                    </span>
                 </div>
-            ` : ''}
-            <div class="flex-1 ${type === 'sent' ? 'text-right' : ''}">
-                <div class="${type === 'sent' ? 'bg-blue-600' : 'bg-white dark:bg-gray-800'} rounded-lg px-4 py-2 shadow-sm">
-                    ${message.content}
+                <div class="max-w-[70%] ${message.is_sent ? 'bg-blue-600 text-white' : 'bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-white'} rounded-lg px-4 py-2">
+                    <p class="text-sm">${message.content}</p>
+                    <span class="text-xs ${message.is_sent ? 'text-blue-200' : 'text-gray-500 dark:text-gray-400'} mt-1 block">
+                        ${new Date(message.created_at).toLocaleTimeString()}
+                    </span>
                 </div>
-                <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">${timestamp}</p>
             </div>
-            ${type === 'sent' ? `
-                <div class="flex-shrink-0">
-                    <div class="w-8 h-8 rounded-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center">
-                        <span class="text-gray-500 dark:text-gray-400 text-xs">ME</span>
-                    </div>
-                </div>
-            ` : ''}
         `;
 
         messagesContainer.appendChild(messageElement);
         messagesContainer.scrollTop = messagesContainer.scrollHeight;
-    },
-
-    setupSearch() {
-        const searchInput = document.querySelector('input[placeholder="Search conversations..."]');
-        if (!searchInput) return;
-
-        searchInput.addEventListener('input', (e) => {
-            const searchTerm = e.target.value.toLowerCase().trim();
-            const chatItems = document.querySelectorAll('.chat-item');
-
-            chatItems.forEach(item => {
-                const name = item.querySelector('.text-sm.font-medium').textContent.toLowerCase();
-                const lastMessage = item.querySelector('.text-sm.text-gray-500').textContent.toLowerCase();
-                
-                if (name.includes(searchTerm) || lastMessage.includes(searchTerm)) {
-                    item.style.display = '';
-                } else {
-                    item.style.display = 'none';
-                }
-            });
-
-            // Show/hide "no results" message
-            const visibleChats = Array.from(chatItems).filter(item => item.style.display !== 'none');
-            let noResultsMessage = document.getElementById('noSearchResults');
-            
-            if (visibleChats.length === 0 && searchTerm !== '') {
-                if (!noResultsMessage) {
-                    noResultsMessage = document.createElement('div');
-                    noResultsMessage.id = 'noSearchResults';
-                    noResultsMessage.className = 'p-4 text-center text-gray-500 dark:text-gray-400';
-                    noResultsMessage.textContent = 'No conversations found';
-                    document.querySelector('.divide-y').appendChild(noResultsMessage);
-                }
-            } else if (noResultsMessage) {
-                noResultsMessage.remove();
-            }
-        });
-
-        // Clear search when input is cleared
-        searchInput.addEventListener('search', (e) => {
-            if (e.target.value === '') {
-                const chatItems = document.querySelectorAll('.chat-item');
-                chatItems.forEach(item => item.style.display = '');
-                const noResultsMessage = document.getElementById('noSearchResults');
-                if (noResultsMessage) {
-                    noResultsMessage.remove();
-                }
-            }
-        });
     }
 };
 
@@ -1311,6 +1205,161 @@ const NewMessageManager = {
     }
 };
 
+// Profile Manager
+const ProfileManager = {
+    init() {
+        this.setupProfileForm();
+        this.setupSettingsToggles();
+        this.setupProfilePictureUpload();
+    },
+
+    setupProfileForm() {
+        const form = document.getElementById('editProfileForm');
+        if (!form) return;
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const submitButton = form.querySelector('button[type="submit"]');
+            const originalText = submitButton.innerHTML;
+            
+            try {
+                submitButton.disabled = true;
+                submitButton.innerHTML = `
+                    <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    Saving...
+                `;
+
+                const formData = new FormData(form);
+                const response = await fetch('/profile/update', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const data = await response.json();
+                
+                if (data.success) {
+                    NotificationManager.show('Profile updated successfully', 'success');
+                    setTimeout(() => {
+                        window.location.href = '/profile';
+                    }, 1500);
+                } else {
+                    throw new Error(data.message || 'Failed to update profile');
+                }
+            } catch (error) {
+                console.error('Error updating profile:', error);
+                NotificationManager.show(error.message || 'Failed to update profile', 'error');
+            } finally {
+                submitButton.disabled = false;
+                submitButton.innerHTML = originalText;
+            }
+        });
+    },
+
+    setupSettingsToggles() {
+        const toggles = document.querySelectorAll('[role="switch"]');
+        toggles.forEach(toggle => {
+            toggle.addEventListener('click', async () => {
+                const setting = toggle.dataset.setting;
+                const isChecked = toggle.getAttribute('aria-checked') === 'true';
+                
+                try {
+                    const response = await fetch('/profile/settings', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            [setting]: !isChecked
+                        })
+                    });
+
+                    const data = await response.json();
+                    
+                    if (data.success) {
+                        toggle.setAttribute('aria-checked', !isChecked);
+                        toggle.classList.toggle('bg-blue-600', !isChecked);
+                        toggle.classList.toggle('bg-gray-200', isChecked);
+                        toggle.classList.toggle('dark:bg-gray-700', isChecked);
+                        
+                        const span = toggle.querySelector('span');
+                        span.classList.toggle('translate-x-5', !isChecked);
+                        span.classList.toggle('translate-x-0', isChecked);
+                        
+                        NotificationManager.show('Settings updated successfully', 'success');
+                    } else {
+                        throw new Error(data.message || 'Failed to update settings');
+                    }
+                } catch (error) {
+                    console.error('Error updating settings:', error);
+                    NotificationManager.show(error.message || 'Failed to update settings', 'error');
+                }
+            });
+        });
+    },
+
+    setupProfilePictureUpload() {
+        const uploadButton = document.querySelector('button[type="button"]');
+        if (!uploadButton) return;
+
+        uploadButton.addEventListener('click', () => {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = 'image/*';
+            input.style.display = 'none';
+            
+            input.addEventListener('change', async (e) => {
+                const file = e.target.files[0];
+                if (!file) return;
+
+                if (file.size > 2 * 1024 * 1024) {
+                    NotificationManager.show('File size must be less than 2MB', 'error');
+                    return;
+                }
+
+                const formData = new FormData();
+                formData.append('profile_picture', file);
+
+                try {
+                    const response = await fetch('/profile/update', {
+                        method: 'POST',
+                        body: formData
+                    });
+
+                    const data = await response.json();
+                    
+                    if (data.success) {
+                        // Update profile picture preview
+                        const reader = new FileReader();
+                        reader.onload = (e) => {
+                            const profilePicture = document.querySelector('.rounded-full');
+                            if (profilePicture) {
+                                profilePicture.style.backgroundImage = `url(${e.target.result})`;
+                                profilePicture.style.backgroundSize = 'cover';
+                                profilePicture.style.backgroundPosition = 'center';
+                            }
+                        };
+                        reader.readAsDataURL(file);
+                        
+                        NotificationManager.show('Profile picture updated successfully', 'success');
+                    } else {
+                        throw new Error(data.message || 'Failed to update profile picture');
+                    }
+                } catch (error) {
+                    console.error('Error updating profile picture:', error);
+                    NotificationManager.show(error.message || 'Failed to update profile picture', 'error');
+                }
+            });
+
+            document.body.appendChild(input);
+            input.click();
+            document.body.removeChild(input);
+        });
+    }
+};
+
 // Initialize the app
 document.addEventListener('DOMContentLoaded', () => {
     AppState.init();
@@ -1320,4 +1369,5 @@ document.addEventListener('DOMContentLoaded', () => {
     PostCreationManager.init();
     PostCommentManager.init();
     NewMessageManager.init();
+    ProfileManager.init();
 }); 
