@@ -68,7 +68,6 @@ const AppState = {
                 };
                 this.updateLocationUI();
             } catch (error) {
-                console.error('Error getting location:', error);
                 this.showNotification('Please enable location services to see local posts', 'error');
             }
         }
@@ -103,14 +102,67 @@ const AppState = {
 // Chat Manager
 const ChatManager = {
     init() {
-        // Only initialize chat features if we're on a chat page
-        if (!document.querySelector('.chat-container')) return;
-
+        this.setupWebSocket();
+        this.setupMessageHandlers();
         this.setupChatList();
         this.setupMessageInput();
         this.setupMediaUpload();
         this.setupAudioRecording();
         this.setupEmojiPicker();
+    },
+
+    setupWebSocket() {
+        let userId = AppState.user.user_id;
+        let token = AppState.getToken();
+        this.ws = new WebSocket(`ws://localhost:3000?userId=${userId}&token=${token}`);
+        this.ws.onopen = () => {
+            this.ws.send(JSON.stringify({
+                endpoint: 'setup/login',
+                type: 'setup',
+                baseUrl: baseUrl
+            }));
+        };
+          
+        this.ws.onmessage = (event) => this.handleIncomingMessage(event);
+        this.ws.onclose = () => this.handleConnectionClose();
+    },
+
+    handleConnectionClose() {
+        AppState.showNotification('Connection lost. Reconnecting...', 'error');
+        setTimeout(() => this.setupWebSocket(), 3000);
+    },
+
+    setupMessageHandlers() {
+        const messageForm = document.querySelector('#messageForm');
+        if (messageForm) {
+            messageForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                const input = messageForm.querySelector('input');
+                if (input.value.trim()) {
+                    this.sendMessage(input.value);
+                    input.value = '';
+                }
+            });
+        }
+    },
+
+    handleIncomingMessage(event) {
+        const message = JSON.parse(event.data);
+        if (message.type === 'message') {
+            this.addMessageToUI(message, false);
+        }
+    },
+
+    sendMessage(content) {
+        if (!this.activeChat) return;
+        const message = {
+            type: 'message',
+            chatId: this.activeChat.id,
+            content,
+            timestamp: new Date().toISOString()
+        };
+        this.ws.send(JSON.stringify(message));
+        this.addMessageToUI(message, true);
     },
 
     setupChatList() {
@@ -195,7 +247,6 @@ const ChatManager = {
                 messageInput.style.height = 'auto';
                 submitButton.disabled = true;
             } catch (error) {
-                console.error('Error sending message:', error);
                 NotificationManager.show('Failed to send message', 'error');
             } finally {
                 submitButton.disabled = false;
@@ -257,20 +308,20 @@ const ChatManager = {
                 });
 
                 mediaRecorder.addEventListener('stop', () => {
-                    const audioBlob = new Blob(audioChunks, { type: 'audio/wav' });
+                    const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
                     const audioUrl = URL.createObjectURL(audioBlob);
                     
                     audioPreview.innerHTML = `
                         <audio src="${audioUrl}" controls class="w-full"></audio>
                     `;
                     audioPreview.classList.remove('hidden');
+                    uploadAudio(audioBlob);
                 });
 
                 mediaRecorder.start();
                 recordButton.classList.add('hidden');
                 audioRecorder.classList.remove('hidden');
             } catch (error) {
-                console.error('Error starting recording:', error);
                 NotificationManager.show('Failed to start recording', 'error');
             }
         });
@@ -390,7 +441,6 @@ const PostManager = {
             this.renderPosts(data.posts);
             this.currentPage++;
         } catch (error) {
-            console.error('Error loading posts:', error);
             AppState.showNotification('Error loading posts', 'error');
         } finally {
             this.isLoading = false;
@@ -469,7 +519,6 @@ const PostManager = {
             const data = await response.json();
             this.updateVoteCounts(postId, data);
         } catch (error) {
-            console.error('Error voting:', error);
             AppState.showNotification('Error submitting vote', 'error');
         }
     },
@@ -490,7 +539,6 @@ const PostManager = {
             });
             AppState.showNotification('Post reported successfully', 'success');
         } catch (error) {
-            console.error('Error reporting post:', error);
             AppState.showNotification('Error reporting post', 'error');
         }
     }
@@ -557,7 +605,6 @@ const AuthManager = {
                 window.location.href = `${baseUrl}/feed`;
             }
         } catch (error) {
-            console.error('Login error:', error);
             AppState.showNotification(error.responseJSON?.message || 'Login failed. Please try again.', 'error');
         }
     },
@@ -872,7 +919,6 @@ const PostCreationManager = {
                 PostManager.loadMorePosts(); // Refresh the feed
             }
         } catch (error) {
-            console.error('Error creating post:', error);
             AppState.showNotification('Failed to create post. Please try again.', 'error');
         }
     }
@@ -947,7 +993,6 @@ const NotificationManager = {
                 this.updateUnreadCount();
             }
         } catch (error) {
-            console.error('Error marking notification as read:', error);
         }
     },
 
@@ -970,7 +1015,6 @@ const NotificationManager = {
                 this.updateUnreadCount();
             }
         } catch (error) {
-            console.error('Error marking all notifications as read:', error);
         }
     },
 
@@ -993,7 +1037,6 @@ const NotificationManager = {
                 this.updateUnreadCount();
             }
         } catch (error) {
-            console.error('Error deleting notification:', error);
         }
     },
 
@@ -1164,7 +1207,6 @@ const PostCommentManager = {
                 // Show success notification
                 NotificationManager.show('Comment posted successfully', 'success');
             } catch (error) {
-                console.error('Error posting comment:', error);
                 submitButton.disabled = false;
                 submitButton.innerHTML = 'Post';
                 NotificationManager.show('Failed to post comment. Please try again.', 'error');
@@ -1211,22 +1253,20 @@ const PostCommentManager = {
 // New Message Manager
 const NewMessageManager = {
     init() {
-        console.log('Initializing NewMessageManager...');
-        this.modal = document.getElementById('newMessageModal');
-        this.searchInput = document.getElementById('userSearchInput');
-        this.searchResults = document.getElementById('userSearchResults');
-        
-        if (!this.modal || !this.searchInput || !this.searchResults) {
-            console.error('Required modal elements not found:', {
-                modal: !!this.modal,
-                searchInput: !!this.searchInput,
-                searchResults: !!this.searchResults
-            });
-            return;
+        try {
+            console.log('Initializing NewMessageManager...');
+            this.modal = document.getElementById('newMessageModal');
+            this.searchInput = document.getElementById('userSearchInput');
+            this.searchResults = document.getElementById('userSearchResults');
+            
+            if (!this.modal || !this.searchInput || !this.searchResults) {
+                return;
+            }
+            
+            this.setupEventListeners();
+            console.log('NewMessageManager initialized successfully');
+        } catch (error) {
         }
-        
-        this.setupEventListeners();
-        console.log('NewMessageManager initialized successfully');
     },
 
     setupEventListeners() {
@@ -1335,7 +1375,6 @@ const NewMessageManager = {
                 this.searchResults.appendChild(userElement);
             });
         } catch (error) {
-            console.error('Error searching users:', error);
             this.searchResults.innerHTML = '<div class="p-4 text-center text-red-500">Error searching users</div>';
         }
     },
@@ -1358,7 +1397,6 @@ const NewMessageManager = {
             // Redirect to the new chat
             window.location.href = `/chat/${chat.id}`;
         } catch (error) {
-            console.error('Error starting conversation:', error);
             NotificationManager.show('Failed to start conversation', 'error');
         }
     }
@@ -1408,7 +1446,6 @@ const ProfileManager = {
                     throw new Error(data.message || 'Failed to update profile');
                 }
             } catch (error) {
-                console.error('Error updating profile:', error);
                 NotificationManager.show(error.message || 'Failed to update profile', 'error');
             } finally {
                 submitButton.disabled = false;
@@ -1452,7 +1489,6 @@ const ProfileManager = {
                         throw new Error(data.message || 'Failed to update settings');
                     }
                 } catch (error) {
-                    console.error('Error updating settings:', error);
                     NotificationManager.show(error.message || 'Failed to update settings', 'error');
                 }
             });
@@ -1507,7 +1543,6 @@ const ProfileManager = {
                         throw new Error(data.message || 'Failed to update profile picture');
                     }
                 } catch (error) {
-                    console.error('Error updating profile picture:', error);
                     NotificationManager.show(error.message || 'Failed to update profile picture', 'error');
                 }
             });
@@ -1540,4 +1575,118 @@ document.addEventListener('DOMContentLoaded', () => {
     NewMessageManager.init();
     ProfileManager.init();
     NotificationManager.init();
-}); 
+});
+
+// Audio Recording Handler
+function startAudioRecording(onDataAvailable, onStop) {
+    let mediaRecorder, audioChunks = [];
+
+    navigator.mediaDevices.getUserMedia({ audio: true })
+        .then(stream => {
+            mediaRecorder = new MediaRecorder(stream);
+            mediaRecorder.ondataavailable = e => audioChunks.push(e.data);
+            mediaRecorder.onstop = () => {
+                const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
+                onStop(audioBlob);
+                stream.getTracks().forEach(track => track.stop());
+            };
+            mediaRecorder.start();
+            onDataAvailable && onDataAvailable(mediaRecorder, stream);
+        })
+        .catch(err => alert('Microphone access denied: ' + err));
+}
+
+// Usage Example:
+// startAudioRecording(
+//   (recorder, stream) => { /* Save recorder to stop later */ },
+//   (audioBlob) => { /* Do something with audioBlob */ }
+// );
+
+// Video Call Handler (WebRTC)
+async function startVideoCall(localVideoElem, remoteVideoElem, signalingSend, signalingOnMessage) {
+    const peer = new RTCPeerConnection();
+    const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+    stream.getTracks().forEach(track => peer.addTrack(track, stream));
+    localVideoElem.srcObject = stream;
+
+    peer.ontrack = e => {
+        if (remoteVideoElem.srcObject !== e.streams[0]) {
+            remoteVideoElem.srcObject = e.streams[0];
+        }
+    };
+
+    // Signaling
+    peer.onicecandidate = e => {
+        if (e.candidate) signalingSend({ candidate: e.candidate });
+    };
+
+    signalingOnMessage(async msg => {
+        if (msg.offer) {
+            await peer.setRemoteDescription(new RTCSessionDescription(msg.offer));
+            const answer = await peer.createAnswer();
+            await peer.setLocalDescription(answer);
+            signalingSend({ answer });
+        } else if (msg.answer) {
+            await peer.setRemoteDescription(new RTCSessionDescription(msg.answer));
+        } else if (msg.candidate) {
+            await peer.addIceCandidate(new RTCIceCandidate(msg.candidate));
+        }
+    });
+
+    // To start call (caller):
+    async function call() {
+        const offer = await peer.createOffer();
+        await peer.setLocalDescription(offer);
+        signalingSend({ offer });
+    }
+
+    return { peer, stream, call };
+}
+
+// Usage Example:
+// const { peer, stream, call } = await startVideoCall(localVideo, remoteVideo, sendSignal, onSignal);
+// call(); // To initiate 
+
+function uploadAudio(audioBlob) {
+    const formData = new FormData();
+    formData.append('audio', audioBlob, 'recording.webm');
+
+    fetch('/api/upload-audio', {
+        method: 'POST',
+        body: formData,
+        headers: { 'X-Requested-With': 'XMLHttpRequest' }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success && data.audioUrl) {
+            // Optionally replay the uploaded audio
+            replayAudio(data.audioUrl);
+        } else {
+            alert('Upload failed');
+        }
+    })
+    .catch(() => alert('Upload error'));
+}
+
+function replayAudio(audioUrl) {
+    const audio = document.createElement('audio');
+    audio.controls = true;
+    audio.src = audioUrl;
+    document.getElementById('audioReplayContainer').innerHTML = '';
+    document.getElementById('audioReplayContainer').appendChild(audio);
+    audio.play();
+}
+
+startAudioRecording(
+    (recorder, stream) => {
+        // Save recorder if you want to stop it later
+        window.currentRecorder = recorder;
+    },
+    (audioBlob) => {
+        // Upload the audio after recording stops
+        uploadAudio(audioBlob);
+
+        // Optionally, replay before upload:
+        // replayAudioBlob(audioBlob);
+    }
+); 
