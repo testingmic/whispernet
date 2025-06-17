@@ -14,7 +14,7 @@
         </div>
 
         <!-- Login Form -->
-        <form class="mt-8 space-y-6" action="<?= $baseUrl; ?>/login" method="POST">
+        <form id="loginForm" class="mt-8 space-y-6" action="<?= $baseUrl; ?>/login" method="POST">
             <div class="rounded-md shadow-sm -space-y-px">
                 <!-- Email Field -->
                 <div>

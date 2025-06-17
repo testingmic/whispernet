@@ -158,7 +158,7 @@ const ChatManager = {
         chatContainer.scrollTop = chatContainer.scrollHeight;
     },
     handleConnectionClose() {
-        this.showNotification('Connection lost. Reconnecting...', 'error');
+        AppState.showNotification('Connection lost. Reconnecting...', 'error');
         setTimeout(() => this.setupWebSocket(), 3000);
     }
 };
@@ -317,9 +317,185 @@ const PostManager = {
     }
 };
 
+// Authentication Manager
+const AuthManager = {
+    init() {
+        this.setupAuthForms();
+        this.setupPasswordReset();
+    },
+
+    setupAuthForms() {
+        // Login Form Handler
+        $('#loginForm').on('submit', (e) => {
+            e.preventDefault();
+            this.handleLogin();
+        });
+
+        // Signup Form Handler
+        $('#signupForm').on('submit', (e) => {
+            e.preventDefault();
+            this.handleSignup();
+        });
+    },
+
+    setupPasswordReset() {
+        // Forgot Password Form Handler
+        $('#forgotPasswordForm').on('submit', (e) => {
+            e.preventDefault();
+            this.handleForgotPassword();
+        });
+    },
+
+    async handleLogin() {
+        const email = $('#email').val();
+        const password = $('#password').val();
+        const rememberMe = $('#remember_me').is(':checked');
+
+        try {
+            const response = await $.ajax({
+                url: `${baseUrl}/api/auth/login`,
+                method: 'POST',
+                data: {
+                    email,
+                    password,
+                    webapp: true,
+                    remember_me: rememberMe
+                }
+            });
+
+            if (response.success) {
+                // Store user data and token
+                localStorage.setItem('user', JSON.stringify(response.data));
+                localStorage.setItem('token', response.data.token);
+                
+                // Update AppState
+                AppState.user = response.data;
+                
+                // Show success message
+                AppState.showNotification('Login successful!', 'success');
+                
+                // Redirect to feed
+                window.location.href = `${baseUrl}/feed`;
+            }
+        } catch (error) {
+            console.error('Login error:', error);
+            AppState.showNotification(error.responseJSON?.message || 'Login failed. Please try again.', 'error');
+        }
+    },
+
+    async handleSignup() {
+        const fullName = $('#full_name').val();
+        const username = $('#username').val();
+        const email = $('#email').val();
+        const password = $('#password').val();
+        const confirmPassword = $('#confirm_password').val();
+        const termsAccepted = $('#terms').is(':checked');
+
+        // Validate passwords match
+        if (password !== confirmPassword) {
+            AppState.showNotification('Passwords do not match', 'error');
+            return;
+        }
+
+        // Validate terms acceptance
+        if (!termsAccepted) {
+            AppState.showNotification('Please accept the terms and conditions', 'error');
+            return;
+        }
+
+        try {
+            const response = await $.ajax({
+                url: `${baseUrl}/api/auth/signup`,
+                method: 'POST',
+                data: {
+                    full_name: fullName,
+                    username,
+                    email,
+                    password,
+                    terms_accepted: termsAccepted
+                }
+            });
+
+            if (response.success) {
+                AppState.showNotification('Account created successfully! Please check your email to verify your account.', 'success');
+                // Redirect to login page
+                window.location.href = `${baseUrl}/login`;
+            }
+        } catch (error) {
+            console.error('Signup error:', error);
+            AppState.showNotification(error.responseJSON?.message || 'Signup failed. Please try again.', 'error');
+        }
+    },
+
+    async handleForgotPassword() {
+        const email = $('#email').val();
+
+        try {
+            const response = await $.ajax({
+                url: `${baseUrl}/api/auth/forgot-password`,
+                method: 'POST',
+                data: { email }
+            });
+
+            if (response.success) {
+                AppState.showNotification('Password reset instructions have been sent to your email.', 'success');
+                // Clear the form
+                $('#forgotPasswordForm')[0].reset();
+            }
+        } catch (error) {
+            console.error('Forgot password error:', error);
+            AppState.showNotification(error.responseJSON?.message || 'Failed to process request. Please try again.', 'error');
+        }
+    },
+
+    async resetPassword(token, newPassword, confirmPassword) {
+        // Validate passwords match
+        if (newPassword !== confirmPassword) {
+            AppState.showNotification('Passwords do not match', 'error');
+            return;
+        }
+
+        try {
+            const response = await $.ajax({
+                url: `${baseUrl}/api/auth/reset-password`,
+                method: 'POST',
+                data: {
+                    token,
+                    password: newPassword
+                }
+            });
+
+            if (response.success) {
+                AppState.showNotification('Password has been reset successfully!', 'success');
+                // Redirect to login page
+                window.location.href = `${baseUrl}/login`;
+            }
+        } catch (error) {
+            console.error('Reset password error:', error);
+            AppState.showNotification(error.responseJSON?.message || 'Failed to reset password. Please try again.', 'error');
+        }
+    },
+
+    logout() {
+        // Clear local storage
+        localStorage.removeItem('user');
+        localStorage.removeItem('token');
+        
+        // Update AppState
+        AppState.user = null;
+        
+        // Show notification
+        AppState.showNotification('Logged out successfully', 'success');
+        
+        // Redirect to login page
+        window.location.href = `${baseUrl}/login`;
+    }
+};
+
 // Initialize the app
 document.addEventListener('DOMContentLoaded', () => {
     AppState.init();
     ChatManager.init();
     PostManager.init();
+    AuthManager.init();
 }); 

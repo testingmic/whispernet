@@ -11,7 +11,7 @@
         </div>
 
         <!-- Reset Form -->
-        <form class="mt-8 space-y-6" action="<?= $baseUrl; ?>/forgot-password" method="POST">
+        <form id="forgotPasswordForm" class="mt-8 space-y-6" action="<?= $baseUrl; ?>/forgot-password" method="POST">
             <div>
                 <label for="email" class="sr-only">Email address</label>
                 <input id="email" name="email" type="email" autocomplete="email" required 

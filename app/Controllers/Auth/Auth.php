@@ -65,11 +65,19 @@ class Auth extends LoadController {
 
         // Delete the user token hash
         $this->authModel->deleteByLogin(md5($user['email']));
+
+        // if the webapp is true, set the session
+        if(!empty($this->payload['webapp'])) {
+            session()->set('user_token', $response['token']);
+            session()->set('user_id', $user['user_id']);
+            session()->set('user_loggedin', true);
+        }
         
         // Return the response
         return [
             'message' => !empty($email) && !empty($password) ? 'Registration successful' : 'Login successful',
-            'data' => $response
+            'data' => $response,
+            'success' => true
         ];
 
     }
@@ -300,10 +308,10 @@ class Auth extends LoadController {
     public function reset() {
 
         // Verify the code
-        $verify = $this->verify();
-        if($verify['status'] == 'error') {
-            return $verify;
-        }
+        // $verify = $this->verify();
+        // if($verify['status'] == 'error') {
+        //     return $verify;
+        // }
 
         // Update the user password
         $this->usersModel->updateRecordByEmail($this->payload['email'], [
