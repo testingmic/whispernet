@@ -880,64 +880,223 @@ const PostCreationManager = {
 
 // Notification Manager
 const NotificationManager = {
-    show(message, type = 'info') {
-        // Create notification container if it doesn't exist
-        let container = document.getElementById('notification-container');
-        if (!container) {
-            container = document.createElement('div');
-            container.id = 'notification-container';
-            container.className = 'fixed top-4 right-4 z-50 space-y-4';
-            document.body.appendChild(container);
-        }
-
-        // Create notification element
-        const notification = document.createElement('div');
-        notification.className = `notification ${type} transform transition-all duration-300 ease-in-out translate-x-full`;
-        
-        // Set background color based on type
-        const bgColor = {
-            success: 'bg-green-500',
-            error: 'bg-red-500',
-            info: 'bg-blue-500',
-            warning: 'bg-yellow-500'
-        }[type] || 'bg-blue-500';
-
-        notification.innerHTML = `
-            <div class="flex items-center p-4 rounded-lg shadow-lg ${bgColor} text-white">
-                <div class="flex-1">${message}</div>
-                <button class="ml-4 text-white hover:text-gray-200">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
-                    </svg>
-                </button>
-            </div>
-        `;
-
-        // Add to container
-        container.appendChild(notification);
-
-        // Animate in
-        requestAnimationFrame(() => {
-            notification.classList.remove('translate-x-full');
-        });
-
-        // Add click handler for close button
-        const closeButton = notification.querySelector('button');
-        closeButton.addEventListener('click', () => {
-            this.hide(notification);
-        });
-
-        // Auto-hide after 5 seconds
-        setTimeout(() => {
-            this.hide(notification);
-        }, 5000);
+    init() {
+        this.setupNotificationDropdown();
+        this.setupNotificationActions();
+        this.startPolling();
     },
 
-    hide(notification) {
-        notification.classList.add('translate-x-full');
-        notification.addEventListener('transitionend', () => {
-            notification.remove();
+    setupNotificationDropdown() {
+        const dropdown = document.querySelector('[x-data]');
+        if (!dropdown) return;
+
+        // Handle mark all as read
+        const markAllReadBtn = dropdown.querySelector('[title="Mark all as read"]');
+        if (markAllReadBtn) {
+            markAllReadBtn.addEventListener('click', async (e) => {
+                e.preventDefault();
+                await this.markAllAsRead();
+            });
+        }
+    },
+
+    setupNotificationActions() {
+        // Handle mark as read buttons
+        document.querySelectorAll('[title="Mark as read"]').forEach(btn => {
+            btn.addEventListener('click', async (e) => {
+                e.preventDefault();
+                const notificationId = e.target.closest('[data-notification-id]')?.dataset.notificationId;
+                if (notificationId) {
+                    await this.markAsRead(notificationId);
+                }
+            });
         });
+
+        // Handle delete buttons
+        document.querySelectorAll('[title="Delete notification"]').forEach(btn => {
+            btn.addEventListener('click', async (e) => {
+                e.preventDefault();
+                const notificationId = e.target.closest('[data-notification-id]')?.dataset.notificationId;
+                if (notificationId) {
+                    await this.deleteNotification(notificationId);
+                }
+            });
+        });
+    },
+
+    async markAsRead(notificationId) {
+        try {
+            const response = await fetch(`/notifications/mark-read/${notificationId}`, {
+                method: 'POST',
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            });
+
+            const data = await response.json();
+            if (data.success) {
+                // Update UI
+                const notification = document.querySelector(`[data-notification-id="${notificationId}"]`);
+                if (notification) {
+                    notification.classList.remove('bg-blue-50', 'dark:bg-blue-900/20');
+                    const markReadBtn = notification.querySelector('[title="Mark as read"]');
+                    if (markReadBtn) {
+                        markReadBtn.remove();
+                    }
+                }
+                this.updateUnreadCount();
+            }
+        } catch (error) {
+            console.error('Error marking notification as read:', error);
+        }
+    },
+
+    async markAllAsRead() {
+        try {
+            const response = await fetch('/notifications/mark-all-read', {
+                method: 'POST',
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            });
+
+            const data = await response.json();
+            if (data.success) {
+                // Update UI
+                document.querySelectorAll('.bg-blue-50, .dark\\:bg-blue-900\\/20').forEach(el => {
+                    el.classList.remove('bg-blue-50', 'dark:bg-blue-900/20');
+                });
+                document.querySelectorAll('[title="Mark as read"]').forEach(btn => btn.remove());
+                this.updateUnreadCount();
+            }
+        } catch (error) {
+            console.error('Error marking all notifications as read:', error);
+        }
+    },
+
+    async deleteNotification(notificationId) {
+        try {
+            const response = await fetch(`/notifications/${notificationId}`, {
+                method: 'DELETE',
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            });
+
+            const data = await response.json();
+            if (data.success) {
+                // Remove notification from UI
+                const notification = document.querySelector(`[data-notification-id="${notificationId}"]`);
+                if (notification) {
+                    notification.remove();
+                }
+                this.updateUnreadCount();
+            }
+        } catch (error) {
+            console.error('Error deleting notification:', error);
+        }
+    },
+
+    async updateUnreadCount() {
+        try {
+            const response = await fetch('/notifications/unread-count');
+            const data = await response.json();
+            
+            const badge = document.querySelector('.notification-badge');
+            if (badge) {
+                badge.style.display = data.count > 0 ? 'block' : 'none';
+            }
+        } catch (error) {
+            console.error('Error updating unread count:', error);
+        }
+    },
+
+    async refreshNotifications() {
+        try {
+            const response = await fetch('/notifications/recent');
+            const data = await response.json();
+            
+            const container = document.querySelector('.notifications-container');
+            if (container) {
+                // Update notifications list
+                this.renderNotifications(data.notifications, container);
+            }
+        } catch (error) {
+            console.error('Error refreshing notifications:', error);
+        }
+    },
+
+    renderNotifications(notifications, container) {
+        if (notifications.length === 0) {
+            container.innerHTML = `
+                <div class="px-4 py-3 text-center text-sm text-gray-500 dark:text-gray-400">
+                    No new notifications
+                </div>
+            `;
+            return;
+        }
+
+        container.innerHTML = notifications.map(notification => `
+            <a href="${notification.link}" class="block px-4 py-3 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors duration-150 ${notification.read ? '' : 'bg-blue-50 dark:bg-blue-900/20'}" data-notification-id="${notification.id}">
+                <div class="flex items-start space-x-3">
+                    <div class="flex-shrink-0">
+                        ${this.getNotificationIcon(notification.type)}
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <p class="text-sm text-gray-900 dark:text-white">
+                            ${notification.message}
+                        </p>
+                        <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
+                            ${notification.time_ago}
+                        </p>
+                    </div>
+                </div>
+            </a>
+        `).join('');
+
+        this.setupNotificationActions();
+    },
+
+    getNotificationIcon(type) {
+        const icons = {
+            like: `
+                <div class="w-8 h-8 rounded-full bg-red-100 dark:bg-red-900/20 flex items-center justify-center">
+                    <svg class="w-4 h-4 text-red-600 dark:text-red-400" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clip-rule="evenodd" />
+                    </svg>
+                </div>
+            `,
+            comment: `
+                <div class="w-8 h-8 rounded-full bg-blue-100 dark:bg-blue-900/20 flex items-center justify-center">
+                    <svg class="w-4 h-4 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z" />
+                    </svg>
+                </div>
+            `,
+            follow: `
+                <div class="w-8 h-8 rounded-full bg-green-100 dark:bg-green-900/20 flex items-center justify-center">
+                    <svg class="w-4 h-4 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
+                    </svg>
+                </div>
+            `
+        };
+
+        return icons[type] || `
+            <div class="w-8 h-8 rounded-full bg-gray-100 dark:bg-gray-700 flex items-center justify-center">
+                <svg class="w-4 h-4 text-gray-600 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+            </div>
+        `;
+    },
+
+    startPolling() {
+        // Poll for new notifications every 30 seconds
+        setInterval(() => {
+            this.updateUnreadCount();
+            this.refreshNotifications();
+        }, 30000);
     }
 };
 
@@ -1360,6 +1519,16 @@ const ProfileManager = {
     }
 };
 
+// check if the user clicked on menuButton if so check if menuHelper has the class hidden if it does remove it if not then add it
+document.getElementById('menuButton').addEventListener('click', () => {
+    const menuHelper = document.getElementById('menuHelper');
+    if (menuHelper.classList.contains('hidden')) {
+        menuHelper.classList.remove('hidden');
+    } else {
+        menuHelper.classList.add('hidden');
+    }
+});
+
 // Initialize the app
 document.addEventListener('DOMContentLoaded', () => {
     AppState.init();
@@ -1370,4 +1539,5 @@ document.addEventListener('DOMContentLoaded', () => {
     PostCommentManager.init();
     NewMessageManager.init();
     ProfileManager.init();
+    NotificationManager.init();
 }); 
