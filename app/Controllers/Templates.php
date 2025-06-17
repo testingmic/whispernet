@@ -35,8 +35,8 @@ class Templates extends BaseController
      * 
      * @return void
      */
-    public function loadHeader() {
-        return view('templates/header', $this->globalVariables());
+    public function loadHeader($data = []) {
+        return view('templates/header', array_merge($this->globalVariables(), $data));
     }
 
     /**
@@ -44,8 +44,8 @@ class Templates extends BaseController
      * 
      * @return void
      */
-    public function loadFooter() {
-        return view('templates/footer', $this->globalVariables());
+    public function loadFooter($data = []) {
+        return view('templates/footer', array_merge($this->globalVariables(), $data));
     }
 
     /**
@@ -67,8 +67,9 @@ class Templates extends BaseController
      * @return void
      */
     public function load404Page() {
-        echo $this->loadHeader();
-        echo view('errors/404');
+        $data['topMargin'] = 0;
+        echo $this->loadHeader($data);
+        echo view('errors/404', $data);
         echo $this->loadFooter();
     }
 }

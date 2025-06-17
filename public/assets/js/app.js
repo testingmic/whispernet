@@ -107,6 +107,7 @@ const ChatManager = {
     init() {
         this.setupWebSocket();
         this.setupMessageHandlers();
+        this.setupCleanup();
     },
     setupWebSocket() {
         let userId = AppState.user.user_id;
@@ -122,6 +123,35 @@ const ChatManager = {
           
         this.ws.onmessage = (event) => this.handleIncomingMessage(event);
         this.ws.onclose = () => this.handleConnectionClose();
+    },
+    setupCleanup() {
+        // Handle page unload/navigation
+        window.addEventListener('beforeunload', () => {
+            this.cleanup();
+        });
+
+        // Handle single-page navigation (if using a router)
+        document.addEventListener('visibilitychange', () => {
+            if (document.visibilityState === 'hidden') {
+                this.cleanup();
+            }
+        });
+    },
+    cleanup() {
+        if (this.ws && this.ws.readyState === WebSocket.OPEN) {
+            // Send a close message to the server
+            this.ws.send(JSON.stringify({
+                type: 'close',
+                userId: AppState.user.user_id
+            }));
+            
+            // Close the WebSocket connection
+            this.ws.close();
+            
+            // Clear any pending messages
+            this.messages.clear();
+            this.activeChat = null;
+        }
     },
     setupMessageHandlers() {
         const messageForm = document.querySelector('#messageForm');

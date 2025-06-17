@@ -1,8 +1,3 @@
-<?php
-$title = "WhisperNet - Chat";
-ob_start();
-?>
-
 <div class="flex flex-col h-[calc(100vh-8rem)]">
     <!-- Chat List -->
     <div class="bg-white border-b">
@@ -147,8 +142,3 @@ ob_start();
         </div>
     </div>
 </div>
-
-<?php
-$content = ob_get_clean();
-require_once __DIR__ . '/templates/layout.php';
-?> 

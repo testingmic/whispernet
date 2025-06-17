@@ -40,4 +40,4 @@
         </div>
       </div>
     </nav>
-    <main class="flex-grow pt-16">
+    <main class="flex-grow pt-<?= $topMargin ?? 16 ?>">
