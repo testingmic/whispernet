@@ -108,6 +108,7 @@ const ChatManager = {
         this.setupMediaUpload();
         this.setupAudioRecording();
         this.setupEmojiPicker();
+        this.setupSearch();
     },
 
     setupChatList() {
@@ -395,6 +396,55 @@ const ChatManager = {
 
         messagesContainer.appendChild(messageElement);
         messagesContainer.scrollTop = messagesContainer.scrollHeight;
+    },
+
+    setupSearch() {
+        const searchInput = document.querySelector('input[placeholder="Search conversations..."]');
+        if (!searchInput) return;
+
+        searchInput.addEventListener('input', (e) => {
+            const searchTerm = e.target.value.toLowerCase().trim();
+            const chatItems = document.querySelectorAll('.chat-item');
+
+            chatItems.forEach(item => {
+                const name = item.querySelector('.text-sm.font-medium').textContent.toLowerCase();
+                const lastMessage = item.querySelector('.text-sm.text-gray-500').textContent.toLowerCase();
+                
+                if (name.includes(searchTerm) || lastMessage.includes(searchTerm)) {
+                    item.style.display = '';
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+
+            // Show/hide "no results" message
+            const visibleChats = Array.from(chatItems).filter(item => item.style.display !== 'none');
+            let noResultsMessage = document.getElementById('noSearchResults');
+            
+            if (visibleChats.length === 0 && searchTerm !== '') {
+                if (!noResultsMessage) {
+                    noResultsMessage = document.createElement('div');
+                    noResultsMessage.id = 'noSearchResults';
+                    noResultsMessage.className = 'p-4 text-center text-gray-500 dark:text-gray-400';
+                    noResultsMessage.textContent = 'No conversations found';
+                    document.querySelector('.divide-y').appendChild(noResultsMessage);
+                }
+            } else if (noResultsMessage) {
+                noResultsMessage.remove();
+            }
+        });
+
+        // Clear search when input is cleared
+        searchInput.addEventListener('search', (e) => {
+            if (e.target.value === '') {
+                const chatItems = document.querySelectorAll('.chat-item');
+                chatItems.forEach(item => item.style.display = '');
+                const noResultsMessage = document.getElementById('noSearchResults');
+                if (noResultsMessage) {
+                    noResultsMessage.remove();
+                }
+            }
+        });
     }
 };
 
@@ -1105,6 +1155,162 @@ const PostCommentManager = {
     }
 };
 
+// New Message Manager
+const NewMessageManager = {
+    init() {
+        console.log('Initializing NewMessageManager...');
+        this.modal = document.getElementById('newMessageModal');
+        this.searchInput = document.getElementById('userSearchInput');
+        this.searchResults = document.getElementById('userSearchResults');
+        
+        if (!this.modal || !this.searchInput || !this.searchResults) {
+            console.error('Required modal elements not found:', {
+                modal: !!this.modal,
+                searchInput: !!this.searchInput,
+                searchResults: !!this.searchResults
+            });
+            return;
+        }
+        
+        this.setupEventListeners();
+        console.log('NewMessageManager initialized successfully');
+    },
+
+    setupEventListeners() {
+        // Open modal when clicking New Message button
+        const newMessageBtn = document.getElementById('newMessageBtn');
+        console.log('New Message button found:', !!newMessageBtn);
+        
+        if (newMessageBtn) {
+            newMessageBtn.addEventListener('click', (e) => {
+                console.log('New Message button clicked');
+                e.preventDefault();
+                this.openModal();
+            });
+        }
+
+        // Close modal when clicking close buttons or outside
+        const closeButtons = document.querySelectorAll('.close-modal');
+        closeButtons.forEach(button => {
+            button.addEventListener('click', () => this.closeModal());
+        });
+
+        this.modal.addEventListener('click', (e) => {
+            if (e.target === this.modal) {
+                this.closeModal();
+            }
+        });
+
+        // Handle user search
+        if (this.searchInput) {
+            let debounceTimer;
+            this.searchInput.addEventListener('input', (e) => {
+                clearTimeout(debounceTimer);
+                debounceTimer = setTimeout(() => {
+                    this.searchUsers(e.target.value);
+                }, 300);
+            });
+        }
+
+        // Close modal on escape key
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && !this.modal.classList.contains('hidden')) {
+                this.closeModal();
+            }
+        });
+    },
+
+    openModal() {
+        console.log('Opening modal...');
+        if (!this.modal) {
+            console.error('Modal element not found');
+            return;
+        }
+        
+        this.modal.classList.remove('hidden');
+        document.body.style.overflow = 'hidden';
+        
+        // Focus the search input after a short delay to ensure the modal is visible
+        setTimeout(() => {
+            this.searchInput.focus();
+        }, 100);
+        console.log('Modal opened');
+    },
+
+    closeModal() {
+        console.log('Closing modal...');
+        if (!this.modal) {
+            console.error('Modal element not found');
+            return;
+        }
+        
+        this.modal.classList.add('hidden');
+        document.body.style.overflow = '';
+        this.searchInput.value = '';
+        this.searchResults.innerHTML = '';
+        console.log('Modal closed');
+    },
+
+    async searchUsers(query) {
+        if (!query.trim()) {
+            this.searchResults.innerHTML = '';
+            return;
+        }
+
+        try {
+            const response = await fetch(`/api/users/search?q=${encodeURIComponent(query)}`);
+            const users = await response.json();
+
+            this.searchResults.innerHTML = users.length ? '' : '<div class="p-4 text-center text-gray-500 dark:text-gray-400">No users found</div>';
+
+            users.forEach(user => {
+                const userElement = document.createElement('div');
+                userElement.className = 'p-3 hover:bg-gray-50 dark:hover:bg-gray-700 cursor-pointer transition-colors';
+                userElement.innerHTML = `
+                    <div class="flex items-center space-x-3">
+                        <div class="w-10 h-10 rounded-full bg-gray-200 dark:bg-gray-600 flex items-center justify-center">
+                            <span class="text-sm font-medium text-gray-600 dark:text-gray-300">${user.name.charAt(0)}</span>
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <p class="text-sm font-medium text-gray-900 dark:text-white">${user.name}</p>
+                            <p class="text-xs text-gray-500 dark:text-gray-400">${user.email}</p>
+                        </div>
+                    </div>
+                `;
+
+                userElement.addEventListener('click', () => this.startConversation(user));
+                this.searchResults.appendChild(userElement);
+            });
+        } catch (error) {
+            console.error('Error searching users:', error);
+            this.searchResults.innerHTML = '<div class="p-4 text-center text-red-500">Error searching users</div>';
+        }
+    },
+
+    async startConversation(user) {
+        try {
+            const response = await fetch('/api/chat/start', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ userId: user.id })
+            });
+
+            if (!response.ok) throw new Error('Failed to start conversation');
+
+            const chat = await response.json();
+            this.closeModal();
+            
+            // Redirect to the new chat
+            window.location.href = `/chat/${chat.id}`;
+        } catch (error) {
+            console.error('Error starting conversation:', error);
+            NotificationManager.show('Failed to start conversation', 'error');
+        }
+    }
+};
+
 // Initialize the app
 document.addEventListener('DOMContentLoaded', () => {
     AppState.init();
@@ -1113,4 +1319,5 @@ document.addEventListener('DOMContentLoaded', () => {
     AuthManager.init();
     PostCreationManager.init();
     PostCommentManager.init();
+    NewMessageManager.init();
 }); 

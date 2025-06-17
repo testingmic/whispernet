@@ -7,7 +7,7 @@ use App\Controllers\WebAppController;
 class Chat extends WebAppController {
     
     public function index() {
-        $chats = [[], [], [], [], [], [], [], [], []];
+        $chats = [[], [], [], [], [], []];
         return $this->templateObject->loadPage('chat', ['pageTitle' => 'Chat', 'chats' => $chats]);
     }
 
