@@ -58,6 +58,7 @@ class Landing extends WebAppController
 
         // confirm if the class actually exists
         if (!class_exists($className)) {
+            return $this->templateObject->loadPage($baseClassName, ['pageTitle' => '404 Page Not Found']);
             return $this->templateObject->load404Page();
         }
 
