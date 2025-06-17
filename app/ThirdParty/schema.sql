@@ -4,7 +4,7 @@
 SET FOREIGN_KEY_CHECKS = 1;
 
 -- Users Table
-CREATE TABLE users (
+CREATE TABLE IF NOT EXISTS users (
     user_id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     username VARCHAR(50) NOT NULL UNIQUE,
     email VARCHAR(255) NOT NULL UNIQUE,
@@ -24,7 +24,7 @@ CREATE TABLE users (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- User Devices Table (for multi-device support)
-CREATE TABLE user_devices (
+CREATE TABLE IF NOT EXISTS user_devices (
     device_id VARCHAR(36) PRIMARY KEY,
     user_id BIGINT UNSIGNED NOT NULL,
     device_hash VARCHAR(64) NOT NULL COMMENT 'Encrypted device identifier',
@@ -40,7 +40,7 @@ CREATE TABLE user_devices (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- User Locations Table
-CREATE TABLE user_locations (
+CREATE TABLE IF NOT EXISTS user_locations (
     id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     user_id BIGINT UNSIGNED NOT NULL,
     latitude DECIMAL(10, 8) NOT NULL,
@@ -54,7 +54,7 @@ CREATE TABLE user_locations (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Media Table
-CREATE TABLE media (
+CREATE TABLE IF NOT EXISTS media (
     media_id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     user_id BIGINT UNSIGNED NOT NULL,
     file_name VARCHAR(255) NOT NULL,
@@ -78,7 +78,7 @@ CREATE TABLE media (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Posts Table
-CREATE TABLE posts (
+CREATE TABLE IF NOT EXISTS posts (
     post_id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     user_id BIGINT UNSIGNED NOT NULL,
     content TEXT,
@@ -101,7 +101,7 @@ CREATE TABLE posts (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Post Tags Table
-CREATE TABLE tags (
+CREATE TABLE IF NOT EXISTS tags (
     tag_id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(50) NOT NULL UNIQUE,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -110,7 +110,7 @@ CREATE TABLE tags (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Post-Tag Relationship Table
-CREATE TABLE post_tags (
+CREATE TABLE IF NOT EXISTS post_tags (
     post_id BIGINT UNSIGNED NOT NULL,
     tag_id BIGINT UNSIGNED NOT NULL,
     PRIMARY KEY (post_id, tag_id),
@@ -120,7 +120,7 @@ CREATE TABLE post_tags (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Comments Table
-CREATE TABLE comments (
+CREATE TABLE IF NOT EXISTS comments (
     comment_id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     post_id BIGINT UNSIGNED NOT NULL,
     user_id BIGINT UNSIGNED NOT NULL,
@@ -139,7 +139,7 @@ CREATE TABLE comments (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Chat Rooms Table
-CREATE TABLE chat_rooms (
+CREATE TABLE IF NOT EXISTS chat_rooms (
     room_id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     last_message_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -150,7 +150,7 @@ CREATE TABLE chat_rooms (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Chat Participants Table
-CREATE TABLE chat_participants (
+CREATE TABLE IF NOT EXISTS chat_participants (
     room_id BIGINT UNSIGNED NOT NULL,
     user_id BIGINT UNSIGNED NOT NULL,
     is_blocked BOOLEAN DEFAULT FALSE,
@@ -164,7 +164,7 @@ CREATE TABLE chat_participants (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Chat Messages Table
-CREATE TABLE chat_messages (
+CREATE TABLE IF NOT EXISTS chat_messages (
     message_id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     room_id BIGINT UNSIGNED NOT NULL,
     user_id BIGINT UNSIGNED NOT NULL,
@@ -184,7 +184,7 @@ CREATE TABLE chat_messages (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Message Status Table
-CREATE TABLE message_status (
+CREATE TABLE IF NOT EXISTS message_status (
     message_id BIGINT UNSIGNED NOT NULL,
     user_id BIGINT UNSIGNED NOT NULL,
     status ENUM('sent', 'delivered', 'read') DEFAULT 'sent',
@@ -197,7 +197,7 @@ CREATE TABLE message_status (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Reports Table
-CREATE TABLE reports (
+CREATE TABLE IF NOT EXISTS reports (
     report_id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     reporter_id BIGINT UNSIGNED NOT NULL,
     reported_type ENUM('post', 'comment', 'message', 'user') NOT NULL,
@@ -214,8 +214,21 @@ CREATE TABLE reports (
     INDEX idx_created_at (created_at)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+CREATE TABLE IF NOT EXISTS votes (
+    vote_id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    record_id BIGINT UNSIGNED NOT NULL,
+    user_id BIGINT UNSIGNED NOT NULL,
+    section ENUM('posts', 'comments') NOT NULL,
+    direction ENUM('up', 'down') NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    INDEX idx_record_id (record_id),
+    INDEX idx_user_id (user_id),
+    INDEX idx_section (section),
+    INDEX idx_direction (direction)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
 -- Notifications Table
-CREATE TABLE notifications (
+CREATE TABLE IF NOT EXISTS notifications (
     notification_id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     user_id BIGINT UNSIGNED NOT NULL,
     type ENUM('chat', 'comment', 'vote', 'system') NOT NULL,
@@ -230,7 +243,7 @@ CREATE TABLE notifications (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Analytics Table
-CREATE TABLE analytics (
+CREATE TABLE IF NOT EXISTS analytics (
     id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     event_type ENUM('post_created', 'comment_created', 'chat_started', 'user_joined', 'user_left') NOT NULL,
     user_id BIGINT UNSIGNED,
@@ -246,7 +259,7 @@ CREATE TABLE analytics (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Rate Limiting Table
-CREATE TABLE rate_limits (
+CREATE TABLE IF NOT EXISTS rate_limits (
     id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     user_id BIGINT UNSIGNED NOT NULL,
     action_type ENUM('post', 'comment', 'chat', 'vote') NOT NULL,
