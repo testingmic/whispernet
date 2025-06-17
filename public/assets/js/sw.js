@@ -1,11 +1,11 @@
 const CACHE_NAME = 'whispernet-v1';
 const ASSETS_TO_CACHE = [
-    '/',
-    '/assets/css/app.css',
-    '/assets/js/app.js',
-    '/assets/images/logo.svg',
-    '/assets/images/icons/icon-192x192.png',
-    '/assets/images/icons/icon-512x512.png'
+    `${baseUrl}/`,
+    `${baseUrl}/assets/css/app.css`,
+    `${baseUrl}/assets/js/app.js`,
+    `${baseUrl}/assets/images/logo.svg`,
+    `${baseUrl}/assets/icons/Icon.192.png`,
+    `${baseUrl}/assets/icons/Icon.512.png`
 ];
 
 // Install Service Worker
@@ -74,8 +74,8 @@ self.addEventListener('fetch', (event) => {
 self.addEventListener('push', (event) => {
     const options = {
         body: event.data.text(),
-        icon: `${baseUrl}/assets/images/icons/icon-192x192.png`,
-        badge: `${baseUrl}/assets/images/icons/badge-72x72.png`,
+        icon: `${baseUrl}/assets/icons/Icon.192.png`,
+        badge: `${baseUrl}/assets/icons/Icon.72.png`,
         vibrate: [100, 50, 100],
         data: {
             dateOfArrival: Date.now(),

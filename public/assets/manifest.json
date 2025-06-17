@@ -2,7 +2,7 @@
     "name": "WhisperNet",
     "short_name": "WhisperNet",
     "description": "Connect with your local community anonymously",
-    "start_url": "/",
+    "start_url": "/public",
     "display": "standalone",
     "background_color": "#ffffff",
     "theme_color": "#2196F3",
