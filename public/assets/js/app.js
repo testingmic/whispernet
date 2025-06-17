@@ -535,10 +535,390 @@ const AuthManager = {
     }
 };
 
+// Post Creation Manager
+const PostCreationManager = {
+    init() {
+        // Only initialize if we're on a page with post creation
+        if (document.getElementById('createPostForm')) {
+            this.setupPostCreation();
+            this.setupMediaUpload();
+            this.setupTags();
+            this.setupRichText();
+        }
+    },
+
+    setupPostCreation() {
+        const createPostForm = document.getElementById('createPostForm');
+        const createPostBtn = document.getElementById('createPostBtn');
+        const postContent = document.getElementById('postContent');
+        const postButton = document.getElementById('postButton');
+        const mediaPreview = document.getElementById('mediaPreview');
+        const tagsInput = document.getElementById('tagsInput');
+        const tagsContainer = document.getElementById('tagsContainer');
+
+        if (!createPostForm || !createPostBtn || !postContent || !postButton) return;
+
+        // Toggle post creation form
+        createPostBtn.addEventListener('click', () => {
+            createPostForm.classList.toggle('hidden');
+            if (!createPostForm.classList.contains('hidden')) {
+                postContent.focus();
+            }
+        });
+
+        // Enable/disable post button based on content
+        postContent.addEventListener('input', () => {
+            postButton.disabled = !postContent.value.trim();
+        });
+
+        // Handle form submission
+        createPostForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            await this.handlePostCreation();
+        });
+    },
+
+    setupMediaUpload() {
+        const mediaInput = document.getElementById('mediaInput');
+        const mediaPreview = document.getElementById('mediaPreview');
+        const removeMediaBtn = document.getElementById('removeMediaBtn');
+
+        if (!mediaInput || !mediaPreview || !removeMediaBtn) return;
+
+        mediaInput.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                if (file.type.startsWith('image/')) {
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+                        mediaPreview.innerHTML = `<img src="${e.target.result}" alt="Media Preview" class="max-w-full h-auto">`;
+                    };
+                    reader.readAsDataURL(file);
+                } else if (file.type.startsWith('video/')) {
+                    // Handle video preview
+                    const video = document.createElement('video');
+                    video.src = URL.createObjectURL(file);
+                    video.controls = true;
+                    mediaPreview.innerHTML = '';
+                    mediaPreview.appendChild(video);
+                }
+            }
+        });
+
+        removeMediaBtn.addEventListener('click', () => {
+            mediaPreview.innerHTML = '';
+            mediaInput.value = '';
+        });
+    },
+
+    setupTags() {
+        const tagsInput = document.getElementById('tagsInput');
+        const tagsContainer = document.getElementById('tagsContainer');
+
+        if (!tagsInput || !tagsContainer) return;
+
+        const tags = new Set();
+
+        tagsInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' || e.key === ',') {
+                e.preventDefault();
+                const tag = tagsInput.value.trim();
+                if (tag && !tags.has(tag)) {
+                    this.addTag(tag);
+                    tags.add(tag);
+                    tagsInput.value = '';
+                }
+            }
+        });
+
+        tagsInput.addEventListener('blur', () => {
+            const tag = tagsInput.value.trim();
+            if (tag && !tags.has(tag)) {
+                this.addTag(tag);
+                tags.add(tag);
+                tagsInput.value = '';
+            }
+        });
+    },
+
+    addTag(tag) {
+        const tagsContainer = document.getElementById('tagsContainer');
+        const tagElement = document.createElement('div');
+        tagElement.className = 'inline-flex items-center px-2 py-1 rounded-full text-sm bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200';
+        tagElement.innerHTML = `
+            ${tag}
+            <button type="button" class="ml-1 text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-200">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                </svg>
+            </button>
+        `;
+
+        tagElement.querySelector('button').addEventListener('click', () => {
+            tagElement.remove();
+            tags.delete(tag);
+        });
+
+        tagsContainer.insertBefore(tagElement, document.getElementById('tagsInput'));
+    },
+
+    setupRichText() {
+        const postContent = document.getElementById('postContent');
+        const boldBtn = document.getElementById('boldBtn');
+        const italicBtn = document.getElementById('italicBtn');
+        const underlineBtn = document.getElementById('underlineBtn');
+
+        if (!postContent || !boldBtn || !italicBtn || !underlineBtn) return;
+
+        const toolbar = document.createElement('div');
+        toolbar.className = 'rich-text-toolbar';
+
+        const boldBtnElement = document.createElement('button');
+        boldBtnElement.className = 'btn btn-sm btn-outline btn-primary';
+        boldBtnElement.textContent = 'B';
+        boldBtnElement.addEventListener('click', () => {
+            document.execCommand('bold', false, null);
+            postContent.focus();
+        });
+
+        const italicBtnElement = document.createElement('button');
+        italicBtnElement.className = 'btn btn-sm btn-outline btn-primary';
+        italicBtnElement.textContent = 'I';
+        italicBtnElement.addEventListener('click', () => {
+            document.execCommand('italic', false, null);
+            postContent.focus();
+        });
+
+        const underlineBtnElement = document.createElement('button');
+        underlineBtnElement.className = 'btn btn-sm btn-outline btn-primary';
+        underlineBtnElement.textContent = 'U';
+        underlineBtnElement.addEventListener('click', () => {
+            document.execCommand('underline', false, null);
+            postContent.focus();
+        });
+
+        toolbar.appendChild(boldBtnElement);
+        toolbar.appendChild(italicBtnElement);
+        toolbar.appendChild(underlineBtnElement);
+
+        postContent.parentNode.insertBefore(toolbar, postContent.nextSibling);
+    },
+
+    async handlePostCreation() {
+        const form = document.getElementById('createPostForm');
+        const formData = new FormData(form);
+        const mediaFile = document.getElementById('mediaInput').files[0];
+        const tags = Array.from(document.querySelectorAll('#tagsContainer > div')).map(tag => tag.textContent.trim());
+
+        if (mediaFile) {
+            formData.append('media', mediaFile);
+        }
+        formData.append('tags', JSON.stringify(tags));
+
+        try {
+            const response = await fetch(`${baseUrl}/api/posts`, {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'Authorization': `Bearer ${AppState.getToken()}`
+                }
+            });
+
+            const data = await response.json();
+
+            if (data.success) {
+                AppState.showNotification('Post created successfully!', 'success');
+                form.reset();
+                document.getElementById('createPostForm').classList.add('hidden');
+                document.getElementById('mediaPreview').classList.add('hidden');
+                document.getElementById('tagsContainer').innerHTML = '<input type="text" id="tagsInput" class="flex-1 min-w-[120px] px-3 py-1 border border-gray-300 dark:border-gray-600 rounded-full text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white" placeholder="Add tags...">';
+                this.setupTags(); // Reinitialize tags functionality
+                PostManager.loadMorePosts(); // Refresh the feed
+            }
+        } catch (error) {
+            console.error('Error creating post:', error);
+            AppState.showNotification('Failed to create post. Please try again.', 'error');
+        }
+    }
+};
+
+// Notification Manager
+const NotificationManager = {
+    show(message, type = 'info') {
+        // Create notification container if it doesn't exist
+        let container = document.getElementById('notification-container');
+        if (!container) {
+            container = document.createElement('div');
+            container.id = 'notification-container';
+            container.className = 'fixed top-4 right-4 z-50 space-y-4';
+            document.body.appendChild(container);
+        }
+
+        // Create notification element
+        const notification = document.createElement('div');
+        notification.className = `notification ${type} transform transition-all duration-300 ease-in-out translate-x-full`;
+        
+        // Set background color based on type
+        const bgColor = {
+            success: 'bg-green-500',
+            error: 'bg-red-500',
+            info: 'bg-blue-500',
+            warning: 'bg-yellow-500'
+        }[type] || 'bg-blue-500';
+
+        notification.innerHTML = `
+            <div class="flex items-center p-4 rounded-lg shadow-lg ${bgColor} text-white">
+                <div class="flex-1">${message}</div>
+                <button class="ml-4 text-white hover:text-gray-200">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                    </svg>
+                </button>
+            </div>
+        `;
+
+        // Add to container
+        container.appendChild(notification);
+
+        // Animate in
+        requestAnimationFrame(() => {
+            notification.classList.remove('translate-x-full');
+        });
+
+        // Add click handler for close button
+        const closeButton = notification.querySelector('button');
+        closeButton.addEventListener('click', () => {
+            this.hide(notification);
+        });
+
+        // Auto-hide after 5 seconds
+        setTimeout(() => {
+            this.hide(notification);
+        }, 5000);
+    },
+
+    hide(notification) {
+        notification.classList.add('translate-x-full');
+        notification.addEventListener('transitionend', () => {
+            notification.remove();
+        });
+    }
+};
+
+// Post Comment Manager
+const PostCommentManager = {
+    init() {
+        this.setupCommentForm();
+    },
+
+    setupCommentForm() {
+        const commentForm = document.getElementById('commentForm');
+        if (!commentForm) return;
+
+        const commentInput = commentForm.querySelector('textarea[id="commentInput"]');
+        const submitButton = commentForm.querySelector('button[type="submit"]');
+
+        // Enable/disable submit button based on input
+        commentInput.addEventListener('input', () => {
+            submitButton.disabled = !commentInput.value.trim();
+        });
+
+        // Handle form submission
+        commentForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const content = commentInput.value.trim();
+            if (!content) return;
+
+            try {
+                submitButton.disabled = true;
+                submitButton.innerHTML = `
+                    <svg class="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                `;
+
+                const postId = window.location.pathname.split('/').pop();
+                const response = await fetch('/api/posts/comment', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest'
+                    },
+                    body: JSON.stringify({
+                        post_id: postId,
+                        content: content
+                    })
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to post comment');
+                }
+
+                const data = await response.json();
+                
+                // Add the new comment to the UI
+                this.addCommentToUI(data.comment);
+                
+                // Clear the input
+                commentInput.value = '';
+                submitButton.disabled = true;
+                submitButton.innerHTML = 'Post';
+
+                // Show success notification
+                NotificationManager.show('Comment posted successfully', 'success');
+            } catch (error) {
+                console.error('Error posting comment:', error);
+                submitButton.disabled = false;
+                submitButton.innerHTML = 'Post';
+                NotificationManager.show('Failed to post comment. Please try again.', 'error');
+            }
+        });
+    },
+
+    addCommentToUI(comment) {
+        const commentsContainer = document.querySelector('.comments-list');
+        if (!commentsContainer) return;
+
+        const commentElement = document.createElement('div');
+        commentElement.className = 'comment-item bg-white dark:bg-gray-800 rounded-lg p-4 mb-4';
+        commentElement.innerHTML = `
+            <div class="flex items-start space-x-3">
+                <img src="${comment.user.avatar || '/assets/images/default-avatar.png'}" 
+                    alt="${comment.user.name}" 
+                    class="w-10 h-10 rounded-full">
+                <div class="flex-1">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h4 class="font-semibold text-gray-900 dark:text-white">${comment.user.name}</h4>
+                            <p class="text-sm text-gray-500 dark:text-gray-400">Just now</p>
+                        </div>
+                    </div>
+                    <p class="mt-1 text-gray-700 dark:text-gray-300">${comment.content}</p>
+                    <div class="mt-2 flex items-center space-x-4">
+                        <button class="text-gray-500 hover:text-blue-600 dark:hover:text-blue-400 text-sm">
+                            Like
+                        </button>
+                        <button class="text-gray-500 hover:text-blue-600 dark:hover:text-blue-400 text-sm">
+                            Reply
+                        </button>
+                    </div>
+                </div>
+            </div>
+        `;
+
+        // Add the new comment at the top of the list
+        commentsContainer.insertBefore(commentElement, commentsContainer.firstChild);
+    }
+};
+
 // Initialize the app
 document.addEventListener('DOMContentLoaded', () => {
     AppState.init();
     ChatManager.init();
     PostManager.init();
     AuthManager.init();
+    PostCreationManager.init();
+    PostCommentManager.init();
 }); 
