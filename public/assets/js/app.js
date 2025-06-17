@@ -1689,4 +1689,97 @@ startAudioRecording(
         // Optionally, replay before upload:
         // replayAudioBlob(audioBlob);
     }
-); 
+);
+
+// --- Location Modal Logic ---
+document.addEventListener('DOMContentLoaded', function () {
+    const changeLocationBtn = document.getElementById('changeLocationBtn');
+    const locationModal = document.getElementById('locationModal');
+    const closeLocationModal = document.getElementById('closeLocationModal');
+    const cancelLocationBtn = document.getElementById('cancelLocationBtn');
+    const locationForm = document.getElementById('locationForm');
+    const locationSelect = document.getElementById('locationSelect');
+    const radiusInput = document.getElementById('radiusInput');
+    const radiusValue = document.getElementById('radiusValue');
+
+    // Populate location list (replace with real locations from API if available)
+    const locations = [
+        { value: 'current', label: 'Current Location' },
+        { value: 'city_centre', label: 'City Centre' },
+        { value: 'university', label: 'University Area' },
+        { value: 'mall', label: 'Mall District' }
+    ];
+    if (locationSelect && locationSelect.children.length === 1) {
+        locations.forEach(loc => {
+            if (loc.value !== 'current') {
+                const opt = document.createElement('option');
+                opt.value = loc.value;
+                opt.textContent = loc.label;
+                locationSelect.appendChild(opt);
+            }
+        });
+    }
+
+    // Open modal
+    if (changeLocationBtn) {
+        changeLocationBtn.addEventListener('click', () => {
+            locationModal.classList.remove('hidden');
+        });
+    }
+    // Close modal
+    function closeModal() {
+        locationModal.classList.add('hidden');
+    }
+    if (closeLocationModal) closeLocationModal.addEventListener('click', closeModal);
+    if (cancelLocationBtn) cancelLocationBtn.addEventListener('click', closeModal);
+    // Update radius value display
+    if (radiusInput && radiusValue) {
+        radiusInput.addEventListener('input', function () {
+            radiusValue.textContent = `${this.value}km`;
+        });
+    }
+    // Save location/radius
+    if (locationForm) {
+        locationForm.addEventListener('submit', function (e) {
+            e.preventDefault();
+            const selectedLocation = locationSelect.value;
+            const selectedRadius = parseInt(radiusInput.value, 10);
+            // For demo: if not current, set dummy lat/lng
+            if (selectedLocation === 'current' && AppState.location) {
+                AppState.selectedLocation = {
+                    latitude: AppState.location.latitude,
+                    longitude: AppState.location.longitude,
+                    label: 'Current Location',
+                    radius: selectedRadius
+                };
+            } else {
+                // Dummy coordinates for demo
+                let coords = { latitude: 0, longitude: 0 };
+                if (selectedLocation === 'city_centre') coords = { latitude: 51.5074, longitude: -0.1278 };
+                if (selectedLocation === 'university') coords = { latitude: 51.4988, longitude: -0.1749 };
+                if (selectedLocation === 'mall') coords = { latitude: 51.5155, longitude: -0.1419 };
+                AppState.selectedLocation = {
+                    ...coords,
+                    label: locationSelect.options[locationSelect.selectedIndex].text,
+                    radius: selectedRadius
+                };
+            }
+            // Update UI
+            const locationElement = document.querySelector('.location-display');
+            if (locationElement && AppState.selectedLocation) {
+                locationElement.textContent = `${AppState.selectedLocation.label} (${AppState.selectedLocation.radius}km)`;
+            }
+            // Reload feed with new location/radius (implement actual reload logic as needed)
+            if (typeof PostManager !== 'undefined' && PostManager.loadMorePosts) {
+                // Reset posts and reload
+                PostManager.posts = [];
+                PostManager.currentPage = 1;
+                const container = document.querySelector('.posts-container');
+                if (container) container.innerHTML = '';
+                // You may want to pass location/radius to the API here
+                PostManager.loadMorePosts();
+            }
+            closeModal();
+        });
+    }
+}); 

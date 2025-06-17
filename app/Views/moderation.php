@@ -1,4 +1,3 @@
-
 <div class="min-h-screen bg-gray-50 dark:bg-gray-900 py-8">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <!-- Header -->
@@ -84,141 +83,125 @@
         <!-- Content Tabs -->
         <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden">
             <div class="border-b border-gray-200 dark:border-gray-700">
-                <nav class="flex -mb-px">
-                    <button class="px-6 py-4 text-sm font-medium text-blue-600 dark:text-blue-400 border-b-2 border-blue-500">
+                <nav class="flex -mb-px" id="moderationTabs">
+                    <button class="px-6 py-4 text-sm font-medium text-blue-600 dark:text-blue-400 border-b-2 border-blue-500" data-tab="pending">
                         Pending Content
                     </button>
-                    <button class="px-6 py-4 text-sm font-medium text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300">
+                    <button class="px-6 py-4 text-sm font-medium text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300" data-tab="flagged">
                         Flagged Users
                     </button>
-                    <button class="px-6 py-4 text-sm font-medium text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300">
+                    <button class="px-6 py-4 text-sm font-medium text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300" data-tab="rules">
                         Moderation Rules
                     </button>
-                    <button class="px-6 py-4 text-sm font-medium text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300">
+                    <button class="px-6 py-4 text-sm font-medium text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300" data-tab="activity">
                         Activity Log
                     </button>
                 </nav>
             </div>
 
-            <!-- Content List -->
-            <div class="divide-y divide-gray-200 dark:divide-gray-700">
-                <!-- Sample Content Items -->
-                <div class="p-6">
-                    <div class="flex items-start justify-between">
-                        <div class="flex items-start space-x-4">
-                            <div class="flex-shrink-0">
-                                <div class="w-10 h-10 rounded-full bg-blue-500 flex items-center justify-center text-white font-medium">
-                                    JD
+            <!-- Tab Contents -->
+            <div id="tabContent">
+                <!-- Pending Content Tab -->
+                <div class="divide-y divide-gray-200 dark:divide-gray-700 tab-pane" data-tab="pending">
+                    <!-- Sample Content Items (same as before) -->
+                    <div class="p-6">
+                        <div class="flex items-start justify-between">
+                            <div class="flex items-start space-x-4">
+                                <div class="flex-shrink-0">
+                                    <div class="w-10 h-10 rounded-full bg-blue-500 flex items-center justify-center text-white font-medium">
+                                        JD
+                                    </div>
+                                </div>
+                                <div>
+                                    <h3 class="text-lg font-medium text-gray-900 dark:text-white">John Doe</h3>
+                                    <p class="text-sm text-gray-500 dark:text-gray-400">Posted 2 hours ago</p>
+                                    <div class="mt-2 text-gray-600 dark:text-gray-300">
+                                        This is a sample post that needs moderation. It contains potentially inappropriate content that needs to be reviewed.
+                                    </div>
                                 </div>
                             </div>
-                            <div>
-                                <h3 class="text-lg font-medium text-gray-900 dark:text-white">John Doe</h3>
-                                <p class="text-sm text-gray-500 dark:text-gray-400">Posted 2 hours ago</p>
-                                <div class="mt-2 text-gray-600 dark:text-gray-300">
-                                    This is a sample post that needs moderation. It contains potentially inappropriate content that needs to be reviewed.
-                                </div>
+                            <div class="flex items-center space-x-2">
+                                <span class="px-3 py-1 text-sm font-medium rounded-full bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200">
+                                    Pending Review
+                                </span>
                             </div>
                         </div>
-                        <div class="flex items-center space-x-2">
-                            <span class="px-3 py-1 text-sm font-medium rounded-full bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200">
-                                Pending Review
-                            </span>
+                        <div class="mt-4 flex justify-end space-x-3">
+                            <button class="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-100 
+                                dark:hover:bg-gray-700 rounded-lg transition-colors duration-200">
+                                View Details
+                            </button>
+                            <button class="px-4 py-2 text-sm font-medium text-white bg-red-600 hover:bg-red-700 
+                                rounded-lg transition-colors duration-200">
+                                Remove Content
+                            </button>
+                            <button class="px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 
+                                rounded-lg transition-colors duration-200">
+                                Approve
+                            </button>
                         </div>
                     </div>
-                    <div class="mt-4 flex justify-end space-x-3">
-                        <button class="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-100 
-                            dark:hover:bg-gray-700 rounded-lg transition-colors duration-200">
-                            View Details
-                        </button>
-                        <button class="px-4 py-2 text-sm font-medium text-white bg-red-600 hover:bg-red-700 
-                            rounded-lg transition-colors duration-200">
-                            Remove Content
-                        </button>
-                        <button class="px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 
-                            rounded-lg transition-colors duration-200">
-                            Approve
-                        </button>
+                    <!-- ... more sample items ... -->
+                </div>
+                <!-- Flagged Users Tab -->
+                <div class="divide-y divide-gray-200 dark:divide-gray-700 tab-pane hidden" data-tab="flagged">
+                    <div class="p-6">
+                        <div class="flex items-center space-x-4">
+                            <div class="w-10 h-10 rounded-full bg-red-500 flex items-center justify-center text-white font-medium">
+                                AB
+                            </div>
+                            <div>
+                                <h3 class="text-lg font-medium text-gray-900 dark:text-white">Alice Brown</h3>
+                                <p class="text-sm text-gray-500 dark:text-gray-400">Flagged for spamming</p>
+                                <div class="mt-2 text-gray-600 dark:text-gray-300">
+                                    User has been reported multiple times for posting spam links.
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mt-4 flex justify-end space-x-3">
+                            <button class="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-100 
+                                dark:hover:bg-gray-700 rounded-lg transition-colors duration-200">
+                                View Profile
+                            </button>
+                            <button class="px-4 py-2 text-sm font-medium text-white bg-red-600 hover:bg-red-700 
+                                rounded-lg transition-colors duration-200">
+                                Ban User
+                            </button>
+                        </div>
                     </div>
                 </div>
-
-                <div class="p-6">
-                    <div class="flex items-start justify-between">
-                        <div class="flex items-start space-x-4">
-                            <div class="flex-shrink-0">
-                                <div class="w-10 h-10 rounded-full bg-green-500 flex items-center justify-center text-white font-medium">
-                                    JS
-                                </div>
-                            </div>
-                            <div>
-                                <h3 class="text-lg font-medium text-gray-900 dark:text-white">Jane Smith</h3>
-                                <p class="text-sm text-gray-500 dark:text-gray-400">Posted 5 hours ago</p>
-                                <div class="mt-2 text-gray-600 dark:text-gray-300">
-                                    Another post that requires moderation. This one has been flagged for potential spam content.
-                                </div>
-                            </div>
+                <!-- Moderation Rules Tab -->
+                <div class="divide-y divide-gray-200 dark:divide-gray-700 tab-pane hidden" data-tab="rules">
+                    <div class="p-6">
+                        <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-2">Current Moderation Rules</h3>
+                        <ul class="list-disc pl-6 text-gray-700 dark:text-gray-300">
+                            <li>No hate speech or harassment</li>
+                            <li>No spam or self-promotion</li>
+                            <li>Respect user privacy</li>
+                            <li>Content must be safe for work</li>
+                        </ul>
+                        <div class="mt-4 flex justify-end">
+                            <button class="px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 
+                                rounded-lg transition-colors duration-200">
+                                Edit Rules
+                            </button>
                         </div>
-                        <div class="flex items-center space-x-2">
-                            <span class="px-3 py-1 text-sm font-medium rounded-full bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200">
-                                Under Review
-                            </span>
-                        </div>
-                    </div>
-                    <div class="mt-4 flex justify-end space-x-3">
-                        <button class="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-100 
-                            dark:hover:bg-gray-700 rounded-lg transition-colors duration-200">
-                            View Details
-                        </button>
-                        <button class="px-4 py-2 text-sm font-medium text-white bg-red-600 hover:bg-red-700 
-                            rounded-lg transition-colors duration-200">
-                            Remove Content
-                        </button>
-                        <button class="px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 
-                            rounded-lg transition-colors duration-200">
-                            Approve
-                        </button>
                     </div>
                 </div>
-
-                <div class="p-6">
-                    <div class="flex items-start justify-between">
-                        <div class="flex items-start space-x-4">
-                            <div class="flex-shrink-0">
-                                <div class="w-10 h-10 rounded-full bg-purple-500 flex items-center justify-center text-white font-medium">
-                                    RJ
-                                </div>
-                            </div>
-                            <div>
-                                <h3 class="text-lg font-medium text-gray-900 dark:text-white">Robert Johnson</h3>
-                                <p class="text-sm text-gray-500 dark:text-gray-400">Posted 1 day ago</p>
-                                <div class="mt-2 text-gray-600 dark:text-gray-300">
-                                    A comment that has been reported for harassment. This needs immediate attention from moderators.
-                                </div>
-                            </div>
-                        </div>
-                        <div class="flex items-center space-x-2">
-                            <span class="px-3 py-1 text-sm font-medium rounded-full bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200">
-                                Urgent
-                            </span>
-                        </div>
-                    </div>
-                    <div class="mt-4 flex justify-end space-x-3">
-                        <button class="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-100 
-                            dark:hover:bg-gray-700 rounded-lg transition-colors duration-200">
-                            View Details
-                        </button>
-                        <button class="px-4 py-2 text-sm font-medium text-white bg-red-600 hover:bg-red-700 
-                            rounded-lg transition-colors duration-200">
-                            Remove Content
-                        </button>
-                        <button class="px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 
-                            rounded-lg transition-colors duration-200">
-                            Approve
-                        </button>
+                <!-- Activity Log Tab -->
+                <div class="divide-y divide-gray-200 dark:divide-gray-700 tab-pane hidden" data-tab="activity">
+                    <div class="p-6">
+                        <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-2">Recent Moderation Activity</h3>
+                        <ul class="text-gray-700 dark:text-gray-300">
+                            <li>2024-06-01 10:15 - <span class="font-semibold">John Doe</span> approved a post by <span class="font-semibold">Jane Smith</span></li>
+                            <li>2024-06-01 09:50 - <span class="font-semibold">Alice Brown</span> was banned for repeated spam</li>
+                            <li>2024-05-31 18:22 - <span class="font-semibold">Robert Johnson</span> removed a comment for harassment</li>
+                        </ul>
                     </div>
                 </div>
             </div>
 
-            <!-- Pagination -->
+            <!-- Pagination (only for Pending Content tab for demo) -->
             <div class="px-6 py-4 border-t border-gray-200 dark:border-gray-700">
                 <nav class="flex justify-between items-center">
                     <div class="text-sm text-gray-500 dark:text-gray-400">
@@ -315,18 +298,30 @@
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    // Handle tab switching
-    const tabs = document.querySelectorAll('nav button');
+    // Tab switching logic
+    const tabs = document.querySelectorAll('#moderationTabs button');
+    const panes = document.querySelectorAll('.tab-pane');
     tabs.forEach(tab => {
         tab.addEventListener('click', function() {
+            // Remove active classes from all tabs
             tabs.forEach(t => t.classList.remove('text-blue-600', 'border-blue-500'));
             tabs.forEach(t => t.classList.add('text-gray-500'));
+            // Add active classes to clicked tab
             this.classList.remove('text-gray-500');
             this.classList.add('text-blue-600', 'border-blue-500');
+            // Show the corresponding pane
+            const tabName = this.getAttribute('data-tab');
+            panes.forEach(pane => {
+                if (pane.getAttribute('data-tab') === tabName) {
+                    pane.classList.remove('hidden');
+                } else {
+                    pane.classList.add('hidden');
+                }
+            });
         });
     });
-    
-    // Handle content item clicks
+
+    // Handle content item clicks (for all panes)
     const contentItems = document.querySelectorAll('.p-6');
     contentItems.forEach(item => {
         item.addEventListener('click', function(e) {

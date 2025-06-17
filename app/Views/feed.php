@@ -9,7 +9,7 @@
                 </svg>
                 <span class="text-sm text-gray-600 dark:text-gray-300 location-display">Loading location...</span>
             </div>
-            <button class="text-sm text-blue-600 hover:text-blue-500 dark:text-blue-400 dark:hover:text-blue-300">
+            <button id="changeLocationBtn" class="text-sm text-blue-600 hover:text-blue-500 dark:text-blue-400 dark:hover:text-blue-300">
                 Change Location
             </button>
         </div>
@@ -111,9 +111,41 @@
     </div>
 </div>
 
+<!-- Location/Radius Modal -->
+<div id="locationModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40 hidden">
+  <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg w-full max-w-md mx-4 p-6 relative">
+    <h2 class="text-lg font-semibold mb-4 text-gray-900 dark:text-white">Select Location & Radius</h2>
+    <form id="locationForm" class="space-y-4">
+      <div>
+        <label for="locationSelect" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Location</label>
+        <select id="locationSelect" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white">
+          <option value="current">Current Location</option>
+          <!-- Dynamic options will be inserted here -->
+        </select>
+      </div>
+      <div>
+        <label for="radiusInput" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Radius (km)</label>
+        <input type="range" id="radiusInput" min="1" max="50" value="10" class="w-full">
+        <div class="flex justify-between text-xs text-gray-500 dark:text-gray-400 mt-1">
+          <span>1km</span><span id="radiusValue">10km</span><span>50km</span>
+        </div>
+      </div>
+      <div class="flex justify-end space-x-2 pt-2">
+        <button type="button" id="cancelLocationBtn" class="px-4 py-2 rounded-md bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-200 hover:bg-gray-300 dark:hover:bg-gray-600">Cancel</button>
+        <button type="submit" class="px-4 py-2 rounded-md bg-blue-600 text-white hover:bg-blue-700">Save</button>
+      </div>
+    </form>
+    <button id="closeLocationModal" class="absolute top-3 right-3 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200">
+      <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+      </svg>
+    </button>
+  </div>
+</div>
+
 <!-- Feed Section -->
 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-    <div class="space-y-4">
+    <div class="space-y-4 posts-container">
         <!-- Post Template -->
         <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm overflow-hidden">
             <div class="p-4">
