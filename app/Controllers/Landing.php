@@ -52,7 +52,7 @@ class Landing extends WebAppController
         }
 
         // if the user is not logged in, return the login page
-        if(!user_loggedin()) {
+        if(!$this->user_loggedin()) {
             return $this->templateObject->loadPage('setup/login', ['pageTitle' => 'Account Login']);
         }
 

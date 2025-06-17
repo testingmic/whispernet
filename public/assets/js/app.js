@@ -1,5 +1,5 @@
 // PWA Service Worker Registration
-if ('serviceWorker' in navigator) {
+if ('serviceWorker' in navigator && userLoggedin) {
     window.addEventListener('load', () => {
         navigator.serviceWorker.register(`${baseUrl}/assets/js/sw.js`)
             .then(registration => {
@@ -54,7 +54,7 @@ const AppState = {
         }
     },
     async checkLocation() {
-        if ('geolocation' in navigator) {
+        if ('geolocation' in navigator && userLoggedin) {
             try {
                 const position = await new Promise((resolve, reject) => {
                     navigator.geolocation.getCurrentPosition(resolve, reject);

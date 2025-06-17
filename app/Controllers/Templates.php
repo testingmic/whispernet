@@ -5,6 +5,19 @@ namespace App\Controllers;
 class Templates extends BaseController
 {
     /**
+     * Check if the user is logged in
+     * 
+     * @return bool
+     */
+    public function user_loggedin() {
+        $session = session();
+        if(empty($session->get('user_id')) && empty($session->get('user_loggedin'))) {
+            return false;
+        }
+        return true;
+    }
+
+    /**
      * Global variables for the templates
      * 
      * @return array
@@ -12,6 +25,7 @@ class Templates extends BaseController
     public function globalVariables() {
         return [
             'baseUrl' => getenv('baseURL') . 'public',
+            'userLoggedin' => $this->user_loggedin(),
             'appName' => 'WhisperNet - Hyperlocal Social Network',
         ];
     }

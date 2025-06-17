@@ -22,4 +22,17 @@ class WebAppController extends BaseController
         $this->templateObject = new Templates();
     }
 
+    /**
+     * Check if the user is logged in
+     * 
+     * @return bool
+     */
+    public function user_loggedin() {
+        if(empty($this->session->get('user_id')) && empty($this->session->get('user_loggedin'))) {
+            return false;
+        }
+
+        return true;
+    }
+
 }
