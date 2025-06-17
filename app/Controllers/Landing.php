@@ -2,10 +2,9 @@
 
 namespace App\Controllers;
 
-use App\Controllers\BaseController;
-use App\Controllers\Templates;
+use App\Controllers\WebAppController;
 
-class Landing extends BaseController
+class Landing extends WebAppController
 {
     /**
      * Index for the landing page
@@ -42,14 +41,31 @@ class Landing extends BaseController
             $classMethod = $path[1] ?? 'index';
         }
 
+        $baseClassName = $className;
+
         // get the class name
         $className = '\\App\\Controllers\\WebApp\\'.ucfirst($className);
 
-        // confirm if the class actually exists
-        if (!class_exists($className)) {
-            return (new Templates())->load404Page();
+        // if the class name is a setup page, return the template page
+        if(in_array($baseClassName, ['login', 'signup', 'forgot-password'])) {
+            return $this->templateObject->loadPage('setup/'.$baseClassName, ['pageTitle' => ucfirst($className)]);
         }
 
-        return view('feed');
+        // confirm if the class actually exists
+        if (!class_exists($className)) {
+            return $this->templateObject->load404Page();
+        }
+
+        // get the class object
+        $classObject = new $className();
+
+        // confirm if the method exists
+        if (!method_exists($classObject, $classMethod)) {
+            return $this->templateObject->load404Page();
+        }
+
+        return $classObject->{$classMethod}($params);
+
     }
+
 }

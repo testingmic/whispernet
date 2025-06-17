@@ -34,8 +34,25 @@ class Templates extends BaseController
         return view('templates/footer', $this->globalVariables());
     }
 
+    /**
+     * Load a page
+     * 
+     * @param string $page
+     * @param array $data
+     * @return void
+     */
+    public function loadPage($page, $data = []) {
+        echo $this->loadHeader();
+        echo view($page, $data);
+        echo $this->loadFooter();
+    }
+
+    /**
+     * Load the 404 page
+     * 
+     * @return void
+     */
     public function load404Page() {
-        // return view('errors/html/error_404');
         echo $this->loadHeader();
         echo view('errors/404');
         echo $this->loadFooter();
