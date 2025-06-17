@@ -9,7 +9,7 @@
         </svg>
         <span class="text-xs mt-1">Home</span>
       </a>
-      <a href="<?= $baseUrl ?>/create" class="flex flex-col items-center justify-center px-3 py-2 text-gray-600 hover:text-blue-500">
+      <a href="<?= $baseUrl ?>/posts/create" class="flex flex-col items-center justify-center px-3 py-2 text-gray-600 hover:text-blue-500">
         <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
         </svg>

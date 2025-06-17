@@ -51,6 +51,11 @@ class Landing extends WebAppController
             return $this->templateObject->loadPage('setup/'.$baseClassName, ['pageTitle' => ucfirst($className)]);
         }
 
+        // if the user is not logged in, return the login page
+        if(!user_loggedin()) {
+            return $this->templateObject->loadPage('setup/login', ['pageTitle' => 'Account Login']);
+        }
+
         // confirm if the class actually exists
         if (!class_exists($className)) {
             return $this->templateObject->load404Page();
