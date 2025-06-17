@@ -100,109 +100,301 @@ const AppState = {
     }
 };
 
-// Chat Functionality
+// Chat Manager
 const ChatManager = {
-    activeChat: null,
-    messages: new Map(),
     init() {
-        this.setupWebSocket();
-        this.setupMessageHandlers();
-        this.setupCleanup();
+        this.setupChatList();
+        this.setupMessageInput();
+        this.setupMediaUpload();
+        this.setupAudioRecording();
+        this.setupEmojiPicker();
     },
-    setupWebSocket() {
-        let userId = AppState.user.user_id;
-        let token = AppState.getToken();
-        this.ws = new WebSocket(`ws://localhost:3000?userId=${userId}&token=${token}`);
-        this.ws.onopen = () => {
-            this.ws.send(JSON.stringify({
-                endpoint: 'setup/login',
-                type: 'setup',
-                baseUrl: baseUrl
-            }));
-        };
-          
-        this.ws.onmessage = (event) => this.handleIncomingMessage(event);
-        this.ws.onclose = () => this.handleConnectionClose();
-    },
-    setupCleanup() {
-        // Handle page unload/navigation
-        window.addEventListener('beforeunload', () => {
-            this.cleanup();
+
+    setupChatList() {
+        const chatItems = document.querySelectorAll('.chat-item');
+        const chatList = document.getElementById('chatList');
+        const chatView = document.getElementById('chatView');
+        const backButton = document.getElementById('backToList');
+
+        chatItems.forEach(item => {
+            item.addEventListener('click', () => {
+                if (window.innerWidth < 768) {
+                    chatList.classList.add('hidden');
+                    chatView.classList.remove('hidden');
+                }
+                // Add active state to clicked item
+                chatItems.forEach(i => i.classList.remove('bg-blue-50', 'dark:bg-blue-900/20'));
+                item.classList.add('bg-blue-50', 'dark:bg-blue-900/20');
+            });
         });
 
-        // Handle single-page navigation (if using a router)
-        document.addEventListener('visibilitychange', () => {
-            if (document.visibilityState === 'hidden') {
-                this.cleanup();
-            }
-        });
-    },
-    cleanup() {
-        if (this.ws && this.ws.readyState === WebSocket.OPEN) {
-            // Send a close message to the server
-            this.ws.send(JSON.stringify({
-                type: 'close',
-                userId: AppState.user.user_id
-            }));
-            
-            // Close the WebSocket connection
-            this.ws.close();
-            
-            // Clear any pending messages
-            this.messages.clear();
-            this.activeChat = null;
-        }
-    },
-    setupMessageHandlers() {
-        const messageForm = document.querySelector('#messageForm');
-        if (messageForm) {
-            messageForm.addEventListener('submit', (e) => {
-                e.preventDefault();
-                const input = messageForm.querySelector('input');
-                if (input.value.trim()) {
-                    this.sendMessage(input.value);
-                    input.value = '';
-                }
+        if (backButton) {
+            backButton.addEventListener('click', () => {
+                chatView.classList.add('hidden');
+                chatList.classList.remove('hidden');
             });
         }
     },
-    sendMessage(content) {
-        if (!this.activeChat) return;
-        const message = {
-            type: 'message',
-            chatId: this.activeChat.id,
-            content,
-            timestamp: new Date().toISOString()
-        };
-        this.ws.send(JSON.stringify(message));
-        this.addMessageToUI(message, true);
+
+    setupMessageInput() {
+        const messageForm = document.getElementById('messageForm');
+        const messageInput = document.getElementById('messageInput');
+        const submitButton = messageForm.querySelector('button[type="submit"]');
+
+        if (!messageForm || !messageInput) return;
+
+        // Auto-resize textarea
+        messageInput.addEventListener('input', () => {
+            messageInput.style.height = 'auto';
+            messageInput.style.height = messageInput.scrollHeight + 'px';
+            submitButton.disabled = !messageInput.value.trim();
+        });
+
+        // Handle form submission
+        messageForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const content = messageInput.value.trim();
+            if (!content) return;
+
+            try {
+                submitButton.disabled = true;
+                submitButton.innerHTML = `
+                    <svg class="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                `;
+
+                const response = await fetch('/api/chat/message', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest'
+                    },
+                    body: JSON.stringify({
+                        content: content,
+                        type: 'text'
+                    })
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to send message');
+                }
+
+                const data = await response.json();
+                this.addMessageToUI(data.message, 'sent');
+                
+                // Clear the input
+                messageInput.value = '';
+                messageInput.style.height = 'auto';
+                submitButton.disabled = true;
+                submitButton.innerHTML = `
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/>
+                    </svg>
+                `;
+
+            } catch (error) {
+                console.error('Error sending message:', error);
+                submitButton.disabled = false;
+                submitButton.innerHTML = `
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/>
+                    </svg>
+                `;
+                NotificationManager.show('Failed to send message. Please try again.', 'error');
+            }
+        });
     },
-    handleIncomingMessage(event) {
-        const message = JSON.parse(event.data);
-        if (message.type === 'message') {
-            this.addMessageToUI(message, false);
+
+    setupMediaUpload() {
+        const attachButton = document.getElementById('attachButton');
+        const fileInput = document.getElementById('fileInput');
+        const mediaPreview = document.getElementById('mediaPreview');
+        const previewImage = document.getElementById('previewImage');
+        const removeMedia = document.getElementById('removeMedia');
+
+        if (!attachButton || !fileInput || !mediaPreview) return;
+
+        attachButton.addEventListener('click', () => {
+            fileInput.click();
+        });
+
+        fileInput.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                if (file.type.startsWith('image/')) {
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+                        previewImage.src = e.target.result;
+                        mediaPreview.classList.remove('hidden');
+                    };
+                    reader.readAsDataURL(file);
+                } else if (file.type.startsWith('video/')) {
+                    const video = document.createElement('video');
+                    video.src = URL.createObjectURL(file);
+                    video.controls = true;
+                    mediaPreview.innerHTML = '';
+                    mediaPreview.appendChild(video);
+                    mediaPreview.classList.remove('hidden');
+                }
+            }
+        });
+
+        if (removeMedia) {
+            removeMedia.addEventListener('click', () => {
+                mediaPreview.classList.add('hidden');
+                fileInput.value = '';
+                mediaPreview.innerHTML = '';
+            });
         }
     },
-    addMessageToUI(message, isSent) {
-        const chatContainer = document.querySelector('.chat-messages');
-        if (!chatContainer) return;
 
-        const messageElement = document.createElement('div');
-        messageElement.className = `message flex ${isSent ? 'justify-end' : 'justify-start'}`;
-        messageElement.innerHTML = `
-            <div class="max-w-xs ${isSent ? 'bg-blue-500 text-white' : 'bg-gray-100'} rounded-lg px-4 py-2">
-                <p class="text-sm">${message.content}</p>
-                <p class="text-xs ${isSent ? 'text-blue-100' : 'text-gray-500'} mt-1">
-                    ${new Date(message.timestamp).toLocaleTimeString()}
-                </p>
+    setupAudioRecording() {
+        const recordButton = document.getElementById('recordButton');
+        const audioRecorder = document.getElementById('audioRecorder');
+        const stopRecording = document.getElementById('stopRecording');
+        let mediaRecorder;
+        let audioChunks = [];
+
+        if (!recordButton || !audioRecorder || !stopRecording) return;
+
+        recordButton.addEventListener('click', async () => {
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                mediaRecorder = new MediaRecorder(stream);
+                audioChunks = [];
+
+                mediaRecorder.addEventListener('dataavailable', (event) => {
+                    audioChunks.push(event.data);
+                });
+
+                mediaRecorder.addEventListener('stop', async () => {
+                    const audioBlob = new Blob(audioChunks, { type: 'audio/wav' });
+                    await this.sendAudioMessage(audioBlob);
+                    audioRecorder.classList.add('hidden');
+                });
+
+                mediaRecorder.start();
+                audioRecorder.classList.remove('hidden');
+            } catch (error) {
+                console.error('Error accessing microphone:', error);
+                NotificationManager.show('Could not access microphone. Please check permissions.', 'error');
+            }
+        });
+
+        stopRecording.addEventListener('click', () => {
+            if (mediaRecorder && mediaRecorder.state === 'recording') {
+                mediaRecorder.stop();
+                mediaRecorder.stream.getTracks().forEach(track => track.stop());
+            }
+        });
+    },
+
+    async sendAudioMessage(audioBlob) {
+        try {
+            const formData = new FormData();
+            formData.append('audio', audioBlob, 'recording.wav');
+
+            const response = await fetch('/api/chat/audio', {
+                method: 'POST',
+                body: formData
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to send audio message');
+            }
+
+            const data = await response.json();
+            this.addMessageToUI(data.message, 'sent');
+            NotificationManager.show('Audio message sent successfully', 'success');
+        } catch (error) {
+            console.error('Error sending audio message:', error);
+            NotificationManager.show('Failed to send audio message. Please try again.', 'error');
+        }
+    },
+
+    setupEmojiPicker() {
+        const emojiButton = document.getElementById('emojiButton');
+        const emojiPicker = document.getElementById('emojiPicker');
+        const messageInput = document.getElementById('messageInput');
+
+        if (!emojiButton || !emojiPicker || !messageInput) return;
+
+        // Simple emoji list - you might want to use a proper emoji picker library
+        const emojis = ['😊', '😂', '❤️', '👍', '🎉', '🔥', '👏', '🙌', '🤔', '😎'];
+        
+        emojiPicker.innerHTML = `
+            <div class="grid grid-cols-5 gap-2">
+                ${emojis.map(emoji => `
+                    <button class="emoji-btn p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg text-2xl">
+                        ${emoji}
+                    </button>
+                `).join('')}
             </div>
         `;
-        chatContainer.appendChild(messageElement);
-        chatContainer.scrollTop = chatContainer.scrollHeight;
+
+        emojiButton.addEventListener('click', () => {
+            emojiPicker.classList.toggle('hidden');
+        });
+
+        emojiPicker.addEventListener('click', (e) => {
+            const emojiBtn = e.target.closest('.emoji-btn');
+            if (emojiBtn) {
+                const emoji = emojiBtn.textContent.trim();
+                const start = messageInput.selectionStart;
+                const end = messageInput.selectionEnd;
+                const text = messageInput.value;
+                messageInput.value = text.substring(0, start) + emoji + text.substring(end);
+                messageInput.focus();
+                messageInput.selectionStart = messageInput.selectionEnd = start + emoji.length;
+                emojiPicker.classList.add('hidden');
+            }
+        });
+
+        // Close emoji picker when clicking outside
+        document.addEventListener('click', (e) => {
+            if (!emojiButton.contains(e.target) && !emojiPicker.contains(e.target)) {
+                emojiPicker.classList.add('hidden');
+            }
+        });
     },
-    handleConnectionClose() {
-        AppState.showNotification('Connection lost. Reconnecting...', 'error');
-        setTimeout(() => this.setupWebSocket(), 3000);
+
+    addMessageToUI(message, type = 'received') {
+        const messagesContainer = document.querySelector('.messages-area');
+        if (!messagesContainer) return;
+
+        const messageElement = document.createElement('div');
+        messageElement.className = `flex items-start space-x-2 ${type === 'sent' ? 'justify-end' : ''}`;
+        
+        const timestamp = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        
+        messageElement.innerHTML = `
+            ${type === 'received' ? `
+                <div class="flex-shrink-0">
+                    <div class="w-8 h-8 rounded-full bg-blue-100 dark:bg-blue-900 flex items-center justify-center">
+                        <span class="text-blue-600 dark:text-blue-300 text-xs">${message.sender.initials}</span>
+                    </div>
+                </div>
+            ` : ''}
+            <div class="flex-1 ${type === 'sent' ? 'text-right' : ''}">
+                <div class="${type === 'sent' ? 'bg-blue-600' : 'bg-white dark:bg-gray-800'} rounded-lg px-4 py-2 shadow-sm">
+                    ${message.content}
+                </div>
+                <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">${timestamp}</p>
+            </div>
+            ${type === 'sent' ? `
+                <div class="flex-shrink-0">
+                    <div class="w-8 h-8 rounded-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center">
+                        <span class="text-gray-500 dark:text-gray-400 text-xs">ME</span>
+                    </div>
+                </div>
+            ` : ''}
+        `;
+
+        messagesContainer.appendChild(messageElement);
+        messagesContainer.scrollTop = messagesContainer.scrollHeight;
     }
 };
 
