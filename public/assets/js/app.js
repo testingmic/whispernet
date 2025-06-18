@@ -39,7 +39,7 @@ const MicrophoneManager = {
 };
 
 // PWA Service Worker Registration
-if ('serviceWorker' in navigator && userLoggedin) {
+if ('serviceWorker' in navigator && userLoggedIn) {
     window.addEventListener('load', () => {
         navigator.serviceWorker.register(`${baseUrl}/assets/js/sw.js`)
             .then(registration => {
@@ -97,7 +97,7 @@ const AppState = {
         }
     },
     async checkLocation() {
-        if ('geolocation' in navigator && userLoggedin) {
+        if ('geolocation' in navigator && userLoggedIn) {
             try {
                 const position = await new Promise((resolve, reject) => {
                     navigator.geolocation.getCurrentPosition(resolve, reject);
