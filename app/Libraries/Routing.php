@@ -62,6 +62,7 @@ class Routing {
         return [
             'status' => $statusCode == 400 ? 'error' : 'success',
             'data' => $message,
+            'message' => $message,
             'record' => $record,
             'statusCode' => $statusCode
         ];

@@ -36,8 +36,8 @@
         <div class="mt-12 text-sm text-gray-500 dark:text-gray-400">
             <p>Need help? Try these options:</p>
             <div class="mt-4 space-x-4">
-                <a href="<?= $baseUrl ?>/feed" class="hover:text-blue-500 dark:hover:text-blue-400">Browse Feed</a>
-                <a href="<?= $baseUrl ?>/create" class="hover:text-blue-500 dark:hover:text-blue-400">Create Post</a>
+                <a href="<?= $baseUrl ?>/dashboard" class="hover:text-blue-500 dark:hover:text-blue-400">Browse Feed</a>
+                <a href="<?= $baseUrl ?>/posts/create" class="hover:text-blue-500 dark:hover:text-blue-400">Create Post</a>
                 <a href="<?= $baseUrl ?>/chat" class="hover:text-blue-500 dark:hover:text-blue-400">Open Chat</a>
             </div>
         </div>

@@ -43,7 +43,7 @@
   <script>
     if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {
-            navigator.serviceWorker.register('<?= $baseUrl ?>/assets/js/sw.js?v=<?= $version ?>')
+            navigator.serviceWorker.register('<?= $baseUrl ?>/assets/js/sw.js?v=<?= $version ?>&path=<?= $baseUrl ?>')
                 .then(registration => {
                     console.log('ServiceWorker registration successful');
                 })

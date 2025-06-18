@@ -1,3 +1,42 @@
+// Microphone Permission Manager
+const MicrophoneManager = {
+    permissionState: null,
+    stream: null,
+
+    async requestPermission() {
+        if (this.permissionState === 'granted') {
+            return this.stream;
+        }
+
+        if (this.permissionState === 'denied') {
+            throw new Error('Microphone access was denied');
+        }
+
+        try {
+            this.stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+            this.permissionState = 'granted';
+            return this.stream;
+        } catch (error) {
+            this.permissionState = 'denied';
+            throw error;
+        }
+    },
+
+    async getStream() {
+        if (this.stream) {
+            return this.stream;
+        }
+        return this.requestPermission();
+    },
+
+    stopStream() {
+        if (this.stream) {
+            this.stream.getTracks().forEach(track => track.stop());
+            this.stream = null;
+        }
+    }
+};
+
 // PWA Service Worker Registration
 if ('serviceWorker' in navigator && userLoggedin) {
     window.addEventListener('load', () => {
@@ -302,37 +341,52 @@ const ChatManager = {
         let audioChunks = [];
 
         recordButton.addEventListener('click', async () => {
-            try {
-                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-                mediaRecorder = new MediaRecorder(stream);
-                
-                mediaRecorder.addEventListener('dataavailable', (e) => {
-                    audioChunks.push(e.data);
-                });
+            if (mediaRecorder && mediaRecorder.state === 'recording') {
+                mediaRecorder.stop();
+                recordButton.classList.remove('text-red-500');
+                return;
+            }
 
-                mediaRecorder.addEventListener('stop', () => {
-                    const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
-                    const audioUrl = URL.createObjectURL(audioBlob);
-                    
-                    audioPreview.innerHTML = `
-                        <audio src="${audioUrl}" controls class="w-full"></audio>
-                    `;
-                    audioPreview.classList.remove('hidden');
-                    uploadAudio(audioBlob);
-                });
+            try {
+                const stream = await MicrophoneManager.getStream();
+                mediaRecorder = new MediaRecorder(stream);
+                audioChunks = [];
+
+                mediaRecorder.ondataavailable = (e) => {
+                    audioChunks.push(e.data);
+                };
+
+                mediaRecorder.onstop = async () => {
+                    const audioBlob = new Blob(audioChunks, { type: 'audio/mpeg' });
+                    const formData = new FormData();
+                    formData.append('file', audioBlob, 'recording.mp3');
+                    formData.append('type', 'audio');
+
+                    try {
+                        const response = await fetch(`${baseUrl}/api/chat/messages/${this.activeChat.id}/audio`, {
+                            method: 'POST',
+                            body: formData
+                        });
+
+                        if (response.ok) {
+                            location.reload();
+                        }
+                    } catch (error) {
+                        console.error('Error uploading audio:', error);
+                    }
+                };
 
                 mediaRecorder.start();
-                recordButton.classList.add('hidden');
-                audioRecorder.classList.remove('hidden');
+                recordButton.classList.add('text-red-500');
             } catch (error) {
-                NotificationManager.show('Failed to start recording', 'error');
+                console.error('Error accessing microphone:', error);
+                NotificationManager.show('Microphone access is required for recording', 'error');
             }
         });
 
         stopButton.addEventListener('click', () => {
             mediaRecorder.stop();
-            recordButton.classList.remove('hidden');
-            audioRecorder.classList.add('hidden');
+            recordButton.classList.remove('text-red-500');
         });
     },
 
@@ -606,7 +660,7 @@ const AuthManager = {
                 AppState.showNotification('Login successful!', 'success');
                 
                 // Redirect to feed
-                window.location.href = `${baseUrl}/feed`;
+                window.location.href = `${baseUrl}/dashboard`;
             }
         } catch (error) {
             AppState.showNotification(error.responseJSON?.message || 'Login failed. Please try again.', 'error');
@@ -618,7 +672,7 @@ const AuthManager = {
         const username = $('#username').val();
         const email = $('#email').val();
         const password = $('#password').val();
-        const confirmPassword = $('#confirm_password').val();
+        const confirmPassword = $('#password_confirm').val();
         const termsAccepted = $('#terms').is(':checked');
 
         // Validate passwords match
@@ -635,13 +689,14 @@ const AuthManager = {
 
         try {
             const response = await $.ajax({
-                url: `${baseUrl}/api/auth/signup`,
+                url: `${baseUrl}/api/auth/register`,
                 method: 'POST',
                 data: {
-                    full_name: fullName,
                     username,
                     email,
                     password,
+                    full_name: fullName,
+                    password_confirm: confirmPassword,
                     terms_accepted: termsAccepted
                 }
             });
@@ -1711,19 +1766,21 @@ document.addEventListener('DOMContentLoaded', () => {
 function startAudioRecording(onDataAvailable, onStop) {
     let mediaRecorder, audioChunks = [];
 
-    navigator.mediaDevices.getUserMedia({ audio: true })
+    MicrophoneManager.getStream()
         .then(stream => {
             mediaRecorder = new MediaRecorder(stream);
             mediaRecorder.ondataavailable = e => audioChunks.push(e.data);
             mediaRecorder.onstop = () => {
                 const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
                 onStop(audioBlob);
-                stream.getTracks().forEach(track => track.stop());
             };
             mediaRecorder.start();
             onDataAvailable && onDataAvailable(mediaRecorder, stream);
         })
-        .catch(err => alert('Microphone access denied: ' + err));
+        .catch(error => {
+            console.error('Error accessing microphone:', error);
+            NotificationManager.show('Microphone access is required for recording', 'error');
+        });
 }
 
 // Usage Example:

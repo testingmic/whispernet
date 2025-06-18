@@ -12,6 +12,8 @@ use RobThree\Auth\Providers\Qr\QRServerProvider;
 
 class Auth extends LoadController {
 
+    private $internal = false;
+
     /**
      * Login the user
      * 
@@ -67,7 +69,7 @@ class Auth extends LoadController {
         $this->authModel->deleteByLogin(md5($user['email']));
 
         // if the webapp is true, set the session
-        if(!empty($this->payload['webapp'])) {
+        if(!empty($this->payload['webapp']) || $this->internal) {
             session()->set('user_token', $response['token']);
             session()->set('user_id', $user['user_id']);
             session()->set('user_loggedin', true);
@@ -139,6 +141,9 @@ class Auth extends LoadController {
 
         // Insert the user
         $this->usersModel->insert($payload);
+
+        // set the internal to true
+        $this->internal = true;
 
         // Login the user
         return $this->login($this->payload['email'], $this->payload['password']);

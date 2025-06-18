@@ -1,6 +1,8 @@
 <div class="min-h-[calc(100vh-4rem)] flex items-center justify-center bg-gray-50 dark:bg-gray-900 px-4 py-12 sm:px-6 lg:px-8">
     <div class="max-w-md w-full space-y-8">
-        <!-- Header -->
+        <div class="flex items-center justify-center">
+            <img src="<?= $baseUrl; ?>/assets/images/logo.png" alt="WhisperNet" class="h-16 w-auto">
+        </div>
         <div class="text-center">
             <h2 class="mt-6 text-3xl font-extrabold text-gray-900 dark:text-white">
                 Create your account
@@ -14,7 +16,7 @@
         </div>
 
         <!-- Signup Form -->
-        <form id="signupForm" class="mt-8 space-y-6" action="<?= $baseUrl; ?>/signup" method="POST">
+        <form id="signupForm" class="mt-8 space-y-6" action="<?= $baseUrl; ?>/register" method="POST">
             <div class="rounded-md shadow-sm -space-y-px">
                 <!-- Full Name -->
                 <div>
@@ -22,14 +24,6 @@
                     <input id="full_name" name="full_name" type="text" required 
                         class="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 placeholder-gray-500 dark:placeholder-gray-400 text-gray-900 dark:text-white rounded-t-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm dark:bg-gray-800"
                         placeholder="Full name">
-                </div>
-
-                <!-- Username -->
-                <div>
-                    <label for="username" class="sr-only">Username</label>
-                    <input id="username" name="username" type="text" required 
-                        class="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 placeholder-gray-500 dark:placeholder-gray-400 text-gray-900 dark:text-white focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm dark:bg-gray-800"
-                        placeholder="Username">
                 </div>
 
                 <!-- Email -->
@@ -50,8 +44,8 @@
 
                 <!-- Confirm Password -->
                 <div>
-                    <label for="password_confirmation" class="sr-only">Confirm password</label>
-                    <input id="password_confirmation" name="password_confirmation" type="password" autocomplete="new-password" required 
+                    <label for="password_confirm" class="sr-only">Confirm password</label>
+                    <input id="password_confirm" name="password_confirm" type="password" autocomplete="new-password" required 
                         class="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 placeholder-gray-500 dark:placeholder-gray-400 text-gray-900 dark:text-white rounded-b-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm dark:bg-gray-800"
                         placeholder="Confirm password">
                 </div>
@@ -84,7 +78,7 @@
         </form>
 
         <!-- Social Signup -->
-        <div class="mt-6">
+        <div class="mt-6 hidden">
             <div class="relative">
                 <div class="absolute inset-0 flex items-center">
                     <div class="w-full border-t border-gray-300 dark:border-gray-600"></div>
