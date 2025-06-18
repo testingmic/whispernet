@@ -498,13 +498,13 @@ const PostManager = {
         const postId = postContainer.getAttribute('data-posts-id');
         if(!postId) return;
         PostCommentManager.postId = postId;
-        postContainer.innerHTML = '';
         $.get(`${baseUrl}/api/posts/view/${postId}`, {
             token: AppState.getToken(),
             longitude,
             latitude
         }).then(data => {
             if(data.status == 'success') {
+                postContainer.innerHTML = '';
                 postContainer.appendChild(this.createPostElement(data.data, true));
                 // comments
                 const commentsContainer = document.getElementById('commentsList');
