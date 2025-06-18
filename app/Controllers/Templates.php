@@ -24,14 +24,17 @@ class Templates extends BaseController
      */
     public function globalVariables() {
         $urlPath = getenv('baseURL') . 'public';
+        $socketUrl = "ws://localhost:3000";
 
         // Remove the trailing slash if it's not localhost
         if(strpos($urlPath, 'localhost') == false) {
             $urlPath = rtrim(str_replace('public', '', $urlPath), '/');
+            $socketUrl = "wss://whispernet-socket.onrender.com:3000";
         }
 
         return [
             'baseUrl' => $urlPath,
+            'websocketUrl' => $socketUrl,
             'userLoggedin' => $this->user_loggedin(),
             'appName' => 'WhisperNet - Hyperlocal Social Network',
         ];

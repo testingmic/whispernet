@@ -117,7 +117,7 @@ const ChatManager = {
         }
         let userId = AppState.user.user_id;
         let token = AppState.getToken();
-        this.ws = new WebSocket(`ws://localhost:3000?userId=${userId}&token=${token}`);
+        this.ws = new WebSocket(`${websocketUrl}?userId=${userId}&token=${token}`);
         this.ws.onopen = () => {
             this.ws.send(JSON.stringify({
                 endpoint: 'setup/login',
@@ -1059,6 +1059,9 @@ const NotificationManager = {
 
     async updateUnreadCount() {
         try {
+            if(!Boolean(AppState.user)) {
+                return;
+            }
             const response = await fetch(`${baseUrl}/api/notifications/unread-count`);
             const data = await response.json();
             
@@ -1073,6 +1076,9 @@ const NotificationManager = {
 
     async refreshNotifications() {
         try {
+            if(!Boolean(AppState.user)) {
+                return;
+            }
             const response = await fetch(`${baseUrl}/api/notifications/recent`);
             const data = await response.json();
             

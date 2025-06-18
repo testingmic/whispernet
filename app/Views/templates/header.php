@@ -16,7 +16,9 @@
   <script src="<?= $baseUrl ?>/assets/js/search.js"></script>
   <script>
     localStorage.setItem('baseUrl', '<?= $baseUrl ?>');
-    const baseUrl = '<?= $baseUrl ?>', userLoggedin = <?= $userLoggedin ? 'true' : 'false' ?>, loadingSkeleton = `<?= function_exists('loadingSkeleton') ? loadingSkeleton() : '' ?>`;
+    const baseUrl = '<?= $baseUrl ?>', userLoggedin = <?= $userLoggedin ? 'true' : 'false' ?>, 
+          websocketUrl = '<?= $websocketUrl ?>',
+          loadingSkeleton = `<?= function_exists('loadingSkeleton') ? loadingSkeleton() : '' ?>`;
   </script>
   <link rel="stylesheet" href="<?= $baseUrl ?>/assets/css/app.css">
 </head>
