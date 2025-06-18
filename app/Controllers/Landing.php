@@ -51,7 +51,7 @@ class Landing extends WebAppController
                 $baseClassName = 'login';
             }
             return $this->templateObject->loadPage('setup/'.$baseClassName, [
-                'pageTitle' => ucfirst($className), 'footerHidden' => true, 'logoutUser' => true
+                'pageTitle' => ucfirst($className), 'footerHidden' => true, 'logoutUser' => true, 'pageTitle' => ucwords($baseClassName)
             ]);
         }
 

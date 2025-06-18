@@ -51,7 +51,7 @@ class Templates extends BaseController
             'websocketUrl' => $socketUrl,
             'userData' => session()->get('userData'),
             'userLoggedin' => $this->user_loggedin(),
-            'appName' => 'WhisperNet - Hyperlocal Social Network',
+            'appName' => 'WhisperChat',
         ];
     }
 

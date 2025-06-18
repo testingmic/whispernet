@@ -2,7 +2,7 @@
     <div class="max-w-md w-full space-y-8">
 
         <div class="flex items-center justify-center">
-            <img src="<?= $baseUrl; ?>/assets/images/logo.png" alt="WhisperNet" class="h-16 w-auto">
+            <img src="<?= $baseUrl; ?>/assets/images/logo.png" alt="<?= $appName ?>" class="h-16 w-auto">
         </div>
 
         <!-- Header -->

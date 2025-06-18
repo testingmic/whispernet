@@ -10,6 +10,17 @@
   <meta name="theme-color" content="#2196F3">
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="apple-touch-icon" href="<?= $baseUrl ?>/assets/icons/Icon.192.png">
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="apple-mobile-web-app-title" content="<?= $appName ?>">
+
+  <link rel="apple-touch-icon" href="<?= $baseUrl ?>/assets/icons/Icon.192.png">
+  <link rel="apple-touch-icon" sizes="152x152" href="<?= $baseUrl ?>/assets/icons/Icon.152.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="<?= $baseUrl ?>/assets/icons/Icon.192.png">
+  <link rel="apple-touch-icon" sizes="167x167" href="<?= $baseUrl ?>/assets/icons/Icon.167.png">
+
   <!-- <link rel="stylesheet" href="<?= $baseUrl ?>/assets/css/tailwind.min.css"> -->
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <script src="<?= $baseUrl ?>/assets/js/groups.js?v=<?= $version ?>"></script>
@@ -39,7 +50,7 @@
     <div class="relative bg-white dark:bg-gray-800 shadow-lg rounded-b-2xl">
       <div class="px-4 py-4">
         <div class="text-xl font-medium text-gray-900 dark:text-white mb-2">
-          <button type="button" onclick="return PostManager.closeCreateModal()"; id="backButton" class="text-gray-500 text-base hover:text-gray-700 dark:hover:text-gray-300 flex items-center space-x-2">
+          <button type="button" onclick="return PostManager.closeCreateModal()" ; id="backButton" class="text-gray-500 text-base hover:text-gray-700 dark:hover:text-gray-300 flex items-center space-x-2">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
             </svg>
@@ -109,8 +120,8 @@
           <div class="flex">
             <div class="flex-shrink-0 flex items-center">
               <a href="<?= $baseUrl ?>" class="flex items-center">
-                <img class="h-8 w-auto" src="<?= $baseUrl ?>/assets/images/logo.png" alt="WhisperNet">
-                <span class="text-xl font-bold ml-2">WhisperNet</span>
+                <img class="h-8 w-auto" src="<?= $baseUrl ?>/assets/images/logo.png" alt="<?= $appName ?>">
+                <span class="text-xl font-bold ml-2"><?= $appName ?></span>
               </a>
             </div>
           </div>

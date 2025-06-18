@@ -1,7 +1,7 @@
 <div class="min-h-[calc(100vh-4rem)] flex items-center justify-center bg-gray-50 dark:bg-gray-900 px-4 py-12 sm:px-6 lg:px-8">
     <div class="max-w-md w-full space-y-8">
         <div class="flex items-center justify-center">
-            <img src="<?= $baseUrl; ?>/assets/images/logo.png" alt="WhisperNet" class="h-16 w-auto">
+            <img src="<?= $baseUrl; ?>/assets/images/logo.png" alt="<?= $appName ?>" class="h-16 w-auto">
         </div>
         <div class="text-center">
             <h2 class="mt-6 text-3xl font-extrabold text-gray-900 dark:text-white">
