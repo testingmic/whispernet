@@ -34,7 +34,7 @@ class Templates extends BaseController
 
         return [
             'baseUrl' => $urlPath,
-            'version' => '1.0.0',
+            'version' => '1.0.1',
             'websocketUrl' => $socketUrl,
             'userLoggedin' => $this->user_loggedin(),
             'appName' => 'WhisperNet - Hyperlocal Social Network',
