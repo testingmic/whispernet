@@ -882,12 +882,6 @@ const PostCreationForm = {
             if (data.status == 'success') {
                 AppState.showNotification('Post created successfully!', 'success');
                 form.reset();
-                document.getElementById('createPostButton').classList.remove('hidden');
-                document.getElementById('postCreationForm').classList.add('hidden');
-                document.getElementById('mediaPreview').classList.add('hidden');
-                document.getElementById('tagsContainer').innerHTML = '<input type="text" id="tagsInput" class="flex-1 min-w-[120px] px-3 py-1 border border-gray-300 dark:border-gray-600 rounded-full text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white" placeholder="Add tags...">';
-                // this.setupTags(); // Reinitialize tags functionality
-                // append the post to the top of the feed
                 const feedContainer = document.getElementById('feedContainer');
                 const postElement = PostManager.createPostElement(data.record);
                 feedContainer.insertBefore(postElement, feedContainer.firstChild);
