@@ -360,6 +360,7 @@ class PostsModel extends Model {
         if(configs('db_group') == 'production') {
             $this->votesDb = $this->db;
             $this->notifDb = $this->db;
+            $this->viewsDb = $this->db;
             return;
         }
 
