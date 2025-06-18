@@ -129,7 +129,7 @@
 
 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-4 mb-2">
     <div id="feedContainer" class="scroll-sentinel">
-        <?= loadingSkeleton(1); ?>
+        <?= loadingSkeleton(1, true); ?>
     </div>
 </div>
 
