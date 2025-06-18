@@ -8,7 +8,7 @@ function loadingSkeleton($count = 1, $padding = true) {
     $html = '';
     for ($i = 0; $i < $count; $i++) {
         $html .= '
-        <div class="max-w-7xl mx-auto '.($padding ? 'px-4 py-4' : 'mb-2').' sm:px-6 lg:px-8">
+        <div class="max-w-7xl mx-auto '.($padding ? 'px-4 py-2' : 'mb-2').' sm:px-6 lg:px-8">
             <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden animate-pulse">
                 <!-- Post Header Skeleton -->
                 <div class="p-4 border-b border-gray-200 dark:border-gray-700">

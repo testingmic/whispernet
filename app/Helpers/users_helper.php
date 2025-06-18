@@ -5,14 +5,17 @@
  * 
  * @return array
  */
-function getLocationByIP() {
+function getLocationByIP($longitude = null, $latitude = null) {
     // Fetch location data from ipapi.co
     $url = "https://ipinfo.io/?token=2d64e9f7d9e7a2";
-    // $url = "https://ipapi.co/json/?token=2d64e9f7d9e7a2";
+    $reverseUrl = "https://api.opencagedata.com/geocode/v1/json?q={$longitude},{$latitude}&pretty=1&key=8cc86300ce5d4a03af06f30acbdb5946";
+
+    // set the url path
+    $urlPath = empty($longitude) && empty($latitude) ? $url : $reverseUrl;
 
     // use curl to get the data
     $ch = curl_init();
-    curl_setopt($ch, CURLOPT_URL, $url);
+    curl_setopt($ch, CURLOPT_URL, $urlPath);
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
     $response = curl_exec($ch);
     curl_close($ch);

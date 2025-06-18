@@ -702,6 +702,8 @@ const AuthManager = {
                     username,
                     email,
                     password,
+                    longitude,
+                    latitude,
                     full_name: fullName,
                     password_confirm: confirmPassword,
                     terms_accepted: termsAccepted

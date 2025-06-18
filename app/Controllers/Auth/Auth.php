@@ -19,7 +19,7 @@ class Auth extends LoadController {
      * 
      * @return array
      */
-    public function login($email = null, $password = null) {
+    public function login($email = null, $password = null, $payload = []) {
 
         // Find user by email
         $user = $this->usersModel->findByEmail($this->payload['email'] ?? $email);
@@ -73,6 +73,12 @@ class Auth extends LoadController {
             session()->set('user_token', $response['token']);
             session()->set('user_id', $user['user_id']);
             session()->set('user_loggedin', true);
+
+            // if the longitude and latitude are provided, set the session
+            if(!empty($payload['longitude']) && !empty($payload['latitude'])) {
+                session()->set('userLongitude', $payload['longitude'] ?? '');
+                session()->set('userLatitude', $payload['latitude'] ?? '');
+            }
         }
         
         // Return the response
@@ -146,7 +152,7 @@ class Auth extends LoadController {
         $this->internal = true;
 
         // Login the user
-        return $this->login($this->payload['email'], $this->payload['password']);
+        return $this->login($this->payload['email'], $this->payload['password'], $this->payload);
 
     }
 

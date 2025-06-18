@@ -20,7 +20,7 @@
 </div>
 
 <!-- Create Post Card -->
-<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-4 mb-2">
     <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm overflow-hidden">
         <!-- Post Creation Header -->
         <div class="p-4 border-b border-gray-200 dark:border-gray-700">
@@ -148,8 +148,10 @@
 
 <div id="feedContainer">
     <!-- Loading Skeleton Card -->
-    <?= loadingSkeleton(1); ?>
+    <?= loadingSkeleton(3); ?>
 </div>
+
+<div class="px-4 py-8 sm:p-6">&nbsp;</div>
 
 <!-- Floating Action Button -->
 <button class="fixed bottom-20 right-4 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-full p-4 shadow-lg hover:from-blue-700 hover:to-blue-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all transform hover:scale-105">
