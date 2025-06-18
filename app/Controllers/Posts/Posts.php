@@ -110,6 +110,8 @@ class Posts extends LoadController {
         $comment = $this->postsModel->viewSingleComment($this->payload['commentId']);
         $comment['ago'] = formatTimeAgo($comment['created_at']);
 
+        $comment['comment_id'] = (int)$comment['comment_id'];
+
         return Routing::success($comment);
     }
 
