@@ -63,6 +63,13 @@ class PostsValidation {
                 'postId' => 'permit_empty|numeric|max_length[10]',
             ]
         ],
+        'notify' => [
+            'method' => 'POST',
+            'authenticate' => true,
+            'payload' => [
+                'postId' => 'required|numeric|max_length[10]',
+            ]
+        ],
         'vote' => [
             'method' => 'POST',
             'authenticate' => true,

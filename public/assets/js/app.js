@@ -637,12 +637,12 @@ const PostManager = {
     },
     createPostElement(post, single = false) {
         const div = document.createElement('div');
-        div.className = `post-card bg-white rounded-lg shadow-sm p-4 mb-4 ${single ? '' : 'hover:bg-blue-200'} cursor-pointer hover:shadow-md transition-all duration-300`;
+        div.className = `post-card bg-white rounded-lg shadow-sm p-4 ${single ? '' : ' mb-4 hover:bg-blue-200'} cursor-pointer hover:shadow-md transition-all duration-300`;
         if(!single) {
             // div.setAttribute('onclick', `window.location.href='${baseUrl}/posts/view/${post.post_id}'`);
         }
         div.innerHTML = `
-            <div class="flex items-center justify-between mb-2" onclick="return PostManager.changeDirection('${post.post_id}')">
+            <div class="flex items-center justify-between mb-2" ${single ? '' : `onclick="return PostManager.changeDirection('${post.post_id}')"`}>
                 <div class="flex items-center space-x-2">
                     <div class="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center">
                         <span class="text-gray-500 text-sm">${post.username[0].toUpperCase()}${post.username[1].toUpperCase()}</span>
@@ -671,7 +671,7 @@ const PostManager = {
                     </svg>
                 </button>
             </div>
-            <div onclick="return PostManager.changeDirection('${post.post_id}')" class="text-gray-800 mb-3">${post.content}</div>
+            <div ${single ? '' : `onclick="return PostManager.changeDirection('${post.post_id}')"`} class="text-gray-800 mb-3">${post.content}</div>
             <div class="flex items-center justify-between">
                 <div class="flex items-center space-x-4">
                     <button class="flex items-center space-x-1 text-gray-500 hover:text-blue-500" data-posts-id="${post.post_id}">
@@ -1392,6 +1392,8 @@ const PostCommentManager = {
 
                 // Show success notification
                 NotificationManager.show('Comment posted successfully', 'success');
+
+                $.post(`${baseUrl}/api/posts/notify`, { token: AppState.getToken(), postId: postId });
             } catch (error) {
                 submitButton.disabled = false;
                 submitButton.innerHTML = 'Post';

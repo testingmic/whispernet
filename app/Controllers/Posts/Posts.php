@@ -172,6 +172,19 @@ class Posts extends LoadController {
     }
 
     /**
+     * Notify a user
+     * 
+     * @return array
+     */
+    public function notify() {
+        // set the payload to the posts model
+        $this->postsModel->payload = $this->payload;
+        
+        // make the call to the posts model
+        
+    }
+
+    /**
      * View a post
      * 
      * @return array

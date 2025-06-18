@@ -23,6 +23,18 @@ html {
     background: #555;
 }
 
+/* .singlePostContainer .post-card {
+    background: linear-gradient(135deg, #fca5a5, #bbf7d0, #bfdbfe);;
+    color: #fff;
+}
+
+.singlePostContainer .post-card,
+.singlePostContainer .post-card .text-gray-800,
+.singlePostContainer .post-card .text-gray-900 {
+    color: #fff;
+    background-color: #000;
+} */
+
 /* Message animations */
 @keyframes slideIn {
     from {
