@@ -50,7 +50,7 @@ class Templates extends BaseController
             'version' => '1.1.0',
             'websocketUrl' => $socketUrl,
             'userData' => session()->get('userData'),
-            'userLoggedin' => $this->user_loggedin(),
+            'userLoggedIn' => $this->user_loggedin(),
             'appName' => 'WhisperChat',
         ];
     }
@@ -61,7 +61,7 @@ class Templates extends BaseController
      * @return void
      */
     public function loadHeader($data = []) {
-        return view('templates/header', array_merge($this->globalVariables(), $data));
+        return view('templates/header', $data);
     }
 
     /**
@@ -70,7 +70,7 @@ class Templates extends BaseController
      * @return void
      */
     public function loadFooter($data = []) {
-        return view('templates/footer', array_merge($this->globalVariables(), $data));
+        return view('templates/footer', $data);
     }
 
     /**
@@ -81,6 +81,10 @@ class Templates extends BaseController
      * @return void
      */
     public function loadPage($page, $data = []) {
+        // merge the global variables with the data
+        $data = array_merge($this->globalVariables(), $data);
+
+        // print the files contents
         echo $this->loadHeader($data);
         echo view($page, $data);
         echo $this->loadFooter($data);
@@ -93,8 +97,13 @@ class Templates extends BaseController
      */
     public function load404Page() {
         $data['topMargin'] = 0;
+
+        // merge the global variables with the data
+        $data = array_merge($this->globalVariables(), $data);
+
+        // print the files contents
         echo $this->loadHeader($data);
         echo view('errors/404', $data);
-        echo $this->loadFooter();
+        echo $this->loadFooter($data);
     }
 }

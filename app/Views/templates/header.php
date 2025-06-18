@@ -28,7 +28,7 @@
   <script>
     localStorage.setItem('baseUrl', '<?= $baseUrl ?>');
     const baseUrl = '<?= $baseUrl ?>',
-      userLoggedin = <?= $userLoggedin ? 'true' : 'false' ?>,
+      userLoggedin = <?= !empty($userLoggedin) ? 'true' : 'false' ?>,
       websocketUrl = '<?= $websocketUrl ?>',
       loadingSkeleton = `<?= function_exists('loadingSkeleton') ? loadingSkeleton() : '' ?>`;
     <?php if (!empty($logoutUser)) { ?>
@@ -125,7 +125,7 @@
               </a>
             </div>
           </div>
-          <?php if ($userLoggedin) { ?>
+          <?php if (!empty($userLoggedin)) { ?>
             <div class="flex items-center">
               <button id="menuButton" class="p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none">
                 <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -138,7 +138,7 @@
       </div>
     </nav>
     <main class="flex-grow pt-<?= $topMargin ?? 16 ?>">
-      <?php if ($userLoggedin) { ?>
+      <?php if (!empty($userLoggedin)) { ?>
         <div class="relative" x-data="{ open: false }">
           <div x-show="open"
             x-cloak

@@ -1,8 +1,8 @@
 </main>
-<nav id="footerBanner" data-footer-hidden="<?= $footerHidden ?>" class="bg-white shadow-lg fixed bottom-0 left-0 right-0 z-50">
+<nav id="footerBanner" data-footer-hidden="<?= !empty($footerHidden) ?>" <?= !empty($footerHidden) ? 'style="display: none;"' : '' ?> class="bg-white shadow-lg fixed bottom-0 left-0 right-0 z-50">
   <div class="max-w-7xl mx-auto px-4">
     <div class="flex justify-around h-16">
-      <?php if (!$footerHidden) { ?>
+      <?php if (empty($footerHidden) && $userLoggedIn) { ?>
         <a href="<?= $baseUrl ?>" class="flex flex-col items-center justify-center px-3 py-2 text-gray-600 hover:text-blue-500">
           <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
