@@ -800,8 +800,9 @@ const AuthManager = {
         if($('#loginForm').length > 0) {
             let token = localStorage.getItem('token');
             if(!token) {
-                token = document.cookie.split('; ').find(row => row.startsWith('user_token=')).split('=')[1];
+                token = document.cookie.split('; ')?.find(row => row.startsWith('user_token='))?.split('=')[1];
             }
+            if(!token) return;
             $.post(`${baseUrl}/api/auth/confirm`, { token: token, webapp: true, longitude, latitude }, (response) => {
                 if(response.success) {
                     window.location.href = `${baseUrl}`;
