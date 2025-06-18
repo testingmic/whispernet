@@ -1421,7 +1421,7 @@ const PostCommentManager = {
                 if(commentsContainer) {
                     $(`span[class^="comments-counter-${this.postId}"]`).text(data.data.length);
                     data.data.forEach(comment => {
-                        if(!this.commentsList.includes(comment.comment_id) || !comment.is_hidden){
+                        if(!this.commentsList.includes(comment.comment_id)){
                             commentsContainer.appendChild(PostManager.createCommentElement(comment));
                         }
                     });
