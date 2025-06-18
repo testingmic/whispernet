@@ -1,6 +1,6 @@
 </main>
 <!-- Bottom Navigation -->
-<nav class="bg-white shadow-lg fixed bottom-0 left-0 hidden right-0 z-50">
+<nav class="bg-white shadow-lg fixed bottom-0 left-0 <?= !empty($footerHidden) ? 'hidden' : '' ?> right-0 z-50">
   <div class="max-w-7xl mx-auto px-4">
     <div class="flex justify-around h-16">
       <a href="<?= $baseUrl ?>" class="flex flex-col items-center justify-center px-3 py-2 text-gray-600 hover:text-blue-500">

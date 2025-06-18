@@ -4,13 +4,13 @@ $messages = $messages ?? [];
 $participants = $participants ?? [];
 ?>
 
-<div class="min-h-screen bg-gray-50 dark:bg-gray-900 flex flex-col">
+<div class="h-screen flex flex-col bg-gray-50 dark:bg-gray-900 max-h-[calc(100vh-5rem)]">
     <!-- Group Header -->
     <div class="bg-white dark:bg-gray-800 shadow-sm border-b border-gray-200 dark:border-gray-700">
         <div class="px-4 py-4 sm:px-6 lg:px-8">
             <div class="flex items-center justify-between">
                 <div class="flex items-center space-x-4">
-                    <a href="/groups" class="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300">
+                    <a href="<?= $baseUrl ?>/chat/groups" class="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300">
                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
                         </svg>
@@ -42,9 +42,9 @@ $participants = $participants ?? [];
     <!-- Main Chat Area -->
     <div class="flex-1 flex overflow-hidden">
         <!-- Chat Messages -->
-        <div class="flex-1 flex flex-col relative">
+        <div class="flex-1 flex flex-col">
             <!-- Messages Container -->
-            <div id="messagesContainer" class="flex-1 overflow-y-auto p-4 space-y-4 max-h-[calc(100vh-14rem)]">
+            <div id="messagesContainer" class="flex-1 overflow-y-auto p-4 space-y-4 max-h-[calc(100vh-20rem)]">
                 <?php if (empty($messages)): ?>
                     <div class="flex items-center justify-center h-full">
                         <div class="text-center">
@@ -93,7 +93,7 @@ $participants = $participants ?? [];
             </div>
 
             <!-- Message Input -->
-            <div class="border-t border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-4 z-10">
+            <div class="border-t border-gray-200 fixed bottom-0 left-0 right-0 dark:border-gray-700 bg-white dark:bg-gray-800 p-4">
                 <form id="messageForm" class="flex items-center space-x-4">
                     <button type="button" id="attachButton" class="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300">
                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -206,7 +206,7 @@ document.addEventListener('DOMContentLoaded', function() {
         if (!message) return;
 
         try {
-            const response = await fetch('/api/groups/<?= $group['id'] ?? '' ?>/messages', {
+            const response = await fetch('<?= $baseUrl; ?>/api/chat/messages/<?= $group['id'] ?? '' ?>/send', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -219,8 +219,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
             if (response.ok) {
                 messageInput.value = '';
-                // Refresh messages
-                location.reload();
             }
         } catch (error) {
             console.error('Error sending message:', error);
@@ -241,7 +239,7 @@ document.addEventListener('DOMContentLoaded', function() {
             formData.append('type', 'image');
 
             try {
-                const response = await fetch('/api/groups/<?= $group['id'] ?? '' ?>/messages', {
+                const response = await fetch('<?= $baseUrl; ?>/api/chat/messages/<?= $group['id'] ?? '' ?>/image', {
                     method: 'POST',
                     body: formData
                 });
@@ -283,7 +281,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 formData.append('type', 'audio');
 
                 try {
-                    const response = await fetch('/api/groups/<?= $group['id'] ?? '' ?>/messages', {
+                    const response = await fetch('<?= $baseUrl; ?>/api/chat/messages/<?= $group['id'] ?? '' ?>/audio', {
                         method: 'POST',
                         body: formData
                     });

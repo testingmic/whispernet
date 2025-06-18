@@ -30,7 +30,11 @@ class Chat extends WebAppController {
      */
     public function group($groupId = null, $params = []) {
         $group = [];
-        return $this->templateObject->loadPage('group_chat', ['pageTitle' => 'Group', 'group' => $group]);
+        return $this->templateObject->loadPage('group_chat', [
+            'pageTitle' => 'Group', 
+            'group' => $group,
+            'footerHidden' => true
+        ]);
     }
 
 }
