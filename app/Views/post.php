@@ -29,7 +29,7 @@
     <div class="px-4 py-8 sm:p-6">&nbsp;</div>
 
     <!-- Fixed Comment Input -->
-    <div class="fixed bottom-0 left-0 right-0 bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 shadow-lg">
+    <div class="fixed bottom-0 left-0 right-0 bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 shadow-lg bg-gradient-to-br from-red-200 via-green-200 to-blue-200">
         <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
             <form id="commentForm" class="flex items-center space-x-4">
                 <div class="flex-1 relative">
