@@ -683,6 +683,7 @@ const AuthManager = {
                 // Store user data and token
                 localStorage.setItem('user', JSON.stringify(response.data));
                 localStorage.setItem('token', response.data.token);
+                document.cookie = `user_token=${response.data.token}; path=/;`;
                 
                 // Update AppState
                 AppState.user = response.data;
@@ -797,7 +798,10 @@ const AuthManager = {
     },
     async loginCheck() {
         if($('#loginForm').length > 0) {
-            const token = localStorage.getItem('token');
+            let token = localStorage.getItem('token');
+            if(!token) {
+                token = document.cookie.split('; ').find(row => row.startsWith('user_token=')).split('=')[1];
+            }
             $.post(`${baseUrl}/api/auth/confirm`, { token: token, webapp: true, longitude, latitude }, (response) => {
                 if(response.success) {
                     window.location.href = `${baseUrl}`;
