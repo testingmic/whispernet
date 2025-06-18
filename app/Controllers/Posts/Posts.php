@@ -314,7 +314,11 @@ class Posts extends LoadController {
         // make the call to the posts model
         $this->postsModel->vote($section, $column);
 
-        return Routing::success('Vote successful');
+        // get the post votes
+        $votes = $this->postsModel->db->query("SELECT downvotes, upvotes FROM posts WHERE post_id = ?", [$this->payload['recordId']])->getRowArray();
+
+        // return the votes
+        return Routing::created(['data' => 'Vote successful', 'record' => $votes]);
 
     }
 

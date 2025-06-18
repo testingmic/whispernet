@@ -566,13 +566,13 @@ const PostManager = {
                         <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 10h4.764a2 2 0 011.789 2.894l-3.5 7A2 2 0 0115.263 21h-4.017c-.163 0-.326-.02-.485-.06L7 20m7-10V5a2 2 0 00-2-2h-.095c-.5 0-.905.405-.905.905 0 .714-.211 1.412-.608 2.006L7 11v9m7-10h-2M7 20H5a2 2 0 01-2-2v-6a2 2 0 012-2h2.5"/>
                         </svg>
-                        <span>${comment.upvotes}</span>
+                        <span data-comments-id-upvotes="${comment.comment_id}">${comment.upvotes}</span>
                     </button>
                     <button class="flex items-center space-x-1 text-gray-500 hover:text-red-500" data-comments-id="${comment.comment_id}" onclick="return PostManager.handleVote('comments', ${comment.comment_id}, 'down')">
                         <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14H5.236a2 2 0 01-1.789-2.894l3.5-7A2 2 0 018.736 3h4.018c.163 0 .326.02.485.06L17 4m-7 10v2a2 2 0 002 2h.095c.5 0 .905-.405.905-.905 0-.714.211-1.412.608-2.006L17 13V4m-7 10h2m5-10h2a2 2 0 012 2v6a2 2 0 01-2 2h-2.5"/>
                         </svg>
-                        <span>${comment.downvotes}</span>
+                        <span data-comments-id-downvotes="${comment.comment_id}">${comment.downvotes}</span>
                     </button>
                 </div>
             </div>`;
@@ -681,19 +681,19 @@ const PostManager = {
                         <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 10h4.764a2 2 0 011.789 2.894l-3.5 7A2 2 0 0115.263 21h-4.017c-.163 0-.326-.02-.485-.06L7 20m7-10V5a2 2 0 00-2-2h-.095c-.5 0-.905.405-.905.905 0 .714-.211 1.412-.608 2.006L7 11v9m7-10h-2M7 20H5a2 2 0 01-2-2v-6a2 2 0 012-2h2.5"/>
                         </svg>
-                        <span>${post.upvotes}</span>
+                        <span data-posts-id-upvotes="${post.post_id}">${post.upvotes}</span>
                     </button>
                     <button class="flex items-center space-x-1 text-gray-500 hover:text-red-500" data-posts-id="${post.post_id}" onclick="return PostManager.handleVote('posts', ${post.post_id}, 'down')">
                         <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14H5.236a2 2 0 01-1.789-2.894l3.5-7A2 2 0 018.736 3h4.018c.163 0 .326.02.485.06L17 4m-7 10v2a2 2 0 002 2h.095c.5 0 .905-.405.905-.905 0-.714.211-1.412.608-2.006L17 13V4m-7 10h2m5-10h2a2 2 0 012 2v6a2 2 0 01-2 2h-2.5"/>
                         </svg>
-                        <span>${post.downvotes}</span>
+                        <span data-posts-id-downvotes="${post.post_id}">${post.downvotes}</span>
                     </button>
                     <button class="flex items-center space-x-1 text-gray-500 hover:text-blue-500" data-posts-id="${post.post_id}">
                         <svg class="h-4 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
                         </svg>
-                        <span>${post.views || 0}</span>
+                        <span>${post.views || 0} views</span>
                     </button>
                 </div>
             </div>
@@ -727,13 +727,10 @@ const PostManager = {
         }
     },
     updateVoteCounts(postId, data, section) {
-        const postElement = document.querySelector(`[data-${section}-id="${postId}"]`).closest('.post-card');
-        if (postElement) {
-            const upvoteCount = postElement.querySelector('[data-vote="up"] span');
-            const downvoteCount = postElement.querySelector('[data-vote="down"] span');
-            if (upvoteCount) upvoteCount.textContent = data.upvotes;
-            if (downvoteCount) downvoteCount.textContent = data.downvotes;
-        }
+        const upvoteCount = document.querySelector(`[data-${section}-id-upvotes="${postId}"]`);
+        const downvoteCount = document.querySelector(`[data-${section}-id-downvotes="${postId}"]`);
+        upvoteCount.innerHTML = data.record.upvotes;
+        downvoteCount.innerHTML = data.record.downvotes;
     },
     async handleReport(button, section) {
         const postId = button.closest('.post-card').querySelector(`[data-${section}-id]`).dataset.postId;
