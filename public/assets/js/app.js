@@ -890,13 +890,7 @@ const PostCreationForm = {
         }
     },
 
-    // ... rest of the existing PostCreationForm methods ...
 };
-
-// Initialize PostCreationForm
-document.addEventListener('DOMContentLoaded', () => {
-    PostCreationForm.init();
-});
 
 // Notification Manager
 const NotificationManager = {
