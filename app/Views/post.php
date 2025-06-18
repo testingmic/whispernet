@@ -2,7 +2,7 @@
 <div class="min-h-screen bg-gray-50 dark:bg-gray-900">
     <!-- Post Section -->
     <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-        <div  id="postContainer" data-post-id="<?= $postId ?>">
+        <div  id="postContainer" data-posts-id="<?= $postId ?>">
             <?= loadingSkeleton(1, false); ?>
         </div>
 

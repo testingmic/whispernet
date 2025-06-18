@@ -57,45 +57,6 @@
             "purpose": "any maskable"
         }
     ],
-    "screenshots": [
-        {
-            "src": "/assets/images/screenshots/feed.png",
-            "sizes": "1080x1920",
-            "type": "image/png",
-            "platform": "narrow",
-            "label": "Local Feed"
-        },
-        {
-            "src": "/assets/images/screenshots/chat.png",
-            "sizes": "1080x1920",
-            "type": "image/png",
-            "platform": "narrow",
-            "label": "Chat Interface"
-        },
-        {
-            "src": "/assets/images/screenshots/create.png",
-            "sizes": "1080x1920",
-            "type": "image/png",
-            "platform": "narrow",
-            "label": "Create Post"
-        }
-    ],
-    "shortcuts": [
-        {
-            "name": "Create Post",
-            "short_name": "Post",
-            "description": "Create a new post",
-            "url": "/create",
-            "icons": [{ "src": "/assets/images/icons/post-96x96.png", "sizes": "96x96" }]
-        },
-        {
-            "name": "Chat",
-            "short_name": "Chat",
-            "description": "Open chat",
-            "url": "/chat",
-            "icons": [{ "src": "/assets/images/icons/chat-96x96.png", "sizes": "96x96" }]
-        }
-    ],
     "categories": ["social", "communication"],
     "prefer_related_applications": false,
     "related_applications": [],

@@ -174,7 +174,7 @@ document.addEventListener('DOMContentLoaded', function() {
             showNotification('Post deleted successfully', 'success');
             
             // Remove post from feed
-            const post = document.querySelector(`[data-post-id="${postId}"]`);
+            const post = document.querySelector(`[data-posts-id="${postId}"]`);
             if (post) {
                 post.remove();
             }

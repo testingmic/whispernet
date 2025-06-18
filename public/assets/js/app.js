@@ -478,7 +478,7 @@ const PostManager = {
     loadPost() {
         const postContainer = document.getElementById('postContainer');
         if (!postContainer) return;
-        const postId = postContainer.getAttribute('data-post-id');
+        const postId = postContainer.getAttribute('data-posts-id');
         if(!postId) return;
         PostCommentManager.postId = postId;
         postContainer.innerHTML = '';
@@ -495,7 +495,9 @@ const PostManager = {
                     commentsContainer.innerHTML = '';
                     if(data.data.comments.length > 0) {
                         data.data.comments.forEach(comment => {
-                            commentsContainer.appendChild(this.createCommentElement(comment));
+                            if(!comment.is_hidden){
+                                commentsContainer.appendChild(this.createCommentElement(comment));
+                            }
                         });
                     } else {
                         commentsContainer.innerHTML = '<p class="text-gray-500 dark:text-gray-400">No comments yet</p>';
@@ -523,8 +525,18 @@ const PostManager = {
                     </div>
                     <p class="mt-1 text-sm text-gray-600 dark:text-gray-300">${comment.content}</p>
                     <div class="mt-2 flex items-center space-x-4 text-xs text-gray-500 dark:text-gray-400">
-                        <button class="hover:text-blue-500 transition-colors">Like</button>
-                        <button class="hover:text-blue-500 transition-colors">Reply</button>
+                        <button class="flex items-center space-x-1 text-gray-500 hover:text-blue-500"  onclick="return PostManager.handleVote('posts', ${comment.comment_id}, 'up')">
+                            <svg class="h-5 w-5 vote-button" fill="none" viewBox="0 0 24 24" stroke="currentColor" data-comments-id="${comment.comment_id}" data-record-type="comments" data-vote="up">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 10h4.764a2 2 0 011.789 2.894l-3.5 7A2 2 0 0115.263 21h-4.017c-.163 0-.326-.02-.485-.06L7 20m7-10V5a2 2 0 00-2-2h-.095c-.5 0-.905.405-.905.905 0 .714-.211 1.412-.608 2.006L7 11v9m7-10h-2M7 20H5a2 2 0 01-2-2v-6a2 2 0 012-2h2.5"/>
+                            </svg>
+                            <span>${comment.upvotes}</span>
+                        </button>
+                        <button class="flex items-center space-x-1 text-gray-500 hover:text-red-500" onclick="return PostManager.handleVote('posts', ${comment.comment_id}, 'down')">
+                            <svg class="h-5 w-5 vote-button" fill="none" viewBox="0 0 24 24" stroke="currentColor" data-comments-id="${comment.comment_id}" data-record-type="comments" data-vote="down">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14H5.236a2 2 0 01-1.789-2.894l3.5-7A2 2 0 018.736 3h4.018c.163 0 .326.02.485.06L17 4m-7 10v2a2 2 0 002 2h.095c.5 0 .905-.405.905-.905 0-.714.211-1.412.608-2.006L17 13V4m-7 10h2m5-10h2a2 2 0 012 2v6a2 2 0 01-2 2h-2.5"/>
+                            </svg>
+                            <span>${comment.downvotes}</span>
+                        </button>
                     </div>
                 </div>
             </div>
@@ -624,19 +636,19 @@ const PostManager = {
             <p class="text-gray-800 mb-3">${post.content}</p>
             <div class="flex items-center justify-between">
                 <div class="flex items-center space-x-4">
-                    <button class="vote-button flex items-center space-x-1 text-gray-500 hover:text-blue-500" data-post-id="${post.id}" data-vote="up">
+                    <button class="flex items-center space-x-1 text-gray-500 hover:text-blue-500" data-posts-id="${post.post_id}">
                         <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
                         </svg>
                         <span class="comments-counter-${post.post_id}">${post.comments_count}</span>
                     </button>
-                    <button class="vote-button flex items-center space-x-1 text-gray-500 hover:text-blue-500" data-post-id="${post.id}" data-vote="up">
+                    <button class="flex items-center space-x-1 text-gray-500 hover:text-blue-500" data-posts-id="${post.post_id}" onclick="return PostManager.handleVote('posts', ${post.post_id}, 'up')">
                         <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 10h4.764a2 2 0 011.789 2.894l-3.5 7A2 2 0 0115.263 21h-4.017c-.163 0-.326-.02-.485-.06L7 20m7-10V5a2 2 0 00-2-2h-.095c-.5 0-.905.405-.905.905 0 .714-.211 1.412-.608 2.006L7 11v9m7-10h-2M7 20H5a2 2 0 01-2-2v-6a2 2 0 012-2h2.5"/>
                         </svg>
                         <span>${post.upvotes}</span>
                     </button>
-                    <button class="vote-button flex items-center space-x-1 text-gray-500 hover:text-red-500" data-post-id="${post.id}" data-vote="down">
+                    <button class="flex items-center space-x-1 text-gray-500 hover:text-red-500" data-posts-id="${post.post_id}" onclick="return PostManager.handleVote('posts', ${post.post_id}, 'down')">
                         <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14H5.236a2 2 0 01-1.789-2.894l3.5-7A2 2 0 018.736 3h4.018c.163 0 .326.02.485.06L17 4m-7 10v2a2 2 0 002 2h.095c.5 0 .905-.405.905-.905 0-.714.211-1.412.608-2.006L17 13V4m-7 10h2m5-10h2a2 2 0 012 2v6a2 2 0 01-2 2h-2.5"/>
                         </svg>
@@ -657,25 +669,24 @@ const PostManager = {
         if (diff < 86400000) return `${Math.floor(diff / 3600000)}h ago`;
         return date.toLocaleDateString();
     },
-    async handleVote(button) {
-        const postId = button.dataset.postId;
-        const voteType = button.dataset.vote;
+    async handleVote(section, recordId, direction) {
         try {
-            const response = await fetch(`${baseUrl}/api/posts/${postId}/vote`, {
+            const response = await fetch(`${baseUrl}/api/posts/vote`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({ vote: voteType, token: AppState.getToken(), longitude, latitude })
+                body: JSON.stringify({ section, recordId, direction, token: AppState.getToken(), longitude, latitude })
             });
             const data = await response.json();
-            this.updateVoteCounts(postId, data);
+            this.updateVoteCounts(recordId, data, section);
         } catch (error) {
+            console.log(error);
             AppState.showNotification('Error submitting vote', 'error');
         }
     },
-    updateVoteCounts(postId, data) {
-        const postElement = document.querySelector(`[data-post-id="${postId}"]`).closest('.post-card');
+    updateVoteCounts(postId, data, section) {
+        const postElement = document.querySelector(`[data-${section}-id="${postId}"]`).closest('.post-card');
         if (postElement) {
             const upvoteCount = postElement.querySelector('[data-vote="up"] span');
             const downvoteCount = postElement.querySelector('[data-vote="down"] span');
@@ -683,8 +694,8 @@ const PostManager = {
             if (downvoteCount) downvoteCount.textContent = data.downvotes;
         }
     },
-    async handleReport(button) {
-        const postId = button.closest('.post-card').querySelector('[data-post-id]').dataset.postId;
+    async handleReport(button, section) {
+        const postId = button.closest('.post-card').querySelector(`[data-${section}-id]`).dataset.postId;
         try {
             await fetch(`${baseUrl}/api/posts/${postId}/report`, {
                 method: 'POST',
@@ -1352,7 +1363,7 @@ const PostCommentManager = {
                 if(commentsContainer) {
                     $(`span[class^="comments-counter-${this.postId}"]`).text(data.data.length);
                     data.data.forEach(comment => {
-                        if(!this.commentsList.includes(comment.comment_id)){
+                        if(!this.commentsList.includes(comment.comment_id) || comment.is_hidden){
                             commentsContainer.appendChild(PostManager.createCommentElement(comment));
                         }
                     });
