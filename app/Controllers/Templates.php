@@ -31,7 +31,7 @@ class Templates extends BaseController
         }
 
         return [
-            'baseUrl' => getenv('baseURL') . 'public',
+            'baseUrl' => $urlPath,
             'userLoggedin' => $this->user_loggedin(),
             'appName' => 'WhisperNet - Hyperlocal Social Network',
         ];
