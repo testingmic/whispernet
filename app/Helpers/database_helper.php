@@ -94,6 +94,7 @@ $databases = [
         city TEXT,
         comments_count INTEGER DEFAULT 0,
         country TEXT,
+        views INTEGER DEFAULT 0,
         upvotes INTEGER DEFAULT 0,
         downvotes INTEGER DEFAULT 0,
         is_hidden BOOLEAN DEFAULT 0,
@@ -130,6 +131,9 @@ $databases = [
         upvotes INTEGER DEFAULT 0,
         downvotes INTEGER DEFAULT 0,
         is_hidden BOOLEAN DEFAULT 0,
+        city TEXT,
+        country TEXT,
+        views INTEGER DEFAULT 0,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         FOREIGN KEY (post_id) REFERENCES posts(post_id) ON DELETE CASCADE,
         FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE
@@ -234,7 +238,12 @@ $databases = [
 
 // alter tables
 $alterTables = [
-    // "ALTER TABLE posts ADD COLUMN comments_count INTEGER DEFAULT 0;",
+    "ALTER TABLE posts ADD COLUMN views INTEGER DEFAULT 0;",
+    "ALTER TABLE posts ADD COLUMN city TEXT;",
+    "ALTER TABLE posts ADD COLUMN country TEXT;",
+    "ALTER TABLE comments ADD COLUMN views INTEGER DEFAULT 0;",
+    "ALTER TABLE comments ADD COLUMN city TEXT;",
+    "ALTER TABLE comments ADD COLUMN country TEXT;"
 ];
 
 $votesTables = [

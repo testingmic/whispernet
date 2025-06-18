@@ -109,8 +109,8 @@ class PostsModel extends Model {
      */
     public function comment() {
         try {
-            $sql = "INSERT INTO comments (post_id, user_id, content) VALUES (?, ?, ?)";
-            $this->db->query($sql, [$this->payload['postId'], $this->payload['userId'], $this->payload['content']]);
+            $sql = "INSERT INTO comments (post_id, user_id, content, city, country) VALUES (?, ?, ?, ?, ?)";
+            $this->db->query($sql, [$this->payload['postId'], $this->payload['userId'], $this->payload['content'], $this->payload['city'] ?? null, $this->payload['country'] ?? null]);
 
             return $this->db->insertID();
         } catch (DatabaseException $e) {

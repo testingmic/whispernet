@@ -530,34 +530,52 @@ const PostManager = {
         PostCommentManager.commentsList.push(comment.comment_id);
         div.className = 'comment-card bg-white rounded-lg shadow-sm p-4 mb-4';
         div.innerHTML = `
-        <div class="p-4">
-            <div class="flex items-start space-x-3">
-                <div class="avatar-gradient-blue flex items-center justify-center rounded-full w-10 h-10 font-bold text-base mr-3">
-                    ${comment.username[0].toUpperCase()}${comment.username[1].toUpperCase()}
-                </div>
-                <div class="flex-1">
-                    <div class="flex items-center justify-between">
-                        <p class="text-sm font-medium text-gray-900 dark:text-white">${comment.username}</p>
-                        <p class="text-xs text-gray-500 dark:text-gray-400">${comment.ago}</p>
+            <div class="flex items-center justify-between mb-2">
+                <div class="flex items-center space-x-2">
+                    <div class="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center">
+                        <span class="text-gray-500 text-sm">${comment.username[0].toUpperCase()}${comment.username[1].toUpperCase()}</span>
                     </div>
-                    <p class="mt-1 text-sm text-gray-600 dark:text-gray-300">${comment.content}</p>
-                    <div class="mt-2 flex items-center space-x-4 text-xs text-gray-500 dark:text-gray-400">
-                        <button class="flex items-center space-x-1 text-gray-500 hover:text-blue-500"  onclick="return PostManager.handleVote('posts', ${comment.comment_id}, 'up')">
-                            <svg class="h-5 w-5 vote-button" fill="none" viewBox="0 0 24 24" stroke="currentColor" data-comments-id="${comment.comment_id}" data-record-type="comments" data-vote="up">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 10h4.764a2 2 0 011.789 2.894l-3.5 7A2 2 0 0115.263 21h-4.017c-.163 0-.326-.02-.485-.06L7 20m7-10V5a2 2 0 00-2-2h-.095c-.5 0-.905.405-.905.905 0 .714-.211 1.412-.608 2.006L7 11v9m7-10h-2M7 20H5a2 2 0 01-2-2v-6a2 2 0 012-2h2.5"/>
-                            </svg>
-                            <span>${comment.upvotes}</span>
-                        </button>
-                        <button class="flex items-center space-x-1 text-gray-500 hover:text-red-500" onclick="return PostManager.handleVote('posts', ${comment.comment_id}, 'down')">
-                            <svg class="h-5 w-5 vote-button" fill="none" viewBox="0 0 24 24" stroke="currentColor" data-comments-id="${comment.comment_id}" data-record-type="comments" data-vote="down">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14H5.236a2 2 0 01-1.789-2.894l3.5-7A2 2 0 018.736 3h4.018c.163 0 .326.02.485.06L17 4m-7 10v2a2 2 0 002 2h.095c.5 0 .905-.405.905-.905 0-.714.211-1.412.608-2.006L17 13V4m-7 10h2m5-10h2a2 2 0 012 2v6a2 2 0 01-2 2h-2.5"/>
-                            </svg>
-                            <span>${comment.downvotes}</span>
-                        </button>
+                    <div>
+                        <div class="text-sm font-medium text-gray-900">${comment.username}</div>
+                        <div class="text-xs text-gray-500 flex items-center space-x-1">
+                            <span title="${comment.created_at}" class="text-xs text-gray-500 mr-2 flex items-center space-x-1">
+                                ${comment.ago}
+                            </span>
+                            ${comment.city ? `
+                            <span class="text-xs text-gray-500 flex items-center space-x-1">
+                                <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                                </svg>
+                                ${comment.city}
+                            </span>
+                            ` : ''}
+                        </div>
                     </div>
                 </div>
+                <button class="report-button text-gray-400 hover:text-gray-500">
+                    <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z"/>
+                    </svg>
+                </button>
             </div>
-        </div>`;
+            <p class="text-gray-800 mb-3">${comment.content}</p>
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-4">
+                    <button class="flex items-center space-x-1 text-gray-500 hover:text-blue-500" data-comments-id="${comment.comment_id}" onclick="return PostManager.handleVote('comments', ${comment.comment_id}, 'up')">
+                        <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 10h4.764a2 2 0 011.789 2.894l-3.5 7A2 2 0 0115.263 21h-4.017c-.163 0-.326-.02-.485-.06L7 20m7-10V5a2 2 0 00-2-2h-.095c-.5 0-.905.405-.905.905 0 .714-.211 1.412-.608 2.006L7 11v9m7-10h-2M7 20H5a2 2 0 01-2-2v-6a2 2 0 012-2h2.5"/>
+                        </svg>
+                        <span>${comment.upvotes}</span>
+                    </button>
+                    <button class="flex items-center space-x-1 text-gray-500 hover:text-red-500" data-comments-id="${comment.comment_id}" onclick="return PostManager.handleVote('comments', ${comment.comment_id}, 'down')">
+                        <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14H5.236a2 2 0 01-1.789-2.894l3.5-7A2 2 0 018.736 3h4.018c.163 0 .326.02.485.06L17 4m-7 10v2a2 2 0 002 2h.095c.5 0 .905-.405.905-.905 0-.714.211-1.412.608-2.006L17 13V4m-7 10h2m5-10h2a2 2 0 012 2v6a2 2 0 01-2 2h-2.5"/>
+                        </svg>
+                        <span>${comment.downvotes}</span>
+                    </button>
+                </div>
+            </div>`;
         return div;
     },
     setupInfiniteScroll() {
@@ -670,6 +688,12 @@ const PostManager = {
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14H5.236a2 2 0 01-1.789-2.894l3.5-7A2 2 0 018.736 3h4.018c.163 0 .326.02.485.06L17 4m-7 10v2a2 2 0 002 2h.095c.5 0 .905-.405.905-.905 0-.714.211-1.412.608-2.006L17 13V4m-7 10h2m5-10h2a2 2 0 012 2v6a2 2 0 01-2 2h-2.5"/>
                         </svg>
                         <span>${post.downvotes}</span>
+                    </button>
+                    <button class="flex items-center space-x-1 text-gray-500 hover:text-blue-500" data-posts-id="${post.post_id}">
+                        <svg class="h-4 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+                        </svg>
+                        <span>${post.views || 0}</span>
                     </button>
                 </div>
             </div>
