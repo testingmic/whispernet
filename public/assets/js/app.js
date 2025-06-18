@@ -112,6 +112,9 @@ const ChatManager = {
     },
 
     setupWebSocket() {
+        if(!Boolean(AppState.user)) {
+            return;
+        }
         let userId = AppState.user.user_id;
         let token = AppState.getToken();
         this.ws = new WebSocket(`ws://localhost:3000?userId=${userId}&token=${token}`);
