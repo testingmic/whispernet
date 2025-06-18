@@ -150,6 +150,10 @@ class Auth extends LoadController {
 
         // Insert the user
         $this->usersModel->insert($payload);
+        $userId = $this->usersModel->getInsertID();
+
+        // update the username of the user
+        $this->usersModel->update($userId, ['username' => "user{$userId}"]);
 
         // set the internal to true
         $this->internal = true;
