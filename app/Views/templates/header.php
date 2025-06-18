@@ -6,7 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title><?= $pageTitle ?? 'Dashboard' ?> - <?= $appName ?></title>
   <meta name="description" content="Connect with your local community anonymously">
-  <link rel="manifest" href="<?= $baseUrl ?>/assets/manifest.json">
+  <link rel="manifest" href="<?= $baseUrl ?>/assets/manifest.json?v=<?= $version ?>">
   <meta name="theme-color" content="#2196F3">
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="apple-touch-icon" href="<?= $baseUrl ?>/assets/icons/Icon.192.png">
