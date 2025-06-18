@@ -1329,6 +1329,7 @@ const PostCommentManager = {
     commentsList: [],
     postId: null,
     postOwnerId: null,
+    sendingComment: false,
     init() {
         this.setupCommentForm();
     },
@@ -1361,6 +1362,7 @@ const PostCommentManager = {
                     </svg>
                 `;
 
+                this.sendingComment = true;
                 const postId = window.location.pathname.split('/').pop();
                 const response = await fetch('/api/posts/comment', {
                     method: 'POST',
@@ -1398,6 +1400,7 @@ const PostCommentManager = {
                 NotificationManager.show('Comment posted successfully', 'success');
 
                 $.post(`${baseUrl}/api/posts/notify`, { token: AppState.getToken(), postId: postId });
+                this.sendingComment = false;
             } catch (error) {
                 submitButton.disabled = false;
                 submitButton.innerHTML = 'Post';
@@ -1408,6 +1411,9 @@ const PostCommentManager = {
         this.getCommentsList();
     },
     getCommentsFromServer() {
+        if(this.sendingComment) {
+            return;
+        }
         $.get(`${baseUrl}/api/posts/comments`, {
             token: AppState.getToken(),
             postId: this.postId,
