@@ -23,11 +23,8 @@
 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-4 mb-2">
     <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm overflow-hidden">
         <!-- Post Creation Header -->
-        <div class="p-4 border-b border-gray-200 dark:border-gray-700">
+        <div class="p-2 border-b border-gray-200 dark:border-gray-700">
             <div class="flex items-center space-x-3">
-                <div class="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-medium">
-                    <?= strtoupper(($userData['full_name'][0] ?? '').($userData['full_name'][1] ?? '')) ?>
-                </div>
                 <div class="flex-1">
                     <div type="button" id="createPostButton"
                         class="w-full text-left px-4 py-2.5 bg-gray-100 dark:bg-gray-700 rounded-full text-gray-500 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors duration-200">
@@ -35,7 +32,7 @@
                     </div>
                     <!-- Post Creation Form (Hidden by default) -->
                     <div id="postCreationForm" class="hidden">
-                        <form id="createPostForm" class="space-y-4 p-4">
+                        <form id="createPostForm" class="space-y-4">
                             <!-- Text Input -->
                             <div class="relative">
                                 <textarea id="postContent" rows="3"
@@ -64,10 +61,10 @@
                             </div>
 
                             <!-- Action Buttons -->
-                            <div class="flex items-center justify-between pt-4 border-t border-gray-200 dark:border-gray-700">
+                            <div class="flex items-center justify-between pt-2 border-t border-gray-200 dark:border-gray-700">
                                 <div class="flex flex-wrap gap-2">
                                     <!-- Photo/Video Upload -->
-                                    <label class="inline-flex items-center space-x-2 px-3 py-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer transition-colors">
+                                    <label class="inline-flex items-center space-x-2 py-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer transition-colors">
                                         <input type="file" id="mediaUpload" class="hidden" accept="image/*,video/*">
                                         <svg class="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
@@ -129,7 +126,7 @@
 
 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-4 mb-2">
     <div id="feedContainer" class="scroll-sentinel">
-        <?= loadingSkeleton(1, true); ?>
+        <?= loadingSkeleton(1, false); ?>
     </div>
 </div>
 
