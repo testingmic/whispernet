@@ -10,6 +10,7 @@
   <meta name="theme-color" content="#2196F3">
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="apple-touch-icon" href="<?= $baseUrl ?>/assets/icons/Icon.192.png">
+  <link rel="icon" type="image/png" href="<?= $baseUrl ?>/assets/icons/Icon.32.png">
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="apple-mobile-web-app-capable" content="yes">
