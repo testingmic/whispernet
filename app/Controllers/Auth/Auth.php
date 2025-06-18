@@ -389,12 +389,16 @@ class Auth extends LoadController {
         $token = hash(configs('algo'), $this->payload['token'] . configs('salt'));
 
         // Delete the token
-        $sql = sprintf("DELETE FROM %s WHERE password = ?", $this->authModel->authTokenTable);
+        $sql = sprintf("DELETE FROM %s WHERE password = ?", $this->authModel->userTokenAuthTable);
         $this->authModel->db->query($sql, [$token]);
 
         // clear the cache if the token is provided
         if(!empty($this->payload['token'])) {
             $this->cacheObject->handle('auth', 'validateToken', ['token' => $this->payload['token']], 'delete');
+        }
+
+        if(!empty($this->payload['webapp'])) {
+            session()->destroy();
         }
 
         return Routing::success('Logout successful.');

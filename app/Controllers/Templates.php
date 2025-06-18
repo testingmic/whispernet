@@ -28,6 +28,7 @@ class Templates extends BaseController
         $session->remove('user_loggedin');
         $session->remove('user_token');
         $session->remove('userLongitude');
+        $session->destroy();
     }
 
     /**

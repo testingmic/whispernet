@@ -64,6 +64,20 @@ const AppState = {
         this.setupEventListeners();
         this.checkLocation();
     },
+    logout() {
+        localStorage.removeItem('user');
+        $.post(`${baseUrl}/api/auth/logout`, {
+            token: localStorage.getItem('token'),
+            webapp: true
+        }).catch(() => {
+            localStorage.removeItem('token');
+            document.cookie = 'user=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+            document.cookie = 'token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+            document.cookie = 'user_token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+            window.location.href = `${baseUrl}/login`;
+        });
+        return true;
+    },
     loadUser() {
         // Load user data from localStorage or API
         const userData = localStorage.getItem('user');
