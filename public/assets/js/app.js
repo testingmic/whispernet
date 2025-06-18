@@ -1783,12 +1783,6 @@ function startAudioRecording(onDataAvailable, onStop) {
         });
 }
 
-// Usage Example:
-// startAudioRecording(
-//   (recorder, stream) => { /* Save recorder to stop later */ },
-//   (audioBlob) => { /* Do something with audioBlob */ }
-// );
-
 // Video Call Handler (WebRTC)
 async function startVideoCall(localVideoElem, remoteVideoElem, signalingSend, signalingOnMessage) {
     const peer = new RTCPeerConnection();
@@ -1864,19 +1858,16 @@ function replayAudio(audioUrl) {
     audio.play();
 }
 
-startAudioRecording(
-    (recorder, stream) => {
-        // Save recorder if you want to stop it later
-        window.currentRecorder = recorder;
-    },
-    (audioBlob) => {
-        // Upload the audio after recording stops
-        uploadAudio(audioBlob);
-
-        // Optionally, replay before upload:
-        // replayAudioBlob(audioBlob);
-    }
-);
+if(Boolean(AppState.user)) {
+    startAudioRecording(
+        (recorder, stream) => {
+            window.currentRecorder = recorder;
+        },
+        (audioBlob) => {
+            uploadAudio(audioBlob);
+        }
+    );
+}
 
 // --- Location Modal Logic ---
 document.addEventListener('DOMContentLoaded', function () {
