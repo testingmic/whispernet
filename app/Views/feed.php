@@ -148,7 +148,7 @@
 
 <div id="feedContainer">
     <!-- Loading Skeleton Card -->
-    <?= loadingSkeleton(); ?>
+    <?= loadingSkeleton(10); ?>
 </div>
 
 <!-- Floating Action Button -->
