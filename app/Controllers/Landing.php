@@ -46,12 +46,12 @@ class Landing extends WebAppController
 
         // if the class name is a setup page, return the template page
         if(in_array($baseClassName, ['login', 'signup', 'forgot-password'])) {
-            return $this->templateObject->loadPage('setup/'.$baseClassName, ['pageTitle' => ucfirst($className)]);
+            return $this->templateObject->loadPage('setup/'.$baseClassName, ['pageTitle' => ucfirst($className), 'footerHidden' => true]);
         }
 
         // if the user is not logged in, return the login page
         if(!$this->user_loggedin()) {
-            return $this->templateObject->loadPage('setup/login', ['pageTitle' => 'Account Login']);
+            return $this->templateObject->loadPage('setup/login', ['pageTitle' => 'Account Login', 'footerHidden' => true]);
         }
 
         // confirm if the class actually exists
