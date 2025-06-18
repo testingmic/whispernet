@@ -509,9 +509,7 @@ const PostManager = {
             const data = await response.json();
             this.posts = [...this.posts, ...data.data];
             this.renderPosts(data.data);
-        } catch (error) {
-            AppState.showNotification('Error loading posts', 'error');
-        } finally {
+        } catch (error) { } finally {
             this.isLoading = false;
         }
     },
@@ -888,7 +886,6 @@ const PostCreationForm = {
                 PostManager.closeCreateModal();
             }
         } catch (error) {
-            console.log({error});
             AppState.showNotification('Failed to create post. Please try again.', 'error');
         }
     },
