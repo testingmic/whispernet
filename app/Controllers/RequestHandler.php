@@ -285,7 +285,7 @@ class RequestHandler extends BaseController
             }
 
             // save the location to the cache for 5 minutes
-            $this->cacheObject->save($cacheKey, $location, 'user.location', null, 60 * 20);
+            $this->cacheObject->save($cacheKey, $location, 'user.location', null, 60 * 30);
         }
 
         if(!empty($location['loc'])) {
