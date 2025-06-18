@@ -66,6 +66,7 @@ class Posts extends LoadController {
 
         // format the comments
         foreach($comments as $key => $comment) {
+            $comments[$key]['comment_id'] = (int)$comment['comment_id'];
             $comments[$key]['ago'] = formatTimeAgo($comment['created_at']);
         }
 
@@ -161,7 +162,7 @@ class Posts extends LoadController {
         $commentId = $this->postsModel->comment();
 
         // return the comment id
-        $this->payload['commentId'] = $commentId;
+        $this->payload['commentId'] = (int)$commentId;
 
         // update the comments count
         $this->postsModel->updateCommentsCount($this->payload['postId']);
@@ -203,6 +204,7 @@ class Posts extends LoadController {
         if($this->addComments) {
             $post['comments'] = $this->postsModel->viewComments($post['post_id']);
             foreach($post['comments'] as $key => $comment) {
+                $post['comments'][$key]['comment_id'] = (int)$comment['comment_id'];
                 $post['comments'][$key]['ago'] = formatTimeAgo($comment['created_at']);
             }
         }
