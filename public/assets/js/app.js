@@ -497,7 +497,7 @@ const PostManager = {
         if (this.isLoading) return;
         this.isLoading = true;
         try {
-            const response = await fetch(`${baseUrl}/api/posts?last_record_id=${this.currentPage}&longitude=${longitude}&latitude=${latitude}&token=${AppState.getToken()}`);
+            const response = await fetch(`${baseUrl}/api/posts/nearby?last_record_id=${this.currentPage}&longitude=${longitude}&latitude=${latitude}&token=${AppState.getToken()}&limit=20`);
             const data = await response.json();
             this.posts = [...this.posts, ...data.data];
             this.renderPosts(data.data);
@@ -527,10 +527,10 @@ const PostManager = {
             <div class="flex items-center justify-between mb-2">
                 <div class="flex items-center space-x-2">
                     <div class="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center">
-                        <span class="text-gray-500 text-sm">AN</span>
+                        <span class="text-gray-500 text-sm">${post.username[0].toUpperCase()}${post.username[1].toUpperCase()}</span>
                     </div>
                     <div>
-                        <div class="text-sm font-medium text-gray-900">Anonymous User</div>
+                        <div class="text-sm font-medium text-gray-900">${post.username}</div>
                         <div class="text-xs text-gray-500 flex items-center space-x-1">
                             <span class="text-xs text-gray-500 mr-2 flex items-center space-x-1">
                                 ${this.formatTimestamp(post.created_at)}

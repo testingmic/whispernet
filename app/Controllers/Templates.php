@@ -18,6 +18,19 @@ class Templates extends BaseController
     }
 
     /**
+     * Logout the user
+     * 
+     * @return void
+     */
+    public function logout() {
+        $session = session();
+        $session->remove('user_id');
+        $session->remove('user_loggedin');
+        $session->remove('user_token');
+        $session->remove('userLongitude');
+    }
+
+    /**
      * Global variables for the templates
      * 
      * @return array
@@ -36,6 +49,7 @@ class Templates extends BaseController
             'baseUrl' => $urlPath,
             'version' => '1.0.4',
             'websocketUrl' => $socketUrl,
+            'userData' => session()->get('userData'),
             'userLoggedin' => $this->user_loggedin(),
             'appName' => 'WhisperNet - Hyperlocal Social Network',
         ];
@@ -67,9 +81,9 @@ class Templates extends BaseController
      * @return void
      */
     public function loadPage($page, $data = []) {
-        echo $this->loadHeader();
+        echo $this->loadHeader($data);
         echo view($page, $data);
-        echo $this->loadFooter();
+        echo $this->loadFooter($data);
     }
 
     /**

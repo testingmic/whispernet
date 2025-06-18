@@ -19,6 +19,10 @@
     const baseUrl = '<?= $baseUrl ?>', userLoggedin = <?= $userLoggedin ? 'true' : 'false' ?>, 
           websocketUrl = '<?= $websocketUrl ?>',
           loadingSkeleton = `<?= function_exists('loadingSkeleton') ? loadingSkeleton() : '' ?>`;
+    <?php if(!empty($logoutUser)) { ?>
+      localStorage.removeItem('user');
+      localStorage.removeItem('token');
+    <?php } ?>
   </script>
   <link rel="stylesheet" href="<?= $baseUrl ?>/assets/css/app.css">
 </head>
@@ -62,7 +66,7 @@
                 x-transition:leave-start="transform opacity-100 scale-100"
                 x-transition:leave-end="transform opacity-0 scale-95"
                 id="menuHelper"
-                class="mr-2 mt-1 hidden absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-white dark:bg-gray-800 ring-1 ring-black ring-opacity-5 focus:outline-none z-50">
+                class="mr-2 mt-1 hidden fixed right-0 mt-2 w-48 rounded-md shadow-lg bg-white dark:bg-gray-800 ring-1 ring-black ring-opacity-5 focus:outline-none z-50">
               <div class="py-1">
                   <!-- Profile Section -->
                   <div class="px-4 py-2 border-b border-gray-200 dark:border-gray-700">

@@ -26,7 +26,7 @@
         <div class="p-4 border-b border-gray-200 dark:border-gray-700">
             <div class="flex items-center space-x-3">
                 <div class="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-medium">
-                    AN
+                    <?= strtoupper(($userData['full_name'][0] ?? '').($userData['full_name'][1] ?? '')) ?>
                 </div>
                 <div class="flex-1">
                     <div type="button" id="createPostButton"

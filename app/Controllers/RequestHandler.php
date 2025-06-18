@@ -218,23 +218,8 @@ class RequestHandler extends BaseController
 
             // if the latitude and longitude are not set, get the location by IP
             if(empty($payload['latitude']) && empty($payload['longitude'])) {
-
                 // get the session object
-                $sessObject = session();
-
-                // if the latitude and longitude are set in the session, use them
-                if($sessObject->has('userLatitude') && $sessObject->has('userLongitude')) {
-                    
-                    // set the latitude and longitude in the payload
-                    $payload['latitude'] = $sessObject->get('userLatitude');
-                    $payload['longitude'] = $sessObject->get('userLongitude');
-
-                    // get the location by IP
-                    // $location = getLocationByIP($payload['longitude'], $payload['latitude']);
-                } else {
-
-                    $payload = $this->setLocationByIP($payload);
-                }
+                $payload = $this->setLocationByIP($payload);
             } else {
                 $payload = $this->setLocationByIP($payload);
             }
@@ -288,9 +273,19 @@ class RequestHandler extends BaseController
             $location = $locationInfo;
         } else {
             // get the location by IP
-            $location = getLocationByIP();
+            $location = getLocationByIP($payload['longitude'] ?? '', $payload['latitude'] ?? '');
+
+            // handle the user location data
+            if(isset($location['results'][0]['components'])) {
+                $location['latitude'] = $location['results'][0]['geometry']['lat'] ?? ($payload['latitude'] ?? '');
+                $location['longitude'] = $location['results'][0]['geometry']['lng'] ?? ($payload['longitude'] ?? '');
+                $location['city'] = $location['results'][0]['components']['town'] ?? null;
+                $location['country'] = $location['results'][0]['components']['country'] ?? null;
+                $location['district'] = $location['results'][0]['components']['county'] ?? null;
+            }
+
             // save the location to the cache for 5 minutes
-            $this->cacheObject->save($cacheKey, $location, 'user.location', null, 60 * 10);
+            $this->cacheObject->save($cacheKey, $location, 'user.location', null, 60 * 20);
         }
 
         if(!empty($location['loc'])) {

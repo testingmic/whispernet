@@ -70,15 +70,18 @@ class Auth extends LoadController {
 
         // if the webapp is true, set the session
         if(!empty($this->payload['webapp']) || $this->internal) {
-            session()->set('user_token', $response['token']);
-            session()->set('user_id', $user['user_id']);
-            session()->set('user_loggedin', true);
+            $sessionObject = session();
+            $sessionObject->set('user_token', $response['token']);
+            $sessionObject->set('user_id', $user['user_id']);
+            $sessionObject->set('user_loggedin', true);
 
             // if the longitude and latitude are provided, set the session
             if(!empty($payload['longitude']) && !empty($payload['latitude'])) {
-                session()->set('userLongitude', $payload['longitude'] ?? '');
-                session()->set('userLatitude', $payload['latitude'] ?? '');
+                $sessionObject->set('userLongitude', $payload['longitude'] ?? '');
+                $sessionObject->set('userLatitude', $payload['latitude'] ?? '');
             }
+            
+            $sessionObject->set('userData', $user);
         }
         
         // Return the response
