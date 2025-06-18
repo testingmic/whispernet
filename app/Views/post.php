@@ -11,7 +11,7 @@
             <h3 class="text-lg font-medium text-gray-900 dark:text-white">Comments</h3>
             
             <!-- Comments List -->
-            <div class="space-y-4" id="commentsList"></div>
+            <div class="space-y-4" id="commentsList"><p class="text-gray-500 dark:text-gray-400">Loading comments...</p></div>
         </div>
     </div>
     <div class="px-4 py-8 sm:p-6">&nbsp;</div>
