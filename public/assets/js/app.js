@@ -711,6 +711,7 @@ const AuthManager = {
                 }
             }).catch((error) => {
                 console.error('Login check error:', error);
+                localStorage.removeItem('token');
             });
         }
     },
@@ -744,21 +745,22 @@ const PostCreationManager = {
 
     setupPostCreation() {
         const createPostForm = document.getElementById('createPostForm');
-        const createPostBtn = document.getElementById('createPostBtn');
+        const postCreationForm = document.getElementById('postCreationForm');
+        const createPostBtn = document.getElementById('createPostButton');
         const postContent = document.getElementById('postContent');
-        const postButton = document.getElementById('postButton');
         const mediaPreview = document.getElementById('mediaPreview');
         const tagsInput = document.getElementById('tagsInput');
         const tagsContainer = document.getElementById('tagsContainer');
 
-        if (!createPostForm || !createPostBtn || !postContent || !postButton) return;
+        if (!createPostForm || !createPostBtn || !postContent) return;
 
         // Toggle post creation form
         createPostBtn.addEventListener('click', () => {
-            createPostForm.classList.toggle('hidden');
-            if (!createPostForm.classList.contains('hidden')) {
+            postCreationForm.classList.toggle('hidden');
+            if (!postCreationForm.classList.contains('hidden')) {
                 postContent.focus();
             }
+            createPostBtn.classList.toggle('hidden');
         });
 
         // Enable/disable post button based on content
@@ -902,7 +904,7 @@ const PostCreationManager = {
     async handlePostCreation() {
         const form = document.getElementById('createPostForm');
         const formData = new FormData(form);
-        const mediaFile = document.getElementById('mediaInput').files[0];
+        const mediaFile = document.getElementById('mediaInput')?.files?.[0];
         const tags = Array.from(document.querySelectorAll('#tagsContainer > div')).map(tag => tag.textContent.trim());
 
         if (mediaFile) {
@@ -984,7 +986,7 @@ const NotificationManager = {
 
     async markAsRead(notificationId) {
         try {
-            const response = await fetch(`/notifications/mark-read/${notificationId}`, {
+            const response = await fetch(`${baseUrl}/api/notifications/mark-read/${notificationId}`, {
                 method: 'POST',
                 headers: {
                     'X-Requested-With': 'XMLHttpRequest'
@@ -1010,7 +1012,7 @@ const NotificationManager = {
 
     async markAllAsRead() {
         try {
-            const response = await fetch('/notifications/mark-all-read', {
+            const response = await fetch(`${baseUrl}/api/notifications/mark-all-read`, {
                 method: 'POST',
                 headers: {
                     'X-Requested-With': 'XMLHttpRequest'
@@ -1032,7 +1034,7 @@ const NotificationManager = {
 
     async deleteNotification(notificationId) {
         try {
-            const response = await fetch(`/notifications/${notificationId}`, {
+            const response = await fetch(`${baseUrl}/api/notifications/${notificationId}`, {
                 method: 'DELETE',
                 headers: {
                     'X-Requested-With': 'XMLHttpRequest'
@@ -1054,7 +1056,7 @@ const NotificationManager = {
 
     async updateUnreadCount() {
         try {
-            const response = await fetch('/notifications/unread-count');
+            const response = await fetch(`${baseUrl}/api/notifications/unread-count`);
             const data = await response.json();
             
             const badge = document.querySelector('.notification-badge');
@@ -1068,7 +1070,7 @@ const NotificationManager = {
 
     async refreshNotifications() {
         try {
-            const response = await fetch('/notifications/recent');
+            const response = await fetch(`${baseUrl}/api/notifications/recent`);
             const data = await response.json();
             
             const container = document.querySelector('.notifications-container');
@@ -1147,6 +1149,10 @@ const NotificationManager = {
     },
 
     startPolling() {
+        // update the unread count and refresh the notifications
+        this.updateUnreadCount();
+        this.refreshNotifications();
+        
         // Poll for new notifications every 30 seconds
         setInterval(() => {
             this.updateUnreadCount();
@@ -1713,24 +1719,6 @@ document.addEventListener('DOMContentLoaded', function () {
     const locationSelect = document.getElementById('locationSelect');
     const radiusInput = document.getElementById('radiusInput');
     const radiusValue = document.getElementById('radiusValue');
-
-    // Populate location list (replace with real locations from API if available)
-    const locations = [
-        { value: 'current', label: 'Current Location' },
-        { value: 'city_centre', label: 'City Centre' },
-        { value: 'university', label: 'University Area' },
-        { value: 'mall', label: 'Mall District' }
-    ];
-    if (locationSelect && locationSelect.children.length === 1) {
-        locations.forEach(loc => {
-            if (loc.value !== 'current') {
-                const opt = document.createElement('option');
-                opt.value = loc.value;
-                opt.textContent = loc.label;
-                locationSelect.appendChild(opt);
-            }
-        });
-    }
 
     // Open modal
     if (changeLocationBtn) {

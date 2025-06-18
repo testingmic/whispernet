@@ -118,4 +118,4 @@
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script src="<?= $baseUrl ?>dd/assets/js/analytics.js"></script> 
+<!-- <script src="<?= $baseUrl ?>/assets/js/analytics.js"></script>  -->

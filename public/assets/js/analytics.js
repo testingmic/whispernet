@@ -19,7 +19,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Load Analytics Data
     async function loadAnalyticsData(timeRange = 'month') {
         try {
-            const response = await fetch(`/api/analytics?timeRange=${timeRange}`);
+            const response = await fetch(`${baseUrl}/api/analytics?timeRange=${timeRange}`);
             
             if (!response.ok) {
                 throw new Error('Failed to load analytics data');

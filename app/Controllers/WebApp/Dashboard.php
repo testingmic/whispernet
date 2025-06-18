@@ -12,7 +12,11 @@ class Dashboard extends WebAppController {
      * @return void
      */
     public function index() {
-        return $this->templateObject->loadPage('feed', ['pageTitle' => 'Dashboard']);
+
+        // get the posts
+        $posts = [[], [], [], [], [], []];
+
+        return $this->templateObject->loadPage('feed', ['pageTitle' => 'Dashboard', 'posts' => $posts]);
     }
 
 }

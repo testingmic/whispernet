@@ -9,27 +9,50 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Add context menu to all feed items
     document.querySelectorAll('.feed-item').forEach(item => {
+        // Handle right-click
         item.addEventListener('contextmenu', function(e) {
             e.preventDefault();
-            
-            const postId = this.dataset.postId;
-            activePostId = postId;
-            
-            // Position context menu
+            showContextMenu(e, this);
+        });
+
+        // Handle three dots menu click
+        const menuButton = item.querySelector('button[aria-label="Post options"]');
+        if (menuButton) {
+            menuButton.addEventListener('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                showContextMenu(e, item);
+            });
+        }
+    });
+    
+    // Function to show context menu
+    function showContextMenu(e, item) {
+        const postId = item.dataset.postId;
+        activePostId = postId;
+        
+        // Position context menu
+        if (e.target.closest('button[aria-label="Post options"]')) {
+            // Position relative to the three dots button
+            const buttonRect = e.target.getBoundingClientRect();
+            contextMenu.style.left = `${buttonRect.left}px`;
+            contextMenu.style.top = `${buttonRect.bottom + 5}px`;
+        } else {
+            // Position relative to right-click
             contextMenu.style.left = `${e.pageX}px`;
             contextMenu.style.top = `${e.pageY}px`;
-            
-            // Update menu items based on user permissions
-            updateContextMenu(postId);
-            
-            // Show menu
-            contextMenu.classList.remove('hidden');
-        });
-    });
+        }
+        
+        // Update menu items based on user permissions
+        updateContextMenu(postId);
+        
+        // Show menu
+        contextMenu.classList.remove('hidden');
+    }
     
     // Hide context menu when clicking outside
     document.addEventListener('click', function(e) {
-        if (!contextMenu.contains(e.target)) {
+        if (!contextMenu.contains(e.target) && !e.target.closest('button[aria-label="Post options"]')) {
             contextMenu.classList.add('hidden');
         }
     });
