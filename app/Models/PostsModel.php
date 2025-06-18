@@ -12,6 +12,7 @@ class PostsModel extends Model {
     protected $table;
     protected $votesDb;
     protected $notifDb;
+    protected $viewsDb;
     protected $primaryKey = "post_id";
 
     public function __construct() {
@@ -372,6 +373,11 @@ class PostsModel extends Model {
             $this->notifDb = db_connect('notification');
             setDatabaseSettings($this->notifDb);
         }
+
+        if($db == 'views') {
+            $this->viewsDb = db_connect('views');
+            setDatabaseSettings($this->viewsDb);
+        }
     }
 
     /**
@@ -455,6 +461,50 @@ class PostsModel extends Model {
             $vote = $this->votesDb->query($sql, [$recordId, $userId, $section])->getRowArray();
             
             return $vote;
+        } catch (DatabaseException $e) {
+            return [];
+        }
+    }
+
+    /**
+     * Check views
+     * 
+     * @param string $recordId
+     * @param string $userId
+     * @param string $section
+     * 
+     * @return array
+     */
+    public function checkViews($recordId, $userId, $section) {
+        try {
+            $sql = "SELECT * FROM views WHERE record_id = ? AND user_id = ? AND section = ?";
+            $view = $this->viewsDb->query($sql, [$recordId, $userId, $section])->getRowArray();
+            return $view;
+        } catch (DatabaseException $e) {
+            return [];
+        }
+    }
+
+    /**
+     * Record view
+     * 
+     * @param string $recordId
+     * @param string $userId
+     * @param string $section
+     * 
+     * @return array
+     */
+    public function recordView($recordId, $userId, $section) {
+        try {
+            // record the view
+            $sql = "INSERT INTO views (record_id, user_id, section) VALUES (?, ?, ?)";
+            $this->viewsDb->query($sql, [$recordId, $userId, $section]);
+
+            // update the views count
+            $this->db->query("UPDATE posts SET views = views + 1 WHERE post_id = ?", [$recordId]);
+
+            // return true
+            return true;
         } catch (DatabaseException $e) {
             return [];
         }

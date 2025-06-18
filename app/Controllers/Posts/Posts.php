@@ -194,6 +194,19 @@ class Posts extends LoadController {
             }
         }
 
+        // connect to the votes database
+        $this->postsModel->connectToDb('views');
+
+        // check if the user has already viewed the post
+        $view = $this->postsModel->checkViews($post['post_id'], $this->payload['userId'], 'posts');
+        if(empty($view)) {
+            // record the view
+            $this->postsModel->recordView($post['post_id'], $this->payload['userId'], 'posts');
+
+            // increment the views count
+            $post['views'] = $post['views'] + 1;
+        }
+
         return Routing::success(formatPosts([$post], true));
         
     }

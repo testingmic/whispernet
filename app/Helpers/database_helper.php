@@ -1,5 +1,5 @@
 <?php
-global $databases, $alterTables, $votesTables, $notificationTables;
+global $databases, $alterTables, $votesTables, $notificationTables, $viewsTables;
 
 use CodeIgniter\Database\Exceptions\DatabaseException;
 
@@ -256,6 +256,20 @@ $votesTables = [
     CREATE INDEX IF NOT EXISTS direction ON votes (direction);",
 ];
 
+$viewsTables = [
+    "CREATE TABLE IF NOT EXISTS views (
+        view_id INTEGER PRIMARY KEY AUTOINCREMENT,
+        user_id INTEGER NOT NULL,
+        section TEXT CHECK(section IN ('posts', 'comments')) NOT NULL,
+        record_id INTEGER NOT NULL,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    );
+    CREATE UNIQUE INDEX IF NOT EXISTS view_id ON views (view_id);
+    CREATE INDEX IF NOT EXISTS user_id ON views (user_id);
+    CREATE INDEX IF NOT EXISTS section ON views (section);
+    CREATE INDEX IF NOT EXISTS record_id ON views (record_id);",
+];
+
 $notificationTables = [
     "CREATE TABLE IF NOT EXISTS notifications (
         notification_id INTEGER PRIMARY KEY,
@@ -274,9 +288,9 @@ $notificationTables = [
 ];
 
 function createDatabaseStructure() {
-    global $databases, $alterTables, $votesTables, $notificationTables;
+    global $databases, $alterTables, $votesTables, $notificationTables, $viewsTables;
 
-    foreach(['tests' => $databases, 'votes' => $votesTables, 'notification' => $notificationTables] as $idb => $tables) {
+    foreach(['tests' => $databases, 'votes' => $votesTables, 'notification' => $notificationTables, 'views' => $viewsTables] as $idb => $tables) {
         $db = \Config\Database::connect($idb);
         foreach(array_merge($tables, $alterTables) as $query) {
             try {

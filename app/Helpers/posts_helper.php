@@ -32,6 +32,7 @@ function formatPosts($posts = [], $single = false) {
             'media_type' => $post['media_type'],
             // 'longitude' => $post['longitude'],
             // 'latitude' => $post['latitude'],
+            'views' => $post['views'] ?? 0,
             'username' => $post['username'],
             'ago' => formatTimeAgo($post['created_at']),
             'comments_count' => $post['comments_count'] ?? 0,
