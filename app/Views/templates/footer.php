@@ -38,12 +38,12 @@
 </nav>
 </div>
 <!-- PWA Service Worker Registration -->
-<script src="<?= $baseUrl ?>/assets/js/app.js" defer></script>
+<script src="<?= $baseUrl ?>/assets/js/app.js?v=<?= $version ?>" defer></script>
 <?php if($userLoggedin) { ?>
   <script>
     if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {
-            navigator.serviceWorker.register('<?= $baseUrl ?>/assets/js/sw.js')
+            navigator.serviceWorker.register('<?= $baseUrl ?>/assets/js/sw.js?v=<?= $version ?>')
                 .then(registration => {
                     console.log('ServiceWorker registration successful');
                 })
