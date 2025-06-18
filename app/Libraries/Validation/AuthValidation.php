@@ -19,6 +19,11 @@ class AuthValidation {
                 'password_confirm' => 'required|matches[password]',
             ]
         ],
+        'confirm' => [
+            'method' => 'POST,GET',
+            'authenticate' => true,
+            'payload' => []
+        ],
         'login' => [
             'method' => 'POST',
             'payload' => [

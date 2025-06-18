@@ -83,6 +83,39 @@ class Auth extends LoadController {
     }
 
     /**
+     * Confirm the user
+     * 
+     * @return array
+     */
+    public function confirm() {
+        
+        // if the current user is empty, return an error
+        if(empty($this->currentUser)) {
+            return Routing::error('User not found.');
+        }
+        
+        // if the webapp is true, set the session
+        if(!empty($this->payload['webapp'])) {
+            session()->set('user_token', $this->payload['token']);
+            session()->set('user_id', $this->currentUser['user_id']);
+            session()->set('user_loggedin', true);
+        }
+
+        return [
+            'message' => 'Login successful',
+            'data' => [
+                'user_id'   => (int) $this->currentUser['user_id'],
+                'full_name' => $this->currentUser['full_name'],
+                'username' => $this->currentUser['username'],
+                'two_factor_setup' => false,
+                'token' => $this->payload['token'],
+                'email' => $this->currentUser['email']
+            ],
+            'success' => true
+        ];
+    }
+
+    /**
      * Register the user
      * 
      * @return array
@@ -377,7 +410,7 @@ class Auth extends LoadController {
             if(empty($getRecord)) return false;
 
             // if the route is in the array, return the record
-            if(in_array($route, ['auth/confirm', 'auth/login'])) {
+            if(in_array($route, ['auth/login'])) {
                 return $getRecord;
             }
 
@@ -402,7 +435,7 @@ class Auth extends LoadController {
         $this->currentUser = $getRecord;
 
         // set the cache
-        if(empty($cacheData)) {
+        if(empty($cacheData) && !empty($getRecord)) {
             $this->cacheObject->accountId = $getRecord['user_id'];
             $this->cacheObject->handle('auth', 'validateToken', ['token' => $token], 'set', $getRecord);
         }

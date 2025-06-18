@@ -547,6 +547,7 @@ const PostManager = {
 // Authentication Manager
 const AuthManager = {
     init() {
+        this.loginCheck();
         this.setupAuthForms();
         this.setupPasswordReset();
     },
@@ -701,7 +702,18 @@ const AuthManager = {
             AppState.showNotification(error.responseJSON?.message || 'Failed to reset password. Please try again.', 'error');
         }
     },
-
+    async loginCheck() {
+        if($('#loginForm').length > 0) {
+            const token = localStorage.getItem('token');
+            $.post(`${baseUrl}/api/auth/confirm`, { token: token, webapp: true }, (response) => {
+                if(response.success) {
+                    window.location.href = `${baseUrl}`;
+                }
+            }).catch((error) => {
+                console.error('Login check error:', error);
+            });
+        }
+    },
     logout() {
         // Clear local storage
         localStorage.removeItem('user');
