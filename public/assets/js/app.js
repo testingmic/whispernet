@@ -466,6 +466,7 @@ const PostManager = {
     },
     closeCreateModal() {
         $('#postCreationForm').addClass('hidden');
+        document.getElementById('createPostForm').reset();
     },
     openCreateModal() {
         $('#postCreationForm').removeClass('hidden');
