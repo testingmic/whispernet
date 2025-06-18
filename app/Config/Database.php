@@ -83,7 +83,8 @@ class Database extends Config
             // set the cache database
             foreach([
                 'tests' => 'whispernet_db', 
-                'cache' =>'whispernet_db_cache', 
+                'views' => 'whispernet_db_views',
+                'cache' => 'whispernet_db_cache', 
                 'votes' => 'whispernet_db_votes',
                 'apiCache' => 'whispernet_db_api',
                 'notification' => 'whispernet_db_notification',
