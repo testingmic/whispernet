@@ -33,7 +33,7 @@
         <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
             <form id="commentForm" class="flex items-center space-x-4">
                 <div class="flex-1 relative">
-                    <textarea name="" id="commentInput" class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white text-base" placeholder="Write a comment..."></textarea>
+                    <textarea maxlength="300" name="" id="commentInput" class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white text-base" placeholder="Write a comment..."></textarea>
                     <button type="button" class="absolute hidden right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-500 dark:hover:text-gray-300">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />

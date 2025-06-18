@@ -67,7 +67,7 @@ $favicon_color = $favicon_color ?? 'dashboard';
         <form id="createPostForm" method="post" enctype="multipart/form-data" class="space-y-4">
           <!-- Text Input -->
           <div class="relative">
-            <textarea id="postContent" rows="5"
+            <textarea maxlength="300" id="postContent" rows="5"
               class="w-full px-4 py-3 font-medium text-xl border border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white resize-none text-base"
               placeholder="Share your thoughts and experiences with users in a 10km radius..." name="content"></textarea>
           </div>

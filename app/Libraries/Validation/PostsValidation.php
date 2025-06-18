@@ -49,7 +49,7 @@ class PostsValidation {
             'method' => 'POST',
             'authenticate' => true,
             'payload' => [
-                'content' => 'required|max_length[1000]',
+                'content' => 'required|max_length[300]',
                 'mediaUrl' => 'permit_empty|max_length[255]',
                 'mediaType' => 'permit_empty|max_length[255]',
                 'latitude' => 'permit_empty|max_length[12]',
@@ -84,7 +84,7 @@ class PostsValidation {
             'authenticate' => true,
             'payload' => [
                 'postId' => 'required|numeric|max_length[10]',
-                'content' => 'required|max_length[1000]',
+                'content' => 'required|max_length[300]',
                 'mediaUrl' => 'permit_empty|max_length[255]',
                 'mediaType' => 'permit_empty|max_length[255]',
                 'latitude' => 'permit_empty|max_length[12]',
