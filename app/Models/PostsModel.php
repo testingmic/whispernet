@@ -331,7 +331,9 @@ class PostsModel extends Model {
                             cos(radians(longitude) - radians({$this->payload['longitude']})) + 
                             sin(radians({$this->payload['latitude']})) * sin(radians(latitude)))) AS distance")
                         ->join('users u', 'p.user_id = u.user_id')
-                        ->where('distance <= ', $this->payload['radius'])
+                        ->where("(6371 * acos(cos(radians({$this->payload['latitude']})) * cos(radians(latitude)) * 
+                            cos(radians(longitude) - radians({$this->payload['longitude']})) + 
+                            sin(radians({$this->payload['latitude']})) * sin(radians(latitude)))) <= ", $this->payload['radius'])
                         ->orderBy('distance, p.created_at DESC')
                         ->limit($this->payload['limit'])
                         ->offset($offset);
@@ -339,8 +341,10 @@ class PostsModel extends Model {
             if(!empty($this->payload['location'])) {
                 $posts->like('p.city', $this->payload['location'], 'both');
             }
+            
+            $query = $posts->get();
 
-            return $posts->get()->getResultArray();
+            return $query->getResultArray();
             
         } catch (DatabaseException $e) {
             return $e->getMessage();
