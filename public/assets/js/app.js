@@ -1,4 +1,5 @@
 // Microphone Permission Manager
+var longitude = '', latitude = '';
 const MicrophoneManager = {
     permissionState: null,
     stream: null,
@@ -115,6 +116,8 @@ const AppState = {
         const locationElement = document.querySelector('.location-display');
         if (locationElement && this.location) {
             locationElement.textContent = `${this.location.latitude.toFixed(4)}, ${this.location.longitude.toFixed(4)}`;
+            longitude = this.location.longitude;
+            latitude = this.location.latitude;
         }
     },
     showNotification(message, type = 'info') {
@@ -272,7 +275,7 @@ const ChatManager = {
                     headers: {
                         'Content-Type': 'application/json',
                     },
-                    body: JSON.stringify({ message })
+                    body: JSON.stringify({ message, longitude, latitude })
                 });
 
                 if (!response.ok) throw new Error('Failed to send message');
@@ -361,6 +364,8 @@ const ChatManager = {
                     const formData = new FormData();
                     formData.append('file', audioBlob, 'recording.mp3');
                     formData.append('type', 'audio');
+                    formData.append('longitude', longitude);
+                    formData.append('latitude', latitude);
 
                     try {
                         const response = await fetch(`${baseUrl}/api/chat/messages/${this.activeChat.id}/audio`, {
@@ -492,7 +497,7 @@ const PostManager = {
         if (this.isLoading) return;
         this.isLoading = true;
         try {
-            const response = await fetch(`${baseUrl}/api/posts?page=${this.currentPage}`);
+            const response = await fetch(`${baseUrl}/api/posts?page=${this.currentPage}&longitude=${longitude}&latitude=${latitude}`);
             const data = await response.json();
             this.posts = [...this.posts, ...data.posts];
             this.renderPosts(data.posts);
@@ -643,6 +648,8 @@ const AuthManager = {
                 data: {
                     email,
                     password,
+                    longitude,
+                    latitude,
                     webapp: true,
                     remember_me: rememberMe
                 }
@@ -765,7 +772,7 @@ const AuthManager = {
     async loginCheck() {
         if($('#loginForm').length > 0) {
             const token = localStorage.getItem('token');
-            $.post(`${baseUrl}/api/auth/confirm`, { token: token, webapp: true }, (response) => {
+            $.post(`${baseUrl}/api/auth/confirm`, { token: token, webapp: true, longitude, latitude }, (response) => {
                 if(response.success) {
                     window.location.href = `${baseUrl}`;
                 }
