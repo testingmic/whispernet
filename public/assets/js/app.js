@@ -512,9 +512,7 @@ const PostManager = {
                     commentsContainer.innerHTML = '';
                     if(data.data.comments.length > 0) {
                         data.data.comments.forEach(comment => {
-                            if(!comment.is_hidden){
-                                commentsContainer.appendChild(this.createCommentElement(comment));
-                            }
+                            commentsContainer.appendChild(this.createCommentElement(comment));
                         });
                     } else {
                         commentsContainer.innerHTML = '<p class="text-gray-500 dark:text-gray-400" id="commentsLoading">No comments yet</p>';
