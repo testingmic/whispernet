@@ -23,7 +23,7 @@ class Templates extends BaseController
      * @return array
      */
     public function globalVariables() {
-        $urlPath = getenv('baseURL') . 'public';
+        $urlPath = rtrim(getenv('baseURL'), '/');
         $socketUrl = "ws://localhost:3000";
 
         // Remove the trailing slash if it's not localhost

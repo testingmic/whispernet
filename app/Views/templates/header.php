@@ -31,11 +31,13 @@
         <div class="flex justify-between h-16">
           <div class="flex">
             <div class="flex-shrink-0 flex items-center">
-              <a href="<?= $baseUrl ?>">
-                <img class="h-8 w-auto" src="<?= $baseUrl ?>/assets/images/logo.svg" alt="WhisperNet">
+              <a href="<?= $baseUrl ?>" class="flex items-center">
+                <img class="h-8 w-auto" src="<?= $baseUrl ?>/assets/images/logo.png" alt="WhisperNet">
+                <span class="text-xl font-bold ml-2">WhisperNet</span>
               </a>
             </div>
           </div>
+          <?php if($userLoggedin) { ?>
           <div class="flex items-center">
             <button id="menuButton" class="p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none">
               <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -43,11 +45,12 @@
               </svg>
             </button>
           </div>
+          <?php } ?>
         </div>
       </div>
     </nav>
     <main class="flex-grow pt-<?= $topMargin ?? 16 ?>">
-      <!-- User Menu Dropdown -->
+      <?php if($userLoggedin) { ?>
       <div class="relative" x-data="{ open: false }">
           <div x-show="open" 
                 x-cloak
@@ -110,3 +113,4 @@
               </div>
           </div>
       </div>
+      <?php } ?>
