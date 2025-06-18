@@ -60,6 +60,11 @@ class Posts extends LoadController {
         // make the call to the posts model
         $comments = $this->postsModel->viewComments($this->payload['userId'], 'user_id', $whereClause);
 
+        // format the comments
+        foreach($comments as $key => $comment) {
+            $comments[$key]['ago'] = formatTimeAgo($comment['created_at']);
+        }
+
         return Routing::success($comments);
     }
 
@@ -73,7 +78,13 @@ class Posts extends LoadController {
         $this->postsModel->payload = $this->payload;
         
         // make the call to the posts model
-        return $this->postsModel->viewComments($this->payload['postId']);
+        $comments = $this->postsModel->viewComments($this->payload['postId']);
+
+        foreach($comments as $key => $comment) {
+            $comments[$key]['ago'] = formatTimeAgo($comment['created_at']);
+        }
+
+        return Routing::success($comments);
     }
 
     /**
@@ -92,6 +103,7 @@ class Posts extends LoadController {
 
         // make the call to the posts model
         $comment = $this->postsModel->viewSingleComment($this->payload['commentId']);
+        $comment['ago'] = formatTimeAgo($comment['created_at']);
 
         return Routing::success($comment);
     }
@@ -173,6 +185,9 @@ class Posts extends LoadController {
 
         if($this->addComments) {
             $post['comments'] = $this->postsModel->viewComments($post['post_id']);
+            foreach($post['comments'] as $key => $comment) {
+                $post['comments'][$key]['ago'] = formatTimeAgo($comment['created_at']);
+            }
         }
 
         return Routing::success(formatPosts([$post], true));

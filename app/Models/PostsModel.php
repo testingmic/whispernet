@@ -129,7 +129,7 @@ class PostsModel extends Model {
                     FROM comments c 
                     INNER JOIN users u ON c.user_id = u.user_id 
                     WHERE c.{$column} = ? {$whereClause}
-                    ORDER BY c.created_at DESC";
+                    ORDER BY c.created_at ASC";
             $comments = $this->db->query($sql, [$postId])->getResultArray();
 
             return $comments;
@@ -155,6 +155,7 @@ class PostsModel extends Model {
                 return false;
             }
 
+            $comment['ago'] = formatTimeAgo($comment['created_at']);
             return $comment;
         } catch (DatabaseException $e) {
             return $e->getMessage();

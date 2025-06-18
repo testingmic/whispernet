@@ -463,6 +463,7 @@ const PostManager = {
     init() {
         this.setupInfiniteScroll();
         this.setupPostInteractions();
+        this.loadPost();
     },
     closeCreateModal() {
         $('#postCreationForm').addClass('hidden');
@@ -471,6 +472,60 @@ const PostManager = {
     openCreateModal() {
         $('#postCreationForm').removeClass('hidden');
         $('#postContent').focus();
+    },
+    loadPost() {
+        const postContainer = document.getElementById('postContainer');
+        if (!postContainer) return;
+        const postId = postContainer.getAttribute('data-post-id');
+        if(!postId) return;
+        postContainer.innerHTML = '';
+        $.get(`${baseUrl}/api/posts/view/${postId}`, {
+            token: AppState.getToken(),
+            longitude,
+            latitude
+        }).then(data => {
+            if(data.status == 'success') {
+                postContainer.appendChild(this.createPostElement(data.data, true));
+                // comments
+                const commentsContainer = document.getElementById('commentsList');
+                if(commentsContainer) {
+                    commentsContainer.innerHTML = '';
+                    if(data.data.comments.length > 0) {
+                        data.data.comments.forEach(comment => {
+                            commentsContainer.appendChild(this.createCommentElement(comment));
+                        });
+                    } else {
+                        commentsContainer.innerHTML = '<p class="text-gray-500 dark:text-gray-400">No comments yet</p>';
+                    }
+                }
+            } else {
+                AppState.showNotification(data.message, 'error');
+            }
+        });
+    },
+    createCommentElement(comment) {
+        const div = document.createElement('div');
+        div.className = 'comment-card bg-white rounded-lg shadow-sm p-4 mb-4';
+        div.innerHTML = `
+        <div class="p-4">
+            <div class="flex items-start space-x-3">
+                <div class="avatar-gradient-blue flex items-center justify-center rounded-full w-10 h-10 font-bold text-base mr-3">
+                    ${comment.username[0].toUpperCase()}${comment.username[1].toUpperCase()}
+                </div>
+                <div class="flex-1">
+                    <div class="flex items-center justify-between">
+                        <p class="text-sm font-medium text-gray-900 dark:text-white">${comment.username}</p>
+                        <p class="text-xs text-gray-500 dark:text-gray-400">${comment.ago}</p>
+                    </div>
+                    <p class="mt-1 text-sm text-gray-600 dark:text-gray-300">${comment.content}</p>
+                    <div class="mt-2 flex items-center space-x-4 text-xs text-gray-500 dark:text-gray-400">
+                        <button class="hover:text-blue-500 transition-colors">Like</button>
+                        <button class="hover:text-blue-500 transition-colors">Reply</button>
+                    </div>
+                </div>
+            </div>
+        </div>`;
+        return div;
     },
     setupInfiniteScroll() {
         const options = {
@@ -526,9 +581,12 @@ const PostManager = {
             }
         });
     },
-    createPostElement(post) {
+    createPostElement(post, single = false) {
         const div = document.createElement('div');
-        div.className = 'post-card bg-white rounded-lg shadow-sm p-4 mb-4';
+        div.className = `post-card bg-white rounded-lg shadow-sm p-4 mb-4 ${single ? '' : 'hover:bg-blue-200'} cursor-pointer hover:shadow-md transition-all duration-300`;
+        if(!single) {
+            div.setAttribute('onclick', `window.location.href='${baseUrl}/posts/view/${post.post_id}'`);
+        }
         div.innerHTML = `
             <div class="flex items-center justify-between mb-2">
                 <div class="flex items-center space-x-2">
@@ -538,8 +596,8 @@ const PostManager = {
                     <div>
                         <div class="text-sm font-medium text-gray-900">${post.username}</div>
                         <div class="text-xs text-gray-500 flex items-center space-x-1">
-                            <span class="text-xs text-gray-500 mr-2 flex items-center space-x-1">
-                                ${this.formatTimestamp(post.created_at)}
+                            <span title="${post.created_at}" class="text-xs text-gray-500 mr-2 flex items-center space-x-1">
+                                ${post.ago}
                             </span>
                             ${post.city ? `
                             <span class="text-xs text-gray-500 flex items-center space-x-1">
@@ -1239,7 +1297,8 @@ const PostCommentManager = {
                         'X-Requested-With': 'XMLHttpRequest'
                     },
                     body: JSON.stringify({
-                        post_id: postId,
+                        token: AppState.getToken(),
+                        postId: postId,
                         content: content
                     })
                 });
@@ -1249,9 +1308,9 @@ const PostCommentManager = {
                 }
 
                 const data = await response.json();
-                
-                // Add the new comment to the UI
-                this.addCommentToUI(data.comment);
+
+                const commentsContainer = document.getElementById('commentsList');
+                commentsContainer.appendChild(PostManager.createCommentElement(data.record));
                 
                 // Clear the input
                 commentInput.value = '';
@@ -1267,41 +1326,6 @@ const PostCommentManager = {
             }
         });
     },
-
-    addCommentToUI(comment) {
-        const commentsContainer = document.querySelector('.comments-list');
-        if (!commentsContainer) return;
-
-        const commentElement = document.createElement('div');
-        commentElement.className = 'comment-item bg-white dark:bg-gray-800 rounded-lg p-4 mb-4';
-        commentElement.innerHTML = `
-            <div class="flex items-start space-x-3">
-                <img src="${comment.user.avatar || '/assets/images/default-avatar.png'}" 
-                    alt="${comment.user.name}" 
-                    class="w-10 h-10 rounded-full">
-                <div class="flex-1">
-                    <div class="flex items-center justify-between">
-                        <div>
-                            <h4 class="font-semibold text-gray-900 dark:text-white">${comment.user.name}</h4>
-                            <p class="text-sm text-gray-500 dark:text-gray-400">Just now</p>
-                        </div>
-                    </div>
-                    <p class="mt-1 text-gray-700 dark:text-gray-300">${comment.content}</p>
-                    <div class="mt-2 flex items-center space-x-4">
-                        <button class="text-gray-500 hover:text-blue-600 dark:hover:text-blue-400 text-sm">
-                            Like
-                        </button>
-                        <button class="text-gray-500 hover:text-blue-600 dark:hover:text-blue-400 text-sm">
-                            Reply
-                        </button>
-                    </div>
-                </div>
-            </div>
-        `;
-
-        // Add the new comment at the top of the list
-        commentsContainer.insertBefore(commentElement, commentsContainer.firstChild);
-    }
 };
 
 // New Message Manager

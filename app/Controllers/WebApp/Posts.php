@@ -14,8 +14,8 @@ class Posts extends WebAppController {
         return $this->templateObject->loadPage('create', ['pageTitle' => 'Feed']);
     }
 
-    public function single() {
-        return $this->templateObject->loadPage('post', ['pageTitle' => 'Feed']);
+    public function view($postId = null) {
+        return $this->templateObject->loadPage('post', ['pageTitle' => 'Feed', 'postId' => $postId]);
     }
 
 }

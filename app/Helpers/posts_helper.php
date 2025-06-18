@@ -33,6 +33,7 @@ function formatPosts($posts = [], $single = false) {
             // 'longitude' => $post['longitude'],
             // 'latitude' => $post['latitude'],
             'username' => $post['username'],
+            'ago' => formatTimeAgo($post['created_at']),
             'comments_count' => $post['comments_count'] ?? 0,
             'profile_image' => $post['profile_image'],
             'score' => $post['score'] ?? 0,
@@ -40,10 +41,7 @@ function formatPosts($posts = [], $single = false) {
             'upvotes' => $post['upvotes'],
             'downvotes' => $post['downvotes'],
         ];
-
-        if(!empty($post['comments'])) {
-            $formattedPosts[$key]['comments'] = $post['comments'];
-        }
+        $formattedPosts[$key]['comments'] = $post['comments'] ?? [];
         $key++;
     }
 
@@ -65,7 +63,7 @@ function formatTimeAgo($datetime) {
         return 'just now';
     } elseif ($diff < 3600) {
         $mins = floor($diff / 60);
-        return $mins . ' minute' . ($mins > 1 ? 's' : '') . ' ago';
+        return $mins . ' min' . ($mins > 1 ? 's' : '') . ' ago';
     } elseif ($diff < 86400) {
         $hours = floor($diff / 3600);
         return $hours . ' hour' . ($hours > 1 ? 's' : '') . ' ago';
