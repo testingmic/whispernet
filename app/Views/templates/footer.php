@@ -33,21 +33,19 @@
 </div>
 <!-- PWA Service Worker Registration -->
 <script src="<?= $baseUrl ?>/assets/js/app.js?v=<?= $version ?>" defer></script>
-<?php if($userLoggedin) { ?>
-  <script>
-    if ('serviceWorker' in navigator) {
-        window.addEventListener('load', () => {
-            navigator.serviceWorker.register('<?= $baseUrl ?>/assets/js/sw.js?v=<?= $version ?>&path=<?= $baseUrl ?>')
-                .then(registration => {
-                    console.log('ServiceWorker registration successful');
-                })
-                .catch(err => {
-                    console.log('ServiceWorker registration failed: ', err);
-                });
-        });
-    }
-  </script>
-<?php } ?>
+<script>
+  if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+          navigator.serviceWorker.register('<?= $baseUrl ?>/assets/js/sw.js?v=<?= $version ?>&path=<?= $baseUrl ?>')
+              .then(registration => {
+                  console.log('ServiceWorker registration successful');
+              })
+              .catch(err => {
+                  console.log('ServiceWorker registration failed: ', err);
+              });
+      });
+  }
+</script>
 </body>
 
 </html>

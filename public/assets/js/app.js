@@ -642,6 +642,11 @@ const AuthManager = {
         // Login Form Handler
         $('#loginForm').on('submit', (e) => {
             e.preventDefault();
+
+            // add loading state to button
+            $('#loginButton').prop('disabled', true);
+            $('#loginButton').html('<span class="loading-spinner"></span> Logging in...');
+
             this.handleLogin();
         });
 

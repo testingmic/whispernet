@@ -24,7 +24,7 @@
                 <!-- Email Field -->
                 <div>
                     <label for="email" class="sr-only">Username or Email</label>
-                    <input id="email" name="email" autocomplete="email" required
+                    <input id="email" name="email" required
                         class="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 placeholder-gray-500 dark:placeholder-gray-400 text-gray-900 dark:text-white rounded-t-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm dark:bg-gray-800"
                         placeholder="Username or Email">
                 </div>
