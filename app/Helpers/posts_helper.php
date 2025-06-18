@@ -21,6 +21,10 @@ function formatPosts($posts = [], $single = false) {
 
     foreach($posts as $post) {
 
+        if(!is_array($post)) {
+            continue;
+        }
+
         $formattedPosts[$key] = [
             'post_id' => $post['post_id'],
             'content' => $post['content'],
