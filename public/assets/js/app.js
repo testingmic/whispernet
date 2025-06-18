@@ -890,6 +890,7 @@ const PostCreationForm = {
                 const feedContainer = document.getElementById('feedContainer');
                 const postElement = PostManager.createPostElement(data.record);
                 feedContainer.insertBefore(postElement, feedContainer.firstChild);
+                PostManager.closeCreateModal();
             }
         } catch (error) {
             console.log({error});
