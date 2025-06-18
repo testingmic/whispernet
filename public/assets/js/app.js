@@ -713,7 +713,6 @@ const AuthManager = {
                     window.location.href = `${baseUrl}`;
                 }
             }).catch((error) => {
-                console.error('Login check error:', error);
                 localStorage.removeItem('token');
             });
         }
@@ -1684,14 +1683,16 @@ const ProfileManager = {
 };
 
 // check if the user clicked on menuButton if so check if menuHelper has the class hidden if it does remove it if not then add it
-document.getElementById('menuButton').addEventListener('click', () => {
-    const menuHelper = document.getElementById('menuHelper');
-    if (menuHelper.classList.contains('hidden')) {
-        menuHelper.classList.remove('hidden');
-    } else {
-        menuHelper.classList.add('hidden');
-    }
-});
+if(document.getElementById('menuButton')) {
+    document.getElementById('menuButton').addEventListener('click', () => {
+        const menuHelper = document.getElementById('menuHelper');
+        if (menuHelper.classList.contains('hidden')) {
+            menuHelper.classList.remove('hidden');
+        } else {
+            menuHelper.classList.add('hidden');
+        }
+    });
+}
 
 // Initialize the app
 document.addEventListener('DOMContentLoaded', () => {
