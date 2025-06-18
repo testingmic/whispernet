@@ -1,4 +1,4 @@
-<div class="flex items-center min-h-[calc(100vh-6rem)] justify-center bg-gray-50 dark:bg-gray-900 px-4 py-12 sm:px-6 lg:px-8">
+<div class="flex items-center min-h-[calc(100vh-4rem)] justify-center bg-gray-50 dark:bg-gray-900 px-4 py-12 sm:px-6 lg:px-8">
     <div class="max-w-md w-full space-y-8">
 
         <div class="flex items-center justify-center">
