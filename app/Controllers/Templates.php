@@ -23,6 +23,13 @@ class Templates extends BaseController
      * @return array
      */
     public function globalVariables() {
+        $urlPath = getenv('baseURL') . 'public';
+
+        // Remove the trailing slash if it's not localhost
+        if(strpos($urlPath, 'localhost') == false) {
+            $urlPath = rtrim(str_replace('public', '', $urlPath), '/');
+        }
+
         return [
             'baseUrl' => getenv('baseURL') . 'public',
             'userLoggedin' => $this->user_loggedin(),
