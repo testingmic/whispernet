@@ -62,7 +62,7 @@
                 <div class="px-4 py-5 sm:p-6">
                     <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4">Recent Activity</h3>
                     <div class="space-y-4">
-                        <?= loadingSkeleton() ?>
+                        <?= loadingSkeleton(1, false) ?>
                         <!-- <?php if (!empty($recentActivity)): ?>
                             <?php foreach ($recentActivity as $activity): ?>
                                 <div class="flex items-start space-x-3">

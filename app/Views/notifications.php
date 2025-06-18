@@ -1,4 +1,4 @@
-<div class="min-h-screen bg-gray-50 dark:bg-gray-900 pb-20 pt-2">
+<div class="min-h-[calc(100vh-8rem)] bg-gray-50 dark:bg-gray-900 pb-20 pt-2">
     <div class="max-w-3xl mx-auto px-4 py-6 sm:px-6 lg:px-8">
         <!-- Header -->
         <div class="mb-6">
@@ -7,9 +7,9 @@
         </div>
 
         <!-- Notifications List -->
-        <div class="bg-white dark:bg-gray-800 shadow rounded-lg overflow-hidden">
+        <div class="dark:bg-gray-800 rounded-lg overflow-hidden">
             <div class="divide-y divide-gray-200 dark:divide-gray-700">
-                <?= loadingSkeleton(); ?>
+                <?= loadingSkeleton(3, false); ?>
                 <?php if (empty($notifications)): ?>
                     <!-- <div class="p-6 text-center">
                         <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
