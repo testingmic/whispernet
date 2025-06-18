@@ -398,7 +398,12 @@ class Auth extends LoadController {
         }
 
         if(!empty($this->payload['webapp'])) {
-            session()->destroy();
+            $session = session();
+            $session->remove('user_id');
+            $session->remove('user_loggedin');
+            $session->remove('user_token');
+            $session->remove('userLongitude');
+            $session->destroy();
         }
 
         return Routing::success('Logout successful.');
