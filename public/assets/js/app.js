@@ -704,7 +704,9 @@ const AuthManager = {
             if (response.success) {
                 AppState.showNotification('Account created successfully! Please check your email to verify your account.', 'success');
                 // Redirect to login page
-                window.location.href = `${baseUrl}/login`;
+                localStorage.setItem('user', JSON.stringify(response.data));
+                localStorage.setItem('token', response.data.token);
+                window.location.href = `${baseUrl}`;
             }
         } catch (error) {
             console.error('Signup error:', error);
