@@ -517,7 +517,7 @@ const PostManager = {
                             }
                         });
                     } else {
-                        commentsContainer.innerHTML = '<p class="text-gray-500 dark:text-gray-400">No comments yet</p>';
+                        commentsContainer.innerHTML = '<p class="text-gray-500 dark:text-gray-400" id="commentsLoading">No comments yet</p>';
                     }
                 }
             } else {
@@ -1381,6 +1381,11 @@ const PostCommentManager = {
                 }
 
                 const data = await response.json();
+
+                const commentsLoading = document?.getElementById('commentsLoading');
+                if(commentsLoading) {
+                    commentsLoading.innerHTML = '';
+                }
 
                 const commentsContainer = document.getElementById('commentsList');
                 commentsContainer.appendChild(PostManager.createCommentElement(data.record));

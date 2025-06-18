@@ -22,7 +22,7 @@
 
             <!-- Comments List -->
             <div class="space-y-4" id="commentsList">
-                <p class="text-gray-500 dark:text-gray-400">Loading comments...</p>
+                <p class="text-gray-500 dark:text-gray-400" id="commentsLoading">Loading comments...</p>
             </div>
         </div>
     </div>
