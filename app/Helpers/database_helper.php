@@ -238,12 +238,7 @@ $databases = [
 
 // alter tables
 $alterTables = [
-    "ALTER TABLE posts ADD COLUMN views INTEGER DEFAULT 0;",
-    "ALTER TABLE posts ADD COLUMN city TEXT;",
-    "ALTER TABLE posts ADD COLUMN country TEXT;",
-    "ALTER TABLE comments ADD COLUMN views INTEGER DEFAULT 0;",
-    "ALTER TABLE comments ADD COLUMN city TEXT;",
-    "ALTER TABLE comments ADD COLUMN country TEXT;"
+    // "ALTER TABLE posts ADD COLUMN views INTEGER DEFAULT 0;",
 ];
 
 $votesTables = [
