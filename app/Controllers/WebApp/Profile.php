@@ -30,12 +30,13 @@ class Profile extends WebAppController
             'pageTitle' => 'Profile',
             'user' => $user,
             'stats' => $stats,
-            'recentActivity' => $recentActivity
+            'recentActivity' => $recentActivity,
+            'favicon_color' => 'profile'
         ]);
     }
 
     public function edit() {
-        return $this->templateObject->loadPage('edit_profile', ['pageTitle' => 'Edit Profile']);
+        return $this->templateObject->loadPage('edit_profile', ['pageTitle' => 'Edit Profile', 'favicon_color' => 'profile']);
     }
 
     private function getPostCount($userId)

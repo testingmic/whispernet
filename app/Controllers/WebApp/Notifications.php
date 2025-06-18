@@ -26,7 +26,8 @@ class Notifications extends WebAppController
 
         return $this->templateObject->loadPage('notifications', [
             'pageTitle' => 'Notifications',
-            'notifications' => $notifications
+            'notifications' => $notifications,
+            'favicon_color' => 'notifications'
         ]);
     }
 }

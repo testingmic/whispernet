@@ -8,7 +8,7 @@ class Chat extends WebAppController {
     
     public function index() {
         $chats = [[], [], [], [], [], []];
-        return $this->templateObject->loadPage('chat', ['pageTitle' => 'Chat', 'chats' => $chats]);
+        return $this->templateObject->loadPage('chat', ['pageTitle' => 'Chat', 'chats' => $chats, 'favicon_color' => 'chat']);
     }
 
     /**
@@ -18,7 +18,7 @@ class Chat extends WebAppController {
      */
     public function groups() {
         $groups = [];
-        return $this->templateObject->loadPage('groups', ['pageTitle' => 'Groups', 'groups' => $groups]);
+        return $this->templateObject->loadPage('groups', ['pageTitle' => 'Groups', 'groups' => $groups, 'favicon_color' => 'chat']);
     }
 
     /**
@@ -33,7 +33,8 @@ class Chat extends WebAppController {
         return $this->templateObject->loadPage('group_chat', [
             'pageTitle' => 'Group', 
             'group' => $group,
-            'footerHidden' => true
+            'footerHidden' => true,
+            'favicon_color' => 'chat'
         ]);
     }
 

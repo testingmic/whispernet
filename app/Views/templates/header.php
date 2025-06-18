@@ -1,3 +1,7 @@
+<?php
+// set the favicon color
+$favicon_color = $favicon_color ?? 'dashboard';
+?>
 <!DOCTYPE html>
 <html lang="en">
 
