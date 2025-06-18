@@ -9,7 +9,7 @@
         <!-- Notifications List -->
         <div class="dark:bg-gray-800 rounded-lg overflow-hidden">
             <div class="divide-y divide-gray-200 dark:divide-gray-700">
-                <?= loadingSkeleton(3, false); ?>
+                <?= loadingSkeleton(1, false); ?>
                 <?php if (empty($notifications)): ?>
                     <!-- <div class="p-6 text-center">
                         <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">

@@ -30,8 +30,7 @@ class Profile extends WebAppController
             'pageTitle' => 'Profile',
             'user' => $user,
             'stats' => $stats,
-            'recentActivity' => $recentActivity,
-            'baseUrl' => configs('baseUrl')
+            'recentActivity' => $recentActivity
         ]);
     }
 

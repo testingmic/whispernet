@@ -437,6 +437,20 @@ class PostsModel extends Model {
     }
 
     /**
+     * Notify a user
+     * 
+     * @return array
+     */
+    public function notify($recordId, $userId, $type, $section, $content) {
+        try {
+            $sql = "INSERT INTO notifications (user_id, type, section, reference_id, content) VALUES (?, ?, ?, ?, ?)";
+            $this->notifDb->query($sql, [$userId, $type, $section, $recordId, $content]);
+        } catch (DatabaseException $e) {
+            return [];
+        }
+    }
+
+    /**
      * Delete votes
      * 
      * @return array

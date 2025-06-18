@@ -272,9 +272,10 @@ $viewsTables = [
 
 $notificationTables = [
     "CREATE TABLE IF NOT EXISTS notifications (
-        notification_id INTEGER PRIMARY KEY,
+        notification_id INTEGER PRIMARY KEY AUTOINCREMENT,
         user_id INTEGER NOT NULL,
         type TEXT CHECK(type IN ('chat', 'comment', 'vote', 'system')) NOT NULL,
+        section TEXT,
         reference_id INTEGER,
         content TEXT NOT NULL,
         is_read BOOLEAN DEFAULT 0,

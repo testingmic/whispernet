@@ -302,10 +302,13 @@ class Posts extends LoadController {
         $section = $this->payload['section'] ?? 'posts';
         $column = $section == "posts" ? "post_id" : "comment_id";
 
+        $firstTime = true;
+
         // check if the user has already voted
         $vote = $this->postsModel->checkVotes($this->payload['recordId'], $this->payload['userId'], $this->payload['section']);
         if(!empty($vote)) {
 
+            $firstTime = false;
             if($vote['direction'] == $this->payload['direction']) {
                 return Routing::error("You have already voted in the {$this->payload['direction']} direction");
             }
@@ -329,6 +332,14 @@ class Posts extends LoadController {
 
         // get the post votes
         $votes = $this->postsModel->db->query("SELECT downvotes, upvotes FROM posts WHERE post_id = ?", [$this->payload['recordId']])->getRowArray();
+
+        if($firstTime && ((int)$this->payload['ownerId'] !== (int)$this->payload['userId'])) {
+            $this->postsModel->connectToDb('notification');
+            $this->postsModel->notify(
+                $this->payload['recordId'], $this->payload['ownerId'], 'vote',
+                $section, "{$this->currentUser['username']} voted on your {$section}"
+            );
+        }
 
         // return the votes
         return Routing::created(['data' => 'Vote successful', 'record' => $votes]);
