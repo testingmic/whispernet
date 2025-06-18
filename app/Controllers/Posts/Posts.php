@@ -58,7 +58,11 @@ class Posts extends LoadController {
         $whereClause = !empty($this->payload['postId']) ? "AND c.post_id = {$this->payload['postId']}" : "";
         
         // make the call to the posts model
-        $comments = $this->postsModel->viewComments($this->payload['userId'], 'user_id', $whereClause);
+        if(!empty($this->payload['postId'])) {
+            $comments = $this->postsModel->viewComments($this->payload['postId']);
+        } else {
+            $comments = $this->postsModel->viewComments($this->payload['userId'], 'user_id', $whereClause);
+        }
 
         // format the comments
         foreach($comments as $key => $comment) {

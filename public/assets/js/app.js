@@ -198,16 +198,18 @@ const ChatManager = {
         }
     },
 
-    sendMessage(content) {
+    sendMessage(content, type = 'message') {
         if (!this.activeChat) return;
         const message = {
-            type: 'message',
+            type: type,
             chatId: this.activeChat.id,
             content,
             timestamp: new Date().toISOString()
         };
         this.ws.send(JSON.stringify(message));
-        this.addMessageToUI(message, true);
+        if(type == 'message') {
+            this.addMessageToUI(message, true);
+        }
     },
 
     setupChatList() {
@@ -478,6 +480,7 @@ const PostManager = {
         if (!postContainer) return;
         const postId = postContainer.getAttribute('data-post-id');
         if(!postId) return;
+        PostCommentManager.postId = postId;
         postContainer.innerHTML = '';
         $.get(`${baseUrl}/api/posts/view/${postId}`, {
             token: AppState.getToken(),
@@ -505,6 +508,7 @@ const PostManager = {
     },
     createCommentElement(comment) {
         const div = document.createElement('div');
+        PostCommentManager.commentsList.push(comment.comment_id);
         div.className = 'comment-card bg-white rounded-lg shadow-sm p-4 mb-4';
         div.innerHTML = `
         <div class="p-4">
@@ -620,6 +624,12 @@ const PostManager = {
             <p class="text-gray-800 mb-3">${post.content}</p>
             <div class="flex items-center justify-between">
                 <div class="flex items-center space-x-4">
+                    <button class="vote-button flex items-center space-x-1 text-gray-500 hover:text-blue-500" data-post-id="${post.id}" data-vote="up">
+                        <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+                        </svg>
+                        <span class="comments-counter-${post.post_id}">${post.comments_count}</span>
+                    </button>
                     <button class="vote-button flex items-center space-x-1 text-gray-500 hover:text-blue-500" data-post-id="${post.id}" data-vote="up">
                         <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 10h4.764a2 2 0 011.789 2.894l-3.5 7A2 2 0 0115.263 21h-4.017c-.163 0-.326-.02-.485-.06L7 20m7-10V5a2 2 0 00-2-2h-.095c-.5 0-.905.405-.905.905 0 .714-.211 1.412-.608 2.006L7 11v9m7-10h-2M7 20H5a2 2 0 01-2-2v-6a2 2 0 012-2h2.5"/>
@@ -1257,6 +1267,8 @@ const NotificationManager = {
 
 // Post Comment Manager
 const PostCommentManager = {
+    commentsList: [],
+    postId: null,
     init() {
         this.setupCommentForm();
     },
@@ -1325,7 +1337,35 @@ const PostCommentManager = {
                 NotificationManager.show('Failed to post comment. Please try again.', 'error');
             }
         });
+
+        this.getCommentsList();
     },
+    getCommentsFromServer() {
+        $.get(`${baseUrl}/api/posts/comments`, {
+            token: AppState.getToken(),
+            postId: this.postId,
+            longitude,
+            latitude
+        }).then(data => {
+            if(data.status == 'success') {
+                const commentsContainer = document.getElementById('commentsList');
+                if(commentsContainer) {
+                    $(`span[class^="comments-counter-${this.postId}"]`).text(data.data.length);
+                    data.data.forEach(comment => {
+                        if(!this.commentsList.includes(comment.comment_id)){
+                            commentsContainer.appendChild(PostManager.createCommentElement(comment));
+                        }
+                    });
+                }
+            }
+        });
+    },
+    getCommentsList() {
+        // get comments list from server every 5 seconds 
+        setInterval(() => {
+            this.getCommentsFromServer();
+        }, 5000);
+    }
 };
 
 // New Message Manager

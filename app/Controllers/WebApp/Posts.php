@@ -15,7 +15,7 @@ class Posts extends WebAppController {
     }
 
     public function view($postId = null) {
-        return $this->templateObject->loadPage('post', ['pageTitle' => 'Feed', 'postId' => $postId]);
+        return $this->templateObject->loadPage('post', ['pageTitle' => 'Feed', 'postId' => $postId, 'footerHidden' => true]);
     }
 
 }

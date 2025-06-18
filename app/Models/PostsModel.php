@@ -123,9 +123,9 @@ class PostsModel extends Model {
      * 
      * @return array
      */
-    public function viewComments($postId, $column = 'post_id', $whereClause = '') {
+    public function viewComments($postId = null, $column = 'post_id', $whereClause = '') {
         try {
-            $sql = "SELECT c.*, u.full_name as username, u.profile_image 
+            $sql = "SELECT c.*, u.username as username, u.profile_image 
                     FROM comments c 
                     INNER JOIN users u ON c.user_id = u.user_id 
                     WHERE c.{$column} = ? {$whereClause}
