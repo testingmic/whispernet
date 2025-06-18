@@ -44,6 +44,10 @@ class PostsModel extends Model {
                         ->limit($this->payload['limit'])
                         ->offset($offset);
 
+            if(!empty($this->payload['last_record_id'])) {
+                $userPosts->where('p.post_id >', $this->payload['last_record_id']);
+            }
+
             $totalPosts = $this->db->table('posts p')->where('p.user_id', $this->payload['userId']);
 
             if(!empty($this->payload['location'])) {

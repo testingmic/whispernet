@@ -1,5 +1,5 @@
 // Microphone Permission Manager
-var longitude = '', latitude = '';
+var longitude = '5.8791', latitude = '-0.0979';
 const MicrophoneManager = {
     permissionState: null,
     stream: null,
@@ -497,11 +497,10 @@ const PostManager = {
         if (this.isLoading) return;
         this.isLoading = true;
         try {
-            const response = await fetch(`${baseUrl}/api/posts?page=${this.currentPage}&longitude=${longitude}&latitude=${latitude}`);
+            const response = await fetch(`${baseUrl}/api/posts?last_record_id=${this.currentPage}&longitude=${longitude}&latitude=${latitude}&token=${AppState.getToken()}`);
             const data = await response.json();
-            this.posts = [...this.posts, ...data.posts];
-            this.renderPosts(data.posts);
-            this.currentPage++;
+            this.posts = [...this.posts, ...data.data];
+            this.renderPosts(data.data);
         } catch (error) {
             AppState.showNotification('Error loading posts', 'error');
         } finally {
@@ -509,12 +508,16 @@ const PostManager = {
         }
     },
     renderPosts(posts) {
-        const container = document.querySelector('.posts-container');
+        const container = document.getElementById('feedContainer');
         if (!container) return;
+        $('.loading-skeleton').remove();
 
-        posts.forEach(post => {
+        posts.forEach((post, key) => {
             const postElement = this.createPostElement(post);
             container.appendChild(postElement);
+            if(key == 0) {
+                this.currentPage = post.post_id;
+            }
         });
     },
     createPostElement(post) {
@@ -528,7 +531,20 @@ const PostManager = {
                     </div>
                     <div>
                         <div class="text-sm font-medium text-gray-900">Anonymous User</div>
-                        <div class="text-xs text-gray-500">${this.formatTimestamp(post.created_at)}</div>
+                        <div class="text-xs text-gray-500 flex items-center space-x-1">
+                            <span class="text-xs text-gray-500 mr-2 flex items-center space-x-1">
+                                ${this.formatTimestamp(post.created_at)}
+                            </span>
+                            ${post.city ? `
+                            <span class="text-xs text-gray-500 flex items-center space-x-1">
+                                <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                                </svg>
+                                ${post.city}
+                            </span>
+                            ` : ''}
+                        </div>
                     </div>
                 </div>
                 <button class="report-button text-gray-400 hover:text-gray-500">
@@ -576,7 +592,7 @@ const PostManager = {
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({ vote: voteType })
+                body: JSON.stringify({ vote: voteType, token: AppState.getToken(), longitude, latitude })
             });
             const data = await response.json();
             this.updateVoteCounts(postId, data);
@@ -597,7 +613,8 @@ const PostManager = {
         const postId = button.closest('.post-card').querySelector('[data-post-id]').dataset.postId;
         try {
             await fetch(`${baseUrl}/api/posts/${postId}/report`, {
-                method: 'POST'
+                method: 'POST',
+                body: JSON.stringify({ token: AppState.getToken(), longitude, latitude })
             });
             AppState.showNotification('Post reported successfully', 'success');
         } catch (error) {
@@ -816,6 +833,7 @@ const PostCreationManager = {
         const postCreationForm = document.getElementById('postCreationForm');
         const createPostBtn = document.getElementById('createPostButton');
         const postContent = document.getElementById('postContent');
+        const postButton = document.getElementById('postButton');
         const mediaPreview = document.getElementById('mediaPreview');
         const tagsInput = document.getElementById('tagsInput');
         const tagsContainer = document.getElementById('tagsContainer');
@@ -829,11 +847,6 @@ const PostCreationManager = {
                 postContent.focus();
             }
             createPostBtn.classList.toggle('hidden');
-        });
-
-        // Enable/disable post button based on content
-        postContent.addEventListener('input', () => {
-            postButton.disabled = !postContent.value.trim();
         });
 
         // Handle form submission
@@ -979,8 +992,12 @@ const PostCreationManager = {
             formData.append('media', mediaFile);
         }
         formData.append('tags', JSON.stringify(tags));
+        formData.append('token', AppState.getToken());
+        formData.append('longitude', longitude);
+        formData.append('latitude', latitude);
 
         try {
+            
             const response = await fetch(`${baseUrl}/api/posts`, {
                 method: 'POST',
                 body: formData,
@@ -991,16 +1008,21 @@ const PostCreationManager = {
 
             const data = await response.json();
 
-            if (data.success) {
+            if (data.status == 'success') {
                 AppState.showNotification('Post created successfully!', 'success');
                 form.reset();
-                document.getElementById('createPostForm').classList.add('hidden');
+                document.getElementById('createPostButton').classList.remove('hidden');
+                document.getElementById('postCreationForm').classList.add('hidden');
                 document.getElementById('mediaPreview').classList.add('hidden');
                 document.getElementById('tagsContainer').innerHTML = '<input type="text" id="tagsInput" class="flex-1 min-w-[120px] px-3 py-1 border border-gray-300 dark:border-gray-600 rounded-full text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white" placeholder="Add tags...">';
                 this.setupTags(); // Reinitialize tags functionality
-                PostManager.loadMorePosts(); // Refresh the feed
+                // append the post to the top of the feed
+                const feedContainer = document.getElementById('feedContainer');
+                const postElement = PostManager.createPostElement(data.record);
+                feedContainer.insertBefore(postElement, feedContainer.firstChild);
             }
         } catch (error) {
+            console.log({error});
             AppState.showNotification('Failed to create post. Please try again.', 'error');
         }
     }
@@ -1127,13 +1149,16 @@ const NotificationManager = {
             if(!Boolean(AppState.user)) {
                 return;
             }
-            const response = await fetch(`${baseUrl}/api/notifications/unread-count`);
-            const data = await response.json();
-            
-            const badge = document.querySelector('.notification-badge');
-            if (badge) {
-                badge.style.display = data.count > 0 ? 'block' : 'none';
-            }
+            const response = $.post(`${baseUrl}/api/notifications/unread-count`, {
+                token: AppState.getToken(),
+                latitude,
+                longitude
+            }).then((response) => {
+                const badge = document.querySelector('.notification-badge');
+                if (badge) {
+                    badge.style.display = response.data.count > 0 ? 'block' : 'none';
+                }
+            })
         } catch (error) {
             console.error('Error updating unread count:', error);
         }
@@ -1144,14 +1169,17 @@ const NotificationManager = {
             if(!Boolean(AppState.user)) {
                 return;
             }
-            const response = await fetch(`${baseUrl}/api/notifications/recent`);
-            const data = await response.json();
-            
-            const container = document.querySelector('.notifications-container');
-            if (container) {
-                // Update notifications list
-                this.renderNotifications(data.notifications, container);
-            }
+            const response = $.post(`${baseUrl}/api/notifications/recent`, {
+                token: AppState.getToken(),
+                latitude,
+                longitude
+            }).then((response) => {
+                const container = document.querySelector('.notifications-container');
+                if (container) {
+                    // Update notifications list
+                    this.renderNotifications(response.data.notifications, container);
+                }
+            })
         } catch (error) {
             console.error('Error refreshing notifications:', error);
         }
@@ -1945,7 +1973,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 // Reset posts and reload
                 PostManager.posts = [];
                 PostManager.currentPage = 1;
-                const container = document.querySelector('.posts-container');
+                const container = document.getElementById('#feedContainer');
                 if (container) container.innerHTML = '';
                 // You may want to pass location/radius to the API here
                 PostManager.loadMorePosts();

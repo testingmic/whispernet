@@ -29,7 +29,7 @@
                     AN
                 </div>
                 <div class="flex-1">
-                    <div type="button" id="createPostButton" 
+                    <div type="button" id="createPostButton"
                         class="w-full text-left px-4 py-2.5 bg-gray-100 dark:bg-gray-700 rounded-full text-gray-500 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors duration-200">
                         What's on your mind?
                     </div>
@@ -40,26 +40,7 @@
                             <div class="relative">
                                 <textarea id="postContent" rows="3"
                                     class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white resize-none text-base"
-                                    placeholder="Share your thoughts..."></textarea>
-
-                                <!-- Rich Text Toolbar -->
-                                <div class="absolute bottom-3 left-3 flex space-x-2 bg-white dark:bg-gray-800 p-1 rounded-lg shadow-sm">
-                                    <button type="button" class="p-1.5 text-gray-500 hover:text-blue-500 dark:text-gray-400 dark:hover:text-blue-400 rounded hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors" title="Bold">
-                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 12h4a2 2 0 100-4H6v4zm0 0h4a2 2 0 110 4H6v-4z" />
-                                        </svg>
-                                    </button>
-                                    <button type="button" class="p-1.5 text-gray-500 hover:text-blue-500 dark:text-gray-400 dark:hover:text-blue-400 rounded hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors" title="Italic">
-                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-                                        </svg>
-                                    </button>
-                                    <button type="button" class="p-1.5 text-gray-500 hover:text-blue-500 dark:text-gray-400 dark:hover:text-blue-400 rounded hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors" title="Add Link">
-                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
-                                        </svg>
-                                    </button>
-                                </div>
+                                    placeholder="Share your thoughts..." name="content"></textarea>
                             </div>
 
                             <!-- Media Preview -->
@@ -97,7 +78,7 @@
                                 </div>
 
                                 <!-- Post Button -->
-                                <button type="submit"
+                                <button type="submit" id="postButton"
                                     class="ml-4 px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-medium">
                                     Post
                                 </button>
@@ -146,9 +127,10 @@
     </div>
 </div>
 
-<div id="feedContainer">
-    <!-- Loading Skeleton Card -->
-    <?= loadingSkeleton(1); ?>
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-4 mb-2">
+    <div id="feedContainer" class="scroll-sentinel">
+        <?= loadingSkeleton(1); ?>
+    </div>
 </div>
 
 <div class="px-4 py-8 sm:p-6">&nbsp;</div>
