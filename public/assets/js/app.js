@@ -75,7 +75,7 @@ const AppState = {
         return localStorage.getItem('token');
     },
     loadTheme() {
-        const theme = localStorage.getItem('theme') || 'light';
+        const theme = 'light'; //localStorage.getItem('theme') || 'light';
         this.setTheme(theme);
     },
     setTheme(theme) {

@@ -148,7 +148,7 @@
 
 <div id="feedContainer">
     <!-- Loading Skeleton Card -->
-    <?= loadingSkeleton(3); ?>
+    <?= loadingSkeleton(1); ?>
 </div>
 
 <div class="px-4 py-8 sm:p-6">&nbsp;</div>
