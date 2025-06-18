@@ -1158,6 +1158,76 @@ const NotificationManager = {
             this.updateUnreadCount();
             this.refreshNotifications();
         }, 30000);
+    },
+
+    show(message, type = 'info', duration = 3000) {
+        // Create notification element
+        const notification = document.createElement('div');
+        notification.className = `fixed top-4 right-4 z-50 transform transition-all duration-300 translate-x-full opacity-0`;
+        
+        // Set notification content based on type
+        const icons = {
+            success: `<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                    </svg>`,
+            error: `<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>`,
+            warning: `<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+                    </svg>`,
+            info: `<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>`
+        };
+
+        // Set background color based on type
+        const bgColors = {
+            success: 'bg-green-500',
+            error: 'bg-red-500',
+            warning: 'bg-yellow-500',
+            info: 'bg-blue-500'
+        };
+
+        notification.innerHTML = `
+            <div class="flex items-center p-4 mb-4 text-white rounded-lg shadow-lg ${bgColors[type]}">
+                <div class="inline-flex items-center justify-center flex-shrink-0 w-8 h-8 rounded-lg">
+                    ${icons[type]}
+                </div>
+                <div class="ml-3 text-sm font-normal">${message}</div>
+                <button type="button" class="ml-auto -mx-1.5 -my-1.5 text-white hover:text-gray-200 rounded-lg focus:ring-2 focus:ring-gray-300 p-1.5 hover:bg-white/10 inline-flex h-8 w-8 items-center justify-center">
+                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+            </div>
+        `;
+
+        // Add to document
+        document.body.appendChild(notification);
+
+        // Add close button functionality
+        const closeButton = notification.querySelector('button');
+        closeButton.addEventListener('click', () => {
+            this.hideNotification(notification);
+        });
+
+        // Show notification with animation
+        requestAnimationFrame(() => {
+            notification.classList.remove('translate-x-full', 'opacity-0');
+        });
+
+        // Auto hide after duration
+        setTimeout(() => {
+            this.hideNotification(notification);
+        }, duration);
+    },
+
+    hideNotification(notification) {
+        notification.classList.add('translate-x-full', 'opacity-0');
+        setTimeout(() => {
+            notification.remove();
+        }, 300);
     }
 };
 
@@ -1473,41 +1543,73 @@ const ProfileManager = {
     },
 
     setupSettingsToggles() {
-        const toggles = document.querySelectorAll('[role="switch"]');
+        const toggles = document.querySelectorAll('[data-setting]');
+        
         toggles.forEach(toggle => {
             toggle.addEventListener('click', async () => {
                 const setting = toggle.dataset.setting;
-                const isChecked = toggle.getAttribute('aria-checked') === 'true';
+                const currentValue = toggle.dataset.value;
+                const newValue = currentValue === '1' ? '0' : '1';
                 
+                // Update UI immediately
+                toggle.dataset.value = newValue;
+                toggle.classList.toggle('bg-blue-600');
+                toggle.classList.toggle('bg-gray-200', 'dark:bg-gray-700');
+                toggle.setAttribute('aria-checked', newValue === '1');
+                
+                const toggleSpan = toggle.querySelector('span');
+                toggleSpan.classList.toggle('translate-x-5');
+                toggleSpan.classList.toggle('translate-x-0');
+                
+                const iconSpan = toggleSpan.querySelector('span');
+                iconSpan.classList.toggle('opacity-0');
+                iconSpan.classList.toggle('opacity-100');
+
                 try {
-                    const response = await fetch('/profile/settings', {
+                    const response = await fetch(`${baseUrl}/api/profile/settings`, {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',
+                            'X-Requested-With': 'XMLHttpRequest'
                         },
                         body: JSON.stringify({
-                            [setting]: !isChecked
+                            setting: setting,
+                            value: newValue
                         })
                     });
+
+                    if (!response.ok) {
+                        throw new Error('Failed to update setting');
+                    }
 
                     const data = await response.json();
                     
                     if (data.success) {
-                        toggle.setAttribute('aria-checked', !isChecked);
-                        toggle.classList.toggle('bg-blue-600', !isChecked);
-                        toggle.classList.toggle('bg-gray-200', isChecked);
-                        toggle.classList.toggle('dark:bg-gray-700', isChecked);
+                        // If it's dark mode setting, update the theme
+                        if (setting === 'dark_mode') {
+                            AppState.setTheme(newValue === '1' ? 'dark' : 'light');
+                        }
                         
-                        const span = toggle.querySelector('span');
-                        span.classList.toggle('translate-x-5', !isChecked);
-                        span.classList.toggle('translate-x-0', isChecked);
-                        
-                        NotificationManager.show('Settings updated successfully', 'success');
+                        NotificationManager.show('Setting updated successfully', 'success');
                     } else {
-                        throw new Error(data.message || 'Failed to update settings');
+                        throw new Error(data.message || 'Failed to update setting');
                     }
                 } catch (error) {
-                    NotificationManager.show(error.message || 'Failed to update settings', 'error');
+                    // Revert UI changes on error
+                    toggle.dataset.value = currentValue;
+                    toggle.classList.toggle('bg-blue-600');
+                    toggle.classList.toggle('bg-gray-200', 'dark:bg-gray-700');
+                    toggle.setAttribute('aria-checked', currentValue === '1');
+                    
+                    const toggleSpan = toggle.querySelector('span');
+                    toggleSpan.classList.toggle('translate-x-5');
+                    toggleSpan.classList.toggle('translate-x-0');
+                    
+                    const iconSpan = toggleSpan.querySelector('span');
+                    iconSpan.classList.toggle('opacity-0');
+                    iconSpan.classList.toggle('opacity-100');
+
+                    NotificationManager.show(error.message, 'error');
                 }
             });
         });

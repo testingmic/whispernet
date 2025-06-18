@@ -16,10 +16,6 @@ class Landing extends WebAppController
         return $this->routing(['dashboard', 'index'], 'GET', []);
     }
 
-    public function globalVariables() {
-
-    }
-
     /**
      * Routing for the landing page
      * 
@@ -33,12 +29,14 @@ class Landing extends WebAppController
 
         // get the params
         $params = $params + $_GET;
+        $uniqueId = null;
 
         // get the class name and method name
         $className = $path;
         if(is_array($path)) {
             $className = $path[0];
             $classMethod = $path[1] ?? 'index';
+            $uniqueId = $path[2] ?? null;
         }
 
         $baseClassName = $className;
@@ -58,7 +56,6 @@ class Landing extends WebAppController
 
         // confirm if the class actually exists
         if (!class_exists($className)) {
-            return $this->templateObject->loadPage($baseClassName, ['pageTitle' => '404 Page Not Found']);
             return $this->templateObject->load404Page();
         }
 
@@ -70,7 +67,7 @@ class Landing extends WebAppController
             return $this->templateObject->load404Page();
         }
 
-        return $classObject->{$classMethod}($params);
+        return $classObject->{$classMethod}($uniqueId, $params);
 
     }
 

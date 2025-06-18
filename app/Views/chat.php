@@ -25,11 +25,12 @@
             </div>
 
             <!-- Chat List -->
-            <div class="flex-1 overflow-y-auto">
+            <div class="flex-1 overflow-y-auto bg-gray-100">
                 <div class="divide-y divide-gray-200 dark:divide-gray-700">
+                    <?= loadingSkeleton() ?>
                     <?php foreach ($chats ?? [] as $i => $chat) { ?>
                         <!-- Chat Item -->
-                        <div class="chat-item p-4 hover:bg-gray-50 dark:hover:bg-gray-700 cursor-pointer transition-colors">
+                        <!-- <div class="chat-item p-4 hover:bg-gray-50 dark:hover:bg-gray-700 cursor-pointer transition-colors">
                             <div class="flex items-center space-x-3">
                                 <div class="relative">
                                     <div class="w-12 h-12 rounded-full bg-blue-100 dark:bg-blue-900 flex items-center justify-center">
@@ -45,7 +46,7 @@
                                     <p class="text-sm text-gray-500 dark:text-gray-400 truncate">Hey, I saw your post about the event...  <?= $i ?></p>
                                 </div>
                             </div>
-                        </div>
+                        </div> -->
                     <?php } ?>
                 </div>
             </div>

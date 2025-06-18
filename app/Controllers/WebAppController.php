@@ -2,6 +2,7 @@
 
 namespace App\Controllers;
 
+use App\Controllers\BaseController;
 use App\Controllers\Templates;
 
 class WebAppController extends BaseController
@@ -28,6 +29,8 @@ class WebAppController extends BaseController
      * @return bool
      */
     public function user_loggedin() {
+        $this->session = session();
+        
         if(empty($this->session->get('user_id')) && empty($this->session->get('user_loggedin'))) {
             return false;
         }

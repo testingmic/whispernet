@@ -3,7 +3,6 @@
 namespace App\Controllers\WebApp;
 
 use App\Controllers\WebAppController;
-use CodeIgniter\Controller;
 
 class Profile extends WebAppController
 {
@@ -19,9 +18,9 @@ class Profile extends WebAppController
 
         // Get user stats
         $stats = [
-            'posts' => $this->getPostCount($userId, $postModel),
-            'comments' => $this->getCommentCount($userId, $postModel),
-            'likes' => $this->getLikeCount($userId, $postModel)
+            'posts' => $this->getPostCount($userId),
+            'comments' => $this->getCommentCount($userId),
+            'likes' => $this->getLikeCount($userId)
         ];
 
         // Get recent activity
@@ -31,7 +30,8 @@ class Profile extends WebAppController
             'pageTitle' => 'Profile',
             'user' => $user,
             'stats' => $stats,
-            'recentActivity' => $recentActivity
+            'recentActivity' => $recentActivity,
+            'baseUrl' => configs('baseUrl')
         ]);
     }
 
