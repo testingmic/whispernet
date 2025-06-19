@@ -9,6 +9,7 @@ use App\Libraries\Routing;
 class Posts extends LoadController {
 
     public $addComments = true;
+    public $justCreated = false;
 
     /**
      * List posts
@@ -37,6 +38,11 @@ class Posts extends LoadController {
         // set the payload to the posts model
         $this->postsModel->payload = $this->payload;
         
+        // check if the content or media is required
+        if(empty($this->payload['content']) && empty($this->payload['file_uploads'])) {
+            return Routing::error('Content or media is required');
+        }
+
         // make the call to the posts model
         $postId = $this->postsModel->create();
 
@@ -47,6 +53,9 @@ class Posts extends LoadController {
             $media = new Media();
             $media->uploadMedia('posts', $postId, $this->payload['userId'], $this->payload['file_uploads']);
         }
+
+        // set the just created flag
+        $this->justCreated = true;
         
         // return the post id
         return Routing::created(['data' => 'Post created successfully', 'record' => $this->view()['data']]);
@@ -218,17 +227,20 @@ class Posts extends LoadController {
             }
         }
 
-        // connect to the votes database
-        $this->postsModel->connectToDb('views');
+        // if the post is not just created, record the view
+        if(!$this->justCreated) {
+            // connect to the votes database
+            $this->postsModel->connectToDb('views');
 
-        // check if the user has already viewed the post
-        $view = $this->postsModel->checkViews($post['post_id'], $this->payload['userId'], 'posts');
-        if(empty($view)) {
-            // record the view
-            $this->postsModel->recordView($post['post_id'], $this->payload['userId'], 'posts');
+            // check if the user has already viewed the post
+            $view = $this->postsModel->checkViews($post['post_id'], $this->payload['userId'], 'posts');
+            if(empty($view)) {
+                // record the view
+                $this->postsModel->recordView($post['post_id'], $this->payload['userId'], 'posts');
 
-            // increment the views count
-            $post['views'] = $post['views'] + 1;
+                // increment the views count
+                $post['views'] = $post['views'] + 1;
+            }
         }
 
         return Routing::success(formatPosts([$post], true));

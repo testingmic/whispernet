@@ -169,6 +169,20 @@ CREATE TABLE IF NOT EXISTS message_status (
     INDEX idx_status (status)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+CREATE TABLE IF NOT EXISTS media (
+    media_id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,
+    record_id VARCHAR(255) NOT NULL,
+    section VARCHAR(100) NOT NULL,
+    media TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
+
+CREATE INDEX IF NOT EXISTS idx_user_id ON media (user_id);
+CREATE INDEX IF NOT EXISTS idx_record_id ON media (record_id);
+CREATE INDEX IF NOT EXISTS idx_section ON media (section);
+
 CREATE TABLE IF NOT EXISTS reports (
     report_id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     reporter_id BIGINT UNSIGNED NOT NULL,

@@ -39,11 +39,10 @@ class Media extends LoadController {
      * @param int $recordId
      * @param int $userId
      * @param array $filesList
-     * @param string $type
      * 
      * @return array
      */
-    public function uploadMedia($section, $recordId, $userId, $filesList, $type = 'image') {
+    public function uploadMedia($section, $recordId, $userId, $filesList) {
 
         try {
 
@@ -70,7 +69,7 @@ class Media extends LoadController {
                 $isMedia = (bool)($itype === 'media');
 
                 // loop through the files
-                foreach($filesList[$itype] as $key => $file) {
+                foreach(($filesList[$itype] ?? []) as $key => $file) {
 
                     // create a new object of the File class
                     $theFile = new \CodeIgniter\Files\File($file);
@@ -117,16 +116,14 @@ class Media extends LoadController {
                         if($isImage) {
                             $uploadedList['images']['files'][] = $uploadPath . $newName;
                             $this->createImageThumbnail($filePath . $newName, $this->thumbnailPath . '300x300_' . $newName);
-                            $this->createImageThumbnail($filePath . $newName, $this->thumbnailPath . '300x169_' . $newName);
                             $uploadedList['images']['thumbnails'][] = [
-                                $uploadPath . 'thumbnails/300x300_' . $newName,
-                                $uploadPath . 'thumbnails/300x169_' . $newName
+                                $uploadPath . 'thumbnails/300x300_' . $newName
                             ];
                         } else {
                             $uploadedList['video']['files'][] = $uploadPath . $newName;
-                            $this->createVideoThumbnail($filePath . $newName, $this->thumbnailPath . $newName);
+                            $this->createVideoThumbnail($filePath . $newName, explode('.', $this->thumbnailPath . $newName)[0] . '.jpg');
                             $uploadedList['video']['thumbnails'][] = [
-                                $uploadPath . 'thumbnails/' . $newName
+                                $uploadPath . 'thumbnails/' . explode('.', $newName)[0] . '.jpg'
                             ];
                         }
                     }
@@ -179,6 +176,9 @@ class Media extends LoadController {
     {
         $cmd = "ffmpeg -i " . escapeshellarg($sourcePath) . " -ss $timeOffset -vframes 1 " . escapeshellarg($thumbPath) . " -y";
         exec($cmd, $output, $returnVar);
+        print_r($cmd);
+        print_r($output);
+        print_r($returnVar);
         return $returnVar === 0;
     }
 

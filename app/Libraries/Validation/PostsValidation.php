@@ -49,7 +49,7 @@ class PostsValidation {
             'method' => 'POST',
             'authenticate' => true,
             'payload' => [
-                'content' => 'required|max_length[300]',
+                'content' => 'permit_empty|max_length[300]',
                 'mediaUrl' => 'permit_empty|max_length[255]',
                 'mediaType' => 'permit_empty|max_length[255]',
                 'latitude' => 'permit_empty|max_length[12]',

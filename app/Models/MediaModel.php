@@ -85,7 +85,6 @@ class MediaModel extends Model
 
             return $this->getInsertID();
         } catch (DatabaseException $e) {
-            print_r($e->getMessage());exit;
             return $e->getMessage();
         }
     }

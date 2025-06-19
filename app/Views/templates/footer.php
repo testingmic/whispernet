@@ -54,7 +54,6 @@ $favicon_color = $favicon_color ?? 'dashboard';
     installButton = document.getElementById('installButton');
     // Check if already installed
     if (window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true) {
-      console.log('App is already installed');
       if (installButton) {
         installButton.classList.add('hidden');
       }
@@ -67,31 +66,24 @@ $favicon_color = $favicon_color ?? 'dashboard';
     window.addEventListener('load', () => {
       navigator.serviceWorker.register('<?= $baseUrl ?>/assets/js/sw.js?v=<?= $version ?>')
         .then(registration => {
-          console.log('ServiceWorker registration successful:', registration);
         })
         .catch(err => {
-          console.error('ServiceWorker registration failed:', err);
         });
     });
   }
 
   // Before Install Prompt Event
   window.addEventListener('beforeinstallprompt', (e) => {
-    console.log('Before install prompt triggered');
     e.preventDefault();
     deferredPrompt = e;
-    
     if (installButton) {
-      console.log('Showing install button');
       installButton.classList.remove('hidden');
     } else {
-      console.log('Install button not found');
     }
   });
 
   // App Installed Event
   window.addEventListener('appinstalled', (evt) => {
-    console.log('App was installed');
     if (installButton) {
       installButton.classList.add('hidden');
     }
@@ -102,18 +94,13 @@ $favicon_color = $favicon_color ?? 'dashboard';
   document.addEventListener('click', function(e) {
     if (e.target.closest('#installButton')) {
       e.preventDefault();
-      console.log('Install button clicked');
       
       if (deferredPrompt) {
-        console.log('Prompting for installation');
         deferredPrompt.prompt();
         
         deferredPrompt.userChoice.then((choiceResult) => {
-          console.log('Installation choice:', choiceResult.outcome);
           if (choiceResult.outcome === 'accepted') {
-            console.log('User accepted the install prompt');
           } else {
-            console.log('User dismissed the install prompt');
           }
           deferredPrompt = null;
           
@@ -122,24 +109,9 @@ $favicon_color = $favicon_color ?? 'dashboard';
           }
         });
       } else {
-        console.log('No deferred prompt available');
       }
     }
   });
-
-  // Debug PWA criteria
-  function checkPWACriteria() {
-    console.log('=== PWA Installation Criteria Check ===');
-    console.log('Service Worker supported:', 'serviceWorker' in navigator);
-    console.log('HTTPS:', window.location.protocol === 'https:');
-    console.log('Manifest exists:', !!document.querySelector('link[rel="manifest"]'));
-    console.log('Already installed:', window.matchMedia('(display-mode: standalone)').matches);
-    console.log('User agent:', navigator.userAgent);
-    console.log('=====================================');
-  }
-
-  // Run check after page load
-  window.addEventListener('load', checkPWACriteria);
 </script>
 </body>
 

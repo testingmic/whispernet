@@ -41,13 +41,7 @@ const MicrophoneManager = {
 // PWA Service Worker Registration
 if ('serviceWorker' in navigator && userLoggedIn) {
     window.addEventListener('load', () => {
-        navigator.serviceWorker.register(`${baseUrl}/assets/js/sw.js`)
-            .then(registration => {
-                console.log('ServiceWorker registration successful');
-            })
-            .catch(err => {
-                console.log('ServiceWorker registration failed: ', err);
-            });
+        navigator.serviceWorker.register(`${baseUrl}/assets/js/sw.js`).then(registration => {}).catch(err => {});
     });
 }
 
@@ -475,6 +469,271 @@ const ChatManager = {
     }
 };
 
+const MediaManager = {
+    postMediaPreview: null,
+
+    init() {
+        this.postMediaPreview = document.getElementById('postMediaPreview');
+        this.previewContainer = document.getElementById('previewContainer');
+        this.audioPreview = document.getElementById('audioPreview');
+        this.audioPlayer = document.getElementById('audioPlayer');
+    },
+    renderMedia(mediaFiles = []) {
+        let html = '<div class="media-display-container space-y-4 mt-3">';
+        if(typeof mediaFiles.images !== 'undefined') {
+            if(mediaFiles.images?.files.length > 0) {
+                html += '<div class="media-grid grid grid-cols-3 gap-2">';
+                mediaFiles.images?.files.forEach((img, key) => {
+                    let _300thumb = mediaFiles.images?.thumbnails[key][0];
+                    let image = img;
+                    html += `
+                        <div class="media-item image-item" data-type="image" data-src="${baseUrl}/assets/uploads/${image}" data-thumbnail="${baseUrl}/assets/uploads/${_300thumb}">
+                            <div class="relative group cursor-pointer overflow-hidden rounded-lg bg-gray-100 aspect-square">
+                                <img src="${baseUrl}/assets/uploads/${_300thumb}" alt="Sample Image" class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105">
+                                <div class="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 transition-all duration-300 flex items-center justify-center">
+                                    <svg class="w-8 h-8 text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7"></path>
+                                    </svg>
+                                </div>
+                                <div class="absolute top-2 right-2 bg-black bg-opacity-50 text-white text-xs px-2 py-1 rounded">
+                                    IMG
+                                </div>
+                            </div>
+                        </div>`;
+                });
+                html += '</div>';
+            }
+        }
+        if(typeof mediaFiles.audio !== 'undefined') {
+            if(mediaFiles.audio?.files.length > 0) {
+                mediaFiles.audio?.files.forEach((audio, key) => {
+                    html += `
+                    <audio controls class="bg-gradient-to-r from-blue-50 to-purple-50 rounded-lg p-4 border border-gray-200 w-full" download=false>
+                        <source src="${baseUrl}/assets/uploads/${audio}" type="audio/mpeg">
+                        Your browser does not support the audio element.
+                    </audio>`;
+                });
+            }
+        }
+        if(typeof mediaFiles.video !== 'undefined') {
+            if(mediaFiles.video?.files.length > 0) {
+                mediaFiles.video?.files.forEach((video, key) => {
+                    let _300thumb = mediaFiles.video?.thumbnails[key][0];
+                    html += `<div class="media-item video-item" data-type="video" data-src="${baseUrl}/assets/uploads/${video}" data-thumbnail="${baseUrl}/assets/uploads/${_300thumb}">
+                        <div class="relative group cursor-pointer overflow-hidden rounded-lg bg-gray-100 aspect-video">
+                            <img src="${baseUrl}/assets/uploads/${_300thumb}" alt="Video Thumbnail" class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105">
+                            <div class="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-30 transition-all duration-300 flex items-center justify-center">
+                                <div class="bg-white bg-opacity-90 rounded-full p-3 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                                    <svg class="w-6 h-6 text-gray-800" fill="currentColor" viewBox="0 0 24 24">
+                                        <path d="M8 5v14l11-7z"/>
+                                    </svg>
+                                </div>
+                            </div>
+                            <div class="absolute top-2 right-2 bg-black bg-opacity-50 text-white text-xs px-2 py-1 rounded">
+                                VID
+                            </div>
+                            <div class="absolute bottom-2 left-2 bg-black bg-opacity-50 text-white text-xs px-2 py-1 rounded">
+                                2:34
+                            </div>
+                        </div>
+                    </div>`;
+                });
+            }
+        }
+
+        html += '</div>';
+        $(`#postMediaPreview`).html(html);
+        new MediaDisplay();
+    }
+}
+
+class MediaDisplay {
+    constructor() {
+        this.currentIndex = 0;
+        this.mediaItems = [];
+        this.modal = document.getElementById('fullViewModal');
+        this.modalContent = document.getElementById('modalContent');
+        this.loadingSpinner = document.getElementById('loadingSpinner');
+        this.closeBtn = document.getElementById('closeModal');
+        this.prevBtn = document.getElementById('prevBtn');
+        this.nextBtn = document.getElementById('nextBtn');
+        
+        this.init();
+    }
+
+    init() {
+        // Collect all media items
+        this.mediaItems = Array.from(document.querySelectorAll('.media-item'));
+        
+        // Add click listeners to media items
+        this.mediaItems.forEach((item, index) => {
+            item.addEventListener('click', () => this.openFullView(index));
+        });
+
+        // Modal controls
+        this.closeBtn.addEventListener('click', () => this.closeFullView());
+        this.prevBtn.addEventListener('click', () => this.navigate(-1));
+        this.nextBtn.addEventListener('click', () => this.navigate(1));
+        
+        // Keyboard navigation
+        document.addEventListener('keydown', (e) => {
+            if (!this.modal.classList.contains('hidden')) {
+                switch(e.key) {
+                    case 'Escape':
+                        this.closeFullView();
+                        break;
+                    case 'ArrowLeft':
+                        this.navigate(-1);
+                        break;
+                    case 'ArrowRight':
+                        this.navigate(1);
+                        break;
+                }
+            }
+        });
+
+        // Click outside to close
+        this.modal.addEventListener('click', (e) => {
+            if (e.target === this.modal) {
+                this.closeFullView();
+            }
+        });
+
+        // Audio player functionality
+        this.initAudioPlayers();
+    }
+
+    openFullView(index) {
+        this.currentIndex = index;
+        const item = this.mediaItems[index];
+        const type = item.dataset.type;
+        const src = item.dataset.src;
+
+        this.modal.classList.remove('hidden');
+        this.showLoading();
+
+        if (type === 'image') {
+            this.loadImage(src);
+        } else if (type === 'video') {
+            this.loadVideo(src);
+        } else if (type === 'audio') {
+            this.loadAudio(src);
+        }
+
+        this.updateNavigationButtons();
+    }
+
+    loadImage(src) {
+        const img = new Image();
+        img.onload = () => {
+            this.hideLoading();
+            this.modalContent.innerHTML = `
+                <img src="${src}" alt="Full size image" class="max-w-full max-h-full object-contain">
+            `;
+        };
+        img.onerror = () => {
+            this.hideLoading();
+            this.showError('Failed to load image');
+        };
+        img.src = src;
+    }
+
+    loadVideo(src) {
+        this.hideLoading();
+        this.modalContent.innerHTML = `
+            <video controls autoplay class="max-w-full max-h-full">
+                <source src="${src}" type="video/mp4">
+                Your browser does not support the video tag.
+            </video>
+        `;
+    }
+
+    loadAudio(src) {
+        this.hideLoading();
+        this.modalContent.innerHTML = `
+            <div class="bg-white rounded-lg p-8 max-w-md w-full">
+                <div class="text-center">
+                    <div class="w-24 h-24 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center mx-auto mb-6">
+                        <svg class="w-12 h-12 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3"></path>
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-semibold text-gray-900 mb-4">Audio Player</h3>
+                    <audio controls class="w-full">
+                        <source src="${src}" type="audio/mpeg">
+                        Your browser does not support the audio tag.
+                    </audio>
+                </div>
+            </div>
+        `;
+    }
+
+    navigate(direction) {
+        const newIndex = this.currentIndex + direction;
+        if (newIndex >= 0 && newIndex < this.mediaItems.length) {
+            this.openFullView(newIndex);
+        }
+    }
+
+    updateNavigationButtons() {
+        this.prevBtn.style.display = this.currentIndex > 0 ? 'block' : 'none';
+        this.nextBtn.style.display = this.currentIndex < this.mediaItems.length - 1 ? 'block' : 'none';
+    }
+
+    closeFullView() {
+        this.modal.classList.add('hidden');
+        this.modalContent.innerHTML = '';
+    }
+
+    showLoading() {
+        this.loadingSpinner.classList.remove('hidden');
+    }
+
+    hideLoading() {
+        this.loadingSpinner.classList.add('hidden');
+    }
+
+    showError(message) {
+        this.modalContent.innerHTML = `
+            <div class="bg-white rounded-lg p-8 text-center">
+                <svg class="w-16 h-16 text-red-500 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+                <p class="text-gray-600">${message}</p>
+            </div>
+        `;
+    }
+
+    initAudioPlayers() {
+        document.querySelectorAll('.play-audio-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const audioItem = btn.closest('.audio-item');
+                const audioSrc = audioItem.dataset.src;
+                
+                // Create temporary audio element
+                const audio = new Audio(audioSrc);
+                audio.play();
+                
+                // Update button state
+                btn.innerHTML = `
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 9v6m4-6v6m7-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                `;
+                
+                audio.addEventListener('ended', () => {
+                    btn.innerHTML = `
+                        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M8 5v14l11-7z"/>
+                        </svg>
+                    `;
+                });
+            });
+        });
+    }
+}
+
 // Post Management
 const PostManager = {
     posts: [],
@@ -513,6 +772,7 @@ const PostManager = {
             if(data.status == 'success') {
                 postContainer.innerHTML = '';
                 postContainer.appendChild(this.createPostElement(data.data, true));
+                MediaManager.renderMedia(data.data.post_media);
                 // comments
                 const commentsContainer = document.getElementById('commentsList');
                 if(commentsContainer) {
@@ -533,7 +793,7 @@ const PostManager = {
     createCommentElement(comment) {
         const div = document.createElement('div');
         PostCommentManager.commentsList.push(comment.comment_id);
-        div.className = 'comment-card bg-white rounded-lg shadow-sm p-4 mb-4';
+        div.className = 'comment-card bg-white rounded-lg shadow-sm p-4 mb-4 bg-gradient-to-r border-t border-blue-500 hover:border-blue-400 hover:shadow-md transition-all duration-300';
         div.innerHTML = `
             <div class="flex items-center justify-between mb-2">
                 <div class="flex items-center space-x-2">
@@ -691,7 +951,7 @@ const PostManager = {
     },
     createPostElement(post, single = false) {
         const div = document.createElement('div');
-        div.className = `post-card bg-white rounded-lg shadow-sm p-4 ${single ? '' : ' mb-4 hover:bg-blue-200'} cursor-pointer hover:shadow-md transition-all duration-300`;
+        div.className = `post-card bg-white border rounded-lg shadow-sm p-4 ${single ? '' : ' mb-4 hover:bg-gradient-to-r hover:from-blue-50 hover:to-indigo-50 rounded-lg hover:border-blue-400'} cursor-pointer hover:shadow-md transition-all duration-300`;
         if(!single) {
             // div.setAttribute('onclick', `window.location.href='${baseUrl}/posts/view/${post.post_id}'`);
         }
@@ -2380,6 +2640,7 @@ document.addEventListener('DOMContentLoaded', () => {
     PostCommentManager.init();
     NewMessageManager.init();
     ProfileManager.init();
+    MediaManager.init();
     NotificationManager.init();
     ImprovedPostCreationForm.init();
 });
@@ -2445,10 +2706,6 @@ async function startVideoCall(localVideoElem, remoteVideoElem, signalingSend, si
 
     return { peer, stream, call };
 }
-
-// Usage Example:
-// const { peer, stream, call } = await startVideoCall(localVideo, remoteVideo, sendSignal, onSignal);
-// call(); // To initiate 
 
 function uploadAudio(audioBlob) {
     const formData = new FormData();

@@ -212,7 +212,7 @@ class PostsModel extends Model {
             $sql = "SELECT p.*, u.username, u.profile_image, m.media as post_media
                     FROM posts p 
                     INNER JOIN users u ON p.user_id = u.user_id 
-                    INNER JOIN media m ON p.post_id = m.record_id AND m.section = 'posts'
+                    LEFT JOIN media m ON p.post_id = m.record_id AND m.section = 'posts'
                     WHERE p.post_id = ?";
             $post = $this->db->query($sql, [$this->payload['postId']])->getRowArray();
 
