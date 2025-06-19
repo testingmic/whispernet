@@ -5,36 +5,15 @@ $currentChat = $currentChat ?? null;
 $messages = $messages ?? [];
 ?>
 
-<div class="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
-    <!-- Header Section -->
-    <div class="relative overflow-hidden">
-        <div class="absolute inset-0 bg-gradient-to-r from-blue-600/10 to-purple-600/10"></div>
-        <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-16 pb-8">
-            <div class="text-center">
-                <div class="inline-flex items-center px-4 py-2 rounded-full bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-200 text-sm font-medium mb-6">
-                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path>
-                    </svg>
-                    Messaging Center
-                </div>
-                <h1 class="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mb-6">
-                    Connect & Chat
-                </h1>
-                <p class="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto leading-relaxed">
-                    Start conversations with friends or create group chats to collaborate
-                </p>
-            </div>
-        </div>
-    </div>
-
+<div class="dbg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 flex items-center justify-center p-4">
     <!-- Main Chat Interface -->
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-16">
+    <div class="w-full max-w-7xl">
         <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-xl border border-gray-200 dark:border-gray-700 overflow-hidden">
-            <div class="flex flex-col lg:flex-row h-[600px] lg:h-[600px]">
+            <div class="flex flex-col lg:flex-row h-[80vh] lg:h-[70vh]">
                 <!-- Left Sidebar - Chat List & Search -->
-                <div class="w-full lg:w-80 border-b lg:border-b-0 lg:border-r border-gray-200 dark:border-gray-700 flex flex-col h-64 lg:h-full">
+                <div class="w-full lg:w-80 border-b lg:border-b-0 lg:border-r border-gray-200 dark:border-gray-700 flex flex-col h-96 lg:h-full">
                     <!-- Header with New Chat Button -->
-                    <div class="p-4 border-b border-gray-200 dark:border-gray-700">
+                    <div class="p-4 border-b border-gray-200 dark:border-gray-700 flex-shrink-0">
                         <div class="flex items-center justify-between mb-4">
                             <h2 class="text-lg font-bold text-gray-900 dark:text-white">Messages</h2>
                             <button id="newChatBtn" class="p-2 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-lg hover:from-blue-600 hover:to-purple-700 transition-all duration-200">
@@ -55,7 +34,7 @@ $messages = $messages ?? [];
                     </div>
 
                     <!-- Chat List -->
-                    <div class="flex-1 overflow-y-auto">
+                    <div class="flex-1 overflow-y-auto min-h-0">
                         <div id="chatList" class="space-y-1 p-2">
                             <!-- Individual Chats -->
                             <div class="space-y-2">
