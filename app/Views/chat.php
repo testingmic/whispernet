@@ -11,7 +11,7 @@ $messages = $messages ?? [];
         <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-xl border border-gray-200 dark:border-gray-700 overflow-hidden">
             <div class="flex flex-col lg:flex-row h-[80vh] lg:h-[70vh]">
                 <!-- Left Sidebar - Chat List & Search -->
-                <div class="w-full lg:w-80 border-b lg:border-b-0 lg:border-r border-gray-200 dark:border-gray-700 flex flex-col h-96 lg:h-full">
+                <div class="w-full lg:w-80 border-b lg:border-b-0 lg:border-r border-gray-200 dark:border-gray-700 flex flex-col h-[28rem] lg:h-full">
                     <!-- Header with New Chat Button -->
                     <div class="p-4 border-b border-gray-200 dark:border-gray-700 flex-shrink-0">
                         <div class="flex items-center justify-between mb-4">
