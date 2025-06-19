@@ -6,7 +6,7 @@
  * @param bool $single
  * @return array
  */
-function formatPosts($posts = [], $single = false) {
+function formatPosts($posts = [], $single = false, $userId = null) {
     $formattedPosts = [];
 
     if(!is_array($posts)) {
@@ -32,6 +32,9 @@ function formatPosts($posts = [], $single = false) {
             'updated_at' => $post['updated_at'],
             'user_id' => $post['user_id'],
             'city' => $post['city'],
+            'manage' => [
+                'delete' => (bool)($post['user_id'] == $userId),
+            ],
             // 'media_url' => $post['media_url'],
             // 'longitude' => $post['longitude'],
             // 'latitude' => $post['latitude'],

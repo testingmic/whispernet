@@ -24,7 +24,7 @@ class Posts extends LoadController {
         // make the call to the posts model
         $posts = $this->postsModel->list();
 
-        return Routing::success(formatPosts($posts['posts']), $posts['pagination']);
+        return Routing::success(formatPosts($posts['posts'], false, $this->payload['userId']), $posts['pagination']);
 
     }
 
@@ -88,6 +88,9 @@ class Posts extends LoadController {
 
         // format the comments
         foreach($comments as $key => $comment) {
+            $comments[$key]['manage'] = [
+                'delete' => (bool)($comment['user_id'] == $this->payload['userId']),
+            ];
             $comments[$key]['comment_id'] = (int)$comment['comment_id'];
             $comments[$key]['ago'] = formatTimeAgo($comment['created_at']);
         }
@@ -108,6 +111,9 @@ class Posts extends LoadController {
         $comments = $this->postsModel->viewComments($this->payload['postId']);
 
         foreach($comments as $key => $comment) {
+            $comments[$key]['manage'] = [
+                'delete' => (bool)($comment['user_id'] == $this->payload['userId']),
+            ];
             $comments[$key]['ago'] = formatTimeAgo($comment['created_at']);
         }
 
@@ -131,6 +137,9 @@ class Posts extends LoadController {
         // make the call to the posts model
         $comment = $this->postsModel->viewSingleComment($this->payload['commentId']);
         $comment['ago'] = formatTimeAgo($comment['created_at']);
+        $comment['manage'] = [
+            'delete' => (bool)($comment['user_id'] == $this->payload['userId']),
+        ];
 
         $comment['comment_id'] = (int)$comment['comment_id'];
 
@@ -262,7 +271,7 @@ class Posts extends LoadController {
             }
         }
 
-        return Routing::success(formatPosts([$post], true));
+        return Routing::success(formatPosts([$post], true, $this->payload['userId']));
         
     }
 
@@ -312,7 +321,7 @@ class Posts extends LoadController {
         // make the call to the posts model
         $posts = $this->postsModel->nearby();
 
-        return Routing::success(formatPosts($posts));
+        return Routing::success(formatPosts($posts, false, $this->payload['userId']));
 
     }
 
@@ -406,7 +415,7 @@ class Posts extends LoadController {
         // make the call to the posts model
         $posts = $this->postsModel->trending();
 
-        return Routing::success(formatPosts($posts));
+        return Routing::success(formatPosts($posts, false, $this->payload['userId']));
 
     }
     

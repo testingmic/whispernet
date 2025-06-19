@@ -1,8 +1,8 @@
-<div class="min-h-screen bg-gradient-to-br pt-5 from-slate-50 via-blue-50 to-indigo-100 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
+<div class="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
 
     <!-- Location Header Card -->
-    <div class="max-w-4xl mx-auto px-4 mt-0 sm:px-6 lg:px-8 mb-8">
-        <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-xl border border-gray-200 dark:border-gray-700 p-6">
+    <div class="max-w-4xl mx-auto mt-0 sm:px-6 lg:px-8 mb-4">
+        <div class="bg-white dark:bg-gray-800 shadow-xl border border-gray-200 dark:border-gray-700 p-6">
             <div class="flex items-center justify-between">
                 <div class="flex items-center space-x-4">
                     <div class="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl flex items-center justify-center">
@@ -119,7 +119,7 @@
         </div>
 
         <!-- Load More Posts -->
-        <div id="oldPostsContainer" class="mt-8">
+        <div id="oldPostsContainer" class="mt-8 mb-4">
             <button onclick="return PostManager.showOldPosts()" class="w-full bg-gradient-to-r from-blue-500 to-purple-600 text-white font-semibold rounded-2xl py-4 px-6 hover:from-blue-600 hover:to-purple-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transform transition-all duration-200 hover:scale-105 shadow-xl">
                 <div class="flex items-center justify-center space-x-3">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
