@@ -1605,9 +1605,9 @@ const ImprovedPostCreationForm = {
             body: formData
         })
         .then(response => {
-            alert('response from request ' + JSON.stringify(response));
+            alert('response from request ' + response.text());
             if (!response.ok) {
-                alert('response not ok', response.status);
+                alert('response not ok ' + response.status);
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
             return response.json();
