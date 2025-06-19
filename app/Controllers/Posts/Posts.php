@@ -354,7 +354,7 @@ class Posts extends LoadController {
         $this->postsModel->vote($section, $column);
 
         // get the post votes
-        $votes = $this->postsModel->db->query("SELECT downvotes, upvotes FROM posts WHERE post_id = ?", [$this->payload['recordId']])->getRowArray();
+        $votes = $this->postsModel->db->query("SELECT downvotes, upvotes FROM {$section} WHERE {$column} = ?", [$this->payload['recordId']])->getRowArray();
 
         if($firstTime && ((int)$this->payload['ownerId'] !== (int)$this->payload['userId'])) {
             $this->postsModel->connectToDb('notification');
