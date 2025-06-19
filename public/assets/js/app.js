@@ -482,7 +482,7 @@ const PostManager = {
     currentPage: 1,
     isLoading: false,
     lastPostId: 0,
-    postLimit: 10,
+    postLimit: 50,
     lastOldPostId: 0,
     unreadPostsCount: 0,
     unreadPosts: [],
@@ -599,7 +599,7 @@ const PostManager = {
         });
     },
     async showOldPosts() {
-        this.loadMorePosts(false, false, this.lastOldPostId, 10);
+        this.loadMorePosts(false, false, this.lastOldPostId, 20);
     },
     async loadLatestPosts() {
         // load unread posts
@@ -666,10 +666,10 @@ const PostManager = {
             }
         });
 
-        if(this.lastOldPostId !== 0) {
-
+        if(lastOldPostId && posts.length == 0) {
+            document.getElementById('noPostsContainer').classList.remove('hidden');
+            document.getElementById('oldPostsContainer').classList.add('hidden');
         }
-
         if(this.unreadPostsCount > 0) {
             // filter out unread post by unique post_id
             this.unreadPosts = Array.from(new Map(this.unreadPosts.map(p => [p.post_id, p])).values());
