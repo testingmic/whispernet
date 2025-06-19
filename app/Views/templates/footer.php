@@ -3,6 +3,7 @@
 $favicon_color = $favicon_color ?? 'dashboard';
 ?>
 </main>
+<?php if(!empty($footerHidden)) { ?>
 <nav id="footerBanner" data-footer-hidden="<?= !empty($footerHidden) ?>" <?= !empty($footerHidden) ? 'style="display: none;"' : '' ?> class="bg-white bg-gradient-to-br from-red-200 via-green-200 to-blue-200 shadow-lg fixed bottom-0 left-0 right-0 z-50">
   <div class="max-w-7xl mx-auto px-4">
     <div class="flex justify-around h-16">
@@ -41,6 +42,7 @@ $favicon_color = $favicon_color ?? 'dashboard';
     </div>
   </div>
 </nav>
+<?php } ?>
 </div>
 <script src="<?= $baseUrl ?>/assets/js/app.js?v=<?= $version ?>" defer></script>
 <script src="<?= $baseUrl ?>/assets/js/feed-context.js?v=<?= $version ?>" defer></script>
