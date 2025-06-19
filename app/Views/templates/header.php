@@ -52,7 +52,7 @@ $favicon_color = $favicon_color ?? 'dashboard';
 
     <!-- Form Container -->
     <div class="relative bg-white dark:bg-gray-800 shadow-lg rounded-b-2xl">
-      <div class="px-4 py-4">
+      <div class="p-2">
         <div class="text-xl font-medium text-gray-900 dark:text-white mb-2">
           <button type="button" onclick="return PostManager.closeCreateModal()" ; id="backButton" class="text-gray-500 text-base hover:text-gray-700 dark:hover:text-gray-300 flex items-center space-x-2">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
