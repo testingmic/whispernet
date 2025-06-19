@@ -9,7 +9,7 @@ $messages = $messages ?? [];
     <!-- Main Chat Interface -->
     <div class="w-full max-w-7xl">
         <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-xl border border-gray-200 dark:border-gray-700 overflow-hidden">
-            <div class="flex flex-col lg:flex-row h-[80vh] lg:h-[70vh]">
+            <div class="flex flex-col lg:flex-row h-[75vh] lg:h-[70vh]">
                 <!-- Left Sidebar - Chat List & Search -->
                 <div class="w-full lg:w-80 border-b lg:border-b-0 lg:border-r border-gray-200 dark:border-gray-700 flex flex-col h-[28rem] lg:h-full">
                     <!-- Header with New Chat Button -->
@@ -139,7 +139,7 @@ $messages = $messages ?? [];
                     </div>
 
                     <!-- Message Input -->
-                    <div id="messageInputArea" class="p-4 border-t border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 hidden">
+                    <div id="messageInputArea" class="p-2 pt-3 border-t border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 hidden">
                         <form id="messageForm" class="flex items-end space-x-2 sm:space-x-4">
                             <button type="button" id="attachButton" class="p-2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
                                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -148,10 +148,7 @@ $messages = $messages ?? [];
                             </button>
                             <div class="flex-1 relative">
                                 <textarea id="messageInput" rows="1" placeholder="Type a message..." 
-                                         class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white resize-none outline-none transition-all duration-200"></textarea>
-                                <div class="absolute bottom-2 right-2 text-xs text-gray-400">
-                                    <span id="charCount">0</span>/500
-                                </div>
+                                         class="w-full px-2 py-3 border border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white resize-none outline-none transition-all duration-200"></textarea>
                             </div>
                             <button type="button" id="recordButton" class="p-2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
                                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
