@@ -8,13 +8,13 @@
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
                     </svg>
-                    <span class="text-sm text-gray-900 dark:text-gray-300 location-display">Loading location...</span>
+                    <span class="text-sm text-gray-900 dark:text-gray-700 location-display">Loading location...</span>
                 </div>
-                <!-- <button id="changeLocationBtn" class="text-sm text-blue-600 hover:text-blue-500 dark:text-blue-400 dark:hover:text-blue-300">
+                <!-- <button id="changeLocationBtn" class="text-sm text-blue-600 hover:text-blue-500 dark:text-blue-400 dark:hover:text-blue-700">
                     Change Location
                 </button> -->
             </div>
-            <p class="mt-1 text-xs text-gray-900 dark:text-gray-300">
+            <p class="mt-1 text-xs text-gray-900 dark:text-gray-700">
                 Posts are displayed within a 35km radius of your location
             </p>
         </div>
