@@ -533,7 +533,7 @@ const MediaManager = {
                                 VID
                             </div>
                             <div class="absolute bottom-2 left-2 bg-black bg-opacity-50 text-white text-xs px-2 py-1 rounded">
-                                2:34
+                                Video
                             </div>
                         </div>
                     </div>`;
@@ -1287,7 +1287,7 @@ const ImprovedPostCreationForm = {
         // Add remove functionality
         const removeBtn = previewContainer.querySelector('.remove-file');
         removeBtn.addEventListener('click', function() {
-            removeFile(fileId);
+            ImprovedPostCreationForm.removeFile(fileId);
         });
     },
 

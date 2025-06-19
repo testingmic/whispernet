@@ -64,6 +64,9 @@ class Media extends LoadController {
                 $filesList['audio'] = [$filesList['audio']];
             }
 
+            // get the video thumbnails
+            $videoThumbnail = $filesList['thumbnails'] ?? [];
+
             foreach(['audio', 'media'] as $itype) {
 
                 $isMedia = (bool)($itype === 'media');
@@ -120,11 +123,20 @@ class Media extends LoadController {
                                 $uploadPath . 'thumbnails/300x300_' . $newName
                             ];
                         } else {
+
+                            // get the video thumbnail
+                            $vidThumb = $videoThumbnail[$key] ?? null;
                             $uploadedList['video']['files'][] = $uploadPath . $newName;
-                            $this->createVideoThumbnail($filePath . $newName, explode('.', $this->thumbnailPath . $newName)[0] . '.jpg');
-                            $uploadedList['video']['thumbnails'][] = [
-                                $uploadPath . 'thumbnails/' . explode('.', $newName)[0] . '.jpg'
-                            ];
+
+                            // move the thumbnail to the thumbnail path
+                            $vidThumb->move($this->thumbnailPath, explode('.', $newName)[0] . '.jpg');
+
+                            // add the thumbnail to the uploaded list
+                            if(!empty($videoThumbnail)) {
+                                $uploadedList['video']['thumbnails'][] = [
+                                    $uploadPath . 'thumbnails/'. explode('.', $newName)[0] . '.jpg'
+                                ];
+                            }
                         }
                     }
                     
@@ -147,6 +159,8 @@ class Media extends LoadController {
             return $mediaModel->createMediaRecord($uploadedList, $section, $recordId, $userId);
 
         } catch (Exception $e) {
+            print_r($e->getMessage());
+            exit;
             return $e->getMessage();
         }
     }
@@ -164,22 +178,6 @@ class Media extends LoadController {
             ->withFile($sourcePath)
             ->resize($width, $height, true, 'width')
             ->save($thumbPath);
-    }
-
-    /**
-     * Create a thumbnail for a video
-     * @param string $sourcePath
-     * @param string $thumbPath
-     * @param string $timeOffset
-     */
-    public function createVideoThumbnail($sourcePath, $thumbPath, $timeOffset = '00:00:01')
-    {
-        $cmd = "ffmpeg -i " . escapeshellarg($sourcePath) . " -ss $timeOffset -vframes 1 " . escapeshellarg($thumbPath) . " -y";
-        exec($cmd, $output, $returnVar);
-        print_r($cmd);
-        print_r($output);
-        print_r($returnVar);
-        return $returnVar === 0;
     }
 
     /**

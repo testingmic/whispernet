@@ -41,11 +41,17 @@ function formatPosts($posts = [], $single = false) {
             'comments_count' => $post['comments_count'] ?? 0,
             'profile_image' => $post['profile_image'],
             'post_media' => !empty($post['post_media']) ? json_decode($post['post_media'], true) : [],
+            'has_media' => !empty($post['post_media']) ? true : false,
             'score' => $post['score'] ?? 0,
             'distance' => round($post['distance'] ?? 0, 2),
             'upvotes' => $post['upvotes'],
             'downvotes' => $post['downvotes'],
         ];
+
+        if(!empty($post['post_media'])) {
+            $formattedPosts[$key]['media_types'] = array_keys($formattedPosts[$key]['post_media']);
+        }
+
         $formattedPosts[$key]['comments'] = $post['comments'] ?? [];
         $key++;
     }
