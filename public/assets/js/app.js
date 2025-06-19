@@ -745,6 +745,7 @@ const PostManager = {
     lastOldPostId: 0,
     unreadPostsCount: 0,
     unreadPosts: [],
+    userLocation: [],
     init() {
         this.loadInitialFeed();
         this.setupPostInteractions();
@@ -883,8 +884,12 @@ const PostManager = {
             if(!dontTrigger && !lastOldPostId) {
                 setInterval(() => this.loadLatestPosts(), 10000);
             }
+            this.userLocation = data?.location ?? [];
             if(data.data.length == 0) {
                 document.getElementById('oldPostsContainer').classList.add('hidden');
+            }
+            if(this.userLocation && $(`.location-display`).length > 0) {
+                $(`.location-display`).html(`${this.userLocation.city}, ${this.userLocation.country}`);
             }
         } catch (error) { } finally {
             this.isLoading = false;
@@ -956,7 +961,6 @@ const PostManager = {
         if(!single) {
             // div.setAttribute('onclick', `window.location.href='${baseUrl}/posts/view/${post.post_id}'`);
         }
-        console.log(post);
         div.innerHTML = `
             <div class="flex items-center justify-between mb-2" ${single ? '' : `onclick="return PostManager.changeDirection('${post.post_id}')"`}>
                 <div class="flex items-center space-x-2">

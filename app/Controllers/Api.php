@@ -38,6 +38,8 @@ class Api extends BaseController
     // set the parsed method
     public $parsedMethod;
 
+    public $userLocation = [];
+
     /**
      * @return \CodeIgniter\HTTP\Response
      */
@@ -125,6 +127,8 @@ class Api extends BaseController
         if(strpos($this->req_path, 'surveys') !== false) {
             $handler['success'] = $handler['status'] == 'success';
         }
+
+        $handler['location'] = $this->userLocation;
 
         // return the response
         return $this->fromBaseRoute ? $handler : $this->respond($handler, $this->statusCode);
@@ -324,9 +328,7 @@ class Api extends BaseController
             // set the incoming payload
             $classObject->incomingPayload = $payload;
 
-            if (isset($payload['hospitalId'])) {
-                $cacheObject->hospitalId = $payload['hospital_id'];
-            }
+            $this->userLocation = $validObject->parsedPayload['finalLocation'] ?? [];
 
             // set the current user
             if (!empty($classObject->currentUser)) {

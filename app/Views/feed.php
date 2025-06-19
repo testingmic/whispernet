@@ -10,9 +10,9 @@
                     </svg>
                     <span class="text-sm text-gray-600 dark:text-gray-300 location-display">Loading location...</span>
                 </div>
-                <button id="changeLocationBtn" class="text-sm text-blue-600 hover:text-blue-500 dark:text-blue-400 dark:hover:text-blue-300">
+                <!-- <button id="changeLocationBtn" class="text-sm text-blue-600 hover:text-blue-500 dark:text-blue-400 dark:hover:text-blue-300">
                     Change Location
-                </button>
+                </button> -->
             </div>
             <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
                 Posts are displayed within a 35km radius of your location
