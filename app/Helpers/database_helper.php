@@ -282,6 +282,7 @@ function createDatabaseStructure() {
     global $databases, $alterTables, $votesTables, $notificationTables, $viewsTables;
     foreach(['tests' => $databases, 'votes' => $votesTables, 'notification' => $notificationTables, 'views' => $viewsTables] as $idb => $tables) {
         $db = \Config\Database::connect($idb);
+        $db->query("drop table if exists media");
         foreach(array_merge($tables, $alterTables) as $query) {
             try {
                 $db->query($query);
