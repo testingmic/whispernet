@@ -478,8 +478,12 @@ const ChatManager = {
 // Post Management
 const PostManager = {
     posts: [],
+    loadedPostIds: [],
     currentPage: 1,
     isLoading: false,
+    lastPostId: 0,
+    unreadPostsCount: 0,
+    unreadPosts: [],
     init() {
         this.setupInfiniteScroll();
         this.setupPostInteractions();
@@ -606,30 +610,74 @@ const PostManager = {
             }
         });
     },
-    async loadMorePosts() {
+    async loadLatestPosts() {
+        // load unread posts
+        this.loadMorePosts(true, true);
+        // filter out unread post by unique post_id
+        this.unreadPosts = Array.from(new Map(this.unreadPosts.map(p => [p.post_id, p])).values());
+        this.unreadPostsCount = this.unreadPosts.length;
+    },
+    async loadMorePosts(dontTrigger = false, unreadCounter = false) {
         if (this.isLoading) return;
         this.isLoading = true;
         try {
             const response = await fetch(`${baseUrl}/api/posts/nearby?last_record_id=${this.currentPage}&longitude=${longitude}&latitude=${latitude}&token=${AppState.getToken()}&limit=20`);
             const data = await response.json();
             this.posts = [...this.posts, ...data.data];
-            this.renderPosts(data.data);
+            this.lastPostId = data?.data[0]?.post_id || 0;
+            this.renderPosts(data.data, dontTrigger, unreadCounter);
+            if(!dontTrigger) {
+                setInterval(() => this.loadLatestPosts(), 10000);
+            }
         } catch (error) { } finally {
             this.isLoading = false;
         }
     },
-    renderPosts(posts) {
+    showUnreadPosts() {
+        this.renderPosts(this.unreadPosts, true, false);
+        this.unreadPosts = [];
+        this.unreadPostsCount = 0;
+        document.getElementById('unreadPostsCountContainer').classList.add('hidden');
+    },
+    renderPosts(posts, sendToTop = false, unreadCounter = false) {
         const container = document.getElementById('feedContainer');
         if (!container) return;
         $('.loading-skeleton').remove();
 
         posts.forEach((post, key) => {
-            const postElement = this.createPostElement(post);
-            container.appendChild(postElement);
+            if(this.loadedPostIds.includes(post.post_id)) {
+                return;
+            }
+            if(!unreadCounter) {
+                this.loadedPostIds.push(post.post_id);
+            }
             if(key == 0) {
                 this.currentPage = post.post_id;
             }
+            if(unreadCounter) {
+                this.unreadPosts.push(post);
+                this.unreadPostsCount = this.unreadPosts.length;
+            } else {
+                const postElement = this.createPostElement(post);
+                if(sendToTop) {
+                    container.insertBefore(postElement, container.firstChild);
+                } else {
+                    container.appendChild(postElement);
+                }
+            }
         });
+        if(this.unreadPostsCount > 0) {
+            // filter out unread post by unique post_id
+            this.unreadPosts = Array.from(new Map(this.unreadPosts.map(p => [p.post_id, p])).values());
+            this.unreadPostsCount = this.unreadPosts.length;
+            // show unread posts count
+            if(unreadCounter) {
+                document.getElementById('unreadPostsCount').innerHTML = this.unreadPostsCount;
+                document.getElementById('unreadPostsCountContainer').classList.remove('hidden');
+            } else {
+                document.getElementById('unreadPostsCountContainer').classList.add('hidden');
+            }
+        }
     },
     changeDirection(postId) {
         return window.location.href = `${baseUrl}/posts/view/${postId}`;
@@ -1184,6 +1232,8 @@ const ImprovedPostCreationForm = {
                 const postElement = PostManager.createPostElement(data.record);
                 feedContainer.insertBefore(postElement, feedContainer.firstChild);
                 PostManager.closeCreateModal();
+                PostManager.loadedPostIds.push(data.record.post_id);
+                PostManager.currentPage = data.record.post_id;
             } else {
                 // Show error message
                 showNotification(data.message || 'Failed to create post. Please try again.', 'error');

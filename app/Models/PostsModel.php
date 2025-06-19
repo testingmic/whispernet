@@ -334,14 +334,18 @@ class PostsModel extends Model {
                         ->where("(6371 * acos(cos(radians({$this->payload['latitude']})) * cos(radians(latitude)) * 
                             cos(radians(longitude) - radians({$this->payload['longitude']})) + 
                             sin(radians({$this->payload['latitude']})) * sin(radians(latitude)))) <= ", $this->payload['radius'])
-                        ->orderBy('distance, p.created_at DESC')
+                        ->orderBy('distance, p.post_id DESC')
                         ->limit($this->payload['limit'])
                         ->offset($offset);
 
             if(!empty($this->payload['location'])) {
                 $posts->like('p.city', $this->payload['location'], 'both');
             }
-            
+
+            if(!empty($this->payload['last_record_id'])) {
+                $posts->where('p.post_id >=', $this->payload['last_record_id']);
+            }
+
             $query = $posts->get();
 
             return $query->getResultArray();

@@ -53,7 +53,12 @@
     </div>
 </div>
 
-<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-4 mb-2">
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-2 mb-2">
+    <div id="unreadPostsCountContainer" class="text-center hidden bg-gray-600 font-bold dark:bg-gray-800 border border-gray-200 dark:border-gray-700
+        shadow-sm text-gray-700 dark:text-gray-200 rounded-md p-2 mb-2 w-full mx-auto cursor-pointer
+        bg-gradient-to-br from-red-200 via-green-200 to-blue-200 shadow-lg" onclick="return PostManager.showUnreadPosts()">
+        <span id="unreadPostsCount" class="text-sm">0</span> new posts
+    </div>
     <div id="feedContainer" class="scroll-sentinel">
         <?= loadingSkeleton(1, false); ?>
     </div>
