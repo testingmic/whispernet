@@ -956,6 +956,7 @@ const PostManager = {
         if(!single) {
             // div.setAttribute('onclick', `window.location.href='${baseUrl}/posts/view/${post.post_id}'`);
         }
+        console.log(post);
         div.innerHTML = `
             <div class="flex items-center justify-between mb-2" ${single ? '' : `onclick="return PostManager.changeDirection('${post.post_id}')"`}>
                 <div class="flex items-center space-x-2">
@@ -987,6 +988,31 @@ const PostManager = {
                 </button>
             </div>
             <div ${single ? '' : `onclick="return PostManager.changeDirection('${post.post_id}')"`} class="text-gray-800 mb-3">${post.content}</div>
+            ${post.has_media ? `
+                <div class="flex flex-wrap gap-2 text-sm text-gray-500 mb-2" ${single ? '' : `onclick="return PostManager.changeDirection('${post.post_id}')"`}>
+                    ${post.media_types.includes('images') ? `
+                    <span class="inline-flex items-center px-2 py-1 bg-blue-100 text-blue-800 rounded-full">
+                        <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/>
+                        </svg>
+                        Images
+                    </span>` : ''}
+                    ${post.media_types.includes('video') ? `
+                    <span class="inline-flex items-center px-2 py-1 bg-green-100 text-green-800 rounded-full">
+                        <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M17 10.5V7c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1v10c0 .55.45 1 1 1h12c.55 0 1-.45 1-1v-3.5l4 4v-11l-4 4z"/>
+                        </svg>
+                        Videos
+                    </span>` : ''}
+                    ${post.media_types.includes('audio') ? `
+                    <span class="inline-flex items-center px-2 py-1 bg-purple-100 text-purple-800 rounded-full">
+                        <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3"></path>
+                        </svg>
+                        Audio
+                    </span>` : ''}
+                </div>` : ''
+            }
             <div class="flex items-center justify-between">
                 <div class="flex items-center space-x-4">
                     <button class="flex items-center space-x-1 text-gray-500 hover:text-blue-500" data-posts-id="${post.post_id}">
