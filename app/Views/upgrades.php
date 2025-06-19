@@ -22,13 +22,13 @@
     </div>
 
     <!-- Pricing Cards -->
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-16">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-16 p-4">
         <div class="grid grid-cols-1 md:grid-cols-3 gap-8 lg:gap-12">
             <?php 
             $packages = [
                 [
                     'name' => 'Starter',
-                    'price' => '$4.99',
+                    'price' => '₵4.99',
                     'period' => 'per month',
                     'description' => 'Perfect for getting started',
                     'features' => [
@@ -44,7 +44,7 @@
                 ],
                 [
                     'name' => 'Professional',
-                    'price' => '$9.99',
+                    'price' => '₵9.99',
                     'period' => 'per month',
                     'description' => 'Most popular choice',
                     'features' => [
@@ -62,7 +62,7 @@
                 ],
                 [
                     'name' => 'Enterprise',
-                    'price' => '$19.99',
+                    'price' => '₵19.99',
                     'period' => 'per month',
                     'description' => 'For power users & teams',
                     'features' => [
@@ -84,7 +84,7 @@
             <?php foreach ($packages as $pkg): ?>
                 <div class="relative group">
                     <?php if ($pkg['popular']): ?>
-                        <div class="absolute -top-4 left-1/2 transform -translate-x-1/2">
+                        <div class="absolute -top-4 left-1/2 transform -translate-x-1/2 z-10">
                             <span class="bg-gradient-to-r from-purple-600 to-pink-600 text-white px-6 py-2 rounded-full text-sm font-semibold shadow-lg">
                                 Most Popular
                             </span>
@@ -169,9 +169,8 @@
 
     <!-- Enhanced Subscribe Modal -->
     <div id="subscribeModal" class="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm z-50 hidden" role="dialog" aria-modal="true">
-        <div class="min-h-screen px-4 text-center">
-            <span class="inline-block h-screen align-middle" aria-hidden="true">&#8203;</span>
-            <div class="inline-block w-full max-w-lg p-8 my-8 overflow-hidden text-left align-middle transition-all transform bg-white dark:bg-gray-800 shadow-2xl rounded-2xl">
+        <div class="min-h-screen px-4 text-center flex items-center justify-center">
+            <div class="inline-block w-full max-w-lg p-6 sm:p-8 overflow-hidden text-left align-middle transition-all transform bg-white dark:bg-gray-800 shadow-2xl rounded-2xl max-h-[90vh] overflow-y-auto">
                 <!-- Modal Header -->
                 <div class="flex items-center justify-between mb-6">
                     <div>
@@ -190,7 +189,7 @@
                     <div class="flex items-center justify-between">
                         <div>
                             <h4 class="font-semibold text-gray-900 dark:text-white" id="planName">Professional Plan</h4>
-                            <p class="text-gray-600 dark:text-gray-400" id="planPrice">$9.99/month</p>
+                            <p class="text-gray-600 dark:text-gray-400" id="planPrice">₵9.99/month</p>
                         </div>
                         <div class="w-12 h-12 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full flex items-center justify-center">
                             <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -242,20 +241,6 @@
                                placeholder="Full Name">
                     </div>
 
-                    <!-- Security Notice -->
-                    <div class="bg-gray-50 dark:bg-gray-700/50 rounded-xl p-4">
-                        <div class="flex items-start">
-                            <svg class="w-5 h-5 text-green-500 mt-0.5 mr-3" fill="currentColor" viewBox="0 0 20 20">
-                                <path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd"></path>
-                            </svg>
-                            <div>
-                                <p class="text-sm text-gray-600 dark:text-gray-400">
-                                    Your payment information is encrypted and secure. We use industry-standard SSL encryption to protect your data.
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-
                     <!-- Action Buttons -->
                     <div class="flex justify-end space-x-4 pt-4">
                         <button type="button" id="cancelSubscribe" 
@@ -264,7 +249,7 @@
                         </button>
                         <button type="submit" 
                                 class="px-8 py-3 bg-gradient-to-r from-blue-500 to-purple-600 text-white font-semibold rounded-xl hover:from-blue-600 hover:to-purple-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transform transition-all duration-200 hover:scale-105">
-                            Complete Purchase
+                            Proceed
                         </button>
                     </div>
                 </form>
@@ -272,6 +257,8 @@
         </div>
     </div>
 </div>
+
+<div class="px-4 py-4 sm:p-4">&nbsp;</div>
 
 <script>
 // Enhanced Modal Management
@@ -287,9 +274,9 @@ const planPrice = document.getElementById('planPrice');
 
 // Plan details mapping
 const planDetails = {
-    'starter': { name: 'Starter Plan', price: '$4.99/month' },
-    'professional': { name: 'Professional Plan', price: '$9.99/month' },
-    'enterprise': { name: 'Enterprise Plan', price: '$19.99/month' }
+    'starter': { name: 'Starter Plan', price: '₵4.99/month' },
+    'professional': { name: 'Professional Plan', price: '₵9.99/month' },
+    'enterprise': { name: 'Enterprise Plan', price: '₵19.99/month' }
 };
 
 // Enhanced button click handlers
