@@ -310,7 +310,7 @@ class RequestHandler extends BaseController
         $payload['longitude'] = $location['longitude'] ?? $longs[1];
 
         $payload['finalLocation'] = [
-            'api' => $location['api_url'] ?? null,
+            // 'api' => $location['api_url'] ?? null,
             'city' => $location['city'] ?? null,
             'district' => $location['district'] ?? null,
             'country' => $location['country'] ?? null,
