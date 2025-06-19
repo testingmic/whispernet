@@ -64,7 +64,7 @@ $favicon_color = $favicon_color ?? 'dashboard';
 
 
         <div class="max-w-2xl mx-auto">
-          <div class="bg-white rounded-lg">
+          <div class="bg-white rounded-lg p-2">
 
             <form id="createPostFormUnique" class="space-y-2" onsubmit="return false;">
               <!-- Textarea Section -->
