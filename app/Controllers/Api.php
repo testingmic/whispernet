@@ -76,6 +76,11 @@ class Api extends BaseController
         // escape the payload
         $payload = array_map('esc', $payload);
 
+        // set the file uploads
+        if(!empty($_FILES) && is_array($_FILES)) {
+            $payload['file_uploads'] = $this->request->getFiles();
+        }
+
         // generate a user fingerprint
         $fingerprint = $this->generateFingerprint();
         $payload['ipaddress'] = $fingerprint['ipaddress'];
@@ -283,7 +288,7 @@ class Api extends BaseController
             return $validPayload;
         }
 
-        // try {
+        try {
             // if the unique id is set, set the method to view, update or delete
             if ($this->uniqueId && preg_match('/^[0-9]+$/', $method)) {
                 if ($this->requestMethod == 'GET') {
@@ -372,10 +377,10 @@ class Api extends BaseController
             
             // return the final response
             return $finalResponse;
-        // } catch (\Exception $e) {
-        //     $this->statusCode = 500;
+        } catch (\Exception $e) {
+            $this->statusCode = 500;
 
-        //     return Routing::error($e->getMessage());
-        // }
+            return Routing::error($e->getMessage());
+        }
     }
 }

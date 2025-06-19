@@ -38,8 +38,9 @@ class PostsModel extends Model {
             $offset = ($this->payload['offset'] - 1) * $this->payload['limit'];
 
             $userPosts = $this->db->table('posts p')
-                        ->select("p.*, u.full_name as username, u.profile_image")
+                        ->select("p.*, u.full_name as username, u.profile_image, m.media as post_media")
                         ->join('users u', 'p.user_id = u.user_id')
+                        ->join('media m', 'p.post_id = m.record_id AND m.section = "posts"', 'left')
                         ->where('p.user_id', $this->payload['userId'])
                         ->orderBy('p.created_at DESC')
                         ->limit($this->payload['limit'])
@@ -208,9 +209,10 @@ class PostsModel extends Model {
      */
     public function view() {
         try {
-            $sql = "SELECT p.*, u.username, u.profile_image 
+            $sql = "SELECT p.*, u.username, u.profile_image, m.media as post_media
                     FROM posts p 
                     INNER JOIN users u ON p.user_id = u.user_id 
+                    INNER JOIN media m ON p.post_id = m.record_id AND m.section = 'posts'
                     WHERE p.post_id = ?";
             $post = $this->db->query($sql, [$this->payload['postId']])->getRowArray();
 
@@ -274,8 +276,9 @@ class PostsModel extends Model {
     public function loadTrending($offset, $hours) {
         
         $posts = $this->db->table('posts p')
-                    ->select("p.*, u.full_name as username, u.profile_image, (p.upvotes - p.downvotes) as score")
+                    ->select("p.*, u.full_name as username, u.profile_image, (p.upvotes - p.downvotes) as score, m.media as post_media")
                     ->join('users u', 'p.user_id = u.user_id')
+                    ->join('media m', 'p.post_id = m.record_id AND m.section = "posts"', 'left')
                     ->where('p.created_at >=', date('Y-m-d H:i:s', strtotime("-{$hours} hours")))
                     ->orderBy('score DESC, p.created_at DESC')
                     ->limit($this->payload['limit'])
@@ -332,8 +335,10 @@ class PostsModel extends Model {
                         ->select("p.*, u.full_name as username, u.profile_image,
                            (6371 * acos(cos(radians({$this->payload['latitude']})) * cos(radians(latitude)) * 
                             cos(radians(longitude) - radians({$this->payload['longitude']})) + 
-                            sin(radians({$this->payload['latitude']})) * sin(radians(latitude)))) AS distance")
+                            sin(radians({$this->payload['latitude']})) * sin(radians(latitude)))) AS distance,
+                            m.media as post_media")
                         ->join('users u', 'p.user_id = u.user_id')
+                        ->join('media m', 'p.post_id = m.record_id AND m.section = "posts"', 'left')
                         ->where("(6371 * acos(cos(radians({$this->payload['latitude']})) * cos(radians(latitude)) * 
                             cos(radians(longitude) - radians({$this->payload['longitude']})) + 
                             sin(radians({$this->payload['latitude']})) * sin(radians(latitude)))) <= ", $this->payload['radius'])

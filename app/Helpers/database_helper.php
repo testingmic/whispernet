@@ -63,25 +63,15 @@ $databases = [
     "CREATE TABLE IF NOT EXISTS media (
         media_id INTEGER PRIMARY KEY,
         user_id INTEGER NOT NULL,
-        file_name TEXT NOT NULL,
-        file_path TEXT NOT NULL,
-        file_type TEXT CHECK(file_type IN ('image', 'video')) NOT NULL,
-        mime_type TEXT NOT NULL,
-        file_size INTEGER NOT NULL,
-        width INTEGER,
-        height INTEGER,
-        duration INTEGER,
-        thumbnail_path TEXT,
-        is_processed BOOLEAN DEFAULT 0,
-        processing_status TEXT CHECK(processing_status IN ('pending', 'processing', 'completed', 'failed')) DEFAULT 'pending',
+        record_id TEXT NOT NULL,
+        section TEXT NOT NULL,
+        media TEXT,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-        FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     );
     CREATE INDEX IF NOT EXISTS user_id ON media (user_id);
-    CREATE INDEX IF NOT EXISTS file_type ON media (file_type);
-    CREATE INDEX IF NOT EXISTS is_processed ON media (is_processed);
-    CREATE INDEX IF NOT EXISTS processing_status ON media (processing_status);",
+    CREATE INDEX IF NOT EXISTS record_id ON media (record_id);
+    CREATE INDEX IF NOT EXISTS section ON media (section);",
 
     "CREATE TABLE IF NOT EXISTS posts (
         post_id INTEGER PRIMARY KEY,
@@ -290,7 +280,6 @@ $notificationTables = [
 
 function createDatabaseStructure() {
     global $databases, $alterTables, $votesTables, $notificationTables, $viewsTables;
-
     foreach(['tests' => $databases, 'votes' => $votesTables, 'notification' => $notificationTables, 'views' => $viewsTables] as $idb => $tables) {
         $db = \Config\Database::connect($idb);
         foreach(array_merge($tables, $alterTables) as $query) {

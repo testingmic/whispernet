@@ -85,6 +85,9 @@ writable/uploads/*
 # pnpm-lock.yaml
 package-lock.json
 
+public/assets/uploads/*
+public/assets/uploads/thumbnails/*
+
 public/tmp/*
 !public/tmp/index.html
 .env

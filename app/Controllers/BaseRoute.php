@@ -66,6 +66,11 @@ class BaseRoute extends BaseController
         // return the payload
         $fullPayload = $_GET + $_POST + $jsonData;
 
+        // set the file uploads
+        if(!empty($_FILES) && is_array($_FILES)) {
+            $fullPayload['file_uploads'] = $this->request->getFiles();
+        }
+
         // return the payload
         return empty($fullPayload) ? ['unknown' => 'payload'] : $fullPayload;
     }

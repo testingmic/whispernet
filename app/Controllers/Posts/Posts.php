@@ -2,6 +2,7 @@
 namespace App\Controllers\Posts;
 
 use App\Controllers\LoadController;
+use App\Controllers\Media\Media;
 
 use App\Libraries\Routing;
 
@@ -40,6 +41,12 @@ class Posts extends LoadController {
         $postId = $this->postsModel->create();
 
         $this->payload['postId'] = $postId;
+
+        // upload the media files if any
+        if(!empty($this->payload['file_uploads'])) {
+            $media = new Media();
+            $media->uploadMedia('posts', $postId, $this->payload['userId'], $this->payload['file_uploads']);
+        }
         
         // return the post id
         return Routing::created(['data' => 'Post created successfully', 'record' => $this->view()['data']]);

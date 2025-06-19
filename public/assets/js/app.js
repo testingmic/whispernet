@@ -807,7 +807,7 @@ const ImprovedPostCreationForm = {
     recordingStartTime: null,
     uploadedFiles: [],
     MAX_RECORDING_TIME: 30, // 30 seconds
-    MAX_IMAGE_SIZE: 2 * 1024 * 1024, // 2MB in bytes
+    MAX_IMAGE_SIZE: 5 * 1024 * 1024, // 2MB in bytes
     isRecording: false,
     isPaused: false,
     totalRecordingTime: 0,
@@ -865,13 +865,13 @@ const ImprovedPostCreationForm = {
 
                 // Check file size based on type
                 if (file.type.startsWith('image/') && file.size > ImprovedPostCreationForm.MAX_IMAGE_SIZE) {
-                    ImprovedPostCreationForm.showNotification(`Image "${file.name}" is too large. Maximum size is 2MB.`, 'error');
+                    ImprovedPostCreationForm.showNotification(`Image "${file.name}" is too large. Maximum size is 5MB.`, 'error');
                     return;
                 }
 
                 // Check file size for videos (10MB limit)
-                if (file.type.startsWith('video/') && file.size > 10 * 1024 * 1024) {
-                    ImprovedPostCreationForm.showNotification(`Video "${file.name}" is too large. Maximum size is 10MB.`, 'error');
+                if (file.type.startsWith('video/') && file.size > 20 * 1024 * 1024) {
+                    ImprovedPostCreationForm.showNotification(`Video "${file.name}" is too large. Maximum size is 20MB.`, 'error');
                     return;
                 }
 
