@@ -1605,7 +1605,7 @@ const ImprovedPostCreationForm = {
             body: formData
         })
         .then(response => {
-            alert('response from request');
+            alert('response from request ' + JSON.stringify(response));
             if (!response.ok) {
                 alert('response not ok', response.status);
                 throw new Error(`HTTP error! status: ${response.status}`);
@@ -1641,7 +1641,7 @@ const ImprovedPostCreationForm = {
                 `;
         })
         .catch(error => {
-            alert('the request failed', error);
+            alert('the request failed ' + JSON.stringify(error));
             console.error('Error:', error);
             showNotification('An error occurred while creating the post. Please try again.', 'error');
             ImprovedPostCreationForm.submitBtn.disabled = false;
