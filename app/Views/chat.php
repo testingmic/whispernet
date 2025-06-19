@@ -71,7 +71,7 @@
                         </div>
                         <div>
                             <h2 class="text-sm font-medium text-gray-900 dark:text-white" data-chat-name="N/A">N/A</h2>
-                            <p class="text-xs text-gray-500 dark:text-gray-400" data-chat-status="N/A">N/A</p>
+                            <p class="text-xs text-gray-500 dark:text-gray-400">N/A</p>
                         </div>
                     </div>
                     <div class="flex items-center space-x-2">
@@ -97,11 +97,13 @@
             <!-- Messages Area -->
             <div class="flex-1 overflow-y-auto bg-gray-50 dark:bg-gray-900 p-4">
                 <div class="max-w-2xl mx-auto space-y-4">
-                    <!-- <div class="flex items-center justify-center">
+                    <!-- Date Separator -->
+                    <div class="flex items-center justify-center">
                         <span class="text-xs text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-gray-800 px-3 py-1 rounded-full">Today</span>
-                    </div> -->
+                    </div>
 
-                    <!-- <div class="flex items-start space-x-2">
+                    <!-- Received Message -->
+                    <div class="flex items-start space-x-2">
                         <div class="flex-shrink-0">
                             <div class="w-8 h-8 rounded-full bg-blue-100 dark:bg-blue-900 flex items-center justify-center">
                                 <span class="text-blue-600 dark:text-blue-300 text-xs">AS</span>
@@ -115,6 +117,7 @@
                         </div>
                     </div>
 
+                    <!-- Sent Message -->
                     <div class="flex items-start space-x-2 justify-end">
                         <div class="flex-1">
                             <div class="bg-blue-600 rounded-lg px-4 py-2 shadow-sm">
@@ -129,6 +132,7 @@
                         </div>
                     </div>
 
+                    <!-- Image Message -->
                     <div class="flex items-start space-x-2">
                         <div class="flex-shrink-0">
                             <div class="w-8 h-8 rounded-full bg-blue-100 dark:bg-blue-900 flex items-center justify-center">
@@ -144,7 +148,7 @@
                             </div>
                             <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">2:32 PM</p>
                         </div>
-                    </div> -->
+                    </div>
                 </div>
             </div>
 
@@ -227,7 +231,7 @@
 </div>
 
 <!-- Emoji Picker (Hidden by default) -->
-<div id="emojiPicker" class=" fixed bottom-24 right-4 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 p-4">
+<div id="emojiPicker" class="hidden fixed bottom-24 right-4 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 p-4">
     <!-- Emoji grid will be populated by JavaScript -->
 </div>
 
