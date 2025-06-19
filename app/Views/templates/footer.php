@@ -32,7 +32,7 @@ $favicon_color = $favicon_color ?? 'dashboard';
           <span class="text-xs mt-1">Profile</span>
         </a>
       <?php } ?>
-      <button id="installButton" class="flex flex-col items-center justify-center px-3 py-2 text-gray-900 hover:text-blue-500">
+      <button id="installButton" class="hidden flex flex-col items-center justify-center px-3 py-2 text-gray-900 hover:text-blue-500">
         <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
         </svg>
@@ -45,50 +45,101 @@ $favicon_color = $favicon_color ?? 'dashboard';
 <script src="<?= $baseUrl ?>/assets/js/app.js?v=<?= $version ?>" defer></script>
 <script src="<?= $baseUrl ?>/assets/js/feed-context.js?v=<?= $version ?>" defer></script>
 <script>
+  // PWA Installation Handler
+  let deferredPrompt;
+  let installButton;
+
+  // Initialize when DOM is loaded
+  document.addEventListener('DOMContentLoaded', function() {
+    installButton = document.getElementById('installButton');
+    // Check if already installed
+    if (window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true) {
+      console.log('App is already installed');
+      if (installButton) {
+        installButton.classList.add('hidden');
+      }
+      return;
+    }
+  });
+
+  // Service Worker Registration
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
-      navigator.serviceWorker.register('<?= $baseUrl ?>/assets/js/sw.js?v=<?= $version ?>&path=<?= $baseUrl ?>')
+      navigator.serviceWorker.register('<?= $baseUrl ?>/assets/js/sw.js?v=<?= $version ?>')
         .then(registration => {
-          console.log('ServiceWorker registration successful');
+          console.log('ServiceWorker registration successful:', registration);
         })
         .catch(err => {
-          console.log('ServiceWorker registration failed: ', err);
+          console.error('ServiceWorker registration failed:', err);
         });
     });
   }
 
-  let deferredPrompt;
-  const installButton = document.getElementById('installButton');
-
+  // Before Install Prompt Event
   window.addEventListener('beforeinstallprompt', (e) => {
+    console.log('Before install prompt triggered');
     e.preventDefault();
     deferredPrompt = e;
+    
     if (installButton) {
+      console.log('Showing install button');
       installButton.classList.remove('hidden');
+    } else {
+      console.log('Install button not found');
     }
   });
 
-  const footerBanner = document.getElementById('footerBanner');
+  // App Installed Event
   window.addEventListener('appinstalled', (evt) => {
+    console.log('App was installed');
     if (installButton) {
-      installButton?.classList?.add('hidden');
-      if (footerBanner.getAttribute('data-footer-hidden') === '1') {
-        footerBanner.classList.add('hidden');
-      }
+      installButton.classList.add('hidden');
     }
     deferredPrompt = null;
   });
 
-  installButton?.addEventListener('click', async () => {
-    if (deferredPrompt) {
-      deferredPrompt.prompt();
-      const {
-        outcome
-      } = await deferredPrompt.userChoice;
-      deferredPrompt = null;
-      installButton?.classList?.add('hidden');
+  // Install Button Click Handler
+  document.addEventListener('click', function(e) {
+    if (e.target.closest('#installButton')) {
+      e.preventDefault();
+      console.log('Install button clicked');
+      
+      if (deferredPrompt) {
+        console.log('Prompting for installation');
+        deferredPrompt.prompt();
+        
+        deferredPrompt.userChoice.then((choiceResult) => {
+          console.log('Installation choice:', choiceResult.outcome);
+          if (choiceResult.outcome === 'accepted') {
+            console.log('User accepted the install prompt');
+          } else {
+            console.log('User dismissed the install prompt');
+          }
+          deferredPrompt = null;
+          
+          if (installButton) {
+            installButton.classList.add('hidden');
+          }
+        });
+      } else {
+        console.log('No deferred prompt available');
+      }
     }
   });
+
+  // Debug PWA criteria
+  function checkPWACriteria() {
+    console.log('=== PWA Installation Criteria Check ===');
+    console.log('Service Worker supported:', 'serviceWorker' in navigator);
+    console.log('HTTPS:', window.location.protocol === 'https:');
+    console.log('Manifest exists:', !!document.querySelector('link[rel="manifest"]'));
+    console.log('Already installed:', window.matchMedia('(display-mode: standalone)').matches);
+    console.log('User agent:', navigator.userAgent);
+    console.log('=====================================');
+  }
+
+  // Run check after page load
+  window.addEventListener('load', checkPWACriteria);
 </script>
 </body>
 

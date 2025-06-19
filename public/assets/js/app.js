@@ -811,7 +811,6 @@ const ImprovedPostCreationForm = {
     max_content_length: 300,
 
     init() {
-        console.log('PostCreationForm initialized');
         this.form = document.getElementById('createPostFormUnique');
         this.textarea = document.getElementById('content');
         this.charCount = document.getElementById('charCount');
@@ -2020,17 +2019,13 @@ const PostCommentManager = {
 const NewMessageManager = {
     init() {
         try {
-            console.log('Initializing NewMessageManager...');
             this.modal = document.getElementById('newMessageModal');
             this.searchInput = document.getElementById('userSearchInput');
             this.searchResults = document.getElementById('userSearchResults');
-            
             if (!this.modal || !this.searchInput || !this.searchResults) {
-                return;
+                // return;
             }
-            
             this.setupEventListeners();
-            console.log('NewMessageManager initialized successfully');
         } catch (error) {
         }
     },
