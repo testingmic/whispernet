@@ -269,6 +269,18 @@ class RequestHandler extends BaseController
         $cacheKey = create_cache_key('user', 'location', ['user_id' => $payload['userId']]);
         $locationInfo = $this->cacheObject->get($cacheKey);
 
+        if(!empty($payload['longitude']) && !empty($payload['latitude'])) {
+            if(strlen($payload['longitude']) == '4' || strlen($payload['latitude']) == '4') {
+                $payload['longitude'] = '';
+                $payload['latitude'] = '';
+                $locationInfo = [];
+            }
+            if(strlen($payload['longitude']) == 'null' || strlen($payload['latitude']) == 'null') {
+                $payload['longitude'] = '';
+                $payload['latitude'] = '';
+                $locationInfo = [];
+            }
+        }
         if(!empty($locationInfo)) {
             $location = $locationInfo;
         } else {
