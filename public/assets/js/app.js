@@ -482,7 +482,7 @@ const PostManager = {
     currentPage: 1,
     isLoading: false,
     lastPostId: 0,
-    postLimit: 50,
+    postLimit: 10,
     lastOldPostId: 0,
     unreadPostsCount: 0,
     unreadPosts: [],
@@ -585,8 +585,6 @@ const PostManager = {
     },
     loadInitialFeed() {
         if($('#feedContainer').length == 0) return;
-        PostManager.posts = [];
-        PostManager.currentPage = 1;
         const container = document.getElementById('#feedContainer');
         if (container) container.innerHTML = '';
         PostManager.loadMorePosts();
@@ -601,7 +599,7 @@ const PostManager = {
         });
     },
     async showOldPosts() {
-        this.loadMorePosts(false, false, this.lastOldPostId, 20);
+        this.loadMorePosts(false, false, this.lastOldPostId, 10);
     },
     async loadLatestPosts() {
         // load unread posts
@@ -620,8 +618,8 @@ const PostManager = {
             const data = await response.json();
             this.posts = [...this.posts, ...data.data];
             this.lastPostId = data?.data[0]?.post_id || 0;
-            this.renderPosts(data.data, dontTrigger, unreadCounter);
-            if(!dontTrigger) {
+            this.renderPosts(data.data, dontTrigger, unreadCounter, lastOldPostId);
+            if(!dontTrigger && !lastOldPostId) {
                 setInterval(() => this.loadLatestPosts(), 10000);
             }
         } catch (error) { } finally {
@@ -634,7 +632,7 @@ const PostManager = {
         this.unreadPostsCount = 0;
         document.getElementById('unreadPostsCountContainer').classList.add('hidden');
     },
-    renderPosts(posts, sendToTop = false, unreadCounter = false) {
+    renderPosts(posts, sendToTop = false, unreadCounter = false, lastOldPostId = 0) {
         const container = document.getElementById('feedContainer');
         if (!container) return;
         $('.loading-skeleton').remove();
@@ -646,11 +644,13 @@ const PostManager = {
             if(!unreadCounter) {
                 this.loadedPostIds.push(post.post_id);
             }
-            if(key == 0) {
+            if(key == 0 && !lastOldPostId) {
                 this.currentPage = post.post_id;
             }
-            this.lastOldPostId = post.post_id;
-            if(post.post_id < this.lastOldPostId && this.lastOldPostId !== 0) {
+            if(this.lastOldPostId == 0) {
+                this.lastOldPostId = post.post_id;
+            }
+            if(post.post_id < this.lastOldPostId) {
                 this.lastOldPostId = post.post_id;
             }
             if(unreadCounter) {
@@ -1228,6 +1228,7 @@ const ImprovedPostCreationForm = {
         })
         .then(data => {
             if (data.status == 'success') {
+                PostManager.showUnreadPosts();
                 // Show success message
                 AppState.showNotification('Post created successfully!', 'success');
                 ImprovedPostCreationForm.resetForm();
