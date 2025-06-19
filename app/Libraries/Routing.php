@@ -58,9 +58,9 @@ class Routing {
      * @param string $message
      * @return array
      */
-    public static function error($message, $record = [], $statusCode = 200) {
+    public static function error($message, $record = [], $statusCode = 400) {
         return [
-            'status' => $statusCode == 200 ? 'error' : 'success',
+            'status' => $statusCode == 400 ? 'error' : 'success',
             'data' => $message,
             'message' => $message,
             'record' => $record,

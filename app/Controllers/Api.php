@@ -185,9 +185,17 @@ class Api extends BaseController
         // get the class name
         $classname = '\\App\\Controllers\\'.ucfirst($class).'\\'.ucfirst($class);
 
+        if(!empty($payload['longitude'])) {
+            $payload['longitude'] = substr($payload['longitude'], 0, 12);
+        }
+
+        if(!empty($payload['latitude'])) {
+            $payload['latitude'] = substr($payload['latitude'], 0, 12);
+        }
+
         // confirm if the class actually exists
         if (!class_exists($classname)) {
-            $this->statusCode = 200;
+            $this->statusCode = 400;
 
             return [
                 'status' => 'error',
@@ -262,7 +270,7 @@ class Api extends BaseController
 
         // if the request method is PUT or DELETE and the unique id is empty, return an error
         if (in_array($this->requestMethod, ['PUT', 'DELETE']) && empty($this->uniqueId)) {
-            $this->statusCode = 200;
+            $this->statusCode = 400;
 
             return [
                 'status' => 'error',
@@ -307,7 +315,7 @@ class Api extends BaseController
             // confirm if the method exists
             if (!method_exists($classObject, $method)) {
                 // set the status code
-                $this->statusCode = 200;
+                $this->statusCode = 400;
 
                 return [
                     'status' => 'error',

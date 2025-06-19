@@ -52,8 +52,8 @@ class PostsValidation {
                 'content' => 'permit_empty|max_length[300]',
                 'mediaUrl' => 'permit_empty|max_length[255]',
                 'mediaType' => 'permit_empty|max_length[255]',
-                'latitude' => 'permit_empty|max_length[12]',
-                'longitude' => 'permit_empty|max_length[12]',
+                'latitude' => 'permit_empty|max_length[32]',
+                'longitude' => 'permit_empty|max_length[32]',
             ]
         ],
         'comments:postId' => [
@@ -87,8 +87,8 @@ class PostsValidation {
                 'content' => 'required|max_length[300]',
                 'mediaUrl' => 'permit_empty|max_length[255]',
                 'mediaType' => 'permit_empty|max_length[255]',
-                'latitude' => 'permit_empty|max_length[12]',
-                'longitude' => 'permit_empty|max_length[12]',
+                'latitude' => 'permit_empty|max_length[32]',
+                'longitude' => 'permit_empty|max_length[32]',
             ]
         ],
 
