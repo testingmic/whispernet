@@ -1,12 +1,12 @@
-const CACHE_NAME = 'WhisperChat-v1';
+const CACHE_NAME = 'WhisperChat-v2';
 const baseUrl = '';
 const ASSETS_TO_CACHE = [
-    `${baseUrl}/`,
-    `${baseUrl}/assets/css/app.css`,
-    `${baseUrl}/assets/js/app.js`,
-    `${baseUrl}/assets/images/logo.png`,
-    `${baseUrl}/assets/icons/Icon.192.png`,
-    `${baseUrl}/assets/icons/Icon.512.png`
+    `/`,
+    `/assets/css/app.css`,
+    `/assets/js/app.js`,
+    `/assets/images/logo.png`,
+    `/assets/icons/Icon.192.png`,
+    `/assets/icons/Icon.512.png`
 ];
 
 // Install Service Worker
@@ -74,8 +74,8 @@ self.addEventListener('fetch', (event) => {
 self.addEventListener('push', (event) => {
     const options = {
         body: event.data.text(),
-        icon: `${baseUrl}/assets/icons/Icon.192.png`,
-        badge: `${baseUrl}/assets/icons/Icon.72.png`,
+        icon: `/assets/icons/Icon.192.png`,
+        badge: `/assets/icons/Icon.72.png`,
         vibrate: [100, 50, 100],
         data: {
             dateOfArrival: Date.now(),
@@ -85,12 +85,12 @@ self.addEventListener('push', (event) => {
             {
                 action: 'explore',
                 title: 'View Post',
-                icon: `${baseUrl}/assets/images/icons/checkmark.png`
+                icon: `/assets/images/icons/checkmark.png`
             },
             {
                 action: 'close',
                 title: 'Close',
-                icon: `${baseUrl}/assets/images/icons/xmark.png`
+                icon: `/assets/images/icons/xmark.png`
             }
         ]
     };
@@ -125,7 +125,7 @@ async function syncPosts() {
         
         for (const post of posts) {
             try {
-                const response = await fetch(`${baseUrl}/api/posts`, {
+                const response = await fetch(`/api/posts`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'

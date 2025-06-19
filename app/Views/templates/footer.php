@@ -128,22 +128,16 @@ document.addEventListener('DOMContentLoaded', function() {
 // Service Worker Registration with Enhanced Error Handling
 if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
-        navigator.serviceWorker.register('<?= $baseUrl ?>/assets/js/sw.js?v=<?= $version ?>')
+        navigator.serviceWorker.register('<?= $baseUrl ?>/assets/js/sw.js')
             .then(registration => {
-                alert('SW registered');
-                
                 // Check for updates
                 registration.addEventListener('updatefound', () => {
                   alert('newWorker inside');
                     const newWorker = registration.installing;
-                    newWorker.addEventListener('statechange', () => {
-                      alert('statechange');
-                    });
+                    newWorker.addEventListener('statechange', () => {});
                 });
             })
-            .catch(err => {
-              alert('SW registration failed');
-            });
+            .catch(err => { });
     });
 }
 
