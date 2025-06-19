@@ -2,7 +2,7 @@
     <div class="bg-white rounded-lg shadow-sm p-4">
         <h1 class="text-xl font-semibold text-gray-900 mb-6">Create New Post</h1>
         
-        <form id="createPostFormUnique" class="space-y-6" onsubmit="return false;">
+        <form id="createPostFormUnique" class="space-y-2" onsubmit="return false;">
             <!-- Textarea Section -->
             <div class="space-y-2">
                 <label for="content" class="block text-sm font-medium text-gray-700">What's on your mind?</label>
@@ -22,53 +22,48 @@
             </div>
 
             <!-- Media Upload Section -->
-            <div class="space-y-4">
-                <label class="block text-sm font-medium text-gray-700">Add Media</label>
+            <div class="">
                 
-                <!-- File Upload -->
                 <div class="flex items-center space-x-4">
-                    <label for="fileUpload" class="flex items-center justify-center w-12 h-12 bg-gray-100 hover:bg-gray-200 rounded-lg cursor-pointer transition-colors duration-200">
-                        <svg class="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"></path>
-                        </svg>
-                        <input type="file" id="fileUpload" name="media[]" accept="image/*,video/*" multiple class="hidden" />
-                    </label>
-                    <div class="flex-1">
-                        <span class="text-sm text-gray-600">Upload images or video (max 4 files)</span>
-                        <div class="text-xs text-gray-400 mt-1">Images: JPG, PNG, GIF (max 2MB) • Video: MP4, MOV (max 10MB)</div>
+
+
+                    <!-- Emoji Selector -->
+                    <div class="flex items-center space-x-4">
+                        <button type="button" id="emojiBtn" class="flex items-center justify-center w-12 h-12 bg-yellow-100 hover:bg-yellow-200 rounded-lg transition-colors duration-200">
+                            <svg class="w-6 h-6 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.828 14.828a4 4 0 01-5.656 0M9 10h1m4 0h1m-6 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                        </button>
+                    </div>
+
+                    <!-- File Upload -->
+                    <div class="flex items-center space-x-4">
+                        <label for="fileUpload" class="flex items-center justify-center w-12 h-12 bg-gray-100 hover:bg-gray-200 rounded-lg cursor-pointer transition-colors duration-200">
+                            <svg class="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"></path>
+                            </svg>
+                            <input type="file" id="fileUpload" name="media[]" accept="image/*,video/*" multiple class="hidden" />
+                        </label>
+                    </div>
+
+                    <!-- Audio Recording -->
+                    <div class="flex items-center space-x-2">
+                        <button type="button" id="audioRecordBtn" class="flex items-center justify-center w-12 h-12 bg-red-100 hover:bg-red-200 rounded-lg transition-colors duration-200">
+                            <svg class="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"></path>
+                            </svg>
+                        </button>
+                        <span id="audioStatus" class="text-sm text-gray-600"></span>
+                        <span id="audioTimer" class="text-sm text-red-600 hidden">00:00</span>
+                        <button type="button" id="audioPauseBtn" class="hidden flex items-center justify-center w-8 h-8 bg-yellow-100 hover:bg-yellow-200 rounded-lg transition-colors duration-200">
+                            <svg class="w-4 h-4 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 9v6m4-6v6m7-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                        </button>
                     </div>
                 </div>
 
-                <!-- Image Preview Grid -->
-                <div id="imagePreviewGrid" class="hidden grid grid-cols-4 gap-2 mt-4">
-                    <!-- Preview slots will be dynamically added here -->
-                </div>
-
-                <!-- Audio Recording -->
-                <div class="flex items-center space-x-4">
-                    <button type="button" id="audioRecordBtn" class="flex items-center justify-center w-12 h-12 bg-red-100 hover:bg-red-200 rounded-lg transition-colors duration-200">
-                        <svg class="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"></path>
-                        </svg>
-                    </button>
-                    <span id="audioStatus" class="text-sm text-gray-600">Record audio message</span>
-                    <span id="audioTimer" class="text-sm text-red-600 hidden">00:00</span>
-                    <button type="button" id="audioPauseBtn" class="hidden flex items-center justify-center w-8 h-8 bg-yellow-100 hover:bg-yellow-200 rounded-lg transition-colors duration-200">
-                        <svg class="w-4 h-4 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 9v6m4-6v6m7-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                        </svg>
-                    </button>
-                </div>
-
-                <!-- Emoji Selector -->
-                <div class="flex items-center space-x-4">
-                    <button type="button" id="emojiBtn" class="flex items-center justify-center w-12 h-12 bg-yellow-100 hover:bg-yellow-200 rounded-lg transition-colors duration-200">
-                        <svg class="w-6 h-6 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.828 14.828a4 4 0 01-5.656 0M9 10h1m4 0h1m-6 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                        </svg>
-                    </button>
-                    <span class="text-sm text-gray-600">Add emoji</span>
-                </div>
+                <div id="imagePreviewGrid" class="hidden grid grid-cols-4 gap-2 mt-4"></div>
 
                 <!-- Emoji Picker (Hidden by default) -->
                 <div id="emojiPicker" class="hidden bg-gray-50 rounded-lg p-4 border">
@@ -405,11 +400,17 @@ const ImprovedPostCreationForm = {
             this.isPaused = false;
             this.recordingStartTime = Date.now();
             
-            // Update UI
+            // Update UI - Change to stop icon
+            this.audioRecordBtn.innerHTML = `
+                <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 10a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1h-4a1 1 0 01-1-1v-4z"></path>
+                </svg>
+            `;
             this.audioRecordBtn.classList.add('bg-red-500', 'text-white');
             this.audioRecordBtn.classList.remove('bg-red-100', 'text-red-600');
             document.getElementById('audioPauseBtn').classList.remove('hidden');
-            this.audioStatus.textContent = 'Recording...';
+            this.audioStatus.textContent = '';
             this.audioTimer.classList.remove('hidden');
             
             this.recordingTimer = setInterval(() => this.updateTimer(), 1000);
@@ -427,11 +428,11 @@ const ImprovedPostCreationForm = {
             // Calculate total recording time so far
             this.totalRecordingTime += Math.floor((Date.now() - this.recordingStartTime) / 1000);
             
-            // Update UI
+            // Update UI - Change pause button to play icon
             const audioPauseBtn = document.getElementById('audioPauseBtn');
             audioPauseBtn.innerHTML = `
-                <svg class="w-4 h-4 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.828 14.828a4 4 0 01-5.656 0M9 10h1m4 0h1m-6 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-3">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M5.25 5.653c0-.856.917-1.398 1.667-.986l11.54 6.348a1.125 1.125 0 0 1 0 1.971l-11.54 6.347a1.125 1.125 0 0 1-1.667-.985V5.653z" />
                 </svg>
             `;
             this.audioStatus.textContent = 'Paused';
@@ -450,14 +451,14 @@ const ImprovedPostCreationForm = {
             // Reset recording start time for the resumed session
             this.recordingStartTime = Date.now();
             
-            // Update UI
+            // Update UI - Change play button back to pause icon
             const audioPauseBtn = document.getElementById('audioPauseBtn');
             audioPauseBtn.innerHTML = `
                 <svg class="w-4 h-4 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 9v6m4-6v6m7-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                 </svg>
             `;
-            this.audioStatus.textContent = 'Recording...';
+            this.audioStatus.textContent = '';
             this.audioRecordBtn.classList.remove('bg-gray-500');
             this.audioRecordBtn.classList.add('bg-red-500');
             
@@ -471,7 +472,12 @@ const ImprovedPostCreationForm = {
             this.isRecording = false;
             this.isPaused = false;
             
-            // Update UI
+            // Update UI - Change back to microphone icon
+            this.audioRecordBtn.innerHTML = `
+                <svg class="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"></path>
+                </svg>
+            `;
             this.audioRecordBtn.classList.remove('bg-red-500', 'bg-gray-500', 'text-white');
             this.audioRecordBtn.classList.add('bg-red-100', 'text-red-600');
             document.getElementById('audioPauseBtn').classList.add('hidden');
