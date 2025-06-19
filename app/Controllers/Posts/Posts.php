@@ -136,6 +136,10 @@ class Posts extends LoadController {
 
         // make the call to the posts model
         $comment = $this->postsModel->viewSingleComment($this->payload['commentId']);
+
+        if(empty($comment)) {
+            return false;
+        }
         $comment['ago'] = formatTimeAgo($comment['created_at']);
         $comment['manage'] = [
             'delete' => (bool)($comment['user_id'] == $this->payload['userId']),
@@ -160,7 +164,7 @@ class Posts extends LoadController {
 
         // if the comment is not deleted, return not found
         if(empty($comment['data']['created_at'])) {
-            return Routing::notFound();
+            return Routing::success('Comment already deleted.');
         }
 
         $this->postsModel->deleteComment($this->payload["commentId"]);
@@ -250,6 +254,11 @@ class Posts extends LoadController {
         if($this->addComments) {
             $post['comments'] = $this->postsModel->viewComments($post['post_id']);
             foreach($post['comments'] as $key => $comment) {
+                $post['comments'][$key]['manage'] = [
+                    'delete' => (bool)($comment['user_id'] == $this->payload['userId']),
+                    'report' => (bool)($comment['user_id'] !== $this->payload['userId']),
+                    'save' => (bool)($comment['user_id'] !== $this->payload['userId']),
+                ];
                 $post['comments'][$key]['comment_id'] = (int)$comment['comment_id'];
                 $post['comments'][$key]['ago'] = formatTimeAgo($comment['created_at']);
             }

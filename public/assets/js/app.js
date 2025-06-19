@@ -479,6 +479,7 @@ const PostManager = {
         const div = document.createElement('div');
         PostCommentManager.commentsList.push(comment.comment_id);
         div.className = 'comment-card bg-white rounded-lg shadow-sm p-4 mb-4 bg-gradient-to-r border-t border-blue-500  hover:border-blue-400 hover:shadow-md transition-all duration-300';
+        div.setAttribute('data-comment-id', comment.comment_id);
         div.innerHTML = `
             <div class="flex items-center justify-between mb-2">
                 <div class="flex items-center space-x-2">
@@ -503,11 +504,6 @@ const PostManager = {
                         </div>
                     </div>
                 </div>
-                <button class="report-button text-gray-400 hover:text-gray-500">
-                    <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z"/>
-                    </svg>
-                </button>
             </div>
             <p class="text-gray-800 mb-3">${comment.content}</p>
             <div class="flex items-center justify-between">
@@ -524,6 +520,14 @@ const PostManager = {
                         </svg>
                         <span data-comments-id-downvotes="${comment.comment_id}">${comment.downvotes}</span>
                     </button>
+                    ${comment?.manage?.delete ? `
+                        <button class="delete-button flex items-center space-x-1 text-red-500 hover:text-red-500" data-comments-id="${comment.comment_id}" onclick="return PostManager.handleDelete('comments', ${comment.comment_id})">
+                            <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                            </svg>
+                            Delete
+                        </button>
+                    ` : ''}
                 </div>
             </div>`;
         return div;
@@ -535,12 +539,49 @@ const PostManager = {
         PostManager.loadMorePosts();
     },
     setupPostInteractions() {
+        // Add existing event listeners
         document.addEventListener('click', (e) => {
             if (e.target.matches('.vote-button')) {
                 this.handleVote(e.target);
-            } else if (e.target.matches('.report-button')) {
-                this.handleReport(e.target);
             }
+        });
+
+        // Add new context menu handlers
+        document.addEventListener('click', (e) => {
+            const menuButton = e.target.closest('.post-menu-button');
+            const menu = e.target.closest('.post-context-menu');
+            
+            // If clicking on a menu button
+            if (menuButton) {
+                e.preventDefault();
+                e.stopPropagation();
+                
+                const currentMenu = menuButton.nextElementSibling;
+                const isCurrentMenuVisible = !currentMenu.classList.contains('hidden');
+                
+                // Hide all other menus first
+                this.hideContextMenu();
+                
+                // Toggle this menu (show if it was hidden, keep hidden if it was visible)
+                if (!isCurrentMenuVisible) {
+                    currentMenu.classList.remove('hidden');
+                }
+                return;
+            }
+            
+            // If clicking inside a menu, don't close it
+            if (menu) {
+                e.stopPropagation();
+                return;
+            }
+            
+            // Close all menus when clicking outside
+            this.hideContextMenu();
+        });
+
+        // Close context menu on scroll
+        window.addEventListener('scroll', () => {
+            this.hideContextMenu();
         });
     },
     async showOldPosts() {
@@ -653,12 +694,11 @@ const PostManager = {
     createPostElement(post, single = false) {
         const div = document.createElement('div');
         div.className = `post-card bg-white border rounded-lg shadow-sm p-4 ${single ? '' : ' mb-4 hover:bg-gradient-to-r hover:from-blue-50 hover:to-indigo-50 rounded-lg hover:border-blue-400'} cursor-pointer hover:shadow-md transition-all duration-300 relative`;
-        if(!single) {
-            // div.setAttribute('onclick', `window.location.href='${baseUrl}/posts/view/${post.post_id}'`);
-        }
+        div.setAttribute('data-post-id', post.post_id);
+        
         div.innerHTML = `
-            <div class="flex items-center justify-between mb-2" ${single ? '' : `onclick="return PostManager.changeDirection('${post.post_id}')"`}>
-                <div class="flex items-center space-x-2">
+            <div class="flex items-center justify-between mb-2">
+                <div class="flex items-center space-x-2 post-header-clickable">
                     <div class="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white">
                         <span class="text-sm font-semibold">${post.username[0].toUpperCase()}${post.username[1].toUpperCase()}</span>
                     </div>
@@ -681,26 +721,38 @@ const PostManager = {
                     </div>
                 </div>
                 <div class="relative">
-                    <button class="post-menu-button text-gray-400 hover:text-gray-500 dark:text-gray-500 dark:hover:text-gray-400 p-1 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors" data-post-id="${post.post_id}">
+                    <button class="post-menu-button text-gray-400 hover:text-gray-500 dark:text-gray-500 dark:hover:text-gray-400 p-1 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
                         <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z"/>
                         </svg>
                     </button>
                     <div class="post-context-menu hidden absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 z-50 py-1">
-                        <button class="w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center space-x-2" onclick="PostManager.handleBookmark(${post.post_id})">
+                        ${!single ? `
+                        <a class="w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center space-x-2" href="${baseUrl}/posts/view/${post.post_id}">
+                            <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                            </svg>
+                            <span>View Post</span>
+                        </a>` : ''}
+                        ${post?.manage?.save ? `
+                        <button class="w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center space-x-2" onclick="event.stopPropagation(); PostManager.handleBookmark(${post.post_id})">
                             <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"/>
                             </svg>
                             <span>Save Post</span>
                         </button>
-                        <button class="w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center space-x-2" onclick="PostManager.handleReport(${post.post_id})">
+                        ` : ''}
+                        ${post?.manage?.report ? `
+                        <button class="hidden w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center space-x-2" onclick="event.stopPropagation(); PostManager.handleReport(${post.post_id})">
                             <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 21v-4m0 0V5a2 2 0 012-2h6.5l1 1H21l-3 6 3 6h-8.5l-1-1H5a2 2 0 00-2 2zm9-13.5V9"/>
                             </svg>
                             <span>Report Post</span>
                         </button>
+                        ` : ''}
                         ${post?.manage?.delete ? `
-                        <button class="w-full text-left px-4 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 flex items-center space-x-2" onclick="PostManager.handleDelete(${post.post_id})">
+                        <button class="w-full text-left px-4 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 flex items-center space-x-2" onclick="event.stopPropagation(); PostManager.handleDelete('posts', ${post.post_id})">
                             <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
                             </svg>
@@ -710,9 +762,9 @@ const PostManager = {
                     </div>
                 </div>
             </div>
-            <div ${single ? '' : `onclick="return PostManager.changeDirection('${post.post_id}')"`} class="text-gray-800 dark:text-gray-200 mb-3 text-sm leading-relaxed">${post.content}</div>
+            <div class="post-content-clickable text-gray-800 dark:text-gray-200 mb-3 text-sm leading-relaxed">${post.content}</div>
             ${post.has_media ? `
-                <div class="flex flex-wrap gap-2 text-sm text-gray-500 mb-2" ${single ? '' : `onclick="return PostManager.changeDirection('${post.post_id}')"`}>
+                <div class="post-content-clickable flex flex-wrap gap-2 text-sm text-gray-500 mb-2">
                     ${post.media_types.includes('images') ? `
                     <span class="inline-flex items-center px-2 py-1 bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300 rounded-full">
                         <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 24 24">
@@ -738,25 +790,25 @@ const PostManager = {
             }
             <div class="flex items-center justify-between">
                 <div class="flex items-center space-x-4">
-                    <button class="flex items-center space-x-1 text-gray-500 hover:text-blue-500 dark:text-gray-400 dark:hover:text-blue-400 transition-colors" data-posts-id="${post.post_id}">
+                    <button class="flex items-center space-x-1 text-gray-500 hover:text-blue-500 dark:text-gray-400 dark:hover:text-blue-400 transition-colors" onclick="event.stopPropagation();" data-posts-id="${post.post_id}">
                         <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
                         </svg>
                         <span class="comments-counter-${post.post_id}">${post.comments_count}</span>
                     </button>
-                    <button class="flex items-center space-x-1 text-gray-500 hover:text-blue-500 dark:text-gray-400 dark:hover:text-blue-400 transition-colors" data-posts-id="${post.post_id}" onclick="return PostManager.handleVote('posts', ${post.post_id}, 'up', ${post.user_id})">
+                    <button class="flex items-center space-x-1 text-gray-500 hover:text-blue-500 dark:text-gray-400 dark:hover:text-blue-400 transition-colors" onclick="event.stopPropagation(); return PostManager.handleVote('posts', ${post.post_id}, 'up', ${post.user_id})" data-posts-id="${post.post_id}">
                         <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 10h4.764a2 2 0 011.789 2.894l-3.5 7A2 2 0 0115.263 21h-4.017c-.163 0-.326-.02-.485-.06L7 20m7-10V5a2 2 0 00-2-2h-.095c-.5 0-.905.405-.905.905 0 .714-.211 1.412-.608 2.006L7 11v9m7-10h-2M7 20H5a2 2 0 01-2-2v-6a2 2 0 012-2h2.5"/>
                         </svg>
                         <span data-posts-id-upvotes="${post.post_id}">${post.upvotes}</span>
                     </button>
-                    <button class="flex items-center space-x-1 text-gray-500 hover:text-red-500 dark:text-gray-400 dark:hover:text-red-400 transition-colors" data-posts-id="${post.post_id}" onclick="return PostManager.handleVote('posts', ${post.post_id}, 'down', ${post.user_id})">
+                    <button class="flex items-center space-x-1 text-gray-500 hover:text-red-500 dark:text-gray-400 dark:hover:text-red-400 transition-colors" onclick="event.stopPropagation(); return PostManager.handleVote('posts', ${post.post_id}, 'down', ${post.user_id})" data-posts-id="${post.post_id}">
                         <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14H5.236a2 2 0 01-1.789-2.894l3.5-7A2 2 0 018.736 3h4.018c.163 0 .326.02.485.06L17 4m-7 10v2a2 2 0 002 2h.095c.5 0 .905-.405.905-.905 0-.714.211-1.412.608-2.006L17 13V4m-7 10h2m5-10h2a2 2 0 012 2v6a2 2 0 01-2 2h-2.5"/>
                         </svg>
                         <span data-posts-id-downvotes="${post.post_id}">${post.downvotes}</span>
                     </button>
-                    <button class="flex items-center space-x-1 text-gray-500 dark:text-gray-400" data-posts-id="${post.post_id}">
+                    <button class="flex items-center space-x-1 text-gray-500 dark:text-gray-400" onclick="event.stopPropagation();" data-posts-id="${post.post_id}">
                         <svg class="h-4 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
                         </svg>
@@ -765,6 +817,19 @@ const PostManager = {
                 </div>
             </div>
         `;
+
+        // Add click handler for post navigation
+        if (!single) {
+            const clickableElements = div.querySelectorAll('.post-header-clickable, .post-content-clickable');
+            clickableElements.forEach(element => {
+                element.addEventListener('click', (e) => {
+                    if (!e.target.closest('.post-menu-button') && !e.target.closest('.post-context-menu')) {
+                        PostManager.changeDirection(post.post_id);
+                    }
+                });
+            });
+        }
+
         return div;
     },
     formatTimestamp(timestamp) {
@@ -812,7 +877,7 @@ const PostManager = {
     },
     async handleBookmark(postId) {
         try {
-            const response = await fetch(`${baseUrl}/api/posts/${postId}/bookmark`, {
+            const response = await fetch(`${baseUrl}/api/posts/bookmark/${postId}`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -829,11 +894,11 @@ const PostManager = {
             AppState.showNotification('Failed to save post', 'error');
         }
     },
-    async handleDelete(postId) {
-        if (!confirm('Are you sure you want to delete this post?')) return;
-        
+    async handleDelete(item, postId) {
         try {
-            const response = await fetch(`${baseUrl}/api/posts/${postId}`, {
+            let path = item === 'posts' ? '' : 'deletecomment/';
+            let field = item === 'posts' ? 'post' : 'comment';
+            const response = await fetch(`${baseUrl}/api/posts/${path}${postId}`, {
                 method: 'DELETE',
                 headers: {
                     'Content-Type': 'application/json'
@@ -847,10 +912,7 @@ const PostManager = {
             AppState.showNotification(data.message || 'Post deleted successfully', 'success');
             
             // Remove post from DOM
-            const postElement = document.querySelector(`.post-card[data-post-id="${postId}"]`);
-            if (postElement) {
-                postElement.remove();
-            }
+            $(`[data-${field}-id="${postId}"]`).remove();
             
             this.hideContextMenu();
         } catch (error) {
@@ -872,23 +934,34 @@ const PostManager = {
         // Add new context menu handlers
         document.addEventListener('click', (e) => {
             const menuButton = e.target.closest('.post-menu-button');
+            const menu = e.target.closest('.post-context-menu');
+            
+            // If clicking on a menu button
             if (menuButton) {
                 e.preventDefault();
                 e.stopPropagation();
                 
+                const currentMenu = menuButton.nextElementSibling;
+                const isCurrentMenuVisible = !currentMenu.classList.contains('hidden');
+                
                 // Hide all other menus first
                 this.hideContextMenu();
                 
-                // Show this menu
-                const menu = menuButton.nextElementSibling;
-                menu.classList.toggle('hidden');
+                // Toggle this menu (show if it was hidden, keep hidden if it was visible)
+                if (!isCurrentMenuVisible) {
+                    currentMenu.classList.remove('hidden');
+                }
                 return;
             }
             
-            // Close menu when clicking outside
-            if (!e.target.closest('.post-context-menu')) {
-                this.hideContextMenu();
+            // If clicking inside a menu, don't close it
+            if (menu) {
+                e.stopPropagation();
+                return;
             }
+            
+            // Close all menus when clicking outside
+            this.hideContextMenu();
         });
 
         // Close context menu on scroll

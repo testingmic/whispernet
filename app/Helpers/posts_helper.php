@@ -34,6 +34,8 @@ function formatPosts($posts = [], $single = false, $userId = null) {
             'city' => $post['city'],
             'manage' => [
                 'delete' => (bool)($post['user_id'] == $userId),
+                'report' => (bool)($post['user_id'] !== $userId),
+                'save' => (bool)($post['user_id'] !== $userId),
             ],
             // 'media_url' => $post['media_url'],
             // 'longitude' => $post['longitude'],
