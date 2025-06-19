@@ -15,7 +15,7 @@
                 </button>
             </div>
             <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
-                Posts are displayed within a 10km radius of your location
+                Posts are displayed within a 35km radius of your location
             </p>
         </div>
     </div>
