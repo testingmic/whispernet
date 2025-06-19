@@ -160,6 +160,7 @@ const AppState = {
 
 // Chat Manager
 const ChatManager = {
+    activeChat: false,
     init() {
         this.setupWebSocket();
         this.setupMessageHandlers();
@@ -199,7 +200,7 @@ const ChatManager = {
         if (messageForm) {
             messageForm.addEventListener('submit', (e) => {
                 e.preventDefault();
-                const input = messageForm.querySelector('input');
+                const input = messageForm.querySelector('textarea');
                 if (input.value.trim()) {
                     this.sendMessage(input.value);
                     input.value = '';

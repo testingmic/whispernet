@@ -36,9 +36,6 @@ $favicon_color = $favicon_color ?? 'dashboard';
       userLoggedIn = <?= !empty($userLoggedIn) ? 'true' : 'false' ?>,
       websocketUrl = '<?= $websocketUrl ?>',
       loadingSkeleton = `<?= function_exists('loadingSkeleton') ? loadingSkeleton() : '' ?>`;
-    <?php if (!empty($logoutUser)) { ?>
-      localStorage.removeItem('user');
-    <?php } ?>
     <?php if(!empty($userToken)) { ?>
       localStorage.setItem('token', '<?= $userToken ?>');
     <?php } ?>
