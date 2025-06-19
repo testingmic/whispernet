@@ -28,14 +28,15 @@
             </div>
         </div>
 
+        <!-- Left Column - Stats -->
+        <div class="bg-white dark:bg-gray-800 shadow rounded-lg mb-4">
+            <div class="px-4 py-3 sm:p-6">
+                <h3 class="text-lg font-medium text-gray-900 dark:text-white">Activity Stats</h3>
+            </div>
+        </div>
         <!-- Profile Content -->
         <div class="grid grid-cols-1 lg:grid-cols-3">
-            <!-- Left Column - Stats -->
-            <div class="bg-white dark:bg-gray-800 shadow rounded-lg mb-4">
-                <div class="px-4 py-3 sm:p-6">
-                    <h3 class="text-lg font-medium text-gray-900 dark:text-white">Activity Stats</h3>
-                </div>
-            </div>
+
 
             <!-- Middle Column - Recent Activity -->
             <div class="bg-white dark:bg-gray-800 shadow rounded-lg lg:col-span-2 mb-3 bg-gradient-to-r border-t border-blue-500 hover:border-blue-400 hover:shadow-md transition-all duration-300">

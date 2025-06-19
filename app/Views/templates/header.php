@@ -223,9 +223,9 @@ $favicon_color = $favicon_color ?? 'dashboard';
             class="mr-2 mt-1 hidden fixed right-0 mt-2 w-48 rounded-md shadow-lg bg-white dark:bg-gray-800 ring-1 ring-black ring-opacity-5 focus:outline-none z-50">
             <div class="py-1">
               <!-- Profile Section -->
-              <div class="px-4 py-2 border-b border-gray-200 dark:border-gray-700">
-                <p class="text-sm font-medium text-gray-900 dark:text-white">Signed in as</p>
-                <p class="text-sm text-gray-500 dark:text-gray-400 truncate"><?= session()->get('email') ?></p>
+              <div class="px-4 py-2 border-b border-gray-200 dark:border-gray-700 flex items-center justify-start space-x-2">
+                <p class="text-sm font-medium text-gray-900 dark:text-white">Hello</p>
+                <p class="text-sm text-gray-500 dark:text-gray-400 truncate"><?= session()->get('userData')['full_name'] ?? '' ?></p>
               </div>
 
               <!-- Menu Items -->
@@ -251,7 +251,7 @@ $favicon_color = $favicon_color ?? 'dashboard';
                 Saved Items
               </a>
 
-              <a href="<?= $baseUrl ?>/help" class="flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">
+              <a href="<?= $baseUrl ?>/help" class="flex hidden items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">
                 <svg class="mr-3 h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
