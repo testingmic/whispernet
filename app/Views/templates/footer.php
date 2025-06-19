@@ -105,6 +105,7 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Check if already installed
     if (window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true) {
+        alert('already installed');
         if (installButton) {
             installButton.classList.add('hidden');
         }
@@ -129,7 +130,7 @@ if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
         navigator.serviceWorker.register('<?= $baseUrl ?>/assets/js/sw.js?v=<?= $version ?>')
             .then(registration => {
-                console.log('SW registered: ', registration);
+                alert('SW registered');
                 
                 // Check for updates
                 registration.addEventListener('updatefound', () => {
@@ -137,7 +138,9 @@ if ('serviceWorker' in navigator) {
                     newWorker.addEventListener('statechange', () => { });
                 });
             })
-            .catch(err => { });
+            .catch(err => {
+              alert('SW registration failed');
+            });
     });
 }
 
@@ -145,6 +148,7 @@ if ('serviceWorker' in navigator) {
 window.addEventListener('beforeinstallprompt', (e) => {
     e.preventDefault();
     deferredPrompt = e;
+    console.log('beforeinstallprompt');
     
     if (installButton) {
         installButton.classList.remove('hidden');
@@ -173,6 +177,7 @@ window.addEventListener('appinstalled', (evt) => {
         }, 500);
     }
     deferredPrompt = null;
+    alert('app installed successfully');
     
     // Show success notification
     showNotification('App installed successfully! 🎉', 'success');
