@@ -60,13 +60,10 @@
                         maxlength="300" 
                         name="" 
                         id="commentInput" 
-                        rows="3"
+                        rows="2"
                         class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white text-base resize-none outline-none transition-all duration-200" 
                         placeholder="Share your thoughts on this post..."
                     ></textarea>
-                    <div class="absolute bottom-2 right-2 text-xs text-gray-400">
-                        <span id="charCount">0</span>/300
-                    </div>
                     <button type="button" class="absolute hidden right-12 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-500 dark:hover:text-gray-300 transition-colors">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -133,3 +130,4 @@
         </div>
     </div>
 </div>
+<div class="h-20"></div>

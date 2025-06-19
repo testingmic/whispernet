@@ -1,4 +1,4 @@
-<div class="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
+<div class="min-h-screen bg-gradient-to-br pt-5 from-slate-50 via-blue-50 to-indigo-100 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
 
     <!-- Location Header Card -->
     <div class="max-w-4xl mx-auto px-4 mt-0 sm:px-6 lg:px-8 mb-8">

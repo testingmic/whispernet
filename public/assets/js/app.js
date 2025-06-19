@@ -2043,7 +2043,13 @@ const PostCommentManager = {
                 // Clear the input
                 commentInput.value = '';
                 submitButton.disabled = true;
-                submitButton.innerHTML = 'Post';
+                submitButton.innerHTML = `
+                    <div class="flex items-center">
+                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path>
+                        </svg>
+                        Post
+                    </div>`;
 
                 // Show success notification
                 NotificationManager.show('Comment posted successfully', 'success');

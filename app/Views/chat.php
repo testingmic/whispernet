@@ -30,9 +30,9 @@ $messages = $messages ?? [];
     <!-- Main Chat Interface -->
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-16">
         <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-xl border border-gray-200 dark:border-gray-700 overflow-hidden">
-            <div class="flex h-[600px]">
+            <div class="flex flex-col lg:flex-row h-[600px] lg:h-[600px]">
                 <!-- Left Sidebar - Chat List & Search -->
-                <div class="w-80 border-r border-gray-200 dark:border-gray-700 flex flex-col">
+                <div class="w-full lg:w-80 border-b lg:border-b-0 lg:border-r border-gray-200 dark:border-gray-700 flex flex-col h-64 lg:h-full">
                     <!-- Header with New Chat Button -->
                     <div class="p-4 border-b border-gray-200 dark:border-gray-700">
                         <div class="flex items-center justify-between mb-4">
@@ -102,11 +102,16 @@ $messages = $messages ?? [];
                 </div>
 
                 <!-- Right Side - Chat Area -->
-                <div class="flex-1 flex flex-col">
+                <div class="flex-1 flex flex-col h-96 lg:h-full">
                     <!-- Chat Header -->
                     <div id="chatHeader" class="p-4 border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-700/50">
                         <div class="flex items-center justify-between">
                             <div class="flex items-center space-x-3">
+                                <button id="backToChats" class="lg:hidden p-2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+                                    </svg>
+                                </button>
                                 <div id="chatAvatar" class="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-semibold">
                                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path>
@@ -138,7 +143,7 @@ $messages = $messages ?? [];
                                 </div>
                                 <h3 class="text-xl font-semibold text-gray-900 dark:text-white mb-2">Welcome to Chat</h3>
                                 <p class="text-gray-600 dark:text-gray-400 mb-6">Select a conversation from the sidebar or start a new chat</p>
-                                <div class="flex space-x-4 justify-center">
+                                <div class="flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-4 justify-center">
                                     <button id="startIndividualChat" class="px-6 py-3 bg-gradient-to-r from-blue-500 to-purple-600 text-white font-semibold rounded-xl hover:from-blue-600 hover:to-purple-700 transition-all duration-200">
                                         Start Individual Chat
                                     </button>
@@ -156,7 +161,7 @@ $messages = $messages ?? [];
 
                     <!-- Message Input -->
                     <div id="messageInputArea" class="p-4 border-t border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 hidden">
-                        <form id="messageForm" class="flex items-end space-x-4">
+                        <form id="messageForm" class="flex items-end space-x-2 sm:space-x-4">
                             <button type="button" id="attachButton" class="p-2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
                                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"></path>
@@ -174,7 +179,7 @@ $messages = $messages ?? [];
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"></path>
                                 </svg>
                             </button>
-                            <button type="submit" class="px-6 py-3 bg-gradient-to-r from-blue-500 to-purple-600 text-white font-semibold rounded-xl hover:from-blue-600 hover:to-purple-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all duration-200 transform hover:scale-105">
+                            <button type="submit" class="px-4 sm:px-6 py-3 bg-gradient-to-r from-blue-500 to-purple-600 text-white font-semibold rounded-xl hover:from-blue-600 hover:to-purple-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all duration-200 transform hover:scale-105">
                                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path>
                                 </svg>
@@ -190,12 +195,12 @@ $messages = $messages ?? [];
 <!-- New Chat Modal -->
 <div id="newChatModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 backdrop-blur-sm hidden" role="dialog" aria-modal="true">
     <div class="min-h-screen px-4 text-center flex items-center justify-center">
-        <div class="inline-block w-full max-w-md p-6 sm:p-8 overflow-hidden text-left align-middle transition-all transform bg-white dark:bg-gray-800 shadow-2xl rounded-2xl">
+        <div class="inline-block w-full max-w-sm sm:max-w-md p-4 sm:p-6 lg:p-8 overflow-hidden text-left align-middle transition-all transform bg-white dark:bg-gray-800 shadow-2xl rounded-2xl">
             <!-- Modal Header -->
             <div class="flex items-center justify-between mb-6">
                 <div>
-                    <h3 class="text-2xl font-bold text-gray-900 dark:text-white">Start New Chat</h3>
-                    <p class="text-gray-600 dark:text-gray-400 mt-1">Choose who you want to chat with</p>
+                    <h3 class="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">Start New Chat</h3>
+                    <p class="text-sm sm:text-base text-gray-600 dark:text-gray-400 mt-1">Choose who you want to chat with</p>
                 </div>
                 <button id="closeNewChatModal" class="text-gray-400 hover:text-gray-500 dark:hover:text-gray-300 transition-colors">
                     <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -206,7 +211,7 @@ $messages = $messages ?? [];
 
             <!-- Chat Type Selection -->
             <div class="space-y-4">
-                <div class="grid grid-cols-2 gap-4">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <button id="individualChatBtn" class="p-4 border-2 border-gray-200 dark:border-gray-600 rounded-xl hover:border-blue-500 dark:hover:border-blue-500 transition-all duration-200 text-left">
                         <div class="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg flex items-center justify-center mb-3">
                             <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -235,12 +240,12 @@ $messages = $messages ?? [];
 <!-- User Search Modal -->
 <div id="userSearchModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 backdrop-blur-sm hidden" role="dialog" aria-modal="true">
     <div class="min-h-screen px-4 text-center flex items-center justify-center">
-        <div class="inline-block w-full max-w-lg p-6 sm:p-8 overflow-hidden text-left align-middle transition-all transform bg-white dark:bg-gray-800 shadow-2xl rounded-2xl max-h-[80vh] overflow-y-auto">
+        <div class="inline-block w-full max-w-sm sm:max-w-lg p-4 sm:p-6 lg:p-8 overflow-hidden text-left align-middle transition-all transform bg-white dark:bg-gray-800 shadow-2xl rounded-2xl max-h-[80vh] overflow-y-auto">
             <!-- Modal Header -->
             <div class="flex items-center justify-between mb-6">
                 <div>
-                    <h3 class="text-2xl font-bold text-gray-900 dark:text-white">Select User</h3>
-                    <p class="text-gray-600 dark:text-gray-400 mt-1">Choose a user to start chatting with</p>
+                    <h3 class="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">Select User</h3>
+                    <p class="text-sm sm:text-base text-gray-600 dark:text-gray-400 mt-1">Choose a user to start chatting with</p>
                 </div>
                 <button id="closeUserSearchModal" class="text-gray-400 hover:text-gray-500 dark:hover:text-gray-300 transition-colors">
                     <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -266,11 +271,11 @@ $messages = $messages ?? [];
                                 <div class="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-semibold">
                                     <?= strtoupper(substr($user['name'] ?? 'U', 0, 1)) ?>
                                 </div>
-                                <div class="flex-1">
-                                    <p class="font-semibold text-gray-900 dark:text-white"><?= htmlspecialchars($user['name'] ?? 'Unknown') ?></p>
-                                    <p class="text-sm text-gray-500 dark:text-gray-400"><?= htmlspecialchars($user['email'] ?? '') ?></p>
+                                <div class="flex-1 min-w-0">
+                                    <p class="font-semibold text-gray-900 dark:text-white truncate"><?= htmlspecialchars($user['name'] ?? 'Unknown') ?></p>
+                                    <p class="text-sm text-gray-500 dark:text-gray-400 truncate"><?= htmlspecialchars($user['email'] ?? '') ?></p>
                                 </div>
-                                <button class="px-4 py-2 bg-gradient-to-r from-blue-500 to-purple-600 text-white text-sm font-semibold rounded-lg hover:from-blue-600 hover:to-purple-700 transition-all duration-200">
+                                <button class="px-3 sm:px-4 py-2 bg-gradient-to-r from-blue-500 to-purple-600 text-white text-sm font-semibold rounded-lg hover:from-blue-600 hover:to-purple-700 transition-all duration-200">
                                     Chat
                                 </button>
                             </div>
@@ -285,12 +290,12 @@ $messages = $messages ?? [];
 <!-- Group Creation Modal -->
 <div id="groupCreationModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 backdrop-blur-sm hidden" role="dialog" aria-modal="true">
     <div class="min-h-screen px-4 text-center flex items-center justify-center">
-        <div class="inline-block w-full max-w-lg p-6 sm:p-8 overflow-hidden text-left align-middle transition-all transform bg-white dark:bg-gray-800 shadow-2xl rounded-2xl max-h-[80vh] overflow-y-auto">
+        <div class="inline-block w-full max-w-sm sm:max-w-lg p-4 sm:p-6 lg:p-8 overflow-hidden text-left align-middle transition-all transform bg-white dark:bg-gray-800 shadow-2xl rounded-2xl max-h-[80vh] overflow-y-auto">
             <!-- Modal Header -->
             <div class="flex items-center justify-between mb-6">
                 <div>
-                    <h3 class="text-2xl font-bold text-gray-900 dark:text-white">Create Group Chat</h3>
-                    <p class="text-gray-600 dark:text-gray-400 mt-1">Set up a new group conversation</p>
+                    <h3 class="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">Create Group Chat</h3>
+                    <p class="text-sm sm:text-base text-gray-600 dark:text-gray-400 mt-1">Set up a new group conversation</p>
                 </div>
                 <button id="closeGroupCreationModal" class="text-gray-400 hover:text-gray-500 dark:hover:text-gray-300 transition-colors">
                     <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -324,13 +329,13 @@ $messages = $messages ?? [];
                                 <div class="w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white text-sm font-semibold">
                                     <?= strtoupper(substr($user['name'] ?? 'U', 0, 1)) ?>
                                 </div>
-                                <span class="text-sm font-medium text-gray-900 dark:text-white"><?= htmlspecialchars($user['name'] ?? 'Unknown') ?></span>
+                                <span class="text-sm font-medium text-gray-900 dark:text-white truncate"><?= htmlspecialchars($user['name'] ?? 'Unknown') ?></span>
                             </label>
                         <?php endforeach; ?>
                     </div>
                 </div>
                 
-                <div class="flex justify-end space-x-4 pt-4">
+                <div class="flex flex-col sm:flex-row justify-end space-y-3 sm:space-y-0 sm:space-x-4 pt-4">
                     <button type="button" id="cancelGroupCreation" class="px-6 py-3 text-sm font-medium text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-700 rounded-xl hover:bg-gray-200 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-500 transition-all duration-200">
                         Cancel
                     </button>
@@ -344,7 +349,7 @@ $messages = $messages ?? [];
 </div>
 
 <script>
-// Enhanced Chat Management
+// Enhanced Chat Management with Mobile Responsiveness
 document.addEventListener('DOMContentLoaded', function() {
     // Elements
     const newChatBtn = document.getElementById('newChatBtn');
@@ -371,10 +376,56 @@ document.addEventListener('DOMContentLoaded', function() {
     const chatTitle = document.getElementById('chatTitle');
     const chatStatus = document.getElementById('chatStatus');
     const chatAvatar = document.getElementById('chatAvatar');
+    const backToChats = document.getElementById('backToChats');
     
     // Welcome message buttons
     const startIndividualChat = document.getElementById('startIndividualChat');
     const startGroupChat = document.getElementById('startGroupChat');
+
+    // Mobile view management
+    let isMobileView = window.innerWidth < 1024;
+    let currentView = 'chat-list'; // 'chat-list' or 'chat-area'
+
+    // Check for mobile view on resize
+    window.addEventListener('resize', function() {
+        isMobileView = window.innerWidth < 1024;
+        updateMobileView();
+    });
+
+    function updateMobileView() {
+        const chatListContainer = document.querySelector('.w-full.lg\\:w-80');
+        const chatAreaContainer = document.querySelector('.flex-1.flex.flex-col');
+        
+        if (isMobileView) {
+            if (currentView === 'chat-list') {
+                chatListContainer.classList.remove('hidden');
+                chatAreaContainer.classList.add('hidden');
+            } else {
+                chatListContainer.classList.add('hidden');
+                chatAreaContainer.classList.remove('hidden');
+            }
+        } else {
+            chatListContainer.classList.remove('hidden');
+            chatAreaContainer.classList.remove('hidden');
+        }
+    }
+
+    function showChatArea() {
+        if (isMobileView) {
+            currentView = 'chat-area';
+            updateMobileView();
+        }
+    }
+
+    function showChatList() {
+        if (isMobileView) {
+            currentView = 'chat-list';
+            updateMobileView();
+        }
+    }
+
+    // Initialize mobile view
+    updateMobileView();
 
     // Modal Management
     function showModal(modal) {
@@ -400,6 +451,13 @@ document.addEventListener('DOMContentLoaded', function() {
     if (startGroupChat) {
         startGroupChat.addEventListener('click', () => {
             showModal(groupCreationModal);
+        });
+    }
+
+    // Back to chats button (mobile)
+    if (backToChats) {
+        backToChats.addEventListener('click', () => {
+            showChatList();
         });
     }
 
@@ -453,6 +511,30 @@ document.addEventListener('DOMContentLoaded', function() {
             loadMessages(userId, 'individual');
             
             hideModal(userSearchModal);
+            showChatArea();
+        });
+    });
+
+    // Chat item selection (for existing chats)
+    document.querySelectorAll('.chat-item').forEach(item => {
+        item.addEventListener('click', function() {
+            const chatId = this.getAttribute('data-chat-id');
+            const chatName = this.querySelector('p').textContent;
+            
+            // Update chat header
+            chatTitle.textContent = chatName;
+            chatStatus.textContent = 'Online';
+            chatAvatar.innerHTML = chatName.charAt(0).toUpperCase();
+            
+            // Show chat area
+            welcomeMessage.classList.add('hidden');
+            messagesContainer.classList.remove('hidden');
+            messageInputArea.classList.remove('hidden');
+            
+            // Load messages for this chat
+            loadMessages(chatId, 'existing');
+            
+            showChatArea();
         });
     });
 
@@ -499,6 +581,8 @@ document.addEventListener('DOMContentLoaded', function() {
         document.querySelectorAll('input[name="members[]"]').forEach(checkbox => {
             checkbox.checked = false;
         });
+        
+        showChatArea();
     });
 
     // Message Input Management
@@ -520,6 +604,16 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             }
         });
+
+        // Focus input when chat area is shown on mobile
+        if (isMobileView) {
+            messageInput.addEventListener('focus', function() {
+                // Scroll to bottom to ensure input is visible
+                setTimeout(() => {
+                    window.scrollTo(0, document.body.scrollHeight);
+                }, 100);
+            });
+        }
     }
 
     // Message Form Submission
@@ -583,7 +677,7 @@ document.addEventListener('DOMContentLoaded', function() {
         messageDiv.className = `flex ${type === 'sent' ? 'justify-end' : 'justify-start'}`;
         
         messageDiv.innerHTML = `
-            <div class="flex items-end space-x-2 max-w-[70%]">
+            <div class="flex items-end space-x-2 max-w-[85%] sm:max-w-[70%]">
                 ${type === 'received' ? `
                     <div class="w-8 h-8 rounded-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center text-xs font-medium text-gray-600 dark:text-gray-300">
                         U
@@ -591,7 +685,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 ` : ''}
                 <div class="flex flex-col ${type === 'sent' ? 'items-end' : 'items-start'}">
                     <div class="rounded-2xl px-4 py-2 ${type === 'sent' ? 'bg-blue-500 text-white' : 'bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-white'}">
-                        <p class="text-sm">${content}</p>
+                        <p class="text-sm break-words">${content}</p>
                     </div>
                     <span class="text-xs text-gray-500 dark:text-gray-400 mt-1">
                         ${new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
@@ -691,7 +785,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 
-// Add CSS animations
+// Add CSS animations and mobile optimizations
 const style = document.createElement('style');
 style.textContent = `
     @keyframes fadeIn {
@@ -708,6 +802,31 @@ style.textContent = `
     
     .user-item:hover {
         transform: translateY(-1px);
+    }
+
+    /* Mobile optimizations */
+    @media (max-width: 1023px) {
+        .chat-item, .user-item {
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        .chat-item:active, .user-item:active {
+            transform: scale(0.98);
+        }
+    }
+
+    /* Prevent zoom on input focus on iOS */
+    @media (max-width: 767px) {
+        input[type="text"], 
+        input[type="email"], 
+        textarea {
+            font-size: 16px;
+        }
+    }
+
+    /* Smooth scrolling for mobile */
+    .overflow-y-auto {
+        -webkit-overflow-scrolling: touch;
     }
 `;
 document.head.appendChild(style);
