@@ -125,7 +125,7 @@ const AppState = {
                 };
                 this.updateLocationUI();
             } catch (error) {
-                this.showNotification('Please enable location services to see local posts', 'error');
+                // this.showNotification('Please enable location services to see local posts', 'error');
             }
         }
     },
@@ -482,10 +482,12 @@ const PostManager = {
     currentPage: 1,
     isLoading: false,
     lastPostId: 0,
+    postLimit: 50,
+    lastOldPostId: 0,
     unreadPostsCount: 0,
     unreadPosts: [],
     init() {
-        this.setupInfiniteScroll();
+        this.loadInitialFeed();
         this.setupPostInteractions();
         this.loadPost();
     },
@@ -581,25 +583,13 @@ const PostManager = {
             </div>`;
         return div;
     },
-    setupInfiniteScroll() {
-        const options = {
-            root: null,
-            rootMargin: '0px',
-            threshold: 1.0
-        };
-
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting && !this.isLoading) {
-                    this.loadMorePosts();
-                }
-            });
-        }, options);
-
-        const sentinel = document.querySelector('.scroll-sentinel');
-        if (sentinel) {
-            observer.observe(sentinel);
-        }
+    loadInitialFeed() {
+        if($('#feedContainer').length == 0) return;
+        PostManager.posts = [];
+        PostManager.currentPage = 1;
+        const container = document.getElementById('#feedContainer');
+        if (container) container.innerHTML = '';
+        PostManager.loadMorePosts();
     },
     setupPostInteractions() {
         document.addEventListener('click', (e) => {
@@ -610,6 +600,9 @@ const PostManager = {
             }
         });
     },
+    async showOldPosts() {
+        this.loadMorePosts(false, false, this.lastOldPostId, 20);
+    },
     async loadLatestPosts() {
         // load unread posts
         this.loadMorePosts(true, true);
@@ -617,11 +610,13 @@ const PostManager = {
         this.unreadPosts = Array.from(new Map(this.unreadPosts.map(p => [p.post_id, p])).values());
         this.unreadPostsCount = this.unreadPosts.length;
     },
-    async loadMorePosts(dontTrigger = false, unreadCounter = false) {
+    async loadMorePosts(dontTrigger = false, unreadCounter = false, lastOldPostId = 0, limit = 20) {
         if (this.isLoading) return;
         this.isLoading = true;
         try {
-            const response = await fetch(`${baseUrl}/api/posts/nearby?last_record_id=${this.currentPage}&longitude=${longitude}&latitude=${latitude}&token=${AppState.getToken()}&limit=20`);
+            let whereClause = lastOldPostId ? `&previous_record_id=${lastOldPostId}` : ``;
+            limit = lastOldPostId ? limit : this.postLimit;
+            const response = await fetch(`${baseUrl}/api/posts/nearby?last_record_id=${this.currentPage}${whereClause}&longitude=${longitude}&latitude=${latitude}&token=${AppState.getToken()}&limit=${limit}`);
             const data = await response.json();
             this.posts = [...this.posts, ...data.data];
             this.lastPostId = data?.data[0]?.post_id || 0;
@@ -654,6 +649,10 @@ const PostManager = {
             if(key == 0) {
                 this.currentPage = post.post_id;
             }
+            this.lastOldPostId = post.post_id;
+            if(post.post_id < this.lastOldPostId && this.lastOldPostId !== 0) {
+                this.lastOldPostId = post.post_id;
+            }
             if(unreadCounter) {
                 this.unreadPosts.push(post);
                 this.unreadPostsCount = this.unreadPosts.length;
@@ -666,6 +665,11 @@ const PostManager = {
                 }
             }
         });
+
+        if(this.lastOldPostId !== 0) {
+
+        }
+
         if(this.unreadPostsCount > 0) {
             // filter out unread post by unique post_id
             this.unreadPosts = Array.from(new Map(this.unreadPosts.map(p => [p.post_id, p])).values());
@@ -2479,78 +2483,3 @@ if(Boolean(AppState.user)) {
         }
     );
 }
-
-// --- Location Modal Logic ---
-document.addEventListener('DOMContentLoaded', function () {
-    const changeLocationBtn = document.getElementById('changeLocationBtn');
-    const locationModal = document.getElementById('locationModal');
-    const closeLocationModal = document.getElementById('closeLocationModal');
-    const cancelLocationBtn = document.getElementById('cancelLocationBtn');
-    const locationForm = document.getElementById('locationForm');
-    const locationSelect = document.getElementById('locationSelect');
-    const radiusInput = document.getElementById('radiusInput');
-    const radiusValue = document.getElementById('radiusValue');
-
-    // Open modal
-    if (changeLocationBtn) {
-        changeLocationBtn.addEventListener('click', () => {
-            locationModal.classList.remove('hidden');
-        });
-    }
-    // Close modal
-    function closeModal() {
-        locationModal.classList.add('hidden');
-    }
-    if (closeLocationModal) closeLocationModal.addEventListener('click', closeModal);
-    if (cancelLocationBtn) cancelLocationBtn.addEventListener('click', closeModal);
-    // Update radius value display
-    if (radiusInput && radiusValue) {
-        radiusInput.addEventListener('input', function () {
-            radiusValue.textContent = `${this.value}km`;
-        });
-    }
-    // Save location/radius
-    if (locationForm) {
-        locationForm.addEventListener('submit', function (e) {
-            e.preventDefault();
-            const selectedLocation = locationSelect.value;
-            const selectedRadius = parseInt(radiusInput.value, 10);
-            // For demo: if not current, set dummy lat/lng
-            if (selectedLocation === 'current' && AppState.location) {
-                AppState.selectedLocation = {
-                    latitude: AppState.location.latitude,
-                    longitude: AppState.location.longitude,
-                    label: 'Current Location',
-                    radius: selectedRadius
-                };
-            } else {
-                // Dummy coordinates for demo
-                let coords = { latitude: 0, longitude: 0 };
-                if (selectedLocation === 'city_centre') coords = { latitude: 51.5074, longitude: -0.1278 };
-                if (selectedLocation === 'university') coords = { latitude: 51.4988, longitude: -0.1749 };
-                if (selectedLocation === 'mall') coords = { latitude: 51.5155, longitude: -0.1419 };
-                AppState.selectedLocation = {
-                    ...coords,
-                    label: locationSelect.options[locationSelect.selectedIndex].text,
-                    radius: selectedRadius
-                };
-            }
-            // Update UI
-            const locationElement = document.querySelector('.location-display');
-            if (locationElement && AppState.selectedLocation) {
-                locationElement.textContent = `${AppState.selectedLocation.label} (${AppState.selectedLocation.radius}km)`;
-            }
-            // Reload feed with new location/radius (implement actual reload logic as needed)
-            if (typeof PostManager !== 'undefined' && PostManager.loadMorePosts) {
-                // Reset posts and reload
-                PostManager.posts = [];
-                PostManager.currentPage = 1;
-                const container = document.getElementById('#feedContainer');
-                if (container) container.innerHTML = '';
-                // You may want to pass location/radius to the API here
-                PostManager.loadMorePosts();
-            }
-            closeModal();
-        });
-    }
-}); 

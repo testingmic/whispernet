@@ -62,6 +62,10 @@
     <div id="feedContainer" class="scroll-sentinel">
         <?= loadingSkeleton(1, false); ?>
     </div>
+    <div id="oldPostsContainer" class="text-center mb-5 bg-gray-600 font-bold bg-blue-600 dark:bg-gray-800 border border-gray-200 dark:border-gray-700
+        shadow-sm text-white rounded-md p-2 mb-2 w-full hover:bg-blue-500 mx-auto cursor-pointer" onclick="return PostManager.showOldPosts()">
+        Show More Posts
+    </div>
 </div>
 
 <div class="px-4 py-8 sm:p-6">&nbsp;</div>

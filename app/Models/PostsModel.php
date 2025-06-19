@@ -45,7 +45,10 @@ class PostsModel extends Model {
                         ->limit($this->payload['limit'])
                         ->offset($offset);
 
-            if(!empty($this->payload['last_record_id'])) {
+            if(!empty($this->payload['previous_record_id'])) {
+                $userPosts->where('p.post_id <', $this->payload['previous_record_id']);
+            }
+            elseif(!empty($this->payload['last_record_id'])) {
                 $userPosts->where('p.post_id >', $this->payload['last_record_id']);
             }
 
@@ -342,7 +345,10 @@ class PostsModel extends Model {
                 $posts->like('p.city', $this->payload['location'], 'both');
             }
 
-            if(!empty($this->payload['last_record_id'])) {
+            if(!empty($this->payload['previous_record_id'])) {
+                $posts->where('p.post_id <', $this->payload['previous_record_id']);
+            }
+            elseif(!empty($this->payload['last_record_id'])) {
                 $posts->where('p.post_id >=', $this->payload['last_record_id']);
             }
 
