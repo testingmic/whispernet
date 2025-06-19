@@ -375,8 +375,8 @@ class PostsModel extends Model {
      */
     public function connectToDb($db = 'votes') {
 
-        // if the database group is production, use the default database
-        if(configs('db_group') == 'production') {
+        // if the database group is default, use the default database
+        if(in_array(configs('db_group'), ['default', 'production'])) {
             $this->votesDb = $this->db;
             $this->notifDb = $this->db;
             $this->viewsDb = $this->db;
