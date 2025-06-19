@@ -12,7 +12,7 @@
                         name="content" 
                         rows="4" 
                         class="w-full font-medium text-xl px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none transition-all duration-200"
-                        placeholder="Share your thoughts and experiences with users in a 10km radius..."
+                        placeholder="Share your thoughts and experiences with users in a 35km radius..."
                     ></textarea>
                     <div class="absolute bottom-2 right-2 flex items-center space-x-2">
                         <!-- Character Counter -->

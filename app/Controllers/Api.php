@@ -199,7 +199,7 @@ class Api extends BaseController
         }
 
         if(empty($payload['radius'])) {
-            $payload['radius'] = 50;
+            $payload['radius'] = $this->defaultRadius;
         }
 
         if(empty($payload['limit'])) {

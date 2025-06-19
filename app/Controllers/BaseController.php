@@ -99,6 +99,11 @@ abstract class BaseController extends Controller
     /**
      * @var int
      */
+    public $defaultRadius = 35;
+
+    /**
+     * @var int
+     */
     public $defaultLimit = 100;
 
     /**
