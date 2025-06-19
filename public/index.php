@@ -4,6 +4,8 @@
  * CHECK PHP VERSION
  *---------------------------------------------------------------
  */
+print_r($_SERVER);
+exit;
 set_time_limit(60);
 $minPhpVersion = '8.2'; // If you update this, don't forget to update `spark`.
 if (version_compare(PHP_VERSION, $minPhpVersion, '<')) {
