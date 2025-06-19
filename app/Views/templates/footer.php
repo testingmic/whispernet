@@ -134,8 +134,11 @@ if ('serviceWorker' in navigator) {
                 
                 // Check for updates
                 registration.addEventListener('updatefound', () => {
+                  alert('newWorker inside');
                     const newWorker = registration.installing;
-                    newWorker.addEventListener('statechange', () => { });
+                    newWorker.addEventListener('statechange', () => {
+                      alert('statechange');
+                    });
                 });
             })
             .catch(err => {
