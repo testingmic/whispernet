@@ -735,14 +735,13 @@ const PostManager = {
                             </svg>
                             <span>View Post</span>
                         </a>` : ''}
-                        ${post?.manage?.save ? `
-                        <button class="w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center space-x-2" onclick="event.stopPropagation(); PostManager.handleBookmark(${post.post_id})">
+                        ${post?.user_id !== AppState.user.user_id ? `
+                        <button class="w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center space-x-2" onclick="event.stopPropagation(); PostManager.handleBookmark(${post.post_id}, ${post.manage.save})">
                             <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"/>
                             </svg>
-                            <span>Save Post</span>
-                        </button>
-                        ` : ''}
+                            <span class="save-post-${post.post_id}">${post.manage.bookmarked ? 'Remove Post' : 'Save Post'}</span>
+                        </button>` : ''}
                         ${post?.manage?.report ? `
                         <button class="hidden w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center space-x-2" onclick="event.stopPropagation(); PostManager.handleReport(${post.post_id})">
                             <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -875,7 +874,7 @@ const PostManager = {
             AppState.showNotification('Error reporting post', 'error');
         }
     },
-    async handleBookmark(postId) {
+    async handleBookmark(postId, isBookmarked) {
         try {
             const response = await fetch(`${baseUrl}/api/posts/bookmark/${postId}`, {
                 method: 'POST',
@@ -888,7 +887,7 @@ const PostManager = {
             if (!response.ok) throw new Error('Failed to bookmark post');
             
             const data = await response.json();
-            AppState.showNotification(data.message || 'Post saved successfully', 'success');
+            document.querySelector(`.save-post-${postId}`).innerHTML = data.message;
             this.hideContextMenu();
         } catch (error) {
             AppState.showNotification('Failed to save post', 'error');

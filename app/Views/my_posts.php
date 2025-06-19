@@ -15,7 +15,7 @@
 </div>
 <script>
     var requestData = 'my_posts',
-        requestLimit = 100;
+        requestLimit = 200;
 </script>
 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-2 mb-2">
     <div id="feedContainer" class="scroll-sentinel">

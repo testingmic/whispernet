@@ -35,18 +35,20 @@ class PostsModel extends Model {
 
         try {
 
-            $offset = ($this->payload['offset'] - 1) * $this->payload['limit'];
+            $offset = ($this->payload['offset'] ?? 1 - 1) * $this->payload['limit'];
+
+            $total = 0;
 
             $hasCommented = (bool) (($this->payload['request_data'] ?? '') == 'my_replies');
             $hasVoted = (bool) (($this->payload['request_data'] ?? '') == 'my_votes');
             $hasViewed = (bool) (($this->payload['request_data'] ?? '') == 'my_views');
             $isAuthor = (bool) (($this->payload['request_data'] ?? '') == 'my_posts');
+            $isBookmarked = (bool) (($this->payload['request_data'] ?? '') == 'my_bookmarks');
 
             $userPosts = $this->db->table('posts p')
-                        ->select("p.*, u.full_name as username, u.profile_image, m.media as post_media")
+                        ->select("p.*, u.full_name, u.username as username, u.profile_image, m.media as post_media")
                         ->join('users u', 'p.user_id = u.user_id')
                         ->join('media m', 'p.post_id = m.record_id AND m.section = "posts"', 'left')
-                        ->where('p.user_id', $this->payload['userId'])
                         ->orderBy('p.created_at DESC')
                         ->limit($this->payload['limit'])
                         ->offset($offset);
@@ -82,23 +84,32 @@ class PostsModel extends Model {
                 $userPosts->where("p.post_id IN (" . implode(',', $postIds) . ")");
             }
 
-            $totalPosts = $this->db->table('posts p')->where('p.user_id', $this->payload['userId']);
+            if($isBookmarked) {
+                $userPosts->where("p.post_id IN (SELECT post_id FROM bookmarks WHERE user_id = {$this->payload['userId']})");
+            } else {
+                
+                // if the user is not viewing their own posts, only show their own posts
+                $userPosts->where('p.user_id', $this->payload['userId']);
+
+                // count the total number of posts
+                $totalPosts = $this->db->table('posts p')->where('p.user_id', $this->payload['userId']);
+                $total = $totalPosts->countAllResults();
+            }
 
             if(!empty($this->payload['location'])) {
                 $userPosts->like('p.city', $this->payload['location'], 'both');
                 $totalPosts->like('p.city', $this->payload['location'], 'both');
             }
 
-            $total = $totalPosts->countAllResults();
             $posts = $userPosts->get()->getResultArray();
 
             return [
                 'posts' => $posts,
                 'pagination' => [
-                    'total' => $total,
+                    'total' => $total ?? 0,
                     'page' => $this->payload['offset'] ?? 1,
                     'limit' => $this->payload['limit'],
-                    'pages' => ceil($total / $this->payload['limit'])
+                    'pages' => $total > 0 ? ceil($total / $this->payload['limit']) : 0
                 ]
             ];
         } catch (DatabaseException $e) {
@@ -305,7 +316,7 @@ class PostsModel extends Model {
     public function loadTrending($offset, $hours) {
         
         $posts = $this->db->table('posts p')
-                    ->select("p.*, u.full_name as username, u.profile_image, (p.upvotes - p.downvotes) as score, m.media as post_media")
+                    ->select("p.*, u.full_name, u.username as username, u.profile_image, (p.upvotes - p.downvotes) as score, m.media as post_media")
                     ->join('users u', 'p.user_id = u.user_id')
                     ->join('media m', 'p.post_id = m.record_id AND m.section = "posts"', 'left')
                     ->where('p.created_at >=', date('Y-m-d H:i:s', strtotime("-{$hours} hours")))
@@ -319,6 +330,49 @@ class PostsModel extends Model {
 
         return $posts->get()->getResultArray();
 
+    }
+
+    /**
+     * Bookmark a post
+     * 
+     * @return array
+     */
+    public function bookmark() {
+        try {
+            $sql = "INSERT INTO bookmarks (user_id, post_id) VALUES (?, ?)";
+            $this->db->query($sql, [$this->payload['userId'], $this->payload['postId']]);
+        } catch (DatabaseException $e) {
+            return $e->getMessage();
+        }
+    }
+
+    /**
+     * Unbookmark a post
+     * 
+     * @return array
+     */
+    public function unbookmark() {
+        try {
+            $sql = "DELETE FROM bookmarks WHERE user_id = ? AND post_id = ?";
+            $this->db->query($sql, [$this->payload['userId'], $this->payload['postId']]);
+        } catch (DatabaseException $e) {
+            return $e->getMessage();
+        }
+    }
+
+    /**
+     * Check if a post is bookmarked
+     * 
+     * @return array
+     */
+    public function checkBookmark() {
+        try {
+            $sql = "SELECT * FROM bookmarks WHERE user_id = ? AND post_id = ?";
+            $bookmark = $this->db->query($sql, [$this->payload['userId'], $this->payload['postId']])->getRowArray();
+            return $bookmark;
+        } catch (DatabaseException $e) {
+            return $e->getMessage();
+        }
     }
 
     /**
@@ -364,15 +418,21 @@ class PostsModel extends Model {
             $hasViewed = (bool) (($this->payload['request_data'] ?? '') == 'my_views');
             $isAuthor = (bool) (($this->payload['request_data'] ?? '') == 'my_posts');
 
+            // if the user has commented, voted, or viewed a post, set the radius to 100km
+            if($hasCommented || $hasVoted || $hasViewed) {
+                $this->payload['radius'] = 100;
+            }
+
             $offset = ($this->payload['offset'] - 1) * $this->payload['limit'];
             $posts = $this->db->table('posts p')
-                        ->select("p.*, u.full_name as username, u.profile_image,
+                        ->select("p.*, u.full_name, u.username as username, u.profile_image,
                            (6371 * acos(cos(radians({$this->payload['latitude']})) * cos(radians(latitude)) * 
                             cos(radians(longitude) - radians({$this->payload['longitude']})) + 
                             sin(radians({$this->payload['latitude']})) * sin(radians(latitude)))) AS distance,
-                            m.media as post_media")
+                            m.media as post_media, b.bookmark_id as is_bookmarked")
                         ->join('users u', 'p.user_id = u.user_id')
                         ->join('media m', 'p.post_id = m.record_id AND m.section = "posts"', 'left')
+                        ->join('bookmarks b', 'p.post_id = b.post_id AND b.user_id = ' . $this->payload['userId'], 'left')
                         ->where("(6371 * acos(cos(radians({$this->payload['latitude']})) * cos(radians(latitude)) * 
                             cos(radians(longitude) - radians({$this->payload['longitude']})) + 
                             sin(radians({$this->payload['latitude']})) * sin(radians(latitude)))) <= ", $this->payload['radius'])

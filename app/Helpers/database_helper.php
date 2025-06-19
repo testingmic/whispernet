@@ -22,6 +22,15 @@ $databases = [
         updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     );
     CREATE UNIQUE INDEX IF NOT EXISTS user_id ON users (user_id);",
+    "CREATE TABLE IF NOT EXISTS bookmarks (
+        bookmark_id INTEGER PRIMARY KEY AUTOINCREMENT,
+        user_id INTEGER NOT NULL,
+        post_id INTEGER NOT NULL,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    );
+    CREATE UNIQUE INDEX IF NOT EXISTS bookmark_id ON bookmarks (bookmark_id);
+    CREATE INDEX IF NOT EXISTS user_id ON bookmarks (user_id);
+    CREATE INDEX IF NOT EXISTS post_id ON bookmarks (post_id);",
     "CREATE TABLE IF NOT EXISTS user_token_auth (
         token_id INTEGER PRIMARY KEY AUTOINCREMENT,
         login TEXT,

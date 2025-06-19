@@ -236,6 +236,55 @@ class Posts extends LoadController {
     }
 
     /**
+     * Bookmark a post
+     * 
+     * @return array
+     */
+    public function bookmark() {
+        // set the payload to the posts model
+        $this->postsModel->payload = $this->payload;
+
+        // make the call to the posts model
+        $post = $this->postsModel->view();
+
+        if(empty($post)) {
+            return Routing::notFound();
+        }
+
+        // check if the post is bookmarked
+        $checkBookmark = $this->postsModel->checkBookmark();
+
+        // if the post is bookmarked, unbookmark it
+        if(!empty($checkBookmark)) {
+            $this->postsModel->unbookmark();
+            return Routing::success('Post unbookmarked successfully', 'Save Post');
+        }
+        
+        // make the call to the posts model
+        $this->postsModel->bookmark();
+
+        // increment the bookmarks count
+        return Routing::success('Post bookmarked successfully', 'Remove Post');
+    }
+
+    /**
+     * View bookmarked posts
+     * 
+     * @return array
+     */
+    public function bookmarked() {
+
+        // set the payload to the posts model
+        $this->postsModel->payload = $this->payload;
+        $this->postsModel->payload['request_data'] = 'my_bookmarks';
+        
+        // make the call to the posts model
+        $posts = $this->postsModel->list();
+
+        return Routing::success(formatPosts($posts, false, $this->payload['userId']));
+    }
+
+    /**
      * View a post
      * 
      * @return array

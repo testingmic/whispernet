@@ -1,5 +1,5 @@
 <?php
-$savedPosts = $savedPosts ?? [];
+$savedPosts = $bookmarkedPosts ?? [];
 $user = $user ?? null;
 ?>
 
@@ -39,46 +39,6 @@ $user = $user ?? null;
         </div>
     </div>
 
-    <!-- Filter Options -->
-    <div id="filterOptions" class="hidden bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-700 p-6 mb-8">
-        <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
-            <div>
-                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Sort By</label>
-                <select id="sortBy" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white">
-                    <option value="newest">Newest First</option>
-                    <option value="oldest">Oldest First</option>
-                    <option value="popular">Most Popular</option>
-                    <option value="recently_saved">Recently Saved</option>
-                </select>
-            </div>
-            <div>
-                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Content Type</label>
-                <select id="contentType" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white">
-                    <option value="all">All Types</option>
-                    <option value="text">Text Only</option>
-                    <option value="images">With Images</option>
-                    <option value="video">With Video</option>
-                    <option value="audio">With Audio</option>
-                </select>
-            </div>
-            <div>
-                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Date Range</label>
-                <select id="dateRange" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white">
-                    <option value="all">All Time</option>
-                    <option value="today">Today</option>
-                    <option value="week">This Week</option>
-                    <option value="month">This Month</option>
-                    <option value="year">This Year</option>
-                </select>
-            </div>
-            <div class="flex items-end">
-                <button id="clearFilters" class="w-full px-4 py-2 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors">
-                    Clear Filters
-                </button>
-            </div>
-        </div>
-    </div>
-
     <!-- Saved Posts Grid -->
     <div id="savedPostsContainer">
         <?php if (empty($savedPosts)): ?>
@@ -100,47 +60,37 @@ $user = $user ?? null;
             </div>
         <?php else: ?>
             <!-- Posts Grid -->
-            <div class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6" id="savedPostsGrid">
+            <div class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3  p-4 gap-6" id="savedPostsGrid">
                 <?php foreach ($savedPosts as $post): ?>
-                    <div class="saved-post-card bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden hover:shadow-lg transition-all duration-300" data-post-id="<?= $post['post_id'] ?>">
+                    <div class="saved-post-card bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden hover:shadow-lg transition-all duration-300" data-post-id="<?= $post['post_id'] ?? '' ?>">
                         <!-- Post Header -->
                         <div class="p-6 border-b border-gray-100 dark:border-gray-700">
                             <div class="flex items-center justify-between mb-3">
-                                <div class="flex items-center space-x-3">
+                                <div class="flex items-center space-x-3" onclick="return PostManager.changeDirection(<?= $post['post_id'] ?>)">
                                     <div class="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white">
                                         <span class="text-sm font-semibold"><?= strtoupper(substr($post['username'] ?? 'U', 0, 2)) ?></span>
                                     </div>
                                     <div>
                                         <p class="text-sm font-semibold text-gray-900 dark:text-white"><?= htmlspecialchars($post['username'] ?? 'Unknown') ?></p>
-                                        <p class="text-xs text-gray-500 dark:text-gray-400"><?= $post['ago'] ?? 'Unknown time' ?></p>
-                                    </div>
-                                </div>
-                                <div class="relative">
-                                    <button class="saved-post-menu-btn text-gray-400 hover:text-gray-500 dark:text-gray-500 dark:hover:text-gray-400 p-1 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
-                                        <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z" />
-                                        </svg>
-                                    </button>
-                                    <div class="saved-post-context-menu hidden absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 z-50 py-1">
-                                        <a href="<?= base_url('posts/view/' . $post['post_id']) ?>" class="w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center space-x-2">
+                                        <p class="text-xs text-gray-500 dark:text-gray-400 flex items-center space-x-1">
                                             <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
                                             </svg>
-                                            <span>View Post</span>
-                                        </a>
-                                        <button class="w-full text-left px-4 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 flex items-center space-x-2" onclick="SavedPostsManager.removeFromSaved(<?= $post['post_id'] ?>)">
-                                            <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                            <span class="mr-2"><?= $post['city'] ?? 'Unknown location' ?></span>
+                                            
+                                            <svg xmlns="http://www.w3.org/2000/svg" 
+                                                width="16" height="16" viewBox="0 0 24 24"  fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" >
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                                             </svg>
-                                            <span>Remove from Saved</span>
-                                        </button>
+                                            <span class="ml-2"><?= $post['ago'] ?? 'Unknown time' ?></span>
+                                        </p>
                                     </div>
                                 </div>
                             </div>
 
                             <!-- Post Content -->
-                            <div class="mb-4">
+                            <div class="mb-4" onclick="return PostManager.changeDirection(<?= $post['post_id'] ?>)">
                                 <p class="text-gray-800 dark:text-gray-200 text-sm leading-relaxed line-clamp-3"><?= htmlspecialchars($post['content'] ?? '') ?></p>
                             </div>
 
@@ -215,4 +165,26 @@ $user = $user ?? null;
             </button>
         </div>
     <?php endif; ?>
+    <div class="h-20"></div>
+    <div class="h-20"></div>
 </div>
+<script>
+    const postsList = <?= json_encode($savedPosts) ?>;
+    let foundPosts = [];
+    $(`input[id="searchSavedPosts"]`).on('keyup', function() {
+        const searchValue = $(this).val();
+        const filteredPosts = postsList.filter(
+            post => post.content.toLowerCase().includes(searchValue.toLowerCase()) || 
+            post.username.toLowerCase().includes(searchValue.toLowerCase()) ||
+            post.city.toLowerCase().includes(searchValue.toLowerCase())
+        );
+        // set all saved-post-card to hidden except the filtered posts post_id
+        $('.saved-post-card').each(function() {
+            if(filteredPosts.some(post => post.post_id == $(this).data('post-id'))) {
+                $(this).removeClass('hidden');
+            } else {
+                $(this).addClass('hidden');
+            }
+        });
+    });
+</script>

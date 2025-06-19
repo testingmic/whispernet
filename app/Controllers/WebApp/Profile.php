@@ -3,6 +3,7 @@
 namespace App\Controllers\WebApp;
 
 use App\Controllers\WebAppController;
+use App\Models\PostsModel;
 
 class Profile extends WebAppController
 {
@@ -82,7 +83,17 @@ class Profile extends WebAppController
      * @return string
      */
     public function saved() {
-        return $this->templateObject->loadPage('my_saved', ['pageTitle' => 'My Saved', 'favicon_color' => 'profile']);
+
+        $postsModel = new PostsModel();
+        
+        $this->payload['limit'] = $this->defaultLimit;
+        $this->payload['userId'] = $this->session->get('user_id');
+
+        $postsModel->payload = $this->payload;
+        $postsModel->payload['request_data'] = 'my_bookmarks';
+        $bookmarkedPosts = formatPosts($postsModel->list()['posts'] ?? []);
+
+        return $this->templateObject->loadPage('my_saved', ['pageTitle' => 'My Saved', 'favicon_color' => 'profile', 'bookmarkedPosts' => $bookmarkedPosts]);
     }
 
     private function getPostCount($statistics)

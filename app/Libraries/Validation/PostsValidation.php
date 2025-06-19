@@ -63,6 +63,21 @@ class PostsValidation {
                 'postId' => 'permit_empty|numeric|max_length[10]',
             ]
         ],
+        'bookmark:postId' => [
+            'method' => 'POST',
+            'authenticate' => true,
+            'payload' => [
+                'postId' => 'required|numeric|max_length[10]',
+            ]
+        ],
+        'bookmarked' => [
+            'method' => 'GET',
+            'authenticate' => true,
+            'payload' => [
+                'limit' => 'permit_empty|numeric|max_length[10]',
+                'offset' => 'permit_empty|numeric|max_length[10]',
+            ]
+        ],
         'notify' => [
             'method' => 'POST',
             'authenticate' => true,
