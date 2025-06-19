@@ -1553,11 +1553,13 @@ const ImprovedPostCreationForm = {
             </span>
 
         `;
+        alert('Processing form submission');
 
         // Prepare form data
         const formData = new FormData();
         formData.append('content', ImprovedPostCreationForm.textarea.value.trim());
         
+        alert('loaded files');
         // Add uploaded files
         ImprovedPostCreationForm.uploadedFiles.forEach((fileData, index) => {
             formData.append(`media[${index}]`, fileData.file);
@@ -1568,8 +1570,11 @@ const ImprovedPostCreationForm = {
             }
         });
 
+        alert('audio player');
+
         // Add audio if recorded
         if (ImprovedPostCreationForm?.audioPlayer?.src && ImprovedPostCreationForm?.audioPlayer?.src !== '') {
+            alert('audio player src');
             // Convert audio blob to file
             fetch(ImprovedPostCreationForm?.audioPlayer?.src)
                 .then(res => res.blob())
@@ -1578,15 +1583,19 @@ const ImprovedPostCreationForm = {
                     formData.append('audio', audioFile);
                     ImprovedPostCreationForm?.submitFormData(formData);
                 });
+                alert('audio player added to form data');
         } else {
+            alert('no audio player');
             ImprovedPostCreationForm?.submitFormData(formData);
         }
     },
 
     submitFormData(formData) {
+        alert('submitting form data');
         formData.append('longitude', longitude);
         formData.append('latitude', latitude);
         formData.append('token', AppState.getToken());
+        alert('added longitude and latitude');
         // Send AJAX request to API endpoint
         fetch('/api/posts/create', {
             method: 'POST',
@@ -1596,12 +1605,15 @@ const ImprovedPostCreationForm = {
             body: formData
         })
         .then(response => {
+            alert('response from request');
             if (!response.ok) {
+                alert('response not ok', response.status);
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
             return response.json();
         })
         .then(data => {
+            alert('data from request after success');
             if (data.status == 'success') {
                 PostManager.showUnreadPosts();
                 // Show success message
@@ -1614,6 +1626,7 @@ const ImprovedPostCreationForm = {
                 PostManager.loadedPostIds.push(data.record.post_id);
                 PostManager.currentPage = data.record.post_id;
             } else {
+                alert(data.message);
                 // Show error message
                 showNotification(data.message || 'Failed to create post. Please try again.', 'error');
                 ImprovedPostCreationForm.submitBtn.disabled = false;
@@ -1628,6 +1641,7 @@ const ImprovedPostCreationForm = {
                 `;
         })
         .catch(error => {
+            alert('the request failed', error);
             console.error('Error:', error);
             showNotification('An error occurred while creating the post. Please try again.', 'error');
             ImprovedPostCreationForm.submitBtn.disabled = false;
