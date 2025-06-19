@@ -7,19 +7,13 @@
                     <div class="relative">
                         <div class="w-24 h-24 rounded-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center">
                             <span class="text-2xl font-medium text-gray-600 dark:text-gray-300">
-                                <?= substr($user['name'] ?? 'User', 0, 1) ?>
+                                <?= substr($user['full_name'] ?? 'User', 0, 1) ?>
                             </span>
                         </div>
-                        <button type="button" class="absolute bottom-0 right-0 p-1 bg-blue-600 rounded-full text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
-                            </svg>
-                        </button>
                     </div>
                     <div class="flex-1 min-w-0">
                         <h1 class="text-2xl font-bold text-gray-900 dark:text-white">
-                            <?= $user['name'] ?? 'User' ?>
+                            <?= $user['full_name'] ?? 'User' ?>
                         </h1>
                         <p class="text-sm text-gray-500 dark:text-gray-400">
                             <?= $user['email'] ?? 'user@example.com' ?>
@@ -35,64 +29,50 @@
         </div>
 
         <!-- Profile Content -->
-        <div class="grid grid-cols-1 gap-6 lg:grid-cols-3">
+        <div class="grid grid-cols-1 lg:grid-cols-3">
             <!-- Left Column - Stats -->
-            <div class="bg-white dark:bg-gray-800 shadow rounded-lg">
-                <div class="px-4 py-5 sm:p-6">
-                    <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4">Activity Stats</h3>
-                    <div class="space-y-4">
-                        <div class="flex items-center justify-between">
-                            <span class="text-sm text-gray-500 dark:text-gray-400">Posts</span>
-                            <span class="text-sm font-medium text-gray-900 dark:text-white"><?= $stats['posts'] ?? 0 ?></span>
-                        </div>
-                        <div class="flex items-center justify-between">
-                            <span class="text-sm text-gray-500 dark:text-gray-400">Comments</span>
-                            <span class="text-sm font-medium text-gray-900 dark:text-white"><?= $stats['comments'] ?? 0 ?></span>
-                        </div>
-                        <div class="flex items-center justify-between">
-                            <span class="text-sm text-gray-500 dark:text-gray-400">Likes Received</span>
-                            <span class="text-sm font-medium text-gray-900 dark:text-white"><?= $stats['likes'] ?? 0 ?></span>
-                        </div>
-                    </div>
+            <div class="bg-white dark:bg-gray-800 shadow rounded-lg mb-4">
+                <div class="px-4 py-3 sm:p-6">
+                    <h3 class="text-lg font-medium text-gray-900 dark:text-white">Activity Stats</h3>
                 </div>
             </div>
 
             <!-- Middle Column - Recent Activity -->
-            <div class="bg-white dark:bg-gray-800 shadow rounded-lg lg:col-span-2">
-                <div class="px-4 py-5 sm:p-6">
-                    <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4">Recent Activity</h3>
-                    <div class="space-y-4">
-                        <?= loadingSkeleton(1, false) ?>
-                        <!-- <?php if (!empty($recentActivity)): ?>
-                            <?php foreach ($recentActivity as $activity): ?>
-                                <div class="flex items-start space-x-3">
-                                    <div class="flex-shrink-0">
-                                        <div class="w-8 h-8 rounded-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center">
-                                            <span class="text-sm font-medium text-gray-600 dark:text-gray-300">
-                                                <?= substr($activity['type'], 0, 1) ?>
-                                            </span>
-                                        </div>
-                                    </div>
-                                    <div class="flex-1 min-w-0">
-                                        <p class="text-sm text-gray-900 dark:text-white">
-                                            <?= $activity['description'] ?>
-                                        </p>
-                                        <p class="text-xs text-gray-500 dark:text-gray-400">
-                                            <?= $activity['time'] ?>
-                                        </p>
-                                    </div>
-                                </div>
-                            <?php endforeach; ?>
-                        <?php else: ?>
-                            <p class="text-sm text-gray-500 dark:text-gray-400">No recent activity</p>
-                        <?php endif; ?> -->
+            <div class="bg-white dark:bg-gray-800 shadow rounded-lg lg:col-span-2 mb-3 bg-gradient-to-r border-t border-blue-500 hover:border-blue-400 hover:shadow-md transition-all duration-300">
+                <a href="<?= $baseUrl ?>/profile/posts">
+                    <div class="px-4 py-4 sm:p-6  ">
+                        <div class="flex items-center justify-between">
+                            <span class="text-sm text-gray-500 dark:text-gray-400">My Posts</span>
+                            <span class="text-sm font-medium text-gray-900 dark:text-white"><?= $stats['posts'] ?? 0 ?></span>
+                        </div>
                     </div>
-                </div>
+                </a>
+            </div>
+            <div class="bg-white dark:bg-gray-800 shadow rounded-lg lg:col-span-2 mb-3 bg-gradient-to-r border-t border-blue-500 hover:border-blue-400 hover:shadow-md transition-all duration-300">
+                <a href="<?= $baseUrl ?>/profile/replies">
+                    <div class="px-4 py-4 sm:p-6 ">
+                        <div class="flex items-center justify-between">
+                            <span class="text-sm text-gray-500 dark:text-gray-400">My Replies</span>
+                            <span class="text-sm font-medium text-gray-900 dark:text-white"><?= $stats['comments'] ?? 0 ?></span>
+                        </div>
+                    </div>
+                </a>
+            </div>
+
+            <div class="bg-white dark:bg-gray-800 shadow rounded-lg bg-gradient-to-r border-t border-blue-500 lg:col-span-2 mb-3  hover:border-blue-400 hover:shadow-md transition-all duration-300">
+                <a href="<?= $baseUrl ?>/profile/votes">
+                    <div class="px-4 py-4 sm:p-6 ">
+                        <div class="flex items-center justify-between">
+                            <span class="text-sm text-gray-500 dark:text-gray-400">My Votes</span>
+                            <span class="text-sm font-medium text-gray-900 dark:text-white"><?= $stats['votes'] ?? 0 ?></span>
+                        </div>
+                    </div>
+                </a>
             </div>
         </div>
 
         <!-- Settings Section -->
-        <div class="mt-6 bg-white dark:bg-gray-800 shadow rounded-lg">
+        <div class="mt-4 bg-white dark:bg-gray-800 shadow rounded-lg">
             <div class="px-4 py-5 sm:p-6">
                 <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4">Settings</h3>
                 <div class="space-y-4">

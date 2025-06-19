@@ -56,6 +56,12 @@ class Posts extends LoadController {
 
         // set the just created flag
         $this->justCreated = true;
+
+        // increment the posts count
+        $this->currentUser['statistics']['posts'] = ($this->currentUser['statistics']['posts'] ?? 0) + 1;
+
+        // update the statistics
+        $this->usersModel->db->table('users')->where('user_id', $this->payload['userId'])->update(['statistics' => json_encode($this->currentUser['statistics'])]);
         
         // return the post id
         return Routing::created(['data' => 'Post created successfully', 'record' => $this->view()['data']]);
@@ -153,6 +159,13 @@ class Posts extends LoadController {
         // update the comments count
         $this->postsModel->updateCommentsCount($comment['data']['post_id'], "-");
 
+        // increment the comments count
+        $this->currentUser['statistics']['comments'] = ($this->currentUser['statistics']['comments'] ?? 0) - 1;
+
+        // update the statistics
+        $this->usersModel->db->table('users')->where('user_id', $this->payload['userId'])->update(['statistics' => json_encode($this->currentUser['statistics'])]);
+
+        // return the success message
         return Routing::success('Comment deleted successfully');
     }
 
@@ -184,6 +197,12 @@ class Posts extends LoadController {
 
         // update the comments count
         $this->postsModel->updateCommentsCount($this->payload['postId']);
+
+        // increment the comments count
+        $this->currentUser['statistics']['comments'] = ($this->currentUser['statistics']['comments'] ?? 0) + 1;
+
+        // update the statistics
+        $this->usersModel->db->table('users')->where('user_id', $this->payload['userId'])->update(['statistics' => json_encode($this->currentUser['statistics'])]);
 
         // return the comment id
         return Routing::created(['data' => 'Comment created successfully', 'record' => $this->viewSingleComment()['data']]);
@@ -362,6 +381,12 @@ class Posts extends LoadController {
                 $this->payload['recordId'], $this->payload['ownerId'], 'vote',
                 $section, "{$this->currentUser['username']} voted on your {$section}"
             );
+
+            // increment the votes count
+            $this->currentUser['statistics']['votes'] = ($this->currentUser['statistics']['votes'] ?? 0) + 1;
+
+            // update the statistics
+            $this->usersModel->db->table('users')->where('user_id', $this->payload['userId'])->update(['statistics' => json_encode($this->currentUser['statistics'])]);
         }
 
         // return the votes

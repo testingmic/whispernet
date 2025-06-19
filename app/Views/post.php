@@ -18,7 +18,7 @@
         <div id="postMediaPreview" class="media-display-container space-y-4"></div>
 
         <!-- Comments Section -->
-        <div class="mt-6 space-y-4">
+        <div class="mt-6 space-y-2">
             <h3 class="text-lg font-medium text-gray-900 dark:text-white">Comments</h3>
 
             <!-- Comments List -->
@@ -31,7 +31,7 @@
 
     <!-- Fixed Comment Input -->
     <div class="fixed bottom-0 left-0 right-0 bg-white bg-gradient-to-r border-t border-blue-400 from-blue-50 to-indigo-50">
-        <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+        <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 pt-2">
             <form id="commentForm" class="flex items-center space-x-4">
                 <div class="flex-1 relative">
                     <textarea maxlength="300" name="" id="commentInput" class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white text-base resize-none outline-none" placeholder="Write a comment..."></textarea>

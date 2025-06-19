@@ -10,6 +10,7 @@ CREATE TABLE IF NOT EXISTS users (
     password_hash VARCHAR(255) NOT NULL,
     full_name VARCHAR(100),
     bio TEXT,
+    statistics TEXT,
     two_factor_setup TINYINT(1) DEFAULT 0,
     profile_image VARCHAR(255),
     is_verified TINYINT(1) DEFAULT 0,

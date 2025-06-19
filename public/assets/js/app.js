@@ -508,7 +508,7 @@ const MediaManager = {
             if(mediaFiles.audio?.files.length > 0) {
                 mediaFiles.audio?.files.forEach((audio, key) => {
                     html += `
-                    <audio controls class="bg-gradient-to-r from-blue-50 to-purple-50 rounded-lg p-4 border border-gray-200 w-full" download=false>
+                    <audio controls class="bg-gradient-to-r from-blue-50 to-purple-50 rounded-lg p-4 border border-gray-200" download=false>
                         <source src="${baseUrl}/assets/uploads/${audio}" type="audio/mpeg">
                         Your browser does not support the audio element.
                     </audio>`;
@@ -795,7 +795,7 @@ const PostManager = {
     createCommentElement(comment) {
         const div = document.createElement('div');
         PostCommentManager.commentsList.push(comment.comment_id);
-        div.className = 'comment-card bg-white rounded-lg shadow-sm p-4 mb-4 bg-gradient-to-r border-t border-blue-500 hover:border-blue-400 hover:shadow-md transition-all duration-300';
+        div.className = 'comment-card bg-white rounded-lg shadow-sm p-4 mb-4 bg-gradient-to-r border-t border-blue-500  hover:border-blue-400 hover:shadow-md transition-all duration-300';
         div.innerHTML = `
             <div class="flex items-center justify-between mb-2">
                 <div class="flex items-center space-x-2">
@@ -876,14 +876,26 @@ const PostManager = {
         try {
             let whereClause = lastOldPostId ? `&previous_record_id=${lastOldPostId}` : ``;
             limit = lastOldPostId ? limit : this.postLimit;
+
+            if(typeof requestLimit !== 'undefined') {
+                limit = requestLimit;
+            }
+
+            if(typeof requestData !== 'undefined') {
+                whereClause = `&request_data=${requestData}`;
+            }
+
             const response = await fetch(`${baseUrl}/api/posts/nearby?last_record_id=${this.currentPage}${whereClause}&longitude=${longitude}&latitude=${latitude}&token=${AppState.getToken()}&limit=${limit}`);
             const data = await response.json();
             this.posts = [...this.posts, ...data.data];
             this.lastPostId = data?.data[0]?.post_id || 0;
             this.renderPosts(data.data, dontTrigger, unreadCounter, lastOldPostId);
-            if(!dontTrigger && !lastOldPostId) {
+
+            // if requestLimit is not defined, load latest posts
+            if(!dontTrigger && !lastOldPostId && typeof requestLimit === 'undefined') {
                 setInterval(() => this.loadLatestPosts(), 10000);
             }
+
             this.userLocation = data?.location ?? [];
             if(data.data.length == 0) {
                 document.getElementById('oldPostsContainer').classList.add('hidden');
@@ -1070,8 +1082,7 @@ const PostManager = {
             const data = await response.json();
             this.updateVoteCounts(recordId, data, section);
         } catch (error) {
-            console.log(error);
-            AppState.showNotification('Error submitting vote', 'error');
+            // AppState.showNotification(`Post ${direction}voted already.`, 'success');
         }
     },
     updateVoteCounts(postId, data, section) {

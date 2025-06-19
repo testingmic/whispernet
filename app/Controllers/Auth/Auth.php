@@ -458,6 +458,9 @@ class Auth extends LoadController {
             }
         }
 
+        // decode the statistics
+        $getRecord['statistics'] = !empty($getRecord['statistics']) ? json_decode($getRecord['statistics'], true) : [];
+
         // set the current user
         $this->currentUser = $getRecord;
 

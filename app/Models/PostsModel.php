@@ -37,6 +37,11 @@ class PostsModel extends Model {
 
             $offset = ($this->payload['offset'] - 1) * $this->payload['limit'];
 
+            $hasCommented = (bool) (($this->payload['request_data'] ?? '') == 'my_replies');
+            $hasVoted = (bool) (($this->payload['request_data'] ?? '') == 'my_votes');
+            $hasViewed = (bool) (($this->payload['request_data'] ?? '') == 'my_views');
+            $isAuthor = (bool) (($this->payload['request_data'] ?? '') == 'my_posts');
+
             $userPosts = $this->db->table('posts p')
                         ->select("p.*, u.full_name as username, u.profile_image, m.media as post_media")
                         ->join('users u', 'p.user_id = u.user_id')
@@ -51,6 +56,30 @@ class PostsModel extends Model {
             }
             elseif(!empty($this->payload['last_record_id'])) {
                 $userPosts->where('p.post_id >', $this->payload['last_record_id']);
+            }
+
+            if($isAuthor) {
+                $userPosts->where('p.user_id', $this->payload['userId']);
+            }
+
+            if($hasCommented) {
+                $userPosts->where("p.post_id IN (SELECT post_id FROM comments WHERE user_id = {$this->payload['userId']})");
+            }
+
+            if($hasVoted) {
+                $this->connectToDb('votes');
+                $postIds = $this->votesDb->table('votes')
+                    ->select('record_id')
+                    ->where('user_id', $this->payload['userId'])
+                    ->where('section', 'posts')
+                    ->get()
+                    ->getResultArray();
+                
+                $postIds = array_column($postIds, 'record_id');
+                if(empty($postIds)) {
+                    return [];
+                }
+                $userPosts->where("p.post_id IN (" . implode(',', $postIds) . ")");
             }
 
             $totalPosts = $this->db->table('posts p')->where('p.user_id', $this->payload['userId']);
@@ -330,6 +359,11 @@ class PostsModel extends Model {
 
         try {
 
+            $hasCommented = (bool) (($this->payload['request_data'] ?? '') == 'my_replies');
+            $hasVoted = (bool) (($this->payload['request_data'] ?? '') == 'my_votes');
+            $hasViewed = (bool) (($this->payload['request_data'] ?? '') == 'my_views');
+            $isAuthor = (bool) (($this->payload['request_data'] ?? '') == 'my_posts');
+
             $offset = ($this->payload['offset'] - 1) * $this->payload['limit'];
             $posts = $this->db->table('posts p')
                         ->select("p.*, u.full_name as username, u.profile_image,
@@ -345,6 +379,30 @@ class PostsModel extends Model {
                         ->orderBy('distance, p.post_id DESC')
                         ->limit($this->payload['limit'])
                         ->offset($offset);
+
+            if($isAuthor) {
+                $posts->where('p.user_id', $this->payload['userId']);
+            }
+
+            if($hasCommented) {
+                $posts->where("p.post_id IN (SELECT post_id FROM comments WHERE user_id = {$this->payload['userId']})");
+            }
+
+            if($hasVoted) {
+                $this->connectToDb('votes');
+                $postIds = $this->votesDb->table('votes')
+                    ->select('record_id')
+                    ->where('user_id', $this->payload['userId'])
+                    ->where('section', 'posts')
+                    ->get()
+                    ->getResultArray();
+                
+                $postIds = array_column($postIds, 'record_id');
+                if(empty($postIds)) {
+                    return [];
+                }
+                $posts->where("p.post_id IN (" . implode(',', $postIds) . ")");
+            }
 
             if(!empty($this->payload['location'])) {
                 $posts->like('p.city', $this->payload['location'], 'both');

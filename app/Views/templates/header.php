@@ -91,7 +91,7 @@ $favicon_color = $favicon_color ?? 'dashboard';
 
 
                   <!-- Emoji Selector -->
-                  <div class="flex items-center space-x-4">
+                  <div class="flex items-center space-x-4 hidden">
                     <button type="button" id="emojiBtn" class="flex items-center justify-center w-12 h-12 bg-yellow-100 hover:bg-yellow-200 rounded-lg transition-colors duration-200">
                       <svg class="w-6 h-6 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.828 14.828a4 4 0 01-5.656 0M9 10h1m4 0h1m-6 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
@@ -107,10 +107,11 @@ $favicon_color = $favicon_color ?? 'dashboard';
                       </svg>
                       <input type="file" id="fileUpload" name="media[]" accept="image/*,video/*" multiple class="hidden" />
                     </label>
+                    <span class="text-sm text-gray-600">Upload Image or Videos</span>
                   </div>
 
                   <!-- Audio Recording -->
-                  <div class="flex items-center space-x-2">
+                  <div class="flex items-center space-x-2 hidden">
                     <button type="button" id="audioRecordBtn" class="flex items-center justify-center w-12 h-12 bg-red-100 hover:bg-red-200 rounded-lg transition-colors duration-200">
                       <svg class="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"></path>
