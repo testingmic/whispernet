@@ -1605,7 +1605,6 @@ const ImprovedPostCreationForm = {
             body: formData
         })
         .then(response => {
-            alert('response from request ' + response.text());
             if (!response.ok) {
                 alert('response not ok ' + response.status);
                 throw new Error(`HTTP error! status: ${response.status}`);
@@ -1613,7 +1612,7 @@ const ImprovedPostCreationForm = {
             return response.json();
         })
         .then(data => {
-            alert('data from request after success');
+            alert(JSON.stringify(data));
             if (data.status == 'success') {
                 PostManager.showUnreadPosts();
                 // Show success message
@@ -1640,9 +1639,7 @@ const ImprovedPostCreationForm = {
                     </span>
                 `;
         })
-        .catch(error => {
-            alert('the request failed ' + JSON.stringify(error));
-            console.error('Error:', error);
+        .catch(error => {;
             showNotification('An error occurred while creating the post. Please try again.', 'error');
             ImprovedPostCreationForm.submitBtn.disabled = false;
             ImprovedPostCreationForm.submitBtn.innerHTML = `

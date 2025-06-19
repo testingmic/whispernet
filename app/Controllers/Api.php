@@ -187,7 +187,7 @@ class Api extends BaseController
 
         // confirm if the class actually exists
         if (!class_exists($classname)) {
-            $this->statusCode = 400;
+            $this->statusCode = 200;
 
             return [
                 'status' => 'error',
@@ -262,7 +262,7 @@ class Api extends BaseController
 
         // if the request method is PUT or DELETE and the unique id is empty, return an error
         if (in_array($this->requestMethod, ['PUT', 'DELETE']) && empty($this->uniqueId)) {
-            $this->statusCode = 400;
+            $this->statusCode = 200;
 
             return [
                 'status' => 'error',
@@ -307,7 +307,7 @@ class Api extends BaseController
             // confirm if the method exists
             if (!method_exists($classObject, $method)) {
                 // set the status code
-                $this->statusCode = 400;
+                $this->statusCode = 200;
 
                 return [
                     'status' => 'error',
