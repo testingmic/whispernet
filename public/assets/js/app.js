@@ -622,6 +622,9 @@ const PostManager = {
             if(!dontTrigger && !lastOldPostId) {
                 setInterval(() => this.loadLatestPosts(), 10000);
             }
+            if(data.data.length == 0) {
+                document.getElementById('oldPostsContainer').classList.add('hidden');
+            }
         } catch (error) { } finally {
             this.isLoading = false;
         }
