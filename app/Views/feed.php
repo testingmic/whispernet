@@ -54,7 +54,7 @@
         </div>
     </div>
 
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-2 mb-2">
+    <div class="bg-gradient-to-br from-slate-50 lg:px-8 max-w-7xl mt-2 mx-auto pb-1 pt-4 px-4 sm:px-6 to-indigo-100">
         <div id="unreadPostsCountContainer" class="text-center hidden bg-gray-600 font-bold dark:bg-gray-800 border border-gray-200 dark:border-gray-700
             shadow-sm text-gray-700 dark:text-gray-200 rounded-md p-2 mb-2 w-full mx-auto cursor-pointer
             bg-gradient-to-br from-red-200 via-green-200 to-blue-200 shadow-lg" onclick="return PostManager.showUnreadPosts()">
