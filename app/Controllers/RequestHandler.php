@@ -146,7 +146,7 @@ class RequestHandler extends BaseController
 
             // if the result is not empty, return the error
             if (!empty($result)) {
-                $this->statusCode = 400;
+                $this->statusCode = 200;
 
                 return [
                     'status' => 'error',

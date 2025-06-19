@@ -1553,13 +1553,11 @@ const ImprovedPostCreationForm = {
             </span>
 
         `;
-        alert('Processing form submission');
 
         // Prepare form data
         const formData = new FormData();
         formData.append('content', ImprovedPostCreationForm.textarea.value.trim());
         
-        alert('loaded files');
         // Add uploaded files
         ImprovedPostCreationForm.uploadedFiles.forEach((fileData, index) => {
             formData.append(`media[${index}]`, fileData.file);
@@ -1569,8 +1567,6 @@ const ImprovedPostCreationForm = {
                 formData.append(`thumbnails[${index}]`, fileData.thumbnail);
             }
         });
-
-        alert('audio player');
 
         // Add audio if recorded
         if (ImprovedPostCreationForm?.audioPlayer?.src && ImprovedPostCreationForm?.audioPlayer?.src !== '') {
@@ -1583,15 +1579,12 @@ const ImprovedPostCreationForm = {
                     formData.append('audio', audioFile);
                     ImprovedPostCreationForm?.submitFormData(formData);
                 });
-                alert('audio player added to form data');
         } else {
-            alert('no audio player');
             ImprovedPostCreationForm?.submitFormData(formData);
         }
     },
 
     submitFormData(formData) {
-        alert('submitting form data');
         formData.append('longitude', longitude);
         formData.append('latitude', latitude);
         formData.append('token', AppState.getToken());
