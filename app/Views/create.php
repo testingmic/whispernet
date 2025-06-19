@@ -53,6 +53,11 @@
                     </button>
                     <span id="audioStatus" class="text-sm text-gray-600">Record audio message</span>
                     <span id="audioTimer" class="text-sm text-red-600 hidden">00:00</span>
+                    <button type="button" id="audioPauseBtn" class="hidden flex items-center justify-center w-8 h-8 bg-yellow-100 hover:bg-yellow-200 rounded-lg transition-colors duration-200">
+                        <svg class="w-4 h-4 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 9v6m4-6v6m7-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                    </button>
                 </div>
 
                 <!-- Emoji Selector -->
@@ -137,9 +142,14 @@ const ImprovedPostCreationForm = {
     recordingTimer: null,
     recordingStartTime: null,
     uploadedFiles: [],
+    MAX_RECORDING_TIME: 30, // 30 seconds
+    MAX_IMAGE_SIZE: 2 * 1024 * 1024, // 2MB in bytes
+    isRecording: false,
+    isPaused: false,
+    totalRecordingTime: 0,
+    stream: null,
 
     init() {
-
         console.log('PostCreationForm initialized');
         this.form = document.getElementById('createPostFormUnique');
         this.textarea = document.getElementById('content');
@@ -155,8 +165,6 @@ const ImprovedPostCreationForm = {
         this.audioPreview = document.getElementById('audioPreview');
         this.audioPlayer = document.getElementById('audioPlayer');
         this.submitBtn = document.getElementById('submitBtn');
-        this.MAX_RECORDING_TIME = 30; // 30 seconds
-        this.MAX_IMAGE_SIZE = 2 * 1024 * 1024; // 2MB in bytes
 
         this.formSetup();
     },
@@ -285,10 +293,20 @@ const ImprovedPostCreationForm = {
 
         // Audio recording
         this.audioRecordBtn.addEventListener('click', function() {
-            if (!ImprovedPostCreationForm.mediaRecorder || ImprovedPostCreationForm.mediaRecorder.state === 'inactive') {
+            if (!ImprovedPostCreationForm.isRecording) {
                 ImprovedPostCreationForm.startRecording();
             } else {
                 ImprovedPostCreationForm.stopRecording();
+            }
+        });
+
+        // Pause/Resume recording
+        const audioPauseBtn = document.getElementById('audioPauseBtn');
+        audioPauseBtn.addEventListener('click', function() {
+            if (ImprovedPostCreationForm.isPaused) {
+                ImprovedPostCreationForm.resumeRecording();
+            } else {
+                ImprovedPostCreationForm.pauseRecording();
             }
         });
     },
@@ -360,57 +378,120 @@ const ImprovedPostCreationForm = {
 
     async startRecording() {
         try {
-            const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-            mediaRecorder = new MediaRecorder(stream);
-            audioChunks = [];
+            this.stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+            this.mediaRecorder = new MediaRecorder(this.stream);
+            this.audioChunks = [];
+            this.totalRecordingTime = 0;
 
-            mediaRecorder.ondataavailable = function(event) {
-                audioChunks.push(event.data);
+            this.mediaRecorder.ondataavailable = (event) => {
+                this.audioChunks.push(event.data);
             };
 
-            mediaRecorder.onstop = function() {
-                const audioBlob = new Blob(audioChunks, { type: 'audio/wav' });
+            this.mediaRecorder.onstop = () => {
+                const audioBlob = new Blob(this.audioChunks, { type: 'audio/wav' });
                 const audioUrl = URL.createObjectURL(audioBlob);
-                audioPlayer.src = audioUrl;
-                audioPreview.classList.remove('hidden');
+                this.audioPlayer.src = audioUrl;
+                this.audioPreview.classList.remove('hidden');
                 
                 // Stop all tracks
-                stream.getTracks().forEach(track => track.stop());
+                if (this.stream) {
+                    this.stream.getTracks().forEach(track => track.stop());
+                    this.stream = null;
+                }
             };
 
-            mediaRecorder.start();
-            audioRecordBtn.classList.add('bg-red-500', 'text-white');
-            audioRecordBtn.classList.remove('bg-red-100', 'text-red-600');
-            audioStatus.textContent = 'Recording...';
-            audioTimer.classList.remove('hidden');
+            this.mediaRecorder.start();
+            this.isRecording = true;
+            this.isPaused = false;
+            this.recordingStartTime = Date.now();
             
-            recordingStartTime = Date.now();
-            recordingTimer = setInterval(this.updateTimer, 1000);
+            // Update UI
+            this.audioRecordBtn.classList.add('bg-red-500', 'text-white');
+            this.audioRecordBtn.classList.remove('bg-red-100', 'text-red-600');
+            document.getElementById('audioPauseBtn').classList.remove('hidden');
+            this.audioStatus.textContent = 'Recording...';
+            this.audioTimer.classList.remove('hidden');
+            
+            this.recordingTimer = setInterval(() => this.updateTimer(), 1000);
         } catch (error) {
             console.error('Error accessing microphone:', error);
             this.showNotification('Unable to access microphone. Please check permissions.', 'error');
         }
     },
 
+    pauseRecording() {
+        if (this.mediaRecorder && this.mediaRecorder.state === 'recording') {
+            this.mediaRecorder.pause();
+            this.isPaused = true;
+            
+            // Calculate total recording time so far
+            this.totalRecordingTime += Math.floor((Date.now() - this.recordingStartTime) / 1000);
+            
+            // Update UI
+            const audioPauseBtn = document.getElementById('audioPauseBtn');
+            audioPauseBtn.innerHTML = `
+                <svg class="w-4 h-4 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.828 14.828a4 4 0 01-5.656 0M9 10h1m4 0h1m-6 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+            `;
+            this.audioStatus.textContent = 'Paused';
+            this.audioRecordBtn.classList.add('bg-gray-500');
+            this.audioRecordBtn.classList.remove('bg-red-500');
+            
+            clearInterval(this.recordingTimer);
+        }
+    },
+
+    resumeRecording() {
+        if (this.mediaRecorder && this.mediaRecorder.state === 'paused') {
+            this.mediaRecorder.resume();
+            this.isPaused = false;
+            
+            // Reset recording start time for the resumed session
+            this.recordingStartTime = Date.now();
+            
+            // Update UI
+            const audioPauseBtn = document.getElementById('audioPauseBtn');
+            audioPauseBtn.innerHTML = `
+                <svg class="w-4 h-4 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 9v6m4-6v6m7-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+            `;
+            this.audioStatus.textContent = 'Recording...';
+            this.audioRecordBtn.classList.remove('bg-gray-500');
+            this.audioRecordBtn.classList.add('bg-red-500');
+            
+            this.recordingTimer = setInterval(() => this.updateTimer(), 1000);
+        }
+    },
+
     stopRecording() {
-        if (mediaRecorder && mediaRecorder.state === 'recording') {
-            mediaRecorder.stop();
-            audioRecordBtn.classList.remove('bg-red-500', 'text-white');
-            audioRecordBtn.classList.add('bg-red-100', 'text-red-600');
-            audioStatus.textContent = 'Record audio message';
-            audioTimer.classList.add('hidden');
-            clearInterval(recordingTimer);
+        if (this.mediaRecorder && (this.mediaRecorder.state === 'recording' || this.mediaRecorder.state === 'paused')) {
+            this.mediaRecorder.stop();
+            this.isRecording = false;
+            this.isPaused = false;
+            
+            // Update UI
+            this.audioRecordBtn.classList.remove('bg-red-500', 'bg-gray-500', 'text-white');
+            this.audioRecordBtn.classList.add('bg-red-100', 'text-red-600');
+            document.getElementById('audioPauseBtn').classList.add('hidden');
+            this.audioStatus.textContent = 'Record audio message';
+            this.audioTimer.classList.add('hidden');
+            
+            clearInterval(this.recordingTimer);
         }
     },
 
     updateTimer() {
-        const elapsed = Math.floor((Date.now() - recordingStartTime) / 1000);
-        const minutes = Math.floor(elapsed / 60);
-        const seconds = elapsed % 60;
-        audioTimer.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        const currentSessionTime = Math.floor((Date.now() - this.recordingStartTime) / 1000);
+        const totalTime = this.totalRecordingTime + currentSessionTime;
+        
+        const minutes = Math.floor(totalTime / 60);
+        const seconds = totalTime % 60;
+        this.audioTimer.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
         
         // Check if recording time limit reached
-        if (elapsed >= this.MAX_RECORDING_TIME) {
+        if (totalTime >= this.MAX_RECORDING_TIME) {
             this.showNotification('Recording stopped automatically (30 second limit reached).', 'info');
             this.stopRecording();
         }
