@@ -1928,35 +1928,36 @@ const AuthManager = {
 // Post Creation Form Handler
 const PostCreationForm = {
     init() {
-        const postCreationForm = document.getElementById('postCreationForm');
+        const postCreationForm = document?.getElementById('postCreationForm');
 
         if (!postCreationForm) return;
 
         // Close form when clicking overlay
-        postCreationForm.addEventListener('click', (e) => {
-            if (e.target === postCreationForm) {
-                postCreationForm.classList.add('hidden');
-            }
-        });
+        // postCreationForm.addEventListener('click', (e) => {
+        //     if (e.target === postCreationForm) {
+        //         postCreationForm.classList.add('hidden');
+        //     }
+        // });
 
         // Close form on escape key
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape' && !postCreationForm.classList.contains('hidden')) {
-                postCreationForm.classList.add('hidden');
-            }
-        });
+        // document.addEventListener('keydown', (e) => {
+        //     if (e.key === 'Escape' && !postCreationForm.classList.contains('hidden')) {
+        //         postCreationForm.classList.add('hidden');
+        //     }
+        // });
 
         // Handle form submission
-        const form = document.getElementById('createPostForm');
-        if (form) {
-            form.addEventListener('submit', async (e) => {
-                e.preventDefault();
-                await this.submitPost(form);
-            });
-        }
+        // const form = document.getElementById('createPostForm');
+        // if (form) {
+        //     form.addEventListener('submit', async (e) => {
+        //         e.preventDefault();
+        //         await this.submitPost(form);
+        //     });
+        // }
     },
 
     async submitPost(form) {
+        return true;
         const formData = new FormData(form);
         formData.append('token', AppState.getToken());
         formData.append('longitude', longitude);
