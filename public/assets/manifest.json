@@ -1,4 +1,5 @@
 {
+  "id": "/",
   "name": "WhisperChat",
   "short_name": "WhisperChat",
   "description": "Connect with your local community anonymously",
@@ -54,13 +55,22 @@
       "src": "/assets/screenshots/Signup.png",
       "sizes": "540x960",
       "type": "image/png",
-      "label": "Signup"
+      "label": "Signup",
+      "form_factor": "narrow"
     },
     {
       "src": "/assets/screenshots/Login.png",
       "sizes": "540x960",
       "type": "image/png",
-      "label": "Login Page"
+      "label": "Login Page",
+      "form_factor": "narrow"
+    },
+    {
+      "src": "/assets/screenshots/Chat-desktop.png",
+      "sizes": "1280x720",
+      "type": "image/png",
+      "label": "Chat View",
+      "form_factor": "wide"
     }
   ],
   "categories": ["social", "communication"],
