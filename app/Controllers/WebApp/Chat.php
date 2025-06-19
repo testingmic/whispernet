@@ -11,31 +11,4 @@ class Chat extends WebAppController {
         return $this->templateObject->loadPage('chat', ['pageTitle' => 'Chat', 'chats' => $chats, 'favicon_color' => 'chat']);
     }
 
-    /**
-     * Groups page
-     * 
-     * @return string
-     */
-    public function groups() {
-        $groups = [];
-        return $this->templateObject->loadPage('groups', ['pageTitle' => 'Groups', 'groups' => $groups, 'favicon_color' => 'chat']);
-    }
-
-    /**
-     * Group page
-     * 
-     * @param string $groupId
-     * @param array $params
-     * @return string
-     */
-    public function group($groupId = null, $params = []) {
-        $group = [];
-        return $this->templateObject->loadPage('group_chat', [
-            'pageTitle' => 'Group', 
-            'group' => $group,
-            'footerHidden' => true,
-            'favicon_color' => 'chat'
-        ]);
-    }
-
 }
