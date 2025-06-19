@@ -9,7 +9,7 @@ $messages = $messages ?? [];
     <!-- Main Chat Interface -->
     <div class="w-full max-w-7xl">
         <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-xl border border-gray-200 dark:border-gray-700 overflow-hidden">
-            <div class="flex flex-col lg:flex-row h-[75vh] lg:h-[70vh]">
+            <div class="flex flex-col lg:flex-row h-[73vh] lg:h-[70vh]">
                 <!-- Left Sidebar - Chat List & Search -->
                 <div class="w-full lg:w-80 border-b lg:border-b-0 lg:border-r border-gray-200 dark:border-gray-700 flex flex-col h-[28rem] lg:h-full">
                     <!-- Header with New Chat Button -->
