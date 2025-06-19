@@ -486,8 +486,8 @@ const PostManager = {
         this.loadPost();
     },
     closeCreateModal() {
-        $('#postCreationForm').addClass('hidden');
-        document.getElementById('createPostForm').reset();
+        $('#postCreationForm')?.addClass('hidden');
+        document?.getElementById('createPostForm')?.reset();
     },
     openCreateModal() {
         $('#postCreationForm').removeClass('hidden');
@@ -746,6 +746,545 @@ const PostManager = {
             AppState.showNotification('Error reporting post', 'error');
         }
     }
+};
+
+const ImprovedPostCreationForm = {
+    mediaRecorder: null,
+    audioChunks: [],
+    recordingTimer: null,
+    recordingStartTime: null,
+    uploadedFiles: [],
+    MAX_RECORDING_TIME: 30, // 30 seconds
+    MAX_IMAGE_SIZE: 2 * 1024 * 1024, // 2MB in bytes
+    isRecording: false,
+    isPaused: false,
+    totalRecordingTime: 0,
+    stream: null,
+    max_content_length: 300,
+
+    init() {
+        console.log('PostCreationForm initialized');
+        this.form = document.getElementById('createPostFormUnique');
+        this.textarea = document.getElementById('content');
+        this.charCount = document.getElementById('charCount');
+        this.fileUpload = document.getElementById('fileUpload');
+        this.audioRecordBtn = document.getElementById('audioRecordBtn');
+        this.audioStatus = document.getElementById('audioStatus');
+        this.audioTimer = document.getElementById('audioTimer');
+        this.emojiBtn = document.getElementById('emojiBtn');
+        this.emojiPicker = document.getElementById('emojiPicker');
+        this.mediaPreview = document.getElementById('mediaPreview');
+        this.previewContainer = document.getElementById('previewContainer');
+        this.audioPreview = document.getElementById('audioPreview');
+        this.audioPlayer = document.getElementById('audioPlayer');
+        this.submitBtn = document.getElementById('submitBtn');
+        this.max_content_length = 300;
+
+        this.formSetup();
+    },
+    formSetup() {
+        // Character counter
+        this.textarea.addEventListener('input', function() {
+            const length = this.value.length;
+            charCount.textContent = `${length}/${ImprovedPostCreationForm.max_content_length}`;
+            
+            if (length > ImprovedPostCreationForm.max_content_length) {
+                charCount.classList.add('text-red-500');
+            } else {
+                charCount.classList.remove('text-red-500');
+            }
+        });
+
+        // File upload preview
+        this.fileUpload.addEventListener('change', function(e) {
+            const files = Array.from(e.target.files);
+            
+            // Check if adding these files would exceed the limit
+            if (ImprovedPostCreationForm.uploadedFiles?.length + files?.length > 4) {
+                ImprovedPostCreationForm.showNotification('You can only upload up to 4 files. Please remove some files first.', 'error');
+                return;
+            }
+
+            files.forEach((file, index) => {
+                // Check file type
+                if (!file.type.startsWith('image/') && !file.type.startsWith('video/')) {
+                    ImprovedPostCreationForm.showNotification(`File "${file.name}" is not a valid image or video file.`, 'error');
+                    return;
+                }
+
+                // Check file size based on type
+                if (file.type.startsWith('image/') && file.size > ImprovedPostCreationForm.MAX_IMAGE_SIZE) {
+                    ImprovedPostCreationForm.showNotification(`Image "${file.name}" is too large. Maximum size is 2MB.`, 'error');
+                    return;
+                }
+
+                // Check file size for videos (10MB limit)
+                if (file.type.startsWith('video/') && file.size > 10 * 1024 * 1024) {
+                    ImprovedPostCreationForm.showNotification(`Video "${file.name}" is too large. Maximum size is 10MB.`, 'error');
+                    return;
+                }
+
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const fileId = Date.now() + index;
+                    ImprovedPostCreationForm.uploadedFiles.push({
+                        id: fileId,
+                        file: file,
+                        preview: e.target.result
+                    });
+                    
+                    ImprovedPostCreationForm.createFilePreview(fileId, file, e.target.result);
+                    ImprovedPostCreationForm.updateUploadButton();
+                };
+                reader.readAsDataURL(file);
+            });
+        });
+
+        // Emoji picker
+        this.emojiBtn.addEventListener('click', function() {
+            ImprovedPostCreationForm.emojiPicker.classList.toggle('hidden');
+        });
+
+        // Add emoji to textarea
+        document.querySelectorAll('.emoji-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const emoji = this.textContent;
+                const cursorPos = ImprovedPostCreationForm.textarea.selectionStart;
+                const textBefore = ImprovedPostCreationForm.textarea.value.substring(0, cursorPos);
+                const textAfter = ImprovedPostCreationForm.textarea.value.substring(cursorPos);
+                ImprovedPostCreationForm.textarea.value = textBefore + emoji + textAfter;
+                ImprovedPostCreationForm.textarea.focus();
+                ImprovedPostCreationForm.textarea.setSelectionRange(cursorPos + emoji.length, cursorPos + emoji.length);
+                
+                // Trigger input event for character counter
+                ImprovedPostCreationForm.textarea.dispatchEvent(new Event('input'));
+            });
+        });
+
+        // Close emoji picker when clicking outside
+        document.addEventListener('click', function(e) {
+            if (!ImprovedPostCreationForm.emojiBtn.contains(e.target) && !ImprovedPostCreationForm.emojiPicker.contains(e.target)) {
+                ImprovedPostCreationForm.emojiPicker.classList.add('hidden');
+            }
+        });
+
+        // Add click event listener to submit button as additional safeguard
+        submitBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            
+            // Trigger form submission manually
+            ImprovedPostCreationForm.form.dispatchEvent(new Event('submit', { bubbles: true, cancelable: true }));
+            
+            return false;
+        });
+
+        // Form submission
+        this.form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            e.stopImmediatePropagation();
+            
+            // Validate content
+            if (!ImprovedPostCreationForm.textarea.value.trim() && ImprovedPostCreationForm.uploadedFiles.length === 0) {
+                ImprovedPostCreationForm.showNotification('Please add some content or upload media before posting.', 'error');
+                return false;
+            }
+            
+            // Stop recording if it's currently active
+            if (ImprovedPostCreationForm.mediaRecorder && ImprovedPostCreationForm.mediaRecorder.state === 'recording') {
+                ImprovedPostCreationForm.stopRecording();
+                // Wait a moment for the recording to finish processing
+                setTimeout(() => {
+                    ImprovedPostCreationForm.processFormSubmission();
+                }, 500);
+            } else {
+                ImprovedPostCreationForm.processFormSubmission();
+            }
+            
+            return false;
+        });
+
+        // Audio recording
+        this.audioRecordBtn.addEventListener('click', function() {
+            if (!ImprovedPostCreationForm.isRecording) {
+                ImprovedPostCreationForm.startRecording();
+            } else {
+                ImprovedPostCreationForm.stopRecording();
+            }
+        });
+
+        // Pause/Resume recording
+        const audioPauseBtn = document.getElementById('audioPauseBtn');
+        audioPauseBtn.addEventListener('click', function() {
+            if (ImprovedPostCreationForm.isPaused) {
+                ImprovedPostCreationForm.resumeRecording();
+            } else {
+                ImprovedPostCreationForm.pauseRecording();
+            }
+        });
+    },
+
+    createFilePreview(fileId, file, previewUrl) {
+        const previewGrid = document.getElementById('imagePreviewGrid');
+        previewGrid.classList.remove('hidden');
+
+        const previewContainer = document.createElement('div');
+        previewContainer.className = 'relative group';
+        previewContainer.id = `preview-${fileId}`;
+
+        const isVideo = file.type.startsWith('video/');
+        
+        previewContainer.innerHTML = `
+            <div class="aspect-square bg-gray-100 rounded-lg overflow-hidden w-20 h-20">
+                ${isVideo ? 
+                    `<video src="${previewUrl}" class="w-full h-full object-cover" controls></video>` :
+                    `<img src="${previewUrl}" class="w-full h-full object-cover" alt="Preview">`
+                }
+            </div>
+            <button type="button" class="remove-file absolute -top-1 -right-1 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs hover:bg-red-600 transition-colors opacity-0 group-hover:opacity-100" data-file-id="${fileId}">
+                ×
+            </button>
+            <div class="absolute bottom-0 left-0 right-0 bg-black bg-opacity-50 text-white text-xs p-1 truncate">
+                ${file.name}
+            </div>
+        `;
+
+        previewGrid.appendChild(previewContainer);
+
+        // Add remove functionality
+        const removeBtn = previewContainer.querySelector('.remove-file');
+        removeBtn.addEventListener('click', function() {
+            removeFile(fileId);
+        });
+    },
+
+    removeFile(fileId) {
+        // Remove from uploadedFiles array
+        this.uploadedFiles = this.uploadedFiles.filter(file => file.id !== fileId);
+        
+        // Remove from DOM
+        const previewElement = document.getElementById(`preview-${fileId}`);
+        if (previewElement) {
+            previewElement.remove();
+        }
+
+        // Hide grid if no files
+        if (this.uploadedFiles.length === 0) {
+            document.getElementById('imagePreviewGrid').classList.add('hidden');
+        }
+
+        this.updateUploadButton();
+    },
+
+    updateUploadButton() {
+        const uploadLabel = fileUpload.parentElement;
+        const remainingSlots = 4 - this.uploadedFiles.length;
+        
+        if (remainingSlots === 0) {
+            uploadLabel.classList.add('opacity-50', 'cursor-not-allowed');
+            uploadLabel.classList.remove('hover:bg-gray-200');
+        } else {
+            uploadLabel.classList.remove('opacity-50', 'cursor-not-allowed');
+            uploadLabel.classList.add('hover:bg-gray-200');
+        }
+    },
+
+    async startRecording() {
+        try {
+            this.stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+            this.mediaRecorder = new MediaRecorder(this.stream);
+            this.audioChunks = [];
+            this.totalRecordingTime = 0;
+
+            this.mediaRecorder.ondataavailable = (event) => {
+                this.audioChunks.push(event.data);
+            };
+
+            this.mediaRecorder.onstop = () => {
+                const audioBlob = new Blob(this.audioChunks, { type: 'audio/wav' });
+                const audioUrl = URL.createObjectURL(audioBlob);
+                this.audioPlayer.src = audioUrl;
+                this.audioPreview.classList.remove('hidden');
+                
+                // Stop all tracks
+                if (this.stream) {
+                    this.stream.getTracks().forEach(track => track.stop());
+                    this.stream = null;
+                }
+            };
+
+            this.mediaRecorder.start();
+            this.isRecording = true;
+            this.isPaused = false;
+            this.recordingStartTime = Date.now();
+            
+            // Update UI - Change to stop icon
+            this.audioRecordBtn.innerHTML = `
+                <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 10a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1h-4a1 1 0 01-1-1v-4z"></path>
+                </svg>
+            `;
+            this.audioRecordBtn.classList.add('bg-red-500', 'text-white');
+            this.audioRecordBtn.classList.remove('bg-red-100', 'text-red-600');
+            document.getElementById('audioPauseBtn').classList.remove('hidden');
+            this.audioStatus.textContent = '';
+            this.audioTimer.classList.remove('hidden');
+            
+            this.recordingTimer = setInterval(() => this.updateTimer(), 1000);
+        } catch (error) {
+            console.error('Error accessing microphone:', error);
+            this.showNotification('Unable to access microphone. Please check permissions.', 'error');
+        }
+    },
+
+    pauseRecording() {
+        if (this.mediaRecorder && this.mediaRecorder.state === 'recording') {
+            this.mediaRecorder.pause();
+            this.isPaused = true;
+            
+            // Calculate total recording time so far
+            this.totalRecordingTime += Math.floor((Date.now() - this.recordingStartTime) / 1000);
+            
+            // Update UI - Change pause button to play icon
+            const audioPauseBtn = document.getElementById('audioPauseBtn');
+            audioPauseBtn.innerHTML = `
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-3">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M5.25 5.653c0-.856.917-1.398 1.667-.986l11.54 6.348a1.125 1.125 0 0 1 0 1.971l-11.54 6.347a1.125 1.125 0 0 1-1.667-.985V5.653z" />
+                </svg>
+            `;
+            this.audioStatus.textContent = 'Paused';
+            this.audioRecordBtn.classList.add('bg-gray-500');
+            this.audioRecordBtn.classList.remove('bg-red-500');
+            
+            clearInterval(this.recordingTimer);
+        }
+    },
+
+    resumeRecording() {
+        if (this.mediaRecorder && this.mediaRecorder.state === 'paused') {
+            this.mediaRecorder.resume();
+            this.isPaused = false;
+            
+            // Reset recording start time for the resumed session
+            this.recordingStartTime = Date.now();
+            
+            // Update UI - Change play button back to pause icon
+            const audioPauseBtn = document.getElementById('audioPauseBtn');
+            audioPauseBtn.innerHTML = `
+                <svg class="w-4 h-4 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 9v6m4-6v6m7-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+            `;
+            this.audioStatus.textContent = '';
+            this.audioRecordBtn.classList.remove('bg-gray-500');
+            this.audioRecordBtn.classList.add('bg-red-500');
+            
+            this.recordingTimer = setInterval(() => this.updateTimer(), 1000);
+        }
+    },
+
+    stopRecording() {
+        if (this.mediaRecorder && (this.mediaRecorder.state === 'recording' || this.mediaRecorder.state === 'paused')) {
+            this.mediaRecorder.stop();
+            this.isRecording = false;
+            this.isPaused = false;
+            
+            // Update UI - Change back to microphone icon
+            this.audioRecordBtn.innerHTML = `
+                <svg class="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"></path>
+                </svg>
+            `;
+            this.audioRecordBtn.classList.remove('bg-red-500', 'bg-gray-500', 'text-white');
+            this.audioRecordBtn.classList.add('bg-red-100', 'text-red-600');
+            document.getElementById('audioPauseBtn').classList.add('hidden');
+            this.audioStatus.textContent = 'Record new audio';
+            this.audioTimer.classList.add('hidden');
+            
+            clearInterval(this.recordingTimer);
+        }
+    },
+
+    updateTimer() {
+        const currentSessionTime = Math.floor((Date.now() - this.recordingStartTime) / 1000);
+        const totalTime = this.totalRecordingTime + currentSessionTime;
+        
+        const minutes = Math.floor(totalTime / 60);
+        const seconds = totalTime % 60;
+        this.audioTimer.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        
+        // Check if recording time limit reached
+        if (totalTime >= this.MAX_RECORDING_TIME) {
+            this.showNotification('Recording stopped automatically (30 second limit reached).', 'info');
+            this.stopRecording();
+        }
+    },
+    
+    processFormSubmission() {
+        // Disable submit button
+        ImprovedPostCreationForm.submitBtn.disabled = true;
+        ImprovedPostCreationForm.submitBtn.innerHTML = `
+            <svg class="animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            </svg>
+            <span>Posting...</span>
+        `;
+
+        // Prepare form data
+        const formData = new FormData();
+        formData.append('content', ImprovedPostCreationForm.textarea.value.trim());
+        
+        // Add uploaded files
+        ImprovedPostCreationForm.uploadedFiles.forEach((fileData, index) => {
+            formData.append(`media[${index}]`, fileData.file);
+        });
+
+        // Add audio if recorded
+        if (ImprovedPostCreationForm.audioPlayer.src && ImprovedPostCreationForm.audioPlayer.src !== '') {
+            // Convert audio blob to file
+            fetch(ImprovedPostCreationForm.audioPlayer.src)
+                .then(res => res.blob())
+                .then(blob => {
+                    const audioFile = new File([blob], 'audio-message.wav', { type: 'audio/wav' });
+                    formData.append('audio', audioFile);
+                    ImprovedPostCreationForm.submitFormData(formData);
+                });
+        } else {
+            ImprovedPostCreationForm.submitFormData(formData);
+        }
+    },
+
+    submitFormData(formData) {
+        formData.append('longitude', longitude);
+        formData.append('latitude', latitude);
+        formData.append('token', AppState.getToken());
+        // Send AJAX request to API endpoint
+        fetch('/api/posts/create', {
+            method: 'POST',
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest'
+            },
+            body: formData
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            return response.json();
+        })
+        .then(data => {
+            if (data.status == 'success') {
+                // Show success message
+                AppState.showNotification('Post created successfully!', 'success');
+                ImprovedPostCreationForm.resetForm();
+                const feedContainer = document.getElementById('feedContainer');
+                const postElement = PostManager.createPostElement(data.record);
+                feedContainer.insertBefore(postElement, feedContainer.firstChild);
+                PostManager.closeCreateModal();
+            } else {
+                // Show error message
+                showNotification(data.message || 'Failed to create post. Please try again.', 'error');
+                ImprovedPostCreationForm.submitBtn.disabled = false;
+            }
+            ImprovedPostCreationForm.submitBtn.innerHTML = `
+                    <span class="flex items-center space-x-2">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path>
+                        </svg>
+                        <span>Post</span>
+                    </span>
+                `;
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            showNotification('An error occurred while creating the post. Please try again.', 'error');
+            ImprovedPostCreationForm.submitBtn.disabled = false;
+            ImprovedPostCreationForm.submitBtn.innerHTML = `
+                <span class="flex items-center space-x-2">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path>
+                    </svg>
+                    <span>Post</span>
+                </span>
+            `;
+        });
+    },
+
+    showNotification(message, type = 'info') {
+        // Create notification element
+        const notification = document.createElement('div');
+        notification.className = `fixed top-4 right-4 z-50 p-4 rounded-lg shadow-lg max-w-sm transform transition-all duration-300 translate-x-full`;
+        
+        // Set background color based on type
+        if (type === 'success') {
+            notification.classList.add('bg-green-500', 'text-white');
+        } else if (type === 'error') {
+            notification.classList.add('bg-red-500', 'text-white');
+        } else {
+            notification.classList.add('bg-blue-500', 'text-white');
+        }
+        
+        notification.innerHTML = `
+            <div class="flex items-center justify-between">
+                <span>${message}</span>
+                <button type="button" class="ml-4 text-white hover:text-gray-200" onclick="this.parentElement.parentElement.remove()">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+            </div>
+        `;
+        
+        // Add to page
+        document.body.appendChild(notification);
+        
+        // Animate in
+        setTimeout(() => {
+            notification.classList.remove('translate-x-full');
+        }, 100);
+        
+        // Auto remove after 5 seconds
+        setTimeout(() => {
+            notification.classList.add('translate-x-full');
+            setTimeout(() => {
+                if (notification.parentElement) {
+                    notification.remove();
+                }
+            }, 300);
+        }, 5000);
+    },
+
+    resetForm() {
+        // Reset form fields
+        this.form.reset();
+        this.textarea.value = '';
+        this.charCount.textContent = `0/${this.max_content_length}`;
+        
+        // Clear uploaded files
+        this.uploadedFiles = [];
+        document.getElementById('imagePreviewGrid').innerHTML = '';
+        document.getElementById('imagePreviewGrid').classList.add('hidden');
+        
+        // Clear audio
+        audioPlayer.src = '';
+        audioPreview.classList.add('hidden');
+        
+        // Reset upload button
+        this.updateUploadButton();
+        
+        // Re-enable submit button
+        this.submitBtn.disabled = false;
+        this.submitBtn.innerHTML = `
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path>
+            </svg>
+            <span>Post</span>
+        `;
+    }
+
 };
 
 // Authentication Manager
@@ -1810,6 +2349,7 @@ document.addEventListener('DOMContentLoaded', () => {
     NewMessageManager.init();
     ProfileManager.init();
     NotificationManager.init();
+    ImprovedPostCreationForm.init();
 });
 
 // Audio Recording Handler

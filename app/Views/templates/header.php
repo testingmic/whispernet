@@ -36,7 +36,7 @@ $favicon_color = $favicon_color ?? 'dashboard';
       userLoggedIn = <?= !empty($userLoggedIn) ? 'true' : 'false' ?>,
       websocketUrl = '<?= $websocketUrl ?>',
       loadingSkeleton = `<?= function_exists('loadingSkeleton') ? loadingSkeleton() : '' ?>`;
-    <?php if(!empty($userToken)) { ?>
+    <?php if (!empty($userToken)) { ?>
       localStorage.setItem('token', '<?= $userToken ?>');
     <?php } ?>
   </script>
@@ -61,57 +61,122 @@ $favicon_color = $favicon_color ?? 'dashboard';
             Back
           </button>
         </div>
-        <form id="createPostForm" method="post" enctype="multipart/form-data" class="space-y-4">
-          <!-- Text Input -->
-          <div class="relative">
-            <textarea maxlength="300" id="postContent" rows="5"
-              class="w-full px-4 py-3 font-medium text-xl border border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white resize-none text-base"
-              placeholder="Share your thoughts and experiences with users in a 10km radius..." name="content"></textarea>
-          </div>
 
-          <!-- Media Preview -->
-          <div id="mediaPreview" class="hidden">
-            <div class="relative rounded-xl overflow-hidden">
-              <img id="previewImage" class="max-h-96 w-full object-cover" src="" alt="Preview">
-              <button type="button" id="removeMedia"
-                class="absolute top-3 right-3 bg-gray-900 bg-opacity-50 rounded-full p-2 text-white hover:bg-opacity-75 transition-opacity">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                </svg>
-              </button>
-            </div>
-          </div>
 
-          <!-- Tags Input -->
-          <div class="flex hidden flex-wrap gap-2 p-2 bg-gray-50 dark:bg-gray-700/50 rounded-xl" id="tagsContainer">
-            <input type="text" id="tagInput"
-              class="flex-1 min-w-[120px] px-3 py-1.5 border border-gray-300 dark:border-gray-600 rounded-full text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
-              placeholder="Add tags...">
-          </div>
+        <div class="max-w-2xl mx-auto">
+          <div class="bg-white rounded-lg">
 
-          <!-- Action Buttons -->
-          <div class="flex items-center justify-between pt-2 border-t border-gray-200 dark:border-gray-700">
-            <div class="flex flex-wrap gap-2">
-              <!-- Photo/Video Upload -->
-              <label class="inline-flex items-center space-x-2 py-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer transition-colors">
-                <input type="file" id="mediaUpload" class="hidden" accept="image/*,video/*">
-                <svg class="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                </svg>
-                <span class="text-sm font-medium text-gray-600 dark:text-gray-400">Photo/Video</span>
-              </label>
-            </div>
+            <form id="createPostFormUnique" class="space-y-2" onsubmit="return false;">
+              <!-- Textarea Section -->
+              <div class="space-y-2">
+                <div class="relative">
+                  <textarea
+                    id="content"
+                    name="content"
+                    rows="4"
+                    maxlength="300"
+                    class="w-full font-medium text-xl px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none transition-all duration-200"
+                    placeholder="Share your thoughts and experiences with users in a 10km radius..."></textarea>
+                  <div class="absolute bottom-2 right-2 flex items-center space-x-2">
+                    <!-- Character Counter -->
+                    <span id="charCount" class="text-xs text-gray-400">0/300</span>
+                  </div>
+                </div>
+              </div>
 
-            <!-- Post Button -->
-            <button type="submit" id="postButton"
-              class="ml-4 px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-medium flex items-center">
-              <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
-              </svg>
-              Post
-            </button>
+              <!-- Media Upload Section -->
+              <div class="">
+
+                <div class="flex items-center space-x-4">
+
+
+                  <!-- Emoji Selector -->
+                  <div class="flex items-center space-x-4">
+                    <button type="button" id="emojiBtn" class="flex items-center justify-center w-12 h-12 bg-yellow-100 hover:bg-yellow-200 rounded-lg transition-colors duration-200">
+                      <svg class="w-6 h-6 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.828 14.828a4 4 0 01-5.656 0M9 10h1m4 0h1m-6 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                      </svg>
+                    </button>
+                  </div>
+
+                  <!-- File Upload -->
+                  <div class="flex items-center space-x-4">
+                    <label for="fileUpload" class="flex items-center justify-center w-12 h-12 bg-gray-100 hover:bg-gray-200 rounded-lg cursor-pointer transition-colors duration-200">
+                      <svg class="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"></path>
+                      </svg>
+                      <input type="file" id="fileUpload" name="media[]" accept="image/*,video/*" multiple class="hidden" />
+                    </label>
+                  </div>
+
+                  <!-- Audio Recording -->
+                  <div class="flex items-center space-x-2">
+                    <button type="button" id="audioRecordBtn" class="flex items-center justify-center w-12 h-12 bg-red-100 hover:bg-red-200 rounded-lg transition-colors duration-200">
+                      <svg class="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"></path>
+                      </svg>
+                    </button>
+                    <span id="audioStatus" class="text-sm text-gray-600"></span>
+                    <span id="audioTimer" class="text-sm text-red-600 hidden">00:00</span>
+                    <button type="button" id="audioPauseBtn" class="hidden flex items-center justify-center w-8 h-8 bg-yellow-100 hover:bg-yellow-200 rounded-lg transition-colors duration-200">
+                      <svg class="w-4 h-4 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 9v6m4-6v6m7-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                      </svg>
+                    </button>
+                  </div>
+                </div>
+
+                <div id="imagePreviewGrid" class="hidden grid grid-cols-4 gap-2 mt-4"></div>
+
+                <!-- Emoji Picker (Hidden by default) -->
+                <div id="emojiPicker" class="hidden bg-gray-50 rounded-lg p-4 mt-2 border">
+                  <div class="grid grid-cols-8 gap-2">
+                    <?= imoji_list(); ?>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Preview Section -->
+              <div id="mediaPreview" class="hidden space-y-2">
+                <label class="block text-sm font-medium text-gray-700">Preview</label>
+                <div id="previewContainer" class="bg-gray-50 rounded-lg p-4 min-h-[100px] flex items-center justify-center">
+                  <span class="text-gray-400">Media preview will appear here</span>
+                </div>
+              </div>
+
+              <!-- Audio Preview -->
+              <div id="audioPreview" class="hidden space-y-2">
+                <label class="block text-sm font-medium text-gray-700">Audio Preview</label>
+                <div class="bg-gray-50 rounded-lg p-4">
+                  <audio id="audioPlayer" controls class="w-full"></audio>
+                </div>
+              </div>
+
+              <!-- Submit Button -->
+              <div class="flex items-center justify-between pt-4 border-t border-gray-200">
+                <div class="flex items-center space-x-2 text-sm text-gray-500">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                  </svg>
+                  <span>Current location will be used.</span>
+                </div>
+                <button
+                  type="submit"
+                  id="submitBtn"
+                  class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed">
+                  <span class="flex items-center space-x-2">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path>
+                    </svg>
+                    <span>Post</span>
+                  </span>
+                </button>
+              </div>
+            </form>
           </div>
-        </form>
+        </div>
+
       </div>
     </div>
   </div>

@@ -42,4 +42,36 @@ function loadingSkeleton($count = 1, $padding = true) {
     }
     return $html;
 }
+
+function imoji_list() {
+    $imojis = [
+        '😊',
+        '😂',
+        '❤️',
+        '👍',
+        '🎉',
+        '🔥',
+        '💯',
+        '✨',
+        '😍',
+        '🤔',
+        '😮',
+        '😢',
+        '😡',
+        '🤯',
+        '🥳',
+        '😴',
+        '🤑',
+        '🤠',
+        '🤡',
+        '🤠',
+        '🤠',
+        '🤠',
+    ];
+    $html = '';
+    foreach ($imojis as $imoji) {
+        $html .= '<button type="button" class="emoji-btn text-2xl hover:bg-gray-200 rounded p-1 transition-colors">'.$imoji.'</button>';
+    }
+    return $html;
+}
 ?>
