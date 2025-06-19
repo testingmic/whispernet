@@ -1634,7 +1634,6 @@ const NotificationManager = {
                         markReadBtn.remove();
                     }
                 }
-                this.updateUnreadCount();
             }
         } catch (error) {
         }
@@ -1656,7 +1655,6 @@ const NotificationManager = {
                     el.classList.remove('bg-blue-50', 'dark:bg-blue-900/20');
                 });
                 document.querySelectorAll('[title="Mark as read"]').forEach(btn => btn.remove());
-                this.updateUnreadCount();
             }
         } catch (error) {
         }
@@ -1678,29 +1676,8 @@ const NotificationManager = {
                 if (notification) {
                     notification.remove();
                 }
-                this.updateUnreadCount();
             }
         } catch (error) {
-        }
-    },
-
-    async updateUnreadCount() {
-        try {
-            if(!Boolean(AppState.user)) {
-                return;
-            }
-            const response = $.post(`${baseUrl}/api/notifications/unread-count`, {
-                token: AppState.getToken(),
-                latitude,
-                longitude
-            }).then((response) => {
-                const badge = document.querySelector('.notification-badge');
-                if (badge) {
-                    badge.style.display = response.data.count > 0 ? 'block' : 'none';
-                }
-            })
-        } catch (error) {
-            console.error('Error updating unread count:', error);
         }
     },
 
@@ -1716,8 +1693,10 @@ const NotificationManager = {
             }).then((response) => {
                 const container = document.querySelector('.notifications-container');
                 if (container) {
+                    const badge = document.querySelector('.notification-badge');
+                    badge.style.display = response.data?.unread_count > 0 ? 'block' : 'none';
                     // Update notifications list
-                    this.renderNotifications(response.data.notifications, container);
+                    this.renderNotifications(response.data?.notifications || [], container);
                 }
             })
         } catch (error) {
@@ -1792,12 +1771,9 @@ const NotificationManager = {
 
     startPolling() {
         // update the unread count and refresh the notifications
-        this.updateUnreadCount();
         this.refreshNotifications();
-        
         // Poll for new notifications every 30 seconds
         setInterval(() => {
-            this.updateUnreadCount();
             this.refreshNotifications();
         }, 30000);
     },
