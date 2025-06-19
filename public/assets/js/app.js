@@ -1565,17 +1565,17 @@ const ImprovedPostCreationForm = {
         });
 
         // Add audio if recorded
-        if (ImprovedPostCreationForm.audioPlayer.src && ImprovedPostCreationForm.audioPlayer.src !== '') {
+        if (ImprovedPostCreationForm?.audioPlayer?.src && ImprovedPostCreationForm?.audioPlayer?.src !== '') {
             // Convert audio blob to file
-            fetch(ImprovedPostCreationForm.audioPlayer.src)
+            fetch(ImprovedPostCreationForm?.audioPlayer?.src)
                 .then(res => res.blob())
                 .then(blob => {
                     const audioFile = new File([blob], 'audio-message.wav', { type: 'audio/wav' });
                     formData.append('audio', audioFile);
-                    ImprovedPostCreationForm.submitFormData(formData);
+                    ImprovedPostCreationForm?.submitFormData(formData);
                 });
         } else {
-            ImprovedPostCreationForm.submitFormData(formData);
+            ImprovedPostCreationForm?.submitFormData(formData);
         }
     },
 
