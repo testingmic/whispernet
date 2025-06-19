@@ -48,7 +48,7 @@ class Templates extends BaseController
 
         return [
             'baseUrl' => $urlPath,
-            'version' => '1.1.141',
+            'version' => '1.1.142',
             'websocketUrl' => $socketUrl,
             'userData' => session()->get('userData'),
             'userLoggedIn' => $this->user_loggedin(),

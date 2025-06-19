@@ -753,6 +753,7 @@ const PostManager = {
     closeCreateModal() {
         $('#postCreationForm')?.addClass('hidden');
         document?.getElementById('createPostForm')?.reset();
+        ImprovedPostCreationForm.resetForm();
     },
     openCreateModal() {
         $('#postCreationForm').removeClass('hidden');
@@ -1138,19 +1139,27 @@ const ImprovedPostCreationForm = {
                     return;
                 }
 
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    const fileId = Date.now() + index;
-                    ImprovedPostCreationForm.uploadedFiles.push({
-                        id: fileId,
-                        file: file,
-                        preview: e.target.result
-                    });
-                    
-                    ImprovedPostCreationForm.createFilePreview(fileId, file, e.target.result);
-                    ImprovedPostCreationForm.updateUploadButton();
-                };
-                reader.readAsDataURL(file);
+                const fileId = Date.now() + index;
+                
+                if (file.type.startsWith('video/')) {
+                    // Handle video files - generate thumbnail
+                    ImprovedPostCreationForm.generateVideoThumbnail(file, fileId);
+                } else {
+                    // Handle image files - use existing logic
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        ImprovedPostCreationForm.uploadedFiles.push({
+                            id: fileId,
+                            file: file,
+                            preview: e.target.result,
+                            thumbnail: null // Images don't need separate thumbnails
+                        });
+                        
+                        ImprovedPostCreationForm.createFilePreview(fileId, file, e.target.result);
+                        ImprovedPostCreationForm.updateUploadButton();
+                    };
+                    reader.readAsDataURL(file);
+                }
             });
         });
 
@@ -1251,10 +1260,19 @@ const ImprovedPostCreationForm = {
         
         previewContainer.innerHTML = `
             <div class="aspect-square bg-gray-100 rounded-lg overflow-hidden w-20 h-20">
-                ${isVideo ? 
-                    `<video src="${previewUrl}" class="w-full h-full object-cover" controls></video>` :
-                    `<img src="${previewUrl}" class="w-full h-full object-cover" alt="Preview">`
-                }
+                <img src="${previewUrl}" class="w-full h-full object-cover" alt="Preview">
+                ${isVideo ? `
+                    <div class="absolute inset-0 bg-black bg-opacity-30 flex items-center justify-center">
+                        <div class="bg-white bg-opacity-90 rounded-full p-1">
+                            <svg class="w-4 h-4 text-gray-800" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M8 5v14l11-7z"/>
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="absolute top-1 right-1 bg-black bg-opacity-50 text-white text-xs px-1 py-0.5 rounded">
+                        VID
+                    </div>
+                ` : ''}
             </div>
             <button type="button" class="remove-file absolute -top-1 -right-1 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs hover:bg-red-600 transition-colors opacity-0 group-hover:opacity-100" data-file-id="${fileId}">
                 ×
@@ -1302,6 +1320,62 @@ const ImprovedPostCreationForm = {
             uploadLabel.classList.remove('opacity-50', 'cursor-not-allowed');
             uploadLabel.classList.add('hover:bg-gray-200');
         }
+    },
+
+    // Generate thumbnail from video file
+    generateVideoThumbnail(videoFile, fileId) {
+        const video = document.createElement('video');
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+        
+        // Set canvas dimensions for thumbnail
+        canvas.width = 320;
+        canvas.height = 240;
+        
+        video.onloadedmetadata = () => {
+            // Seek to 1 second or 25% of video duration (whichever is smaller)
+            const seekTime = Math.min(1, video.duration * 0.25);
+            video.currentTime = seekTime;
+        };
+        
+        video.onseeked = () => {
+            // Draw video frame to canvas
+            ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+            
+            // Convert canvas to blob
+            canvas.toBlob((thumbnailBlob) => {
+                // Create thumbnail file
+                const thumbnailFile = new File([thumbnailBlob], `thumbnail_${videoFile.name}.jpg`, { 
+                    type: 'image/jpeg' 
+                });
+                
+                // Create preview URL for display
+                const previewUrl = URL.createObjectURL(thumbnailBlob);
+                
+                // Add to uploaded files array
+                this.uploadedFiles.push({
+                    id: fileId,
+                    file: videoFile,
+                    preview: previewUrl,
+                    thumbnail: thumbnailFile
+                });
+                
+                // Create preview in UI
+                this.createFilePreview(fileId, videoFile, previewUrl);
+                this.updateUploadButton();
+                
+                // Clean up
+                URL.revokeObjectURL(video.src);
+            }, 'image/jpeg', 0.8); // 80% quality
+        };
+        
+        video.onerror = () => {
+            this.showNotification(`Failed to generate thumbnail for video "${videoFile.name}"`, 'error');
+        };
+        
+        // Load video file
+        video.src = URL.createObjectURL(videoFile);
+        video.load();
     },
 
     async startRecording() {
@@ -1457,6 +1531,11 @@ const ImprovedPostCreationForm = {
         // Add uploaded files
         ImprovedPostCreationForm.uploadedFiles.forEach((fileData, index) => {
             formData.append(`media[${index}]`, fileData.file);
+            
+            // Add thumbnail if it exists (for videos)
+            if (fileData.thumbnail) {
+                formData.append(`thumbnails[${index}]`, fileData.thumbnail);
+            }
         });
 
         // Add audio if recorded
@@ -1592,17 +1671,18 @@ const ImprovedPostCreationForm = {
         audioPlayer.src = '';
         audioPreview.classList.add('hidden');
         
-        // Reset upload button
+        // Reset upload button 
         this.updateUploadButton();
         
         // Re-enable submit button
         this.submitBtn.disabled = false;
         this.submitBtn.innerHTML = `
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path>
-            </svg>
-            <span>Post</span>
-        `;
+            <span class="flex items-center space-x-2">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path>
+                </svg>
+                <span>Post</span>
+            </span>`;
     }
 
 };
