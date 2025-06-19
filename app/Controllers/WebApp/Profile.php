@@ -76,6 +76,15 @@ class Profile extends WebAppController
         return $this->templateObject->loadPage('my_votes', ['pageTitle' => 'My Votes', 'favicon_color' => 'profile']);
     }
 
+    /**
+     * Display the my votes page
+     * 
+     * @return string
+     */
+    public function saved() {
+        return $this->templateObject->loadPage('my_saved', ['pageTitle' => 'My Saved', 'favicon_color' => 'profile']);
+    }
+
     private function getPostCount($statistics)
     {
         return $statistics['posts'] ?? 0;

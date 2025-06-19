@@ -467,7 +467,7 @@ const PostManager = {
                             commentsContainer.appendChild(this.createCommentElement(comment));
                         });
                     } else {
-                        commentsContainer.innerHTML = '<p class="text-gray-500 dark:text-gray-400" id="commentsLoading">No comments yet</p>';
+                        commentsContainer.innerHTML = '<p class="text-gray-500 dark:text-gray-400" id="commentsLoading">No replies yet</p>';
                     }
                 }
             } else {

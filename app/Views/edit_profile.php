@@ -7,7 +7,7 @@
         </div>
 
         <!-- Profile Form -->
-        <div class="bg-white dark:bg-gray-800 shadow rounded-lg overflow-hidden">
+        <div class="mt-8 mb-6 bg-white dark:bg-gray-800 rounded-2xl shadow-xl border border-gray-200 dark:border-gray-700 p-6">
             <form id="editProfileForm" class="space-y-6 p-4 sm:p-6">
                 <!-- Profile Picture -->
                 <div>

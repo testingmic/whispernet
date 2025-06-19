@@ -90,7 +90,6 @@ $favicon_color = $favicon_color ?? 'dashboard';
 </nav>
 
 <!-- Bottom Spacer for Fixed Footer -->
-<div class="h-20"></div>
 <?php } ?>
 
 </div>

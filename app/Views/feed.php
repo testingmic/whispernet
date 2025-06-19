@@ -157,7 +157,7 @@
         </svg>
     </button>
 </div>
-
+<div class="h-20"></div>
 <script>
 // Enhanced Location Modal Management
 document.addEventListener('DOMContentLoaded', function() {

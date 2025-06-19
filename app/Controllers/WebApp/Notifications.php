@@ -24,6 +24,8 @@ class Notifications extends WebAppController
             ];
         }
 
+        $notifications = [];
+
         return $this->templateObject->loadPage('notifications', [
             'pageTitle' => 'Notifications',
             'notifications' => $notifications,
