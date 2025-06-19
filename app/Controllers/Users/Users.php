@@ -66,7 +66,7 @@ class Users extends LoadController {
      * 
      * @return array
      */
-    public function searchUsers() {
-        return $this->usersModel->searchUsers($this->payload['query'], $this->payload['page'], $this->payload['limit']);
+    public function search() {
+        return $this->usersModel->searchUsers($this->payload['query']);
     }
 } 

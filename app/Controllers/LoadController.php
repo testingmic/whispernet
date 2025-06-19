@@ -4,7 +4,7 @@ namespace App\Controllers;
 
 use App\Models\AuthModel;
 use App\Libraries\Caching;
-use App\Libraries\Encryptions;
+use Config\Encryption;
 use App\Models\DBModel;
 
 use App\Models\PostsModel;
@@ -43,7 +43,13 @@ class LoadController extends BaseController
             $this->cacheObject = new Caching();
         }
 
-        $this->encryptions = new Encryptions();
+        // get the encryption object
+        $config         = config(Encryption::class);
+        $config->key    = 'heat_IencTest-Key_secret';
+        $config->driver = 'OpenSSL';
+
+        // get the encryption object
+        $this->encryptions = service('encrypter', $config);
 
         // get the last name of the class that has been called and trigger the model
         $childClass = get_called_class();

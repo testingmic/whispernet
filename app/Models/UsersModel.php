@@ -144,7 +144,7 @@ class UsersModel extends Model {
             $offset = ($page - 1) * $limit;
             $searchTerm = "%$query%";
 
-            $sql = "SELECT user_id, username, full_name, profile_image, is_verified 
+            $sql = "SELECT user_id, username, full_name, profile_image, is_verified, last_login
                     FROM users 
                     WHERE username LIKE ? OR full_name LIKE ? 
                     ORDER BY username 
@@ -157,7 +157,7 @@ class UsersModel extends Model {
 
             return [
                 'success' => true,
-                'users' => $users,
+                'users' => mask_email_address($users),
                 'pagination' => [
                     'total' => $total,
                     'page' => $page,

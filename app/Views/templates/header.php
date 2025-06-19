@@ -32,7 +32,7 @@ $favicon_color = $favicon_color ?? 'dashboard';
   <script src="<?= $baseUrl ?>/assets/js/search.js?v=<?= $version ?>"></script>
   <script>
     localStorage.setItem('baseUrl', '<?= $baseUrl ?>');
-    const baseUrl = '<?= $baseUrl ?>',
+    const baseUrl = '<?= $baseUrl ?>', loggedInUserId = <?= $userId ?? 0 ?>,
       userLoggedIn = <?= !empty($userLoggedIn) ? 'true' : 'false' ?>,
       websocketUrl = '<?= $websocketUrl ?>',
       loadingSkeleton = `<?= function_exists('loadingSkeleton') ? loadingSkeleton() : '' ?>`;

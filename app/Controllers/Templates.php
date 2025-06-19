@@ -4,6 +4,9 @@ namespace App\Controllers;
 
 class Templates extends BaseController
 {
+    private $userId;
+    private $sessionObject;
+
     /**
      * Check if the user is logged in
      * 
@@ -14,6 +17,7 @@ class Templates extends BaseController
         if(empty($session->get('user_id')) && empty($session->get('user_loggedin'))) {
             return false;
         }
+        $this->userId = $session->get('user_id');
         return true;
     }
 
@@ -46,13 +50,17 @@ class Templates extends BaseController
             $socketUrl = "wss://whispernet-socket.onrender.com:3000";
         }
 
+        // get the session object
+        $this->sessionObject = !empty($this->sessionObject) ? $this->sessionObject : session();
+
         return [
             'baseUrl' => $urlPath,
             'version' => '1.1.6',
+            'userId' => (int) $this->sessionObject->user_id,
             'websocketUrl' => $socketUrl,
-            'userData' => session()->get('userData'),
+            'userData' => $this->sessionObject->get('userData'),
             'userLoggedIn' => $this->user_loggedin(),
-            'userToken' => session()->get('user_token'),
+            'userToken' => $this->sessionObject->get('user_token'),
             'appName' => 'WhisperChat',
         ];
     }

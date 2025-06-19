@@ -164,6 +164,20 @@ function convertDateToTimestamp($dateString) {
 }
 
 /**
+ * Convert the timestamp to date
+ * 
+ * @param int $timestamp
+ * 
+ * @return string
+ */
+function convertTimestampToDate($timestamp) {
+    // since strftime is deprecated use \DateTime to generate the date
+    $date = new \DateTime();
+    $date->setTimestamp($timestamp);
+    return $date->format('d M Y H:i');
+}
+
+/**
  * Convert seconds to hours and minutes
  * 
  * @param int $seconds

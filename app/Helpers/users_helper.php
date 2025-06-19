@@ -34,6 +34,46 @@ function getLocationByIP($longitude = null, $latitude = null) {
 }
 
 /**
+ * Mask the email address
+ * 
+ * @param array $users
+ * 
+ * @return array
+ */
+function mask_email_address($users) {
+    // check if the users is empty or not an array
+    if(empty($users) || !is_array($users)) return [];
+    // loop through the users
+    foreach($users as $key => $value) {
+        if(isset($value['last_login'])) {
+            // convert the last login to date
+            $users[$key]['last_login'] = convertTimestampToDate($value['last_login']);
+            // check the last login to today
+            $days_ago = timeDifference($users[$key]['last_login']);
+
+            // check the online status
+            if($days_ago['months'] > 0) {
+                $users[$key]['online_status'] = $days_ago['months'] . ' Long time ago';
+            } elseif($days_ago['days'] > 0) {
+                $users[$key]['online_status'] = $days_ago['days'] . ' day'.($days_ago['days'] > 1 ? 's' : '').' ago';
+            } elseif($days_ago['days'] > 0) {
+                $users[$key]['online_status'] = $days_ago['days'] . ' day'.($days_ago['days'] > 1 ? 's' : '').' ago';
+            } else if($days_ago['hours'] > 0) {
+                $users[$key]['online_status'] = $days_ago['hours'] . ' hour'.($days_ago['hours'] > 1 ? 's' : '').' ago';
+            } else if($days_ago['minutes'] > 0) {
+                $users[$key]['online_status'] = $days_ago['minutes'] . ' minute'.($days_ago['minutes'] > 1 ? 's' : '').' ago';
+            } else {
+                $users[$key]['online_status'] = 'Online';
+            }
+        }
+        if(isset($value['email'])) {
+            $users[$key]['email'] = substr($value['email'], 0, 3) . '***@***.com';
+        }
+    }
+    return $users;
+}
+
+/**
  * Format the user response
  * 
  * @param array $user

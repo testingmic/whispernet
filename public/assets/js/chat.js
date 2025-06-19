@@ -1,3 +1,9 @@
+let selectedChatId = null;
+let selectedChatType = null;
+let selectedUserId = null;
+let selectedUserInfo = [];
+let searchedUsersList = [];
+
 // Enhanced Chat Management with Mobile Responsiveness
 document.addEventListener('DOMContentLoaded', function() {
     // Elements
@@ -140,30 +146,6 @@ document.addEventListener('DOMContentLoaded', function() {
         showModal(groupCreationModal);
     });
 
-    // User Selection
-    document.querySelectorAll('.user-item').forEach(item => {
-        item.addEventListener('click', function() {
-            const userId = this.getAttribute('data-user-id');
-            const userName = this.getAttribute('data-user-name');
-            
-            // Update chat header
-            chatTitle.textContent = userName;
-            chatStatus.textContent = 'Online';
-            chatAvatar.innerHTML = userName.charAt(0).toUpperCase();
-            
-            // Show chat area
-            welcomeMessage.classList.add('hidden');
-            messagesContainer.classList.remove('hidden');
-            messageInputArea.classList.remove('hidden');
-            
-            // Load messages for this user
-            loadMessages(userId, 'individual');
-            
-            hideModal(userSearchModal);
-            showChatArea();
-        });
-    });
-
     // Chat item selection (for existing chats)
     document.querySelectorAll('.chat-item').forEach(item => {
         item.addEventListener('click', function() {
@@ -282,9 +264,21 @@ document.addEventListener('DOMContentLoaded', function() {
             charCount.textContent = '0';
             
             // Simulate sending
-            setTimeout(() => {
-                addMessageToUI('Message received!', 'received');
-            }, 1000);
+            // setTimeout(() => {
+            //     addMessageToUI('Message received!', 'received');
+            // }, 1000);
+            let msgPayload = {
+                message: message,
+                sender: loggedInUserId,
+                receiver: selectedUserId,
+                type: selectedChatType,
+                roomId: selectedChatId,
+                timestamp: new Date().getTime(),
+                token: AppState.getToken()
+            }
+            $.post(`${baseUrl}/api/chats/sendMessage`, msgPayload, function(response) {
+                console.log(response);
+            });
         });
     }
 
@@ -296,21 +290,93 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
+    function addEventListeners() {
+        // User Selection
+        document.querySelectorAll('.user-item').forEach(item => {
+            item.addEventListener('click', function() {
+                const userId = this.getAttribute('data-user-id');
+                const userName = this.getAttribute('data-user-name');
+                
+                // Update chat header
+                chatTitle.textContent = userName;
+                chatStatus.textContent = 'Online';
+                chatAvatar.innerHTML = userName.charAt(0).toUpperCase();
+                
+                // Show chat area
+                welcomeMessage.classList.add('hidden');
+                messagesContainer.classList.remove('hidden');
+                messageInputArea.classList.remove('hidden');
+                
+                // Load messages for this user
+                loadMessages(userId, 'individual');
+                
+                hideModal(userSearchModal);
+                showChatArea();
+            });
+        });
+    }
+
+    function debounce(fn, delay) {
+        let timer;
+        return function (...args) {
+          clearTimeout(timer);
+          timer = setTimeout(() => fn.apply(this, args), delay);
+        };
+    }
+
+    const debouncedFilterUsers = debounce(function(query) {
+        const individualChats = document.getElementById('individualChats');
+        $.get(`${baseUrl}/api/users/search?query=${query}`, function(response) {
+            let users = '';
+          $.each(response.users, function(index, user) {
+            if(user.user_id !== loggedInUserId) {
+                users += `
+                        <div class="user-item p-3 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-700 cursor-pointer transition-all duration-200 border border-gray-200 dark:border-gray-600" data-user-id="${user.user_id}" data-user-name="${user.username}">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-semibold">
+                                    ${user.username.charAt(0).toUpperCase()}
+                                </div>
+                                <div class="flex-1 min-w-0">
+                                    <p class="font-semibold text-gray-900 dark:text-white truncate">${user.full_name}</p>
+                                    <p class="text-sm text-gray-500 dark:text-gray-400 truncate">${user.username}</p>
+                                </div>
+                                <button class="px-3 sm:px-4 py-2 bg-gradient-to-r from-blue-500 to-purple-600 text-white text-sm font-semibold rounded-lg hover:from-blue-600 hover:to-purple-700 transition-all duration-200">
+                                    Chat
+                                </button>
+                            </div>
+                        </div>`;
+            }
+          });
+          searchedUsersList = response.users;
+          $(`div[id="userList"]`).html(users);
+          addEventListeners();
+        });
+      }, 500); // Adjust debounce delay here
+
     if (userSearchInput) {
-        userSearchInput.addEventListener('input', function() {
+        // add a debounce to the input
+        userSearchInput.addEventListener('input', function () {
             const query = this.value.toLowerCase();
-            filterUsers(query);
+            debouncedFilterUsers(query);
         });
     }
 
     // Helper Functions
-    function loadMessages(chatId, type) {
+    function loadMessages(userId, type) {
+
+        selectedChatType = type;
+        selectedUserId = parseInt(userId);
+        selectedUserInfo = searchedUsersList.find(user => user.user_id === selectedUserId);
+
+        selectedChatId = selectedUserInfo?.roomId || 0;
+
+        $(`p[id="chatStatus"]`).text(selectedUserInfo.online_status);
+
         // Simulate loading messages
         messagesContainer.innerHTML = `
             <div class="flex items-center justify-center py-8">
                 <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
-            </div>
-        `;
+            </div>`;
         
         setTimeout(() => {
             messagesContainer.innerHTML = `
@@ -319,6 +385,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 </div>
             `;
         }, 1000);
+
+        console.log({searchedUsersList, selectedChatId, selectedChatType, selectedUserId, selectedUserInfo});
     }
 
     function addMessageToUI(content, type) {
@@ -350,18 +418,6 @@ document.addEventListener('DOMContentLoaded', function() {
     function filterChats(query) {
         const chatItems = document.querySelectorAll('.chat-item');
         chatItems.forEach(item => {
-            const name = item.querySelector('p').textContent.toLowerCase();
-            if (name.includes(query)) {
-                item.style.display = 'block';
-            } else {
-                item.style.display = 'none';
-            }
-        });
-    }
-
-    function filterUsers(query) {
-        const userItems = document.querySelectorAll('.user-item');
-        userItems.forEach(item => {
             const name = item.querySelector('p').textContent.toLowerCase();
             if (name.includes(query)) {
                 item.style.display = 'block';

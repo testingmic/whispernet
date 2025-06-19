@@ -23,23 +23,89 @@ class ChatsModel extends Model {
         }
     }
 
-    public function createChatRoom($userId) {
+    /**
+     * Create chat room
+     * 
+     * @param int $sender
+     * @param int $receiver
+     * @param string $type
+     * @return array
+     */
+    public function createChatRoom($sender, $receiver, $type, $receipientsList = null) {
 
         try {
-
-            $roomId = $this->db->table('chat_rooms')->insert([
-                'created_at' => date('Y-m-d H:i:s')
+            $this->db->table('chat_rooms')->insert([
+                'sender_id' => $sender,
+                'receiver_id' => $receiver,
+                'type' => $type,
+                'created_at' => date('Y-m-d H:i:s'),
+                'receipients_list' => json_encode($receipientsList)
             ]);
-            $roomId = $this->db->insertID();
+            return $this->db->insertID();
 
-            // Add creator as participant
-            $stmt = $this->db->query("INSERT INTO chat_participants (room_id, user_id) VALUES (?, ?)", [$roomId, $userId]);
+        } catch (DatabaseException $e) {
+            return $e->getMessage();
+        }
+    }
 
-            return [
-                'success' => true,
-                'room_id' => $roomId,
-                'message' => 'Chat room created successfully'
-            ];
+    /**
+     * Get chat room
+     * 
+     * @param int $roomId
+     * @return array
+     */
+    public function getChatRoom($roomId) {
+        try {
+            return $this->db->table('chat_rooms')->where('room_id', $roomId)->get()->getRowArray();
+        } catch (DatabaseException $e) {
+            return false;
+        }
+    }
+
+    /**
+     * Get individual chat room id
+     * 
+     * @param int $sender
+     * @param int $receiver
+     * @return int
+     */
+    public function getIndividualChatRoomId($sender, $receiver) {
+        try {
+            $roomId = $this->db->query("SELECT * FROM chat_rooms 
+                WHERE (sender_id = ? AND receiver_id = ?) OR (sender_id = ? AND receiver_id = ?)
+                LIMIT 1", [$sender, $receiver, $receiver, $sender])->getRowArray();
+            return $roomId;
+        } catch (DatabaseException $e) {
+            return false;
+        }
+    }
+
+    /**
+     * Send message
+     * 
+     * @param int $roomId
+     * @param int $userId
+     * @param string $content
+     * @param string $mediaUrl
+     * @param string $mediaType
+     * @return array
+     */
+    public function postMessage($payload) {
+        try {
+            // insert the message
+            $this->db->table('chat_messages')->insert([
+                'room_id' => $payload['room_id'],
+                'user_id' => $payload['user_id'],
+                'content' => $payload['content'],
+                'media_url' => $payload['media_url'] ?? '',
+                'media_type' => $payload['media_type'] ?? 'text',
+            ]);
+
+            // Update last message timestamp
+            $this->db->table('chat_rooms')->where('room_id', $payload['room_id'])->update(['last_message_at' => date('Y-m-d H:i:s')]);
+
+            // return the message id
+            return $this->db->insertID();
         } catch (DatabaseException $e) {
             return $e->getMessage();
         }
@@ -91,43 +157,6 @@ class ChatsModel extends Model {
             return [
                 'success' => true,
                 'message' => 'Participant removed successfully'
-            ];
-        } catch (DatabaseException $e) {
-            return $e->getMessage();
-        }
-    }
-
-    public function sendMessage($roomId, $userId, $content, $mediaUrl = null, $mediaType = 'text') {
-        try {
-
-            // Check if user is a participant
-            $participant = $this->db->table('chat_participants')->where('room_id', $roomId)->where('user_id', $userId)->get()->getRowArray();
-            if (!$participant) {
-                return ('User is not a participant in this chat room');
-            }
-
-            $messageId = $this->db->table('chat_messages')->insert([
-                'room_id' => $roomId,
-                'user_id' => $userId,
-                'content' => $content,
-                'media_url' => $mediaUrl,
-                'media_type' => $mediaType
-            ]);
-
-            // Update last message timestamp
-            $this->db->table('chat_rooms')->where('room_id', $roomId)->update(['last_message_at' => date('Y-m-d H:i:s')]);
-
-            // Create message status for all participants
-            $this->db->table('message_status')->insert([
-                'message_id' => $messageId,
-                'user_id' => $userId,
-                'status' => 'sent'
-            ]);
-
-            return [
-                'success' => true,
-                'message_id' => $messageId,
-                'message' => 'Message sent successfully'
             ];
         } catch (DatabaseException $e) {
             return $e->getMessage();

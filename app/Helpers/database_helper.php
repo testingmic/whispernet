@@ -142,11 +142,42 @@ $databases = [
     CREATE INDEX IF NOT EXISTS user_id ON comments (user_id);",
 
     "CREATE TABLE IF NOT EXISTS chat_rooms (
-        room_id INTEGER PRIMARY KEY,
+        room_id INTEGER PRIMARY KEY AUTOINCREMENT,
+        sender_id INTEGER NOT NULL,
+        receiver_id INTEGER NOT NULL,
+        type TEXT,
+        receiver_deleted BOOLEAN DEFAULT 0,
+        sender_deleted BOOLEAN DEFAULT 0,
+        receipients_list TEXT,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-        last_message_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-        is_active BOOLEAN DEFAULT 1
-    );",
+        last_message_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    );
+    CREATE INDEX IF NOT EXISTS sender_id ON chat_rooms (sender_id);
+    CREATE INDEX IF NOT EXISTS receiver_id ON chat_rooms (receiver_id);
+    CREATE INDEX IF NOT EXISTS type ON chat_rooms (type);
+    CREATE INDEX IF NOT EXISTS receiver_deleted ON chat_rooms (receiver_deleted);
+    CREATE INDEX IF NOT EXISTS sender_deleted ON chat_rooms (sender_deleted);",
+
+    "CREATE TABLE IF NOT EXISTS chat_messages (
+        message_id INTEGER PRIMARY KEY,
+        room_id INTEGER NOT NULL,
+        user_id INTEGER NOT NULL,
+        content TEXT,
+        media_url TEXT,
+        receiver_seen BOOLEAN DEFAULT 0,
+        sender_deleted BOOLEAN DEFAULT 0,
+        receiver_deleted BOOLEAN DEFAULT 0,
+        media_type TEXT CHECK(media_type IN ('text', 'image', 'video')) DEFAULT 'text',
+        is_encrypted BOOLEAN DEFAULT 1,
+        self_destruct_at TIMESTAMP,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (room_id) REFERENCES chat_rooms(room_id) ON DELETE CASCADE,
+        FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE
+    );
+    CREATE UNIQUE INDEX IF NOT EXISTS message_id ON chat_messages (message_id);
+    CREATE INDEX IF NOT EXISTS room_id ON chat_messages (room_id);
+    CREATE INDEX IF NOT EXISTS user_id ON chat_messages (user_id);
+    CREATE INDEX IF NOT EXISTS media_type ON chat_messages (media_type);",
 
     "CREATE TABLE IF NOT EXISTS chat_participants (
         room_id INTEGER NOT NULL,
@@ -160,24 +191,6 @@ $databases = [
     );
     CREATE INDEX IF NOT EXISTS room_id ON chat_participants (room_id);
     CREATE INDEX IF NOT EXISTS user_id ON chat_participants (user_id);",
-
-    "CREATE TABLE IF NOT EXISTS chat_messages (
-        message_id INTEGER PRIMARY KEY,
-        room_id INTEGER NOT NULL,
-        user_id INTEGER NOT NULL,
-        content TEXT,
-        media_url TEXT,
-        media_type TEXT CHECK(media_type IN ('text', 'image', 'video')) DEFAULT 'text',
-        is_encrypted BOOLEAN DEFAULT 1,
-        self_destruct_at TIMESTAMP,
-        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-        FOREIGN KEY (room_id) REFERENCES chat_rooms(room_id) ON DELETE CASCADE,
-        FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE
-    );
-    CREATE UNIQUE INDEX IF NOT EXISTS message_id ON chat_messages (message_id);
-    CREATE INDEX IF NOT EXISTS room_id ON chat_messages (room_id);
-    CREATE INDEX IF NOT EXISTS user_id ON chat_messages (user_id);
-    CREATE INDEX IF NOT EXISTS media_type ON chat_messages (media_type);",
 
     "CREATE TABLE IF NOT EXISTS message_status (
         message_id INTEGER NOT NULL,
