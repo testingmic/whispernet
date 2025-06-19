@@ -22,6 +22,7 @@ function getLocationByIP($longitude = null, $latitude = null) {
 
     if ($response !== false) {
         $data = json_decode($response, true);
+        $data['api_url'] = $urlPath;
         return $data;
     }
 }

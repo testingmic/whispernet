@@ -300,7 +300,7 @@ class Api extends BaseController
             return $validPayload;
         }
 
-        // try {
+        try {
             // if the unique id is set, set the method to view, update or delete
             if ($this->uniqueId && preg_match('/^[0-9]+$/', $method)) {
                 if ($this->requestMethod == 'GET') {
@@ -387,10 +387,10 @@ class Api extends BaseController
             
             // return the final response
             return $finalResponse;
-        // } catch (\Exception $e) {
-        //     $this->statusCode = 500;
+        } catch (\Exception $e) {
+            $this->statusCode = 500;
 
-        //     return Routing::error($e->getMessage());
-        // }
+            return Routing::error($e->getMessage());
+        }
     }
 }
