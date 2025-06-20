@@ -165,6 +165,6 @@ function generateRandomLocationAndSentence() {
         'latitude' => $latitude,
         'longitude' => $longitude,
         'city' => $cityName,
-        'sentence' => $randomSentence
+        'content' => $randomSentence
     ];
 }

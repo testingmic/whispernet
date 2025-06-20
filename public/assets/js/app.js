@@ -425,7 +425,7 @@ const PostManager = {
     currentPage: 1,
     isLoading: false,
     lastPostId: 0,
-    postLimit: 50,
+    postLimit: 100,
     lastOldPostId: 0,
     unreadPostsCount: 0,
     unreadPosts: [],
@@ -587,7 +587,7 @@ const PostManager = {
         });
     },
     async showOldPosts() {
-        this.loadMorePosts(false, false, this.lastOldPostId, 20);
+        this.loadMorePosts(false, false, this.lastOldPostId, 50);
     },
     async loadLatestPosts() {
         // load unread posts

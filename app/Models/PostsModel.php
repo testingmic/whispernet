@@ -49,7 +49,7 @@ class PostsModel extends Model {
                         ->select("p.*, u.full_name, u.username as username, u.profile_image, m.media as post_media")
                         ->join('users u', 'p.user_id = u.user_id')
                         ->join('media m', 'p.post_id = m.record_id AND m.section = "posts"', 'left')
-                        ->orderBy('p.created_at DESC')
+                        ->orderBy('p.post_id DESC')
                         ->limit($this->payload['limit'])
                         ->offset($offset);
 
@@ -436,7 +436,7 @@ class PostsModel extends Model {
                         ->where("(6371 * acos(cos(radians({$this->payload['latitude']})) * cos(radians(latitude)) * 
                             cos(radians(longitude) - radians({$this->payload['longitude']})) + 
                             sin(radians({$this->payload['latitude']})) * sin(radians(latitude)))) <= ", $this->payload['radius'])
-                        ->orderBy('distance, p.post_id DESC')
+                        ->orderBy('p.post_id DESC')
                         ->limit($this->payload['limit'])
                         ->offset($offset);
 
