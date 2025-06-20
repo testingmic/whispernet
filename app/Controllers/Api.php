@@ -323,6 +323,13 @@ class Api extends BaseController
                 ];
             }
 
+            if(isset($validObject->parsedPayload['latitude']) && !empty($validObject->parsedPayload['latitude'])) {
+                $validObject->parsedPayload['latitude'] = trim(substr($validObject->parsedPayload['latitude'], 0, 7));
+            }
+            if(isset($validObject->parsedPayload['longitude']) && !empty($validObject->parsedPayload['longitude'])) {
+                $validObject->parsedPayload['longitude'] = trim(substr($validObject->parsedPayload['longitude'], 0, 7));
+            }
+
             // set the payload
             $classObject->payload = $validObject->parsedPayload;
             $classObject->mainRawId = $this->mainRawId;
