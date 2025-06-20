@@ -4,16 +4,30 @@ namespace App\Libraries\Validation;
 class ChatsValidation {
 
     public $routes = [
-        'sendMessage' => [
+        'send' => [
             'method' => 'POST,GET',
             'authenticate' => true,
             'payload' => [
-                'roomId' => 'required|integer',
-                'sender' => 'required|integer',
+                'roomId' => 'permit_empty|integer',
                 'receiver' => 'required|integer',
-                'type' => 'required|string|in_list[individual,group]',
+                'type' => 'permit_empty|string|in_list[individual,group]',
                 'message' => 'required|string|max_length[255]',
-                'timestamp' => 'required|integer|max_length[16]'
+                'timestamp' => 'permit_empty|integer|max_length[16]'
+            ]
+        ],
+        'messages' => [
+            'method' => 'GET',
+            'authenticate' => true,
+            'payload' => [
+                'roomId' => 'permit_empty|integer',
+                'receiverId' => 'required|integer',
+            ]
+        ],
+        'delete' => [
+            'method' => 'DELETE',
+            'authenticate' => true,
+            'payload' => [
+                'type' => 'required|integer'
             ]
         ]
     ];

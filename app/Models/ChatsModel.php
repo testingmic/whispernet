@@ -97,6 +97,7 @@ class ChatsModel extends Model {
                 'room_id' => $payload['room_id'],
                 'user_id' => $payload['user_id'],
                 'content' => $payload['content'],
+                'unique_id' => $payload['unique_id'],
                 'media_url' => $payload['media_url'] ?? '',
                 'media_type' => $payload['media_type'] ?? 'text',
             ]);
@@ -108,6 +109,33 @@ class ChatsModel extends Model {
             return $this->db->insertID();
         } catch (DatabaseException $e) {
             return $e->getMessage();
+        }
+    }
+
+    /**
+     * Get messages
+     * 
+     * @param int $roomId
+     * @param int $userId
+     * @param int $page
+     * @param int $limit
+     * @return array
+     */
+    public function getMessages($roomId, $page = 1, $limit = 50) {
+        try {
+
+            // Check if user is a participant
+            $offset = ($page - 1) * $limit;
+            $messages = $this->db->table('chat_messages')->where('room_id', $roomId)->orderBy('created_at', 'DESC')->limit($limit)->offset($offset)->get()->getResultArray();
+
+            // Update message status to 'read' for this user
+            // $this->db->table('message_status')->where('room_id', $roomId)->where('user_id', $userId)
+            //         ->where('status', '!=', 'read')->update(['status' => 'read', 'updated_at' => date('Y-m-d H:i:s')]);
+
+            return $messages;
+        } catch (DatabaseException $e) {
+            return $e->getMessage();
+            return [];
         }
     }
 
@@ -157,31 +185,6 @@ class ChatsModel extends Model {
             return [
                 'success' => true,
                 'message' => 'Participant removed successfully'
-            ];
-        } catch (DatabaseException $e) {
-            return $e->getMessage();
-        }
-    }
-
-    public function getMessages($roomId, $userId, $page = 1, $limit = 50) {
-        try {
-
-            // Check if user is a participant
-            $participant = $this->db->table('chat_participants')->where('room_id', $roomId)->where('user_id', $userId)->get()->getRowArray();
-            if (!$participant) {
-                return ('User is not a participant in this chat room');
-            }
-
-            $offset = ($page - 1) * $limit;
-            $messages = $this->db->table('chat_messages')->where('room_id', $roomId)->orderBy('created_at', 'DESC')->limit($limit)->offset($offset)->get()->getResultArray();
-
-            // Update message status to 'read' for this user
-            $this->db->table('message_status')->where('room_id', $roomId)->where('user_id', $userId)
-                    ->where('status', '!=', 'read')->update(['status' => 'read', 'updated_at' => date('Y-m-d H:i:s')]);
-
-            return [
-                'success' => true,
-                'messages' => $messages
             ];
         } catch (DatabaseException $e) {
             return $e->getMessage();

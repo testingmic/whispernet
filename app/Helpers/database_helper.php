@@ -164,6 +164,7 @@ $databases = [
         user_id INTEGER NOT NULL,
         content TEXT,
         media_url TEXT,
+        unique_id TEXT,
         receiver_seen BOOLEAN DEFAULT 0,
         sender_deleted BOOLEAN DEFAULT 0,
         receiver_deleted BOOLEAN DEFAULT 0,
@@ -251,7 +252,7 @@ $databases = [
 
 // alter tables
 $alterTables = [
-    // "ALTER TABLE posts ADD COLUMN views INTEGER DEFAULT 0;",
+    // "ALTER TABLE chat_messages ADD COLUMN unique_id TEXT;",
 ];
 
 $votesTables = [
