@@ -252,6 +252,8 @@ class MediaDisplay {
             item.addEventListener('click', () => this.openFullView(index));
         });
 
+        if(!this.closeBtn) return;
+
         // Modal controls
         this.closeBtn.addEventListener('click', () => this.closeFullView());
         this.prevBtn.addEventListener('click', () => this.navigate(-1));
@@ -2472,7 +2474,73 @@ if(document.getElementById('menuButton')) {
             menuHelper.classList.add('hidden');
         }
     });
-}
+}(function() {
+    const pageLoader = document.getElementById('pageLoader');
+    const progressBar = document.getElementById('progressBar');
+    let progress = 0;
+    let progressInterval;
+    let isLoaderHidden = false;
+    
+    function hideLoader() {
+      if (isLoaderHidden) return;
+      isLoaderHidden = true;
+      
+      if (progressInterval) {
+        clearInterval(progressInterval);
+      }
+      
+      // Complete the progress bar
+      if (progressBar) {
+        progressBar.style.width = '100%';
+      }
+      
+      // Hide loader with fade out animation
+      setTimeout(() => {
+        if (pageLoader) {
+          pageLoader.style.transition = 'opacity 0.5s ease-out';
+          pageLoader.style.opacity = '0';
+          
+          setTimeout(() => {
+            if (pageLoader && pageLoader.parentNode) {
+              pageLoader.parentNode.removeChild(pageLoader);
+            }
+          }, 500);
+        }
+      }, 300);
+    }
+    
+    // Start progress simulation when DOM is ready
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', startLoader);
+    } else {
+      startLoader();
+    }
+    
+    function startLoader() {
+      if (!pageLoader || !progressBar) return;
+      
+      // Simulate loading progress
+      progressInterval = setInterval(() => {
+        progress += Math.random() * 15;
+        if (progress > 90) progress = 90;
+        progressBar.style.width = progress + '%';
+      }, 100);
+      
+      // Hide loader when page is fully loaded
+      if (document.readyState === 'complete') {
+        hideLoader();
+      } else {
+        window.addEventListener('load', hideLoader);
+      }
+      
+      // Fallback: Hide loader after 3 seconds if load event doesn't fire
+      setTimeout(() => {
+        if (!isLoaderHidden) {
+          hideLoader();
+        }
+      }, 3000);
+    }
+})();
 
 // Initialize the app
 document.addEventListener('DOMContentLoaded', () => {

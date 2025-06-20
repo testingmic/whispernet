@@ -41,9 +41,54 @@ $favicon_color = $favicon_color ?? 'dashboard';
     <?php } ?>
   </script>
   <link rel="stylesheet" href="<?= $baseUrl ?>/assets/css/app.css">
+  <style>
+    /* Ensure loader doesn't affect page layout */
+    #pageLoader {
+      position: fixed !important;
+      top: 0 !important;
+      left: 0 !important;
+      right: 0 !important;
+      bottom: 0 !important;
+      z-index: 9999 !important;
+      pointer-events: none;
+    }
+    
+    /* Ensure page content flows normally */
+    body {
+      margin: 0 !important;
+      padding: 0 !important;
+    }
+    
+    #app {
+      position: relative;
+      z-index: 1;
+    }
+  </style>
 </head>
 
 <body class="bg-gray-100 min-h-screen">
+
+  <!-- Loading Spinner -->
+  <div id="pageLoader" class="fixed inset-0 z-[9999] bg-white dark:bg-gray-900 flex items-center justify-center" style="position: fixed !important; top: 0 !important; left: 0 !important; right: 0 !important; bottom: 0 !important; z-index: 9999 !important;">
+    <div class="text-center">
+      <!-- Logo and App Name -->
+      <div class="flex items-center justify-center mb-6">
+        <img class="h-12 w-auto mr-3" src="<?= $baseUrl ?>/assets/images/logo.png" alt="<?= $appName ?>">
+        <span class="text-2xl font-bold text-gray-900 dark:text-white"><?= $appName ?></span>
+      </div>
+      
+      <!-- Single Spinner -->
+      <div class="w-12 h-12 border-4 border-blue-200 dark:border-blue-800 rounded-full animate-spin border-t-blue-600 dark:border-t-blue-400 mx-auto"></div>
+      
+      <!-- Loading Text -->
+      <p class="text-gray-600 dark:text-gray-400 mt-4 text-sm font-medium">Loading your experience...</p>
+      
+      <!-- Progress Bar -->
+      <div class="w-48 h-1 bg-gray-200 dark:bg-gray-700 rounded-full mt-4 mx-auto overflow-hidden">
+        <div id="progressBar" class="h-full bg-blue-600 dark:bg-blue-400 rounded-full transition-all duration-300" style="width: 0%"></div>
+      </div>
+    </div>
+  </div>
 
   <!-- Post Creation Form -->
   <div id="postCreationForm" class="fixed inset-0 py-8 top-8 z-50 hidden">
