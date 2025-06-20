@@ -423,6 +423,12 @@ class PostsModel extends Model {
                 $this->payload['radius'] = 100;
             }
 
+            $isMySQL = in_array(configs('db_group'), ['default']);
+
+            $whereClause = $isMySQL ? "(6371 * acos(cos(radians({$this->payload['latitude']})) * cos(radians(latitude)) * 
+                            cos(radians(longitude) - radians({$this->payload['longitude']})) + 
+                            sin(radians({$this->payload['latitude']})) * sin(radians(latitude))))" : "distance";
+
             $offset = ($this->payload['offset'] - 1) * $this->payload['limit'];
             $posts = $this->db->table('posts p')
                         ->select("p.*, u.full_name, u.username as username, u.profile_image,
@@ -433,9 +439,7 @@ class PostsModel extends Model {
                         ->join('users u', 'p.user_id = u.user_id')
                         ->join('media m', 'p.post_id = m.record_id AND m.section = "posts"', 'left')
                         ->join('bookmarks b', 'p.post_id = b.post_id AND b.user_id = ' . $this->payload['userId'], 'left')
-                        ->where("(6371 * acos(cos(radians({$this->payload['latitude']})) * cos(radians(latitude)) * 
-                            cos(radians(longitude) - radians({$this->payload['longitude']})) + 
-                            sin(radians({$this->payload['latitude']})) * sin(radians(latitude)))) <= ", $this->payload['radius'])
+                        ->where("{$whereClause} <= ", $this->payload['radius'])
                         ->orderBy('p.post_id DESC')
                         ->limit($this->payload['limit'])
                         ->offset($offset);
