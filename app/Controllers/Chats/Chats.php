@@ -84,8 +84,8 @@ class Chats extends LoadController {
             // if the chat room is not found, create a new one
             if(empty($room)) {
                 $room = $this->chatsModel->createChatRoom($this->payload['sender'], $this->payload['receiver'], $this->payload['type'], [
-                    $this->payload['sender'],
-                    $this->payload['receiver']
+                    (int)$this->payload['sender'],
+                    (int)$this->payload['receiver']
                 ]);
             }
 
@@ -127,6 +127,7 @@ class Chats extends LoadController {
 
         return Routing::created(['data' => 'Message sent successfully', 'record' => [
             'roomId' => $theRoomId,
+            'userId' => $this->payload['sender'],
             'messageId' => $this->chatsModel->postMessage($payload)
         ]]);
 
@@ -139,6 +140,11 @@ class Chats extends LoadController {
      */
     public function messages() {
         
+        // check if the room id or receiver id is set
+        if(empty($this->payload['roomId']) && empty($this->payload['receiverId'])) {
+            return Routing::error('Room ID or receiver ID is required');
+        }
+
         $senderId = $this->currentUser['user_id'];
         $receiverId = $this->payload['receiverId'];
         

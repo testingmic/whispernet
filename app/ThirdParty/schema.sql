@@ -123,10 +123,16 @@ CREATE TABLE IF NOT EXISTS comments (
     INDEX idx_created_at (created_at)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+DROP TABLE IF EXISTS chat_rooms;
 CREATE TABLE IF NOT EXISTS chat_rooms (
     room_id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     last_message_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    name TEXT,
+    description TEXT,
+    receiver_deleted TINYINT(1) DEFAULT 0,
+    sender_deleted TINYINT(1) DEFAULT 0,
+    receipients_list TEXT,
     is_active TINYINT(1) DEFAULT 1,
     INDEX idx_last_message_at (last_message_at)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -149,6 +155,10 @@ CREATE TABLE IF NOT EXISTS chat_messages (
     user_id BIGINT UNSIGNED NOT NULL,
     content TEXT,
     media_url VARCHAR(255),
+    unique_id VARCHAR(255),
+    receiver_seen TINYINT(1) DEFAULT 0,
+    sender_deleted TINYINT(1) DEFAULT 0,
+    receiver_deleted TINYINT(1) DEFAULT 0,
     media_type ENUM('text', 'image', 'video') DEFAULT 'text',
     is_encrypted TINYINT(1) DEFAULT 1,
     self_destruct_at TIMESTAMP NULL DEFAULT NULL,
@@ -157,17 +167,6 @@ CREATE TABLE IF NOT EXISTS chat_messages (
     INDEX idx_user_id (user_id),
     INDEX idx_created_at (created_at),
     INDEX idx_self_destruct_at (self_destruct_at)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
-CREATE TABLE IF NOT EXISTS message_status (
-    message_id BIGINT UNSIGNED NOT NULL,
-    user_id BIGINT UNSIGNED NOT NULL,
-    status ENUM('sent', 'delivered', 'read') DEFAULT 'sent',
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    PRIMARY KEY (message_id, user_id),
-    INDEX idx_message_id (message_id),
-    INDEX idx_user_id (user_id),
-    INDEX idx_status (status)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE IF NOT EXISTS media (
@@ -258,6 +257,16 @@ CREATE TABLE IF NOT EXISTS notifications (
     INDEX idx_type (type),
     INDEX idx_is_read (is_read),
     INDEX idx_created_at (created_at)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS user_chat_rooms (
+    id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    room_id INTEGER NOT NULL,
+    user_id INTEGER NOT NULL,
+    type VARCHAR(50),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    INDEX idx_user_id (user_id),
+    INDEX idx_type (type)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 SET FOREIGN_KEY_CHECKS = 1;

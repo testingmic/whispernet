@@ -10,6 +10,7 @@ class ChatsModel extends Model {
 
     public $payload = [];
     protected $table;
+    protected $chatsDb;
     protected $primaryKey = "chat_id";
 
     public function __construct() {
@@ -20,6 +21,26 @@ class ChatsModel extends Model {
             if (property_exists($this, $key)) {
                 $this->{$key} = DbTables::${$key};
             }
+        }
+    }
+
+    /**
+     * Connect to the votes and comments databases
+     * 
+     * @param string $db
+     * 
+     * @return array
+     */
+    public function connectToDb($db = 'chats') {
+        // if the database group is default, use the default database
+        if(in_array(configs('db_group'), ['default', 'production'])) {
+            $this->chatsDb = $this->db;
+            return;
+        }
+
+        if($db == 'chats') {
+            $this->chatsDb = db_connect('chats');
+            setDatabaseSettings($this->chatsDb);
         }
     }
 
@@ -41,7 +62,21 @@ class ChatsModel extends Model {
                 'created_at' => date('Y-m-d H:i:s'),
                 'receipients_list' => json_encode($receipientsList)
             ]);
-            return $this->db->insertID();
+            $roomId = $this->db->insertID();
+
+            // connect to the chats database
+            $this->connectToDb('chats');
+
+            // create the room for the sender and receiver
+            foreach([$sender, $receiver] as $userId) {
+                $this->chatsDb->table('user_chat_rooms')->insert([
+                    'room_id' => (int)$roomId,
+                    'user_id' => (int)$userId,
+                    'type' => $type,
+                ]);
+            }
+
+            return $roomId;
 
         } catch (DatabaseException $e) {
             return $e->getMessage();
@@ -77,6 +112,87 @@ class ChatsModel extends Model {
             return $roomId;
         } catch (DatabaseException $e) {
             return false;
+        }
+    }
+
+    /**
+     * Get user chat rooms
+     * 
+     * @param int $userId
+     * @return array
+     */
+    public function getUserChatRooms($userId, $roomId = null) {
+
+        try {
+        
+            $this->connectToDb('chats');
+            $rooms = $this->chatsDb->table('user_chat_rooms')->where('user_id', $userId);
+
+            if(!empty($roomId)) {
+                $rooms->where('room_id', $roomId);
+            }
+            $chatRooms = $rooms->get()->getResultArray();
+
+            if(empty($chatRooms)) {
+                return [];
+            }
+
+            // get the user names for the individual chats
+            $roomIds = array_column($chatRooms, 'room_id');
+
+            // get the participants for the rooms
+            $participants = $this->db->table('chat_rooms')->select('*')->whereIn('room_id', $roomIds)->get()->getResultArray();
+            if(empty($participants)) {
+                return [];
+            }
+
+            $groupedType = [];
+            $userIdsByRoomId = [];
+            foreach($participants as $key => $par) {
+                $groupedType[$par['room_id']] = $par['type'];
+                $userIdsByRoomId[$par['room_id']] = [
+                    'type' => $par['type'],
+                    'participants' => json_decode($par['receipients_list'], true),
+                    'name' => $par['name'],
+                    'description' => $par['room_description'],
+                ];
+            }
+
+            $participants = array_column($participants, 'receipients_list');
+
+            // convert each record to an array
+            $participants = array_map(function($participant) {
+                return json_decode($participant, true);
+            }, $participants);
+
+            // group the participants into one array
+            $participants = array_unique(array_merge(...$participants));
+
+            // remove the current user from the participants
+            $participants = array_values(array_diff($participants, [$userId]));
+
+            // get the users for the participants
+            $users = $this->db->table('users')
+                            ->select('user_id, full_name, username, profile_image, last_login')
+                            ->whereIn('user_id', $participants)
+                            ->where('is_active', 1)
+                            ->get()
+                            ->getResultArray();
+
+            $roomsList = [];
+            foreach($users as $user) {
+                $theRoom = array_filter($userIdsByRoomId, function($room) use ($user) {
+                    return in_array($user['user_id'], $room['participants']);
+                });
+                $user['room_id'] = array_keys($theRoom)[0] ?? 0;
+                $user['room'] = array_values($theRoom)[0] ?? [];
+                $roomsList[] = $user;
+            }
+
+            return $roomsList;
+
+        } catch (DatabaseException $e) {
+            return [];
         }
     }
 

@@ -87,6 +87,7 @@ class Database extends Config
                 'cache' => 'whispernet_db_cache', 
                 'votes' => 'whispernet_db_votes',
                 'apiCache' => 'whispernet_db_api',
+                'chats' => 'whispernet_db_chats',
                 'notification' => 'whispernet_db_notification',
             ] as $group => $db) {
                 $this->{$group} = [

@@ -34,6 +34,7 @@ $favicon_color = $favicon_color ?? 'dashboard';
     localStorage.setItem('baseUrl', '<?= $baseUrl ?>');
     const baseUrl = '<?= $baseUrl ?>',
       loggedInUserId = <?= $userId ?? 0 ?>,
+      footerArray = <?= json_encode($footerArray ?? []) ?>,
       userLoggedIn = <?= !empty($userLoggedIn) ? 'true' : 'false' ?>,
       websocketUrl = '<?= $websocketUrl ?>',
       loadingSkeleton = `<?= function_exists('loadingSkeleton') ? loadingSkeleton() : '' ?>`;

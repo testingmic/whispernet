@@ -74,6 +74,35 @@ function mask_email_address($users) {
 }
 
 /**
+ * User state
+ * 
+ * @param string $last_login
+ * @return string
+ */
+function userState($last_login) {
+
+    // check the last login to today
+    $days_ago = timeDifference($last_login);
+
+    // check the online status
+    if($days_ago['months'] > 0) {
+        $state = $days_ago['months'] . ' Long time ago';
+    } elseif($days_ago['days'] > 0) {
+        $state = $days_ago['days'] . ' day'.($days_ago['days'] > 1 ? 's' : '').' ago';
+    } elseif($days_ago['days'] > 0) {
+        $state = $days_ago['days'] . ' day'.($days_ago['days'] > 1 ? 's' : '').' ago';
+    } else if($days_ago['hours'] > 0) {
+        $state = $days_ago['hours'] . ' hour'.($days_ago['hours'] > 1 ? 's' : '').' ago';
+    } else if($days_ago['minutes'] > 0) {
+        $state = $days_ago['minutes'] . ' minute'.($days_ago['minutes'] > 1 ? 's' : '').' ago';
+    } else {
+        $state = 'Online';
+    }
+
+    return $state;
+}
+    
+/**
  * Format the user response
  * 
  * @param array $user

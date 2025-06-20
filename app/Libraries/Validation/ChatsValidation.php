@@ -20,7 +20,7 @@ class ChatsValidation {
             'authenticate' => true,
             'payload' => [
                 'roomId' => 'permit_empty|integer',
-                'receiverId' => 'required|integer',
+                'receiverId' => 'permit_empty|integer',
             ]
         ],
         'delete' => [

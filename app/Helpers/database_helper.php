@@ -1,5 +1,5 @@
 <?php
-global $databases, $alterTables, $votesTables, $notificationTables, $viewsTables;
+global $databases, $alterTables, $votesTables, $notificationTables, $viewsTables, $chatRooms;
 
 use CodeIgniter\Database\Exceptions\DatabaseException;
 
@@ -146,6 +146,8 @@ $databases = [
         sender_id INTEGER NOT NULL,
         receiver_id INTEGER NOT NULL,
         type TEXT,
+        name TEXT,
+        room_description TEXT,
         receiver_deleted BOOLEAN DEFAULT 0,
         sender_deleted BOOLEAN DEFAULT 0,
         receipients_list TEXT,
@@ -252,7 +254,7 @@ $databases = [
 
 // alter tables
 $alterTables = [
-    // "ALTER TABLE chat_messages ADD COLUMN unique_id TEXT;",
+    // "ALTER TABLE chat_rooms ADD COLUMN description TEXT;",
 ];
 
 $votesTables = [
@@ -284,6 +286,18 @@ $viewsTables = [
     CREATE INDEX IF NOT EXISTS record_id ON views (record_id);",
 ];
 
+$chatRooms = [
+    "CREATE TABLE IF NOT EXISTS user_chat_rooms (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        room_id INTEGER NOT NULL,
+        user_id INTEGER NOT NULL,
+        type TEXT,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    );
+    CREATE INDEX IF NOT EXISTS user_id ON user_chat_rooms (user_id);
+    CREATE INDEX IF NOT EXISTS type ON user_chat_rooms (type);",
+];
+
 $notificationTables = [
     "CREATE TABLE IF NOT EXISTS notifications (
         notification_id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -303,8 +317,8 @@ $notificationTables = [
 ];
 
 function createDatabaseStructure() {
-    global $databases, $alterTables, $votesTables, $notificationTables, $viewsTables;
-    foreach(['tests' => $databases, 'votes' => $votesTables, 'notification' => $notificationTables, 'views' => $viewsTables] as $idb => $tables) {
+    global $databases, $alterTables, $votesTables, $notificationTables, $viewsTables, $chatRooms;
+    foreach(['tests' => $databases, 'votes' => $votesTables, 'notification' => $notificationTables, 'views' => $viewsTables, 'chats' => $chatRooms] as $idb => $tables) {
         $db = \Config\Database::connect($idb);
         foreach(array_merge($tables, $alterTables) as $query) {
             try {

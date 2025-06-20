@@ -148,6 +148,10 @@ function scrollToBottom() {
     }
 }
 
+function closeModal() {
+  hideModal(groupCreationModal);
+}
+
 // Individual Chat Button
 function individualChatBtnClick() {
     hideModal(newChatModal);
@@ -160,29 +164,6 @@ function groupChatBtnClick() {
   showModal(groupCreationModal);
   $(`input[id="groupName"]`).focus();
 }
-
-// Chat item selection (for existing chats)
-document.querySelectorAll(".chat-item").forEach((item) => {
-  item.addEventListener("click", function () {
-    const chatId = this.getAttribute("data-chat-id");
-    const chatName = this.querySelector("p").textContent;
-
-    // Update chat header
-    chatTitle.textContent = chatName;
-    chatStatus.textContent = "Online";
-    chatAvatar.innerHTML = chatName.charAt(0).toUpperCase();
-
-    // Show chat area
-    welcomeMessage.classList.add("hidden");
-    messagesContainer.classList.remove("hidden");
-    messageInputArea.classList.remove("hidden");
-
-    // Load messages for this chat
-    loadMessages(chatId, "existing");
-
-    showChatArea();
-  });
-});
 
 // Group Creation Form
 groupCreationForm.addEventListener("submit", function (e) {
@@ -397,6 +378,32 @@ function selectUser(userId) {
   showChatArea();
 }
 
+function beginChat(roomId, type) {
+  selectedChatId = roomId;
+  selectedChatType = type;
+  let roomInfo = footerArray[roomId];
+
+  if(selectedUserId == roomInfo?.user_id) {
+    return;
+  }
+
+  if (isMobileView) {
+    currentView = "chat-area";
+    updateMobileView();
+  }
+  // Show chat area
+  welcomeMessage.classList.add("hidden");
+  messagesContainer.classList.remove("hidden");
+  messageInputArea.classList.remove("hidden");
+
+  // Hide modal
+  hideModal(userSearchModal);
+  selectedUserId = roomInfo?.user_id ?? 0;
+
+  // Load messages
+  loadingMessages(roomId, selectedUserId);
+}
+
 function debounce(fn, delay) {
   let timer;
   return function (...args) {
@@ -449,6 +456,44 @@ if (userSearchInput) {
   });
 }
 
+function loadingMessages(roomId, receiverId = 0) {
+
+  // Simulate loading messages
+  messagesContainer.innerHTML = `
+        <div class="flex items-center justify-center py-8">
+            <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
+        </div>`;
+
+  $.get(`${baseUrl}/api/chats/messages?roomId=${roomId}&receiverId=${receiverId}&room=${selectedChatType}&token=${AppState.getToken()}`, function (response) {
+    if (response.status === "success") {
+      messagesContainer.innerHTML = '';
+      response.data.forEach((message) => {
+          if(message.msgid > mostRecentMessageId) {
+              mostRecentMessageId = message.msgid;
+          }
+          addMessageToUI(message.message, message.type, message.time);
+      });
+
+      if(!response.data.length) {
+        messagesContainer.innerHTML = `
+          <div class="text-center py-8" id="no-message-notification">
+              <p class="text-gray-500 dark:text-gray-400">No messages yet. Start the conversation!</p>
+          </div>
+        `;
+      }
+      scrollToBottom();
+    }
+  }).catch((error) => {
+      messagesContainer.innerHTML = `
+      <div class="text-center py-8" id="no-message-notification">
+          <p class="text-gray-500 dark:text-gray-400">No messages yet. Start the conversation!</p>
+      </div>`;
+  });
+  setTimeout(() => {
+    $(`div[id="selfDestructMessage"]`).removeClass('hidden');
+  }, 1000);
+}
+
 // Helper Functions
 function loadMessages(userId, type) {
   selectedChatType = type;
@@ -461,39 +506,7 @@ function loadMessages(userId, type) {
 
   $(`p[id="chatStatus"]`).text(selectedUserInfo?.online_status ?? "Offline");
 
-  // Simulate loading messages
-  messagesContainer.innerHTML = `
-        <div class="flex items-center justify-center py-8">
-            <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
-        </div>`;
-
-  $.get(`${baseUrl}/api/chats/messages?roomId=${selectedChatId}&receiverId=${selectedUserInfo.user_id}&token=${AppState.getToken()}`, function (response) {
-      if (response.status === "success") {
-        messagesContainer.innerHTML = '';
-        response.data.forEach((message) => {
-            if(message.msgid > mostRecentMessageId) {
-                mostRecentMessageId = message.msgid;
-            }
-            addMessageToUI(message.message, message.type, message.time);
-        });
-
-        if(!response.data.length) {
-          messagesContainer.innerHTML = `
-            <div class="text-center py-8" id="no-message-notification">
-                <p class="text-gray-500 dark:text-gray-400">No messages yet. Start the conversation!</p>
-            </div>
-          `;
-        }
-        // scroll to the bottom of the messages container
-        scrollToBottom();
-      }
-    }).catch((error) => {
-        messagesContainer.innerHTML = `
-        <div class="text-center py-8" id="no-message-notification">
-            <p class="text-gray-500 dark:text-gray-400">No messages yet. Start the conversation!</p>
-        </div>`;
-    });
-    $(`div[id="selfDestructMessage"]`).removeClass('hidden');
+  loadingMessages(selectedChatId, selectedUserInfo.user_id);
 }
 
 function addMessageToUI(content, type, time = '') {
