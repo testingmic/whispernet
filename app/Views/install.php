@@ -17,7 +17,7 @@
         <div class="bg-white dark:bg-gray-800 rounded-3xl shadow-2xl border border-gray-200 dark:border-gray-700 overflow-hidden">
             
             <!-- Installation Steps -->
-            <div class="p-8">
+            <div class="p-4">
                 <div class="grid md:grid-cols-2 gap-8">
                     <?php 
                     $browsers = [
@@ -87,7 +87,7 @@
             </div>
 
             <!-- Visual Guide Section -->
-            <div class="bg-gray-50 dark:bg-gray-900/50 px-8 py-6 border-t border-gray-200 dark:border-gray-700">
+            <div class="bg-gray-50 dark:bg-gray-900/50 px-5 py-6 border-t border-gray-200 dark:border-gray-700">
                 <div class="text-center mb-6">
                     <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-2">Visual Guide</h3>
                     <p class="text-gray-600 dark:text-gray-400">Tap on any image below to see it in full size</p>
