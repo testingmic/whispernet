@@ -264,54 +264,82 @@ if (messageInput) {
 
 // Message Form Submission
 if (messageForm) {
-  messageForm.addEventListener("submit", function (e) {
-    e.preventDefault();
-
-    const message = messageInput.value.trim();
-    if (message.length === 0) return;
-
-    // Add message to UI
-    addMessageToUI(message, "sent");
-
-    // Clear input
-    messageInput.value = "";
-    messageInput.style.height = "auto";
-    charCount.textContent = "0";
-
-    scrollToBottom();
-
-    let msgPayload = {
-      message: message,
-      sender: loggedInUserId,
-      receiver: selectedUserId,
-      type: selectedChatType,
-      roomId: selectedChatId,
-      timestamp: new Date().getTime(),
-      token: AppState.getToken(),
-    };
-    $(`div[id="no-message-notification"]`).addClass('hidden');
-    $.post(`${baseUrl}/api/chats/send`, msgPayload, function (response) {
-      if (response.status === "success") {
-        selectedChatId = response.record.roomId;
-        mostRecentMessageId = response.record.messageId;
-        $(`div[id="no-message-notification"]`).remove();
-
-        msgPayload.roomId = selectedChatId;
-        msgPayload.type = 'chat';
-        msgPayload.direction = 'sent';
-
-        // send the receiver id as an array
-        msgPayload.receiver = [loggedInUserId, selectedUserId];
-
-        AppState.socketConnect.send({
-            type: 'chat',
-            data: msgPayload,
-        });
-
-      }
-    }).catch((error) => {
-        $(`div[id="no-message-notification"]`).removeClass('hidden');
+  // Change submit button to regular button to prevent form submission entirely
+  const submitButton = messageForm.querySelector('button[type="submit"]');
+  if (submitButton) {
+    submitButton.type = 'button'; // Change from submit to button
+    submitButton.addEventListener("click", function (e) {
+      e.preventDefault();
+      e.stopPropagation();
+      handleMessageSubmit();
     });
+  }
+
+  // Handle Enter key press
+  messageInput.addEventListener("keydown", function (e) {
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault();
+      e.stopPropagation();
+      handleMessageSubmit();
+    }
+  });
+
+  // Completely disable form submission
+  messageForm.onsubmit = function(e) {
+    e.preventDefault();
+    e.stopPropagation();
+    e.stopImmediatePropagation();
+    return false;
+  };
+}
+
+// Separate function to handle message submission
+function handleMessageSubmit() {
+  const message = messageInput.value.trim();
+  if (message.length === 0) return;
+
+  // Add message to UI
+  addMessageToUI(message, "sent");
+
+  // Clear input
+  messageInput.value = "";
+  messageInput.style.height = "auto";
+  charCount.textContent = "0";
+
+  scrollToBottom();
+
+  let msgPayload = {
+    message: message,
+    sender: loggedInUserId,
+    receiver: selectedUserId,
+    type: selectedChatType,
+    roomId: selectedChatId,
+    timestamp: new Date().getTime(),
+    token: AppState.getToken(),
+  };
+  
+  $(`div[id="no-message-notification"]`).addClass('hidden');
+  
+  $.post(`${baseUrl}/api/chats/send`, msgPayload, function (response) {
+    if (response.status === "success") {
+      selectedChatId = response.record.roomId;
+      mostRecentMessageId = response.record.messageId;
+      $(`div[id="no-message-notification"]`).remove();
+
+      msgPayload.roomId = selectedChatId;
+      msgPayload.type = 'chat';
+      msgPayload.direction = 'sent';
+
+      // send the receiver id as an array
+      msgPayload.receiver = [loggedInUserId, selectedUserId];
+
+      AppState.socketConnect.send({
+          type: 'chat',
+          data: msgPayload,
+      });
+    }
+  }).catch((error) => {
+      $(`div[id="no-message-notification"]`).removeClass('hidden');
   });
 }
 
