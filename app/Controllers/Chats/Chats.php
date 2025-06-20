@@ -76,28 +76,28 @@ class Chats extends LoadController {
         // check the chat type
         $isIndividual = (bool)($this->payload['type'] == 'individual');
         if(empty($this->payload['roomId'])) {
-            $room = $isIndividual ? $this->chatsModel->getIndividualChatRoomId($this->payload['sender'], $this->payload['receiver']) : [];
+            $room = $isIndividual ? $this->chatsModel->getIndividualChatRoomId((int)$this->payload['sender'], (int)$this->payload['receiver']) : [];
             if(!empty($room) && ((int)$room['sender_deleted'] == 1)) {
                 return Routing::error('Chat room not found');
             }
 
             // if the chat room is not found, create a new one
             if(empty($room)) {
-                $room = $this->chatsModel->createChatRoom($this->payload['sender'], $this->payload['receiver'], $this->payload['type'], [
+                $room = $this->chatsModel->createChatRoom((int)$this->payload['sender'], (int)$this->payload['receiver'], $this->payload['type'], [
                     (int)$this->payload['sender'],
                     (int)$this->payload['receiver']
                 ]);
             }
 
         } else {
-            $roomId = $this->payload['roomId'];
+            $roomId = (int)$this->payload['roomId'];
             $room  = $this->chatsModel->getChatRoom($roomId);
             if(empty($room)) {
                 return Routing::error('Chat room not found');
             }
 
             // check if the sender is a participant of the chat
-            if(!in_array($this->payload['sender'], json_decode($room['receipients_list'], true))) {
+            if(!in_array((int)$this->payload['sender'], json_decode($room['receipients_list'], true))) {
                 return Routing::error('You are not a participant of this chat');
             }
         }

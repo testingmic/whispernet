@@ -149,6 +149,7 @@ CREATE TABLE IF NOT EXISTS chat_participants (
     INDEX idx_last_read_at (last_read_at)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+DROP TABLE IF EXISTS chat_messages;
 CREATE TABLE IF NOT EXISTS chat_messages (
     message_id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     room_id BIGINT UNSIGNED NOT NULL,
