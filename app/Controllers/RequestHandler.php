@@ -340,6 +340,7 @@ class RequestHandler extends BaseController
         }
 
         $payload['finalLocation'] = [
+            'fulllocation' => $location,
             'city' => $location['city'] ?? null,
             'district' => $location['district'] ?? null,
             'country' => $location['country'] ?? null,
