@@ -658,7 +658,8 @@ const PostManager = {
             }
             if(this.userLocation && $(`.location-display`).length > 0) {
                 $(`.location-display`).html(`${this.userLocation.city}, ${this.userLocation.country}`);
-                $(`.position-display`).html(`${this.userLocation.longitude},${this.userLocation.latitude}`);
+                $(`.position-display`).html(`${this.userLocation.longitude}, ${this.userLocation.latitude}`);
+                $(`.raw-position-display`).html(`${longitude},${latitude}`)
             }
         } catch (error) {
             console.log(error);

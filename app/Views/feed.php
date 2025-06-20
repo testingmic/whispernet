@@ -14,6 +14,7 @@
                     <div>
                         <h3 class="text-lg font-semibold text-gray-900 dark:text-white location-display">Loading location...</h3>
                         <div class="position-display"></div>
+                        <div class="raw-position-display"></div>
                         <p class="text-sm text-gray-600 dark:text-gray-400">
                             Posts are displayed within a 35km radius of your location
                         </p>
