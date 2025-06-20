@@ -12,16 +12,16 @@
                 <div class="mb-6">
                     <h2 class="text-xl font-bold">🔹 <?= $browser; ?> Steps:</h2>
                     <div>
-                        <div class="flex items-center gap-2 mb-2">
+                        <div class=" gap-2 mb-3">
                             1. Tap the Share Icon in the <strong>"<?= $step; ?>"</strong>.
                         </div>
-                        <div class="flex items-center gap-2 mb-2">
+                        <div class=" gap-2 mb-3">
                             2. Scroll down and select <strong>"Add to Home Screen"</strong>.
                         </div>
-                        <div class="flex items-center gap-2 mb-2">
+                        <div class=" gap-2 mb-3">
                             3. A pop-up will appear — edit the name if you want and tap <strong>"Add"</strong>.
                         </div>
-                        <div class="flex items-center gap-2">
+                        <div class=" gap-2">
                             4. Tap <strong>"Add"</strong>.
                         </div>
                     </div>
