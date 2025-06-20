@@ -360,4 +360,3 @@ $messages = $messages ?? [];
         </div>
     </div>
 </div>
-<script src="<?= base_url('assets/js/chat.js') ?>" type="text/javascript"></script>

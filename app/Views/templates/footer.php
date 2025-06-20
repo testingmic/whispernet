@@ -96,6 +96,7 @@ $favicon_color = $favicon_color ?? 'dashboard';
 <script src="<?= $baseUrl ?>/assets/js/app.js?v=<?= $version ?>" defer></script>
 <script src="<?= $baseUrl ?>/assets/js/websocket.js?v=<?= $version ?>" defer></script>
 <script src="<?= $baseUrl ?>/assets/js/feed-context.js?v=<?= $version ?>" defer></script>
+<script src="<?= $baseUrl ?>/assets/js/chat.js?v=<?= $version ?>" defer></script>
 
 <script>
 // Enhanced PWA Installation Handler
