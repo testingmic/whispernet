@@ -656,6 +656,7 @@ const PostManager = {
             if(data.data.length == 0) {
                 document.getElementById('oldPostsContainer').classList.add('hidden');
             }
+            $(`.position-display`).html(`${longitude},${latitude}`);
             if(this.userLocation && $(`.location-display`).length > 0) {
                 $(`.location-display`).html(`${this.userLocation.city}, ${this.userLocation.country}`);
             }
