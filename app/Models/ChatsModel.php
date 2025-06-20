@@ -218,13 +218,14 @@ class ChatsModel extends Model {
                 'media_type' => $payload['media_type'] ?? 'text',
             ]);
 
+            $insertId = $this->db->insertID();
+
             // Update last message timestamp
             $this->db->table('chat_rooms')->where('room_id', $payload['room_id'])->update(['last_message_at' => date('Y-m-d H:i:s')]);
 
             // return the message id
-            return $this->db->insertID();
+            return $insertId;
         } catch (DatabaseException $e) {
-            print_r($e->getMessage());
             return 0;
         }
     }
