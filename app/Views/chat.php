@@ -22,11 +22,11 @@ $messages = $messages ?? [];
                                 </svg>
                             </button>
                         </div>
-                        
+
                         <!-- Search Bar -->
                         <div class="relative">
-                            <input type="text" id="searchInput" placeholder="Search users..." 
-                                   class="w-full px-4 py-2 pl-10 bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:text-white text-sm">
+                            <input type="text" id="searchInput" placeholder="Search users..."
+                                class="w-full px-4 py-2 pl-10 bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:text-white text-sm">
                             <svg class="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
                             </svg>
@@ -39,26 +39,26 @@ $messages = $messages ?? [];
                             <!-- Individual Chats -->
                             <div class="space-y-2">
                                 <h3 class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider px-3 py-2">Individual Chats</h3>
-                                
-                                <?php if(empty($chatRooms)) { ?>
-                                <div id="individualChats">
-                                    <div class=" p-3 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-700 cursor-pointer transition-all duration-200" data-chat-id="0">
-                                        <div class="flex items-center space-x-3">
-                                            <div class="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-semibold">
-                                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
-                                                </svg>
-                                            </div>
-                                            <div class="flex-1 min-w-0" onclick="return individualChatBtnClick()">
-                                                <p class="text-sm font-semibold text-gray-900 dark:text-white">Create Individual Chat</p>
-                                                <p class="text-xs text-gray-500 dark:text-gray-400">Start a conversation with a single person</p>
+
+                                <?php if (empty($chatRooms)) { ?>
+                                    <div id="individualChats">
+                                        <div class=" p-3 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-700 cursor-pointer transition-all duration-200" data-chat-id="0">
+                                            <div class="flex items-center space-x-3">
+                                                <div class="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-semibold">
+                                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                                                    </svg>
+                                                </div>
+                                                <div class="flex-1 min-w-0" onclick="return individualChatBtnClick()">
+                                                    <p class="text-sm font-semibold text-gray-900 dark:text-white">Create Individual Chat</p>
+                                                    <p class="text-xs text-gray-500 dark:text-gray-400">Start a conversation with a single person</p>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
-                                </div>
                                 <?php } ?>
-                                <?php foreach($chatRooms as $chat) { ?>
-                                    <?php if($chat['room']['type'] !== 'individual') continue; ?>
+                                <?php foreach ($chatRooms as $chat) { ?>
+                                    <?php if ($chat['room']['type'] !== 'individual') continue; ?>
                                     <div onclick="return beginChat(<?= $chat['room_id']; ?>, '<?= $chat['room']['type']; ?>')" class="cursor-pointer p-3 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-700 cursor-pointer transition-all duration-200">
                                         <div class="flex items-center space-x-3">
                                             <div class="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-semibold">
@@ -79,23 +79,23 @@ $messages = $messages ?? [];
                             <!-- Group Chats -->
                             <div class="space-y-2 mt-4">
                                 <h3 class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider px-3 py-2">Group Chats</h3>
-                                <?php if(empty($groupChats)) { ?>
-                                <div class="group-chat-item p-3 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-700 cursor-pointer transition-all duration-200" data-chat-type="group">
-                                    <div class="flex items-center space-x-3">
-                                        <div class="w-10 h-10 rounded-full bg-gradient-to-br from-green-500 to-green-600 flex items-center justify-center text-white font-semibold">
-                                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
-                                            </svg>
-                                        </div>
-                                        <div class="flex-1 min-w-0" onclick="return groupChatBtnClick()">
-                                            <p class="text-sm font-semibold text-gray-900 dark:text-white">Create Group Chat</p>
-                                            <p class="text-xs text-gray-500 dark:text-gray-400">Start a conversation with multiple people</p>
+                                <?php if (empty($groupChats)) { ?>
+                                    <div class="group-chat-item p-3 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-700 cursor-pointer transition-all duration-200" data-chat-type="group">
+                                        <div class="flex items-center space-x-3">
+                                            <div class="w-10 h-10 rounded-full bg-gradient-to-br from-green-500 to-green-600 flex items-center justify-center text-white font-semibold">
+                                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                                                </svg>
+                                            </div>
+                                            <div class="flex-1 min-w-0" onclick="return groupChatBtnClick()">
+                                                <p class="text-sm font-semibold text-gray-900 dark:text-white">Create Group Chat</p>
+                                                <p class="text-xs text-gray-500 dark:text-gray-400">Start a conversation with multiple people</p>
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
                                 <?php } ?>
-                                <?php foreach($groupChats as $chat) { ?>
-                                    <?php if($chat['room']['type'] !== 'group') continue; ?>
+                                <?php foreach ($groupChats as $chat) { ?>
+                                    <?php if ($chat['room']['type'] !== 'group') continue; ?>
                                     <div onclick="return beginChat(<?= $chat['room_id']; ?>, '<?= $chat['room']['type']; ?>')" class="cursor-pointer p-3 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-700 transition-all duration-200">
                                         <div class="flex items-center space-x-3">
                                             <div class="w-10 h-10 rounded-full bg-gradient-to-br from-green-500 to-green-600 flex items-center justify-center text-white font-semibold">
@@ -172,7 +172,7 @@ $messages = $messages ?? [];
                                 </div>
                             </div>
                         </div>
-                        
+
                         <div id="messagesContainer" class="space-y-4 hidden">
                             <!-- Messages will be dynamically loaded here -->
                         </div>
@@ -192,30 +192,32 @@ $messages = $messages ?? [];
                                 <!-- Preview items will be added here -->
                             </div>
                         </div>
-                        
+
                         <form id="messageForm" class="flex items-end space-x-2 sm:space-x-4">
-                            <!-- Hidden file input -->
-                            <input type="file" id="fileInput" accept="image/*,video/*" multiple class="hidden">
-                            
-                            <button type="button" id="attachButton" class="p-2 hidden text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
-                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"></path>
-                                </svg>
-                            </button>
-                            <div class="flex-1 relative">
-                                <textarea id="messageInput" rows="1" placeholder="Type a message..." 
-                                         class="w-full px-2 py-3 border border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white resize-none outline-none transition-all duration-200"></textarea>
+                            <div class="flex items-center space-x-3 w-full">
+                                <!-- Hidden file input -->
+                                <input type="file" id="fileInput" accept="image/*,video/*" multiple class="hidden">
+
+                                <button type="button" id="attachButton" class="p-2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"></path>
+                                    </svg>
+                                </button>
+                                <div class="flex-1 relative">
+                                    <textarea id="messageInput" rows="1" placeholder="Type a message..."
+                                        class="w-full px-2 py-3 border border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white resize-none outline-none transition-all duration-200"></textarea>
+                                </div>
+                                <button type="button" id="recordButton" class="p-2 hidden text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"></path>
+                                    </svg>
+                                </button>
+                                <button type="submit" class="px-4 sm:px-6 py-3 bg-gradient-to-r from-blue-500 to-purple-600 text-white font-semibold rounded-xl hover:from-blue-600 hover:to-purple-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all duration-200 transform hover:scale-105">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path>
+                                    </svg>
+                                </button>
                             </div>
-                            <button type="button" id="recordButton" class="p-2 hidden text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
-                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"></path>
-                                </svg>
-                            </button>
-                            <button type="submit" class="px-4 sm:px-6 py-3 bg-gradient-to-r from-blue-500 to-purple-600 text-white font-semibold rounded-xl hover:from-blue-600 hover:to-purple-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all duration-200 transform hover:scale-105">
-                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path>
-                                </svg>
-                            </button>
                         </form>
                     </div>
                 </div>
@@ -253,7 +255,7 @@ $messages = $messages ?? [];
                         <h4 class="font-semibold text-gray-900 dark:text-white">Individual Chat</h4>
                         <p class="text-sm text-gray-600 dark:text-gray-400">Chat with one person</p>
                     </button>
-                    
+
                     <button onclick="return groupChatBtnClick()" class="p-4 border-2 border-gray-200 dark:border-gray-600 rounded-xl hover:border-green-500 dark:hover:border-green-500 transition-all duration-200 text-left">
                         <div class="w-12 h-12 bg-gradient-to-br from-green-500 to-green-600 rounded-lg flex items-center justify-center mb-3">
                             <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -289,13 +291,13 @@ $messages = $messages ?? [];
             <!-- User Search -->
             <div class="space-y-4">
                 <div class="relative">
-                    <input type="text" id="userSearchInput" placeholder="Search users..." 
-                           class="w-full px-4 py-3 pl-10 bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:text-white">
+                    <input type="text" id="userSearchInput" placeholder="Search users..."
+                        class="w-full px-4 py-3 pl-10 bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:text-white">
                     <svg class="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
                     </svg>
                 </div>
-                
+
                 <div id="userList" class="space-y-2 max-h-96 overflow-y-auto"></div>
             </div>
         </div>
@@ -337,18 +339,18 @@ $messages = $messages ?? [];
             <form id="groupCreationForm" class="space-y-6 hidden">
                 <div>
                     <label for="groupName" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Group Name</label>
-                    <input type="text" id="groupName" name="groupName" required 
-                           class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
-                           placeholder="Enter group name">
+                    <input type="text" id="groupName" name="groupName" required
+                        class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+                        placeholder="Enter group name">
                 </div>
-                
+
                 <div>
                     <label for="groupDescription" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Description (Optional)</label>
                     <textarea id="groupDescription" name="groupDescription" rows="3"
-                              class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white resize-none"
-                              placeholder="Describe the purpose of this group"></textarea>
+                        class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white resize-none"
+                        placeholder="Describe the purpose of this group"></textarea>
                 </div>
-                
+
                 <div>
                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Select Members</label>
                     <div class="space-y-2 max-h-48 overflow-y-auto border border-gray-300 dark:border-gray-600 rounded-xl p-3">
@@ -363,7 +365,7 @@ $messages = $messages ?? [];
                         <?php endforeach; ?>
                     </div>
                 </div>
-                
+
                 <div class="flex flex-col sm:flex-row justify-end space-y-3 sm:space-y-0 sm:space-x-4 pt-4">
                     <button type="button" id="cancelGroupCreation" class="px-6 py-3 text-sm font-medium text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-700 rounded-xl hover:bg-gray-200 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-500 transition-all duration-200">
                         Cancel
