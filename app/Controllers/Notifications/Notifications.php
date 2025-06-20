@@ -10,8 +10,8 @@ class Notifications extends LoadController {
 
     public function recent() {
         
-        return Routing::success(['data' => 'Notifications fetched successfully']);
-        
+        return Routing::success([]);
+
     }
     
 }
