@@ -186,11 +186,11 @@ class Api extends BaseController
         $classname = '\\App\\Controllers\\'.ucfirst($class).'\\'.ucfirst($class);
 
         if(!empty($payload['longitude'])) {
-            $payload['longitude'] = substr($payload['longitude'], 0, 12);
+            $payload['longitude'] = substr($payload['longitude'], 0, 7);
         }
 
         if(!empty($payload['latitude'])) {
-            $payload['latitude'] = substr($payload['latitude'], 0, 12);
+            $payload['latitude'] = substr($payload['latitude'], 0, 7);
         }
 
         // confirm if the class actually exists
