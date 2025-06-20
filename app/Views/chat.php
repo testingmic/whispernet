@@ -132,8 +132,8 @@ $messages = $messages ?? [];
                                     </svg>
                                 </div>
                                 <div>
-                                    <h3 id="chatTitle" class="text-lg font-semibold text-gray-900 dark:text-white">Select a chat to start messaging</h3>
-                                    <p id="chatStatus" class="text-sm text-gray-500 dark:text-gray-400">Choose from your conversations</p>
+                                    <h3 id="chatTitle" class="text-lg font-semibold text-gray-900 dark:text-white">Go Back</h3>
+                                    <p id="chatStatus" class="text-sm text-gray-500 dark:text-gray-400">Offline</p>
                                 </div>
                             </div>
                             <div class="flex items-center space-x-2">

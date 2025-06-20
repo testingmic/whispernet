@@ -402,6 +402,11 @@ function beginChat(roomId, type) {
   hideModal(userSearchModal);
   selectedUserId = roomInfo?.user_id ?? 0;
 
+  console.log(roomInfo);
+  $(`h3[id="chatTitle"]`).text(roomInfo?.username ?? roomInfo?.full_name);
+  $(`p[id="chatStatus"]`).text(roomInfo?.state ?? 'Offline');
+  $(`div[id="chatAvatar"]`).html(roomInfo?.username?.charAt(0)?.toUpperCase() ?? '');
+
   // Load messages
   loadingMessages(roomId, selectedUserId);
 }
