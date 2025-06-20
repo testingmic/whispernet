@@ -35,6 +35,13 @@ class Posts extends LoadController {
      */
     public function create() {
 
+        if(isset($this->payload['latitude']) && !empty($this->payload['latitude'])) {
+            $this->payload['latitude'] = trim(substr($this->payload['latitude'], 0, 7));
+        }
+        if(isset($this->payload['longitude']) && !empty($this->payload['longitude'])) {
+            $this->payload['longitude'] = trim(substr($this->payload['longitude'], 0, 7));
+        }
+
         // set the payload to the posts model
         $this->postsModel->payload = $this->payload;
         
