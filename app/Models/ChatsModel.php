@@ -134,7 +134,6 @@ class ChatsModel extends Model {
 
             return $messages;
         } catch (DatabaseException $e) {
-            return $e->getMessage();
             return [];
         }
     }

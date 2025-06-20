@@ -3,13 +3,12 @@ let selectedChatType = null;
 let selectedUserId = null;
 let selectedUserInfo = [];
 let searchedUsersList = [];
+let mostRecentMessageId = 0;
 
 // Elements
 const newChatBtn = document.getElementById("newChatBtn");
 const newChatModal = document.getElementById("newChatModal");
 const closeNewChatModal = document.getElementById("closeNewChatModal");
-const individualChatBtn = document.getElementById("individualChatBtn");
-const groupChatBtn = document.getElementById("groupChatBtn");
 const userSearchModal = document.getElementById("userSearchModal");
 const closeUserSearchModal = document.getElementById("closeUserSearchModal");
 const groupCreationModal = document.getElementById("groupCreationModal");
@@ -142,17 +141,25 @@ if (backToChats) {
   });
 });
 
-// Individual Chat Button
-individualChatBtn.addEventListener("click", () => {
-  hideModal(newChatModal);
-  showModal(userSearchModal);
-});
+function scrollToBottom() {
+    const chatDiv = document.getElementById('messagesArea');
+    if (chatDiv) {
+      chatDiv.scrollTop = chatDiv.scrollHeight;
+    }
+}
 
-// Group Chat Button
-groupChatBtn.addEventListener("click", () => {
+// Individual Chat Button
+function individualChatBtnClick() {
+    hideModal(newChatModal);
+    showModal(userSearchModal);
+    $(`input[id="userSearchInput"]`).focus();
+}
+
+function groupChatBtnClick() {
   hideModal(newChatModal);
   showModal(groupCreationModal);
-});
+  $(`input[id="groupName"]`).focus();
+}
 
 // Chat item selection (for existing chats)
 document.querySelectorAll(".chat-item").forEach((item) => {
@@ -271,10 +278,8 @@ if (messageForm) {
     messageInput.style.height = "auto";
     charCount.textContent = "0";
 
-    // Simulate sending
-    // setTimeout(() => {
-    //     addMessageToUI('Message received!', 'received');
-    // }, 1000);
+    scrollToBottom();
+
     let msgPayload = {
       message: message,
       sender: loggedInUserId,
@@ -284,10 +289,28 @@ if (messageForm) {
       timestamp: new Date().getTime(),
       token: AppState.getToken(),
     };
+    $(`div[id="no-message-notification"]`).addClass('hidden');
     $.post(`${baseUrl}/api/chats/send`, msgPayload, function (response) {
       if (response.status === "success") {
         selectedChatId = response.record.roomId;
+        mostRecentMessageId = response.record.messageId;
+        $(`div[id="no-message-notification"]`).remove();
+
+        msgPayload.roomId = selectedChatId;
+        msgPayload.type = 'chat';
+        msgPayload.direction = 'sent';
+
+        // send the receiver id as an array
+        msgPayload.receiver = [loggedInUserId, selectedUserId];
+
+        AppState.socketConnect.send({
+            type: 'chat',
+            data: msgPayload,
+        });
+
       }
+    }).catch((error) => {
+        $(`div[id="no-message-notification"]`).removeClass('hidden');
     });
   });
 }
@@ -391,29 +414,36 @@ function loadMessages(userId, type) {
             <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
         </div>`;
 
-  setTimeout(() => {
-    messagesContainer.innerHTML = `
-            <div class="text-center py-8">
+  $.get(`${baseUrl}/api/chats/messages?roomId=${selectedChatId}&receiverId=${selectedUserInfo.user_id}&token=${AppState.getToken()}`, function (response) {
+      if (response.status === "success") {
+        messagesContainer.innerHTML = '';
+        response.data.forEach((message) => {
+            if(message.msgid > mostRecentMessageId) {
+                mostRecentMessageId = message.msgid;
+            }
+            addMessageToUI(message.message, message.type, message.time);
+        });
+
+        if(!response.data.length) {
+          messagesContainer.innerHTML = `
+            <div class="text-center py-8" id="no-message-notification">
                 <p class="text-gray-500 dark:text-gray-400">No messages yet. Start the conversation!</p>
             </div>
-        `;
-  }, 1000);
-
-  $.get(
-    `${baseUrl}/api/chats/messages?roomId=${selectedChatId}&receiverId=${
-      selectedUserInfo.user_id
-    }&token=${AppState.getToken()}`,
-    function (response) {
-      if (response.status === "success") {
-        response.data.forEach((message) => {
-          addMessageToUI(message.message, message.type);
-        });
+          `;
+        }
+        // scroll to the bottom of the messages container
+        scrollToBottom();
       }
-    }
-  );
+    }).catch((error) => {
+        messagesContainer.innerHTML = `
+        <div class="text-center py-8" id="no-message-notification">
+            <p class="text-gray-500 dark:text-gray-400">No messages yet. Start the conversation!</p>
+        </div>`;
+    });
+    $(`div[id="selfDestructMessage"]`).removeClass('hidden');
 }
 
-function addMessageToUI(content, type) {
+function addMessageToUI(content, type, time = '') {
   const messageDiv = document.createElement("div");
   messageDiv.className = `flex ${
     type === "sent" ? "justify-end" : "justify-start"
@@ -441,7 +471,7 @@ function addMessageToUI(content, type) {
                     <p class="text-sm break-words">${content}</p>
                 </div>
                 <span class="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                    ${new Date().toLocaleTimeString([], {
+                    ${time ? time : new Date().toLocaleTimeString([], {
                       hour: "2-digit",
                       minute: "2-digit",
                     })}

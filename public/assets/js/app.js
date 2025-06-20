@@ -52,6 +52,7 @@ const AppState = {
     theme: 'light',
     notifications: [],
     isOnline: navigator.onLine,
+    socketConnect: false,
     init() {
         this.loadUser();
         this.loadTheme();
@@ -84,6 +85,9 @@ const AppState = {
     },
     getToken() {
         return localStorage.getItem('token');
+    },
+    getUserId() {
+        return this.user?.user_id || 0;
     },
     loadTheme() {
         const theme = 'light'; //localStorage.getItem('theme') || 'light';
@@ -469,7 +473,7 @@ const PostManager = {
                             commentsContainer.appendChild(this.createCommentElement(comment));
                         });
                     } else {
-                        commentsContainer.innerHTML = '<p class="text-gray-500 dark:text-gray-400" id="commentsLoading">No replies yet</p>';
+                        commentsContainer.innerHTML = '<p class="text-gray-500 dark:text-gray-800" id="commentsLoading">No replies yet</p>';
                     }
                 }
             } else {
@@ -489,7 +493,7 @@ const PostManager = {
                         <span class="text-gray-500 text-sm">${comment.username[0].toUpperCase()}${comment.username[1].toUpperCase()}</span>
                     </div>
                     <div>
-                        <div class="text-sm font-medium text-gray-900">${comment.username}</div>
+                        <div class="text-sm font-medium text-gray-900 dark:text-white">${comment.username}</div>
                         <div class="text-xs text-gray-500 flex items-center space-x-1">
                             <span title="${comment.created_at}" class="text-xs text-gray-500 mr-2 flex items-center space-x-1">
                                 ${comment.ago}
@@ -507,7 +511,7 @@ const PostManager = {
                     </div>
                 </div>
             </div>
-            <p class="text-gray-800 mb-3">${comment.content}</p>
+            <p class="text-gray-800 mb-3 dark:text-white">${comment.content}</p>
             <div class="flex items-center justify-between">
                 <div class="flex items-center space-x-4">
                     <button class="flex items-center space-x-1 text-gray-500 hover:text-blue-500" data-comments-id="${comment.comment_id}" onclick="return PostManager.handleVote('comments', ${comment.comment_id}, 'up', ${comment.user_id})">
@@ -701,17 +705,17 @@ const PostManager = {
         div.innerHTML = `
             <div class="flex items-center justify-between mb-2">
                 <div class="flex items-center space-x-2 post-header-clickable">
-                    <div class="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white">
+                    <div class="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center">
                         <span class="text-sm font-semibold">${post.username[0].toUpperCase()}${post.username[1].toUpperCase()}</span>
                     </div>
                     <div>
-                        <div class="text-sm font-medium text-gray-900 dark:text-white">${post.username}</div>
-                        <div class="text-xs text-gray-500 dark:text-gray-400 flex items-center space-x-1">
-                            <span title="${post.created_at}" class="text-xs text-gray-500 dark:text-gray-400 mr-2 flex items-center space-x-1">
+                        <div class="text-sm font-medium text-gray-900">${post.username}</div>
+                        <div class="text-xs text-gray-500 dark:text-gray-800 flex items-center space-x-1">
+                            <span title="${post.created_at}" class="text-xs text-gray-500 dark:text-gray-800 mr-2 flex items-center space-x-1">
                                 ${post.ago}
                             </span>
                             ${post.city ? `
-                            <span class="text-xs text-gray-500 dark:text-gray-400 flex items-center space-x-1">
+                            <span class="text-xs text-gray-500 dark:text-gray-800 flex items-center space-x-1">
                                 <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -763,7 +767,7 @@ const PostManager = {
                     </div>
                 </div>
             </div>
-            <div class="post-content-clickable text-gray-800 dark:text-gray-200 mb-3 text-sm leading-relaxed">${post.content}</div>
+            <div class="post-content-clickable text-gray-800 dark:text-gray-900 mb-3 text-sm leading-relaxed">${post.content}</div>
             ${post.has_media ? `
                 <div class="post-content-clickable flex flex-wrap gap-2 text-sm text-gray-500 mb-2">
                     ${post.media_types.includes('images') ? `
@@ -791,25 +795,25 @@ const PostManager = {
             }
             <div class="flex items-center justify-between">
                 <div class="flex items-center space-x-4">
-                    <button class="flex items-center space-x-1 text-gray-500 hover:text-blue-500 dark:text-gray-400 dark:hover:text-blue-400 transition-colors" onclick="event.stopPropagation();" data-posts-id="${post.post_id}">
+                    <button class="flex items-center space-x-1 text-gray-500 hover:text-blue-500 dark:text-gray-800 dark:hover:text-blue-400 transition-colors" onclick="event.stopPropagation();" data-posts-id="${post.post_id}">
                         <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
                         </svg>
                         <span class="comments-counter-${post.post_id}">${post.comments_count}</span>
                     </button>
-                    <button class="flex items-center space-x-1 text-gray-500 hover:text-blue-500 dark:text-gray-400 dark:hover:text-blue-400 transition-colors" onclick="event.stopPropagation(); return PostManager.handleVote('posts', ${post.post_id}, 'up', ${post.user_id})" data-posts-id="${post.post_id}">
+                    <button class="flex items-center space-x-1 text-gray-500 hover:text-blue-500 dark:text-gray-800 dark:hover:text-blue-400 transition-colors" onclick="event.stopPropagation(); return PostManager.handleVote('posts', ${post.post_id}, 'up', ${post.user_id})" data-posts-id="${post.post_id}">
                         <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 10h4.764a2 2 0 011.789 2.894l-3.5 7A2 2 0 0115.263 21h-4.017c-.163 0-.326-.02-.485-.06L7 20m7-10V5a2 2 0 00-2-2h-.095c-.5 0-.905.405-.905.905 0 .714-.211 1.412-.608 2.006L7 11v9m7-10h-2M7 20H5a2 2 0 01-2-2v-6a2 2 0 012-2h2.5"/>
                         </svg>
                         <span data-posts-id-upvotes="${post.post_id}">${post.upvotes}</span>
                     </button>
-                    <button class="flex items-center space-x-1 text-gray-500 hover:text-red-500 dark:text-gray-400 dark:hover:text-red-400 transition-colors" onclick="event.stopPropagation(); return PostManager.handleVote('posts', ${post.post_id}, 'down', ${post.user_id})" data-posts-id="${post.post_id}">
+                    <button class="flex items-center space-x-1 text-gray-500 hover:text-red-500 dark:text-gray-800 dark:hover:text-red-400 transition-colors" onclick="event.stopPropagation(); return PostManager.handleVote('posts', ${post.post_id}, 'down', ${post.user_id})" data-posts-id="${post.post_id}">
                         <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14H5.236a2 2 0 01-1.789-2.894l3.5-7A2 2 0 018.736 3h4.018c.163 0 .326.02.485.06L17 4m-7 10v2a2 2 0 002 2h.095c.5 0 .905-.405.905-.905 0-.714.211-1.412.608-2.006L17 13V4m-7 10h2m5-10h2a2 2 0 012 2v6a2 2 0 01-2 2h-2.5"/>
                         </svg>
                         <span data-posts-id-downvotes="${post.post_id}">${post.downvotes}</span>
                     </button>
-                    <button class="flex items-center space-x-1 text-gray-500 dark:text-gray-400" onclick="event.stopPropagation();" data-posts-id="${post.post_id}">
+                    <button class="flex items-center space-x-1 text-gray-500 dark:text-gray-800" onclick="event.stopPropagation();" data-posts-id="${post.post_id}">
                         <svg class="h-4 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
                         </svg>
@@ -2013,7 +2017,7 @@ const NotificationManager = {
     renderNotifications(notifications, container) {
         if (notifications.length === 0) {
             container.innerHTML = `
-                <div class="px-4 py-3 text-center text-sm text-gray-500 dark:text-gray-400">
+                <div class="px-4 py-3 text-center text-sm text-gray-500 dark:text-gray-800">
                     No new notifications
                 </div>
             `;
@@ -2030,7 +2034,7 @@ const NotificationManager = {
                         <p class="text-sm text-gray-900 dark:text-white">
                             ${notification.message}
                         </p>
-                        <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
+                        <p class="mt-1 text-xs text-gray-500 dark:text-gray-800">
                             ${notification.time_ago}
                         </p>
                     </div>
@@ -2068,7 +2072,7 @@ const NotificationManager = {
 
         return icons[type] || `
             <div class="w-8 h-8 rounded-full bg-gray-100 dark:bg-gray-700 flex items-center justify-center">
-                <svg class="w-4 h-4 text-gray-600 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg class="w-4 h-4 text-gray-600 dark:text-gray-800" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
             </div>

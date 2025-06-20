@@ -189,19 +189,19 @@ class Chats extends LoadController {
 
             if($append) {
                 $allowedMessages[] = [
-                    'message_id' => $message['message_id'],
+                    'msgid' => $message['message_id'],
                     'message' => $this->encrypter->decrypt(base64_decode($message['content'])),
                     'sender' => $message['user_id'],
+                    'time' => date('h:i A', strtotime($message['created_at'])),
                     'uuid' => $message['unique_id'],
                     'created_at' => $message['created_at'],
                     'type' => $type,
-                    // 'ago' => timeAgo($message['created_at'])
                 ];
             }
         }
 
 
-        return Routing::success($allowedMessages);
+        return Routing::success(array_reverse($allowedMessages));
 
 
     }

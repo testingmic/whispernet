@@ -48,7 +48,7 @@ $messages = $messages ?? [];
                                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
                                                 </svg>
                                             </div>
-                                            <div class="flex-1 min-w-0">
+                                            <div class="flex-1 min-w-0" onclick="return individualChatBtnClick()">
                                                 <p class="text-sm font-semibold text-gray-900 dark:text-white">Create Individual Chat</p>
                                                 <p class="text-xs text-gray-500 dark:text-gray-400">Start a conversation with a single person</p>
                                             </div>
@@ -68,7 +68,7 @@ $messages = $messages ?? [];
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
                                             </svg>
                                         </div>
-                                        <div class="flex-1 min-w-0">
+                                        <div class="flex-1 min-w-0" onclick="return groupChatBtnClick()">
                                             <p class="text-sm font-semibold text-gray-900 dark:text-white">Create Group Chat</p>
                                             <p class="text-xs text-gray-500 dark:text-gray-400">Start a conversation with multiple people</p>
                                         </div>
@@ -112,6 +112,11 @@ $messages = $messages ?? [];
 
                     <!-- Messages Area -->
                     <div id="messagesArea" class="flex-1 overflow-y-auto p-4 bg-gray-50 dark:bg-gray-700/50">
+
+                        <div id="selfDestructMessage" class="text-center hidden text-sm text-danger color-red-500 mb-4 border-b border-gray-200 dark:border-gray-700 p-4 bg-white dark:bg-gray-700/50 dark:text-white">
+                            <span class="text-red-500 dark:text-white">All messages in this chat will self destruct after 24 hours.</span>
+                        </div>
+
                         <div id="welcomeMessage" class="flex items-center justify-center h-full">
                             <div class="text-center">
                                 <div class="w-20 h-20 mx-auto mb-6 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center">
@@ -187,7 +192,7 @@ $messages = $messages ?? [];
             <!-- Chat Type Selection -->
             <div class="space-y-4">
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <button id="individualChatBtn" class="p-4 border-2 border-gray-200 dark:border-gray-600 rounded-xl hover:border-blue-500 dark:hover:border-blue-500 transition-all duration-200 text-left">
+                    <button onclick="return individualChatBtnClick()" class="p-4 border-2 border-gray-200 dark:border-gray-600 rounded-xl hover:border-blue-500 dark:hover:border-blue-500 transition-all duration-200 text-left">
                         <div class="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg flex items-center justify-center mb-3">
                             <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
@@ -197,7 +202,7 @@ $messages = $messages ?? [];
                         <p class="text-sm text-gray-600 dark:text-gray-400">Chat with one person</p>
                     </button>
                     
-                    <button id="groupChatBtn" class="p-4 border-2 border-gray-200 dark:border-gray-600 rounded-xl hover:border-green-500 dark:hover:border-green-500 transition-all duration-200 text-left">
+                    <button onclick="return groupChatBtnClick()" class="p-4 border-2 border-gray-200 dark:border-gray-600 rounded-xl hover:border-green-500 dark:hover:border-green-500 transition-all duration-200 text-left">
                         <div class="w-12 h-12 bg-gradient-to-br from-green-500 to-green-600 rounded-lg flex items-center justify-center mb-3">
                             <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
@@ -213,7 +218,7 @@ $messages = $messages ?? [];
 </div>
 
 <!-- User Search Modal -->
-<div id="userSearchModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 backdrop-blur-sm hidden" role="dialog" aria-modal="true">
+<div id="userSearchModal" class="fixed inset-0 z-50 items-center justify-center bg-black bg-opacity-50 backdrop-blur-sm hidden" role="dialog" aria-modal="true">
     <div class="min-h-screen px-4 text-center flex items-center justify-center">
         <div class="inline-block w-full max-w-sm sm:max-w-lg p-4 sm:p-6 lg:p-8 overflow-hidden text-left align-middle transition-all transform bg-white dark:bg-gray-800 shadow-2xl rounded-2xl max-h-[80vh] overflow-y-auto">
             <!-- Modal Header -->
@@ -246,7 +251,7 @@ $messages = $messages ?? [];
 </div>
 
 <!-- Group Creation Modal -->
-<div id="groupCreationModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 backdrop-blur-sm hidden" role="dialog" aria-modal="true">
+<div id="groupCreationModal" class="fixed inset-0 z-50 items-center justify-center bg-black bg-opacity-50 backdrop-blur-sm hidden" role="dialog" aria-modal="true">
     <div class="min-h-screen px-4 text-center flex items-center justify-center">
         <div class="inline-block w-full max-w-sm sm:max-w-lg p-4 sm:p-6 lg:p-8 overflow-hidden text-left align-middle transition-all transform bg-white dark:bg-gray-800 shadow-2xl rounded-2xl max-h-[80vh] overflow-y-auto">
             <!-- Modal Header -->
