@@ -52,7 +52,7 @@
             </div>
 
             <!-- Terms and Privacy -->
-            <div class="flex items-center hidden">
+            <div class="flex items-center">
                 <input id="terms" name="terms" type="checkbox" required
                     class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 dark:border-gray-600 rounded dark:bg-gray-800">
                 <label for="terms" class="ml-2 block text-sm text-gray-900 dark:text-gray-300">
