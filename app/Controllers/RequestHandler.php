@@ -330,8 +330,9 @@ class RequestHandler extends BaseController
 
         $payload['city'] = $location['city'] ?? null;
         $payload['country'] = $location['country'] ?? null;
-        $payload['latitude'] = $location['latitude'] ?? $longs[0];
-        $payload['longitude'] = $location['longitude'] ?? $longs[1];
+        
+        $payload['latitude'] = $location['latitude'] ?? ($longs[0] ?? $rawPayload['latitude'] ?? '');
+        $payload['longitude'] = $location['longitude'] ?? ($longs[1] ?? $rawPayload['longitude'] ?? '');
 
         // if the latitude and longitude are not set, set the latitude and longitude from the raw payload
         if(!empty($rawPayload['latitude']) && !empty($rawPayload['longitude'])) {
@@ -343,8 +344,8 @@ class RequestHandler extends BaseController
             'city' => $location['city'] ?? '',
             'district' => $location['district'] ?? '',
             'country' => $location['country'] ?? '',
-            'latitude' => $location['latitude'] ?? $longs[0],
-            'longitude' => $location['longitude'] ?? $longs[1],
+            'latitude' => $location['latitude'] ?? ($longs[0] ?? $rawPayload['latitude'] ?? ''),
+            'longitude' => $location['longitude'] ?? ($longs[1] ?? $rawPayload['longitude'] ?? ''),
         ];
 
         if(empty($final['city']) && isset($location['results'][0]['components']['town'])) {
