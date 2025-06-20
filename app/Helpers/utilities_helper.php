@@ -170,7 +170,8 @@ function convertDateToTimestamp($dateString) {
  * 
  * @return string
  */
-function convertTimestampToDate($timestamp) {
+function convertTimestampToDate($timestamp = '') {
+    if(empty($timestamp)) return date('d M Y H:i');
     // since strftime is deprecated use \DateTime to generate the date
     $date = new \DateTime();
     $date->setTimestamp($timestamp);
