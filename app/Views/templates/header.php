@@ -93,7 +93,7 @@ $favicon_color = $favicon_color ?? 'dashboard';
   <!-- Post Creation Form -->
   <div id="postCreationForm" class="fixed inset-0 py-8 top-8 z-50 hidden">
     <!-- Overlay -->
-    <div class="absolute inset-0 bg-black bg-opacity-50 backdrop-blur-sm"></div>
+    <div class="absolute inset-0 bg-black bg-opacity-50 backdrop-blur-sm mt-8"></div>
 
     <!-- Form Container -->
     <div class="relative bg-white dark:bg-gray-800 shadow-lg rounded-b-2xl">

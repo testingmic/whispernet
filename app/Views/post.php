@@ -1,4 +1,50 @@
 <!-- Post View Container -->
+<style>
+  /* Custom scrollbar styles for textarea */
+  #commentInput::-webkit-scrollbar {
+    width: 6px;
+  }
+  
+  #commentInput::-webkit-scrollbar-track {
+    background: transparent;
+    border-radius: 3px;
+  }
+  
+  #commentInput::-webkit-scrollbar-thumb {
+    background: #d1d5db;
+    border-radius: 3px;
+    transition: background-color 0.2s ease;
+  }
+  
+  #commentInput::-webkit-scrollbar-thumb:hover {
+    background: #9ca3af;
+  }
+  
+  /* Dark mode scrollbar */
+  .dark #commentInput::-webkit-scrollbar-thumb {
+    background: #4b5563;
+  }
+  
+  .dark #commentInput::-webkit-scrollbar-thumb:hover {
+    background: #6b7280;
+  }
+  
+  /* Firefox scrollbar */
+  #commentInput {
+    scrollbar-width: thin;
+    scrollbar-color: #d1d5db transparent;
+  }
+  
+  .dark #commentInput {
+    scrollbar-color: #4b5563 transparent;
+  }
+  
+  /* Smooth scrolling */
+  #commentInput {
+    scroll-behavior: smooth;
+  }
+</style>
+
 <div class="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
     <!-- Main Content -->
     <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 pt-4 pb-10">
@@ -65,8 +111,9 @@
                         name="" 
                         id="commentInput" 
                         rows="2"
-                        class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white text-base resize-none outline-none transition-all duration-200 min-h-[56px] max-h-32" 
+                        class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white text-base resize-none outline-none transition-all duration-200 min-h-[56px] max-h-32 scrollbar-thin scrollbar-thumb-gray-300 dark:scrollbar-thumb-gray-600 scrollbar-track-transparent hover:scrollbar-thumb-gray-400 dark:hover:scrollbar-thumb-gray-500" 
                         placeholder="Share your thoughts on this post..."
+                        style="scrollbar-width: thin; scrollbar-color: #d1d5db transparent;"
                     ></textarea>
                     
                     <!-- Emoji Button (Hidden for now) -->
