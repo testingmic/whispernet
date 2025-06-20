@@ -290,7 +290,7 @@ class RequestHandler extends BaseController
                 // get the location by IP
                 $location = getLocationByIP($payload['longitude'], $payload['latitude']);
                 // handle the user location data
-                if(isset($location['results'][0]['components'])) {
+                if(isset($location['results'][0]['components']['town'])) {
                     $location['latitude'] = $location['results'][0]['geometry']['lat'] ?? ($payload['latitude'] ?? '');
                     $location['longitude'] = $location['results'][0]['geometry']['lng'] ?? ($payload['longitude'] ?? '');
                     $location['city'] = $location['results'][0]['components']['town'] ?? null;
@@ -311,7 +311,7 @@ class RequestHandler extends BaseController
                 $location = getLocationByIP($payload['longitude'] ?? '', $payload['latitude'] ?? '');
 
                 // handle the user location data
-                if(isset($location['results'][0]['components'])) {
+                if(isset($location['results'][0]['components']['town'])) {
                     $location['latitude'] = $location['results'][0]['geometry']['lat'] ?? ($payload['latitude'] ?? '');
                     $location['longitude'] = $location['results'][0]['geometry']['lng'] ?? ($payload['longitude'] ?? '');
                     $location['city'] = $location['results'][0]['components']['town'] ?? null;
@@ -339,14 +339,21 @@ class RequestHandler extends BaseController
             $location['longitude'] = $rawPayload['longitude'];
         }
 
-        $payload['finalLocation'] = [
-            'fulllocation' => $location,
-            'city' => $location['city'] ?? null,
-            'district' => $location['district'] ?? null,
-            'country' => $location['country'] ?? null,
+        $final = [
+            'city' => $location['city'] ?? '',
+            'district' => $location['district'] ?? '',
+            'country' => $location['country'] ?? '',
             'latitude' => $location['latitude'] ?? $longs[0],
             'longitude' => $location['longitude'] ?? $longs[1],
         ];
+
+        if(empty($final['city']) && isset($location['results'][0]['components']['town'])) {
+            $final['city'] = $location['results'][0]['components']['town'];
+            $final['country'] = $location['results'][0]['components']['country'];
+            $final['district'] = $location['results'][0]['components']['county'];
+        }
+
+        $payload['finalLocation'] = $final;
 
         return $payload;
     }
