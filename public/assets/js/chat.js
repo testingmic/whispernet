@@ -358,6 +358,7 @@ if (searchInput) {
 }
 
 function selectUser(userId) {
+  console.log(userId);
   // User Selection
   const userName = searchedUsersList?.find(
     (user) => user.user_id === parseInt(userId)
