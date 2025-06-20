@@ -11,7 +11,7 @@ class ChatsValidation {
                 'roomId' => 'permit_empty|integer',
                 'receiver' => 'required|integer',
                 'type' => 'permit_empty|string|in_list[individual,group]',
-                'message' => 'required|string|max_length[255]',
+                'message' => 'permit_empty|string|max_length[255]',
                 'timestamp' => 'permit_empty|integer|max_length[16]'
             ]
         ],

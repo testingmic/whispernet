@@ -6,6 +6,7 @@ use Exception;
 use Config\Encryption;
 use App\Controllers\LoadController;
 use App\Libraries\Routing;
+use App\Controllers\Media\Media;
 
 class Chats extends LoadController {
 
@@ -70,6 +71,14 @@ class Chats extends LoadController {
             return Routing::error('You cannot send a message to yourself');
         }
 
+        // trim the message
+        $this->payload['message'] = !empty($this->payload['message']) ? trim($this->payload['message']) : '';
+
+        // check if the message or media is set
+        if(empty($this->payload['message']) && empty($this->payload['file_uploads'])) {
+            return Routing::error('Message or media is required');
+        }
+
         // check if the type is set
         $this->payload['type'] = !empty($this->payload['type']) ? $this->payload['type'] : 'individual';
 
@@ -111,7 +120,7 @@ class Chats extends LoadController {
         $this->getEncrypter($theRoomId);
         
         // encrypt the message
-        $encryptData = $this->encrypter->encrypt($this->payload['message']);
+        $encryptData = $this->encrypter->encrypt($this->payload['message'] ?? '');
 
         // generate a unique message id
         $messageUUID = generateUUID();
@@ -125,12 +134,21 @@ class Chats extends LoadController {
             'self_destruct_at' => $selfDestruct
         ];
 
+        // post the message
         $messageId = $this->chatsModel->postMessage($payload);
+
+        // upload the media files if any
+        if(!empty($this->payload['file_uploads'])) {
+            $media = new Media();
+            $media = $media->uploadMedia('chats', $messageId, $this->payload['sender'], $this->payload['file_uploads']);
+        }
 
         return Routing::created(['data' => 'Message sent successfully', 'record' => [
             'roomId' => (int)$theRoomId,
             'userId' => (int)$this->payload['sender'],
-            'messageId' => $messageId
+            'messageId' => $messageId,
+            'uuid' => $this->payload['uuid'] ?? $messageUUID,
+            'media' => $media ?? []
         ]]);
 
     }
@@ -198,7 +216,7 @@ class Chats extends LoadController {
             if($append) {
                 $allowedMessages[] = [
                     'msgid' => $message['message_id'],
-                    'message' => $this->encrypter->decrypt(base64_decode($message['content'])),
+                    'message' => !empty($message['content']) ? $this->encrypter->decrypt(base64_decode($message['content'])) : '',
                     'sender' => $message['user_id'],
                     'time' => date('h:i A', strtotime($message['created_at'])),
                     'uuid' => $message['unique_id'],

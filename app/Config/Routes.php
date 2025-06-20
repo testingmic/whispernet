@@ -17,6 +17,7 @@ $routes->set404Override(function() {
 });
 
 $routes->get("/dashboard/install", "WebApp\Dashboard::install");
+$routes->get("/chat", "WebApp\Chat::index");
 $routes->get("/login", "Landing::load/login");
 $routes->get("/signup", "Landing::load/signup");
 $routes->get("/forgot-password", "Landing::load/forgot-password");

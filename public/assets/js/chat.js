@@ -4,6 +4,7 @@ let selectedUserId = 0;
 let selectedUserInfo = [];
 let searchedUsersList = [];
 let mostRecentMessageId = 0;
+let messageUUID = '';
 
 // Elements
 const newChatBtn = document.getElementById("newChatBtn");
@@ -302,7 +303,7 @@ if (messageForm) {
 // Separate function to handle message submission
 function handleMessageSubmit() {
   const message = messageInput.value.trim();
-  
+  messageUUID = AppState.generateUUID();
   // Check if there are files to upload
   if (selectedFiles.length > 0) {
     // Handle file upload with message
@@ -314,7 +315,7 @@ function handleMessageSubmit() {
   if (message.length === 0) return;
 
   // Add message to UI
-  addMessageToUI(message, "sent");
+  addMessageToUI(message, "sent", '', messageUUID);
 
   // Clear input
   messageInput.value = "";
@@ -331,6 +332,7 @@ function handleMessageSubmit() {
     roomId: selectedChatId,
     timestamp: new Date().getTime(),
     token: AppState.getToken(),
+    uuid: messageUUID,
   };
   selectedUserId = parseInt(selectedUserId);
   selectedChatId = parseInt(selectedChatId);
@@ -346,6 +348,8 @@ function handleMessageSubmit() {
       msgPayload.roomId = selectedChatId;
       msgPayload.type = 'chat';
       msgPayload.direction = 'sent';
+      msgPayload.msgid = mostRecentMessageId;
+      msgPayload.media = false;
 
       // send the receiver id as an array
       msgPayload.receiver = [loggedInUserId, selectedUserId];
@@ -416,6 +420,7 @@ function beginChat(roomId, type) {
   $(`p[id="chatStatus"]`).text(roomInfo?.state ?? 'Offline');
   $(`div[id="chatAvatar"]`).html(roomInfo?.username?.charAt(0)?.toUpperCase() ?? '');
 
+  $(`textarea[id="messageInput"]`).focus();
   // Load messages
   loadingMessages(roomId, selectedUserId);
 }
@@ -487,7 +492,7 @@ function loadingMessages(roomId, receiverId = 0) {
           if(message.msgid > mostRecentMessageId) {
               mostRecentMessageId = message.msgid;
           }
-          addMessageToUI(message.message, message.type, message.time);
+          addMessageToUI(message.message, message.type, message.time, message.uuid);
       });
 
       if(!response.data.length) {
@@ -525,14 +530,14 @@ function loadMessages(userId, type) {
   loadingMessages(selectedChatId, selectedUserInfo?.user_id ?? 0);
 }
 
-function addMessageToUI(content, type, time = '') {
+function addMessageToUI(content, type, time = '', uuid = '') {
   const messageDiv = document.createElement("div");
   messageDiv.className = `flex ${
     type === "sent" ? "justify-end" : "justify-start"
   }`;
 
   messageDiv.innerHTML = `
-        <div class="flex items-end space-x-2 max-w-[85%] sm:max-w-[70%]">
+        <div class="flex items-end space-x-2 max-w-[85%] sm:max-w-[70%]" data-uuid="${uuid}">
             ${
               type === "received"
                 ? `
@@ -673,26 +678,137 @@ style.textContent = `
 #mediaPreviewContainer {
     max-height: 200px;
     overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: #cbd5e0 #f7fafc;
 }
 
+/* Custom Webkit Scrollbar for Chrome/Safari/Edge */
 #mediaPreviewContainer::-webkit-scrollbar {
-    width: 4px;
+    width: 8px;
+    height: 8px;
 }
 
 #mediaPreviewContainer::-webkit-scrollbar-track {
-    background: #f1f1f1;
-    border-radius: 2px;
+    background: linear-gradient(to bottom, #f7fafc, #edf2f7);
+    border-radius: 10px;
+    border: 1px solid #e2e8f0;
+    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
 #mediaPreviewContainer::-webkit-scrollbar-thumb {
-    background: #c1c1c1;
-    border-radius: 2px;
+    background: linear-gradient(to bottom, #cbd5e0, #a0aec0);
+    border-radius: 10px;
+    border: 1px solid #718096;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+    transition: all 0.2s ease;
 }
 
 #mediaPreviewContainer::-webkit-scrollbar-thumb:hover {
-    background: #a8a8a8;
+    background: linear-gradient(to bottom, #a0aec0, #718096);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+    transform: scale(1.05);
 }
 
+#mediaPreviewContainer::-webkit-scrollbar-thumb:active {
+    background: linear-gradient(to bottom, #718096, #4a5568);
+    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+#mediaPreviewContainer::-webkit-scrollbar-corner {
+    background: #f7fafc;
+    border-radius: 10px;
+}
+
+/* Dark mode support for scrollbar */
+@media (prefers-color-scheme: dark) {
+    #mediaPreviewContainer {
+        scrollbar-color: #4a5568 #2d3748;
+    }
+    
+    #mediaPreviewContainer::-webkit-scrollbar-track {
+        background: linear-gradient(to bottom, #2d3748, #1a202c);
+        border: 1px solid #4a5568;
+        box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.3);
+    }
+    
+    #mediaPreviewContainer::-webkit-scrollbar-thumb {
+        background: linear-gradient(to bottom, #4a5568, #2d3748);
+        border: 1px solid #718096;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+    }
+    
+    #mediaPreviewContainer::-webkit-scrollbar-thumb:hover {
+        background: linear-gradient(to bottom, #2d3748, #1a202c);
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.5);
+    }
+    
+    #mediaPreviewContainer::-webkit-scrollbar-thumb:active {
+        background: linear-gradient(to bottom, #1a202c, #171923);
+        box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.5);
+    }
+    
+    #mediaPreviewContainer::-webkit-scrollbar-corner {
+        background: #2d3748;
+    }
+}
+
+/* Firefox scrollbar styling */
+@supports (scrollbar-color: red blue) {
+    #mediaPreviewContainer {
+        scrollbar-width: thin;
+        scrollbar-color: #cbd5e0 #f7fafc;
+    }
+    
+    @media (prefers-color-scheme: dark) {
+        #mediaPreviewContainer {
+            scrollbar-color: #4a5568 #2d3748;
+        }
+    }
+}
+
+/* Smooth scrolling behavior */
+#mediaPreviewContainer {
+    scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch;
+}
+
+/* Custom scrollbar for mobile devices */
+@media (max-width: 768px) {
+    #mediaPreviewContainer::-webkit-scrollbar {
+        width: 6px;
+        height: 6px;
+    }
+    
+    #mediaPreviewContainer::-webkit-scrollbar-track {
+        background: #f1f5f9;
+        border-radius: 8px;
+    }
+    
+    #mediaPreviewContainer::-webkit-scrollbar-thumb {
+        background: #cbd5e0;
+        border-radius: 8px;
+    }
+    
+    #mediaPreviewContainer::-webkit-scrollbar-thumb:hover {
+        background: #a0aec0;
+    }
+    
+    @media (prefers-color-scheme: dark) {
+        #mediaPreviewContainer::-webkit-scrollbar-track {
+            background: #374151;
+        }
+        
+        #mediaPreviewContainer::-webkit-scrollbar-thumb {
+            background: #6b7280;
+        }
+        
+        #mediaPreviewContainer::-webkit-scrollbar-thumb:hover {
+            background: #9ca3af;
+        }
+    }
+}
+
+/* Remove button styles */
 .remove-file-btn {
     transition: all 0.2s ease;
 }
@@ -873,9 +989,10 @@ function handleFileUpload() {
   formData.append('roomId', selectedChatId);
   formData.append('timestamp', new Date().getTime());
   formData.append('token', AppState.getToken());
+  formData.append('uuid', messageUUID);
   
   // Show loading state
-  const submitButton = document.querySelector('#messageForm button[type="submit"]');
+  const submitButton = document.querySelector('#messageForm button[data-type="submit-message"]');
   const originalContent = submitButton.innerHTML;
   submitButton.innerHTML = `
     <svg class="w-5 h-5 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -883,10 +1000,13 @@ function handleFileUpload() {
     </svg>
   `;
   submitButton.disabled = true;
+
+  // Add message to UI
+  addMessageToUI(messageInput.value.trim(), "sent", '', messageUUID);
   
   // Upload files
   $.ajax({
-    url: `${baseUrl}/api/chats/send-media`,
+    url: `${baseUrl}/api/chats/send`,
     type: 'POST',
     data: formData,
     processData: false,
@@ -894,7 +1014,7 @@ function handleFileUpload() {
     success: function(response) {
       if (response.status === "success") {
         // Add message to UI with media
-        addMessageWithMediaToUI(messageInput.value.trim(), "sent", selectedFiles);
+        // addMessageWithMediaToUI(messageInput.value.trim(), "sent", selectedFiles);
         
         // Clear input and preview
         messageInput.value = "";
@@ -913,7 +1033,10 @@ function handleFileUpload() {
           roomId: selectedChatId,
           timestamp: new Date().getTime(),
           media: response.record.media || [],
-          direction: 'sent'
+          direction: 'sent',
+          msgid: mostRecentMessageId,
+          media: true,
+          files: response.record.media || []
         };
         
         AppState.socketConnect.send({
@@ -931,7 +1054,9 @@ function handleFileUpload() {
     },
     complete: function() {
       // Restore button state
-      submitButton.innerHTML = originalContent;
+      submitButton.innerHTML = `<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+      </svg>`;
       submitButton.disabled = false;
     }
   });

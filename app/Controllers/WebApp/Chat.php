@@ -35,7 +35,8 @@ class Chat extends WebAppController {
             'groupChats' => $groupChats, 
             'favicon_color' => 'chat', 
             'footerArray' => $footerArray,
-            'footerHidden' => true
+            'footerHidden' => true,
+            'chatSection' => true
         ]);
     }
 

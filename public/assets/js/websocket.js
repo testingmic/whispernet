@@ -10,7 +10,7 @@ class WebSocketManager {
             const data = JSON.parse(message);
             
             if(typeof data.type == 'undefined') return;
-            if(data.type == 'chat') {
+            if(data.type == 'chat' && data.sender == parseInt(selectedUserId)) {
                 addMessageToUI(data.message, data.direction);
                 scrollToBottom();
             }

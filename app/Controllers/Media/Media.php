@@ -128,14 +128,15 @@ class Media extends LoadController {
                             $vidThumb = $videoThumbnail[$key] ?? null;
                             $uploadedList['video']['files'][] = $uploadPath . $newName;
 
-                            // move the thumbnail to the thumbnail path
-                            $vidThumb->move($this->thumbnailPath, explode('.', $newName)[0] . '.jpg');
-
-                            // add the thumbnail to the uploaded list
-                            if(!empty($videoThumbnail)) {
-                                $uploadedList['video']['thumbnails'][] = [
-                                    $uploadPath . 'thumbnails/'. explode('.', $newName)[0] . '.jpg'
-                                ];
+                            if(!empty($vidThumb)) {
+                                // move the thumbnail to the thumbnail path
+                                $vidThumb->move($this->thumbnailPath, explode('.', $newName)[0] . '.jpg');
+                                // add the thumbnail to the uploaded list
+                                if(!empty($videoThumbnail)) {
+                                    $uploadedList['video']['thumbnails'][] = [
+                                        $uploadPath . 'thumbnails/'. explode('.', $newName)[0] . '.jpg'
+                                    ];
+                                }
                             }
                         }
                     }
@@ -156,7 +157,10 @@ class Media extends LoadController {
             if(empty($uploadedList)) return [];
 
             $mediaModel = new MediaModel();
-            return $mediaModel->createMediaRecord($uploadedList, $section, $recordId, $userId);
+            $mediaModel->createMediaRecord($uploadedList, $section, $recordId, $userId);
+
+            // return the uploaded list
+            return $uploadedList;
 
         } catch (Exception $e) {
             print_r($e->getMessage());
