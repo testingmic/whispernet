@@ -47,7 +47,7 @@ class Templates extends BaseController
         // Remove the trailing slash if it's not localhost
         if(strpos($urlPath, 'localhost') == false) {
             $urlPath = rtrim(str_replace('public', '', $urlPath), '/');
-            $socketUrl = "wss://whispernet-socket.onrender.com:3000";
+            $socketUrl = "wss://whispernet-socket.onrender.com";
         }
 
         // get the session object
