@@ -633,7 +633,9 @@ const PostManager = {
             if(this.userLocation && $(`.location-display`).length > 0) {
                 $(`.location-display`).html(`${this.userLocation.city}, ${this.userLocation.country}`);
             }
-        } catch (error) { } finally {
+        } catch (error) {
+            console.log(error);
+        } finally {
             this.isLoading = false;
         }
     },
