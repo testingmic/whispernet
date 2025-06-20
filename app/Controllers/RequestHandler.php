@@ -298,7 +298,7 @@ class RequestHandler extends BaseController
                     $location['district'] = $location['results'][0]['components']['county'] ?? null;
                 }
                 // save the location to the cache for 5 minutes
-                $this->cacheObject->save($cacheKey2, $location, 'user.location2', null, 60 * 30);
+                $this->cacheObject->save($cacheKey2, $location, 'user.location2', null, 60 * 60);
             }
             $byPassCheck = true;
         }
@@ -320,7 +320,7 @@ class RequestHandler extends BaseController
                 }
 
                 // save the location to the cache for 5 minutes
-                $this->cacheObject->save($cacheKey, $location, 'user.location', null, 60 * 30);
+                $this->cacheObject->save($cacheKey, $location, 'user.location', null, 60 * 60);
             }
         }
 
