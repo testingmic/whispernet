@@ -123,7 +123,15 @@ CREATE TABLE IF NOT EXISTS comments (
     INDEX idx_created_at (created_at)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-DROP TABLE IF EXISTS chat_rooms;
+CREATE TABLE IF NOT EXISTS bookmarks (
+    bookmark_id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    user_id BIGINT UNSIGNED NOT NULL,
+    post_id BIGINT UNSIGNED NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    INDEX idx_user_id (user_id),
+    INDEX idx_post_id (post_id)
+);
+
 CREATE TABLE IF NOT EXISTS chat_rooms (
     room_id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,

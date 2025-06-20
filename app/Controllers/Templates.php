@@ -55,7 +55,7 @@ class Templates extends BaseController
 
         return [
             'baseUrl' => $urlPath,
-            'version' => '1.2.1',
+            'version' => '1.2.2',
             'userId' => (int) $this->sessionObject->user_id,
             'websocketUrl' => $socketUrl,
             'userData' => $this->sessionObject->get('userData'),

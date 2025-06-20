@@ -312,7 +312,7 @@ class FormatRules
     public function valid_password($str = null): bool
     {
         // Single regex to validate all conditions
-        $pattern = '/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/';
+        $pattern = '/^(?=.*[a-z])(?=.*[A-Z]).{8,}$/';
 
         if (preg_match($pattern, $str)) {
             return true; // Password is valid

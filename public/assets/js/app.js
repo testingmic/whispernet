@@ -135,16 +135,16 @@ const AppState = {
             latitude = this.location.latitude;
         }
     },
-    showNotification(message, type = 'info') {
+    showNotification(message, type = 'info', timer = 3000) {
         const notification = {
             id: Date.now(),
             message,
             type
         };
         this.notifications.push(notification);
-        this.renderNotification(notification);
+        this.renderNotification(notification, timer);
     },
-    renderNotification(notification) {
+    renderNotification(notification, timer = 3000) {
         const toast = document.createElement('div');
         toast.className = `toast notification-${notification.type}`;
         toast.textContent = notification.message;
@@ -152,7 +152,7 @@ const AppState = {
         setTimeout(() => {
             toast.remove();
             this.notifications = this.notifications.filter(n => n.id !== notification.id);
-        }, 3000);
+        }, timer);
     }
 };
 
@@ -1732,8 +1732,11 @@ const AuthManager = {
                 window.location.href = `${baseUrl}`;
             }
         } catch (error) {
-            console.error('Signup error:', error);
-            AppState.showNotification(error.responseJSON?.message || 'Signup failed. Please try again.', 'error');
+            let parsedError = JSON.parse(error.responseText);
+            $.each(parsedError.data, (key, value) => {
+                AppState.showNotification(value, 'error', 6000);
+                console.log(key, value);
+            });
         }
     },
 
