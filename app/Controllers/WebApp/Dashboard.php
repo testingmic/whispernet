@@ -25,7 +25,7 @@ class Dashboard extends WebAppController {
      * @return void
      */
     public function install() {
-        return $this->templateObject->loadPage('install', ['pageTitle' => 'Install', 'noInstallation' => true]);
+        return $this->templateObject->loadPage('install', ['pageTitle' => 'Install', 'noInstallation' => true, 'footerHidden' => true]);
     }
 
 }
