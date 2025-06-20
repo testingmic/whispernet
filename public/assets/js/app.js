@@ -617,6 +617,11 @@ const PostManager = {
 
             const response = await fetch(`${baseUrl}/api/posts/nearby?last_record_id=${this.currentPage}${whereClause}&longitude=${longitude}&latitude=${latitude}&token=${AppState.getToken()}&limit=${limit}`);
             const data = await response.json();
+
+            if(data.status == 'error') {
+                AppState.showNotification(data, 'error');
+                return;
+            }
             this.posts = [...this.posts, ...data.data];
             this.lastPostId = data?.data[0]?.post_id || 0;
             this.renderPosts(data.data, dontTrigger, unreadCounter, lastOldPostId);
