@@ -385,7 +385,7 @@ function beginChat(roomId, type) {
   selectedChatType = type;
   let roomInfo = footerArray[roomId];
 
-  if(selectedUserId == roomInfo?.user_id) {
+  if(selectedUserId == roomInfo?.user_id && !isMobileView) {
     return;
   }
 
@@ -677,3 +677,148 @@ style.textContent = `
 }
 `;
 document.head.appendChild(style);
+
+// File upload functionality
+const attachButton = document.getElementById('attachButton');
+const fileInput = document.getElementById('fileInput');
+
+if (attachButton && fileInput) {
+  // Handle attach button click
+  attachButton.addEventListener('click', function() {
+    fileInput.click();
+  });
+  
+  // Handle file selection
+  fileInput.addEventListener('change', function(e) {
+    const files = e.target.files;
+    if (files.length > 0) {
+      handleFileUpload(files);
+    }
+  });
+}
+
+// Handle file upload
+function handleFileUpload(files) {
+  const formData = new FormData();
+  
+  // Add files to FormData
+  for (let i = 0; i < files.length; i++) {
+    formData.append('media[]', files[i]);
+  }
+  
+  // Add other necessary data
+  formData.append('message', messageInput.value.trim());
+  formData.append('sender', loggedInUserId);
+  formData.append('receiver', selectedUserId);
+  formData.append('type', selectedChatType);
+  formData.append('roomId', selectedChatId);
+  formData.append('timestamp', new Date().getTime());
+  formData.append('token', AppState.getToken());
+  
+  // Show loading state
+  const submitButton = document.querySelector('#messageForm button[type="submit"]');
+  const originalContent = submitButton.innerHTML;
+  submitButton.innerHTML = `
+    <svg class="w-5 h-5 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+    </svg>
+  `;
+  submitButton.disabled = true;
+  
+  // Upload files
+  $.ajax({
+    url: `${baseUrl}/api/chats/send-media`,
+    type: 'POST',
+    data: formData,
+    processData: false,
+    contentType: false,
+    success: function(response) {
+      if (response.status === "success") {
+        // Add message to UI with media
+        addMessageWithMediaToUI(messageInput.value.trim(), "sent", files);
+        
+        // Clear input and file input
+        messageInput.value = "";
+        fileInput.value = "";
+        
+        // Update chat data
+        selectedChatId = response.record.roomId;
+        mostRecentMessageId = response.record.messageId;
+        
+        // Send via WebSocket
+        let msgPayload = {
+          message: messageInput.value.trim(),
+          sender: loggedInUserId,
+          receiver: [loggedInUserId, selectedUserId],
+          type: 'chat',
+          roomId: selectedChatId,
+          timestamp: new Date().getTime(),
+          media: response.record.media || [],
+          direction: 'sent'
+        };
+        
+        AppState.socketConnect.send({
+          type: 'chat',
+          data: msgPayload,
+        });
+        
+        scrollToBottom();
+      }
+    },
+    error: function(xhr, status, error) {
+      console.error('File upload failed:', error);
+      // Show error message
+      addMessageToUI('Failed to upload file(s)', "error");
+    },
+    complete: function() {
+      // Restore button state
+      submitButton.innerHTML = originalContent;
+      submitButton.disabled = false;
+    }
+  });
+}
+
+// Enhanced addMessageToUI function to handle media
+function addMessageWithMediaToUI(message, type, files = null) {
+  const messageElement = document.createElement('div');
+  messageElement.className = `flex ${type === 'sent' ? 'justify-end' : 'justify-start'} mb-4`;
+  
+  let mediaHTML = '';
+  if (files && files.length > 0) {
+    mediaHTML = '<div class="mt-2 space-y-2">';
+    for (let i = 0; i < files.length; i++) {
+      const file = files[i];
+      if (file && file.type && file.type.startsWith('image/')) {
+        mediaHTML += `
+          <div class="max-w-xs">
+            <img src="${URL.createObjectURL(file)}" alt="Uploaded image" class="rounded-lg max-w-full h-auto">
+          </div>
+        `;
+      } else if (file && file.type && file.type.startsWith('video/')) {
+        mediaHTML += `
+          <div class="max-w-xs">
+            <video controls class="rounded-lg max-w-full h-auto">
+              <source src="${URL.createObjectURL(file)}" type="${file.type}">
+              Your browser does not support the video tag.
+            </video>
+          </div>
+        `;
+      }
+    }
+    mediaHTML += '</div>';
+  }
+  
+  messageElement.innerHTML = `
+    <div class="max-w-xs lg:max-w-md px-4 py-2 rounded-lg ${
+      type === 'sent' 
+        ? 'bg-gradient-to-r from-blue-500 to-purple-600 text-white' 
+        : 'bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white'
+    }">
+      <p class="text-sm">${message || ''}</p>
+      ${mediaHTML}
+      <p class="text-xs opacity-75 mt-1">${new Date().toLocaleTimeString()}</p>
+    </div>
+  `;
+  
+  messagesContainer.appendChild(messageElement);
+}
