@@ -172,6 +172,13 @@ function convertDateToTimestamp($dateString) {
  */
 function convertTimestampToDate($timestamp = '') {
     if(empty($timestamp)) return date('d M Y H:i');
+    
+    // Convert string timestamp to integer
+    $timestamp = (int) $timestamp;
+    
+    // Validate that we have a valid timestamp
+    if($timestamp <= 0) return date('d M Y H:i');
+    
     // since strftime is deprecated use \DateTime to generate the date
     $date = new \DateTime();
     $date->setTimestamp($timestamp);
