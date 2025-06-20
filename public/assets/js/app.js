@@ -247,7 +247,6 @@ class MediaDisplay {
     init() {
         // Collect all media items
         this.mediaItems = Array.from(document.querySelectorAll('.media-item'));
-        
         // Add click listeners to media items
         this.mediaItems.forEach((item, index) => {
             item.addEventListener('click', () => this.openFullView(index));
@@ -2578,6 +2577,10 @@ function replayAudio(audioUrl) {
     document.getElementById('audioReplayContainer').innerHTML = '';
     document.getElementById('audioReplayContainer').appendChild(audio);
     audio.play();
+}
+
+if($(`div[id="postMediaPreview"]`)) {
+    new MediaDisplay();
 }
 
 if(Boolean(AppState.user)) {

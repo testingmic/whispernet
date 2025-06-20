@@ -16,6 +16,8 @@ $routes->set404Override(function() {
     return (new \App\Controllers\Landing())->routing($segments);
 });
 
+$routes->get("/dashboard/install", "WebApp\Dashboard::install");
+
 use App\Controllers\Api;
 
 // request to api routing

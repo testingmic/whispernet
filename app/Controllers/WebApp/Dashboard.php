@@ -19,4 +19,13 @@ class Dashboard extends WebAppController {
         return $this->templateObject->loadPage('feed', ['pageTitle' => 'Dashboard', 'posts' => $posts, 'favicon_color' => 'dashboard']);
     }
 
+    /**
+     * Install page
+     * 
+     * @return void
+     */
+    public function install() {
+        return $this->templateObject->loadPage('install', ['pageTitle' => 'Install', 'noInstallation' => true]);
+    }
+
 }
