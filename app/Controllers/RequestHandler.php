@@ -217,12 +217,7 @@ class RequestHandler extends BaseController
             $classObject->forceAuth = $forceAuth;
 
             // if the latitude and longitude are not set, get the location by IP
-            if(empty($payload['latitude']) && empty($payload['longitude'])) {
-                // get the session object
-                $payload = $this->setLocationByIP($payload);
-            } else {
-                $payload = $this->setLocationByIP($payload);
-            }
+            $payload = $this->setLocationByIP($payload);
 
             // set the current user
             $classObject->currentUser = $userToken;
@@ -269,6 +264,8 @@ class RequestHandler extends BaseController
         $cacheKey = create_cache_key('user', 'location', ['user_id' => $payload['userId']]);
         $locationInfo = $this->cacheObject->get($cacheKey);
 
+        $rawPayload = $payload;
+
         if(!empty($payload['longitude']) && !empty($payload['latitude'])) {
             if(strlen($payload['longitude']) == '4' || strlen($payload['latitude']) == '4') {
                 $payload['longitude'] = '';
@@ -309,8 +306,13 @@ class RequestHandler extends BaseController
         $payload['latitude'] = $location['latitude'] ?? $longs[0];
         $payload['longitude'] = $location['longitude'] ?? $longs[1];
 
+        // if the latitude and longitude are not set, set the latitude and longitude from the raw payload
+        if(!empty($rawPayload['latitude']) && !empty($rawPayload['longitude'])) {
+            $payload['latitude'] = $rawPayload['latitude'];
+            $payload['longitude'] = $rawPayload['longitude'];
+        }
+
         $payload['finalLocation'] = [
-            // 'api' => $location['api_url'] ?? null,
             'city' => $location['city'] ?? null,
             'district' => $location['district'] ?? null,
             'country' => $location['country'] ?? null,
