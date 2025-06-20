@@ -323,6 +323,9 @@ function handleMessageSubmit() {
     timestamp: new Date().getTime(),
     token: AppState.getToken(),
   };
+  selectedUserId = parseInt(selectedUserId);
+  loggedInUserId = parseInt(loggedInUserId);
+  selectedChatId = parseInt(selectedChatId);
   
   $(`div[id="no-message-notification"]`).addClass('hidden');
   
