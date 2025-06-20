@@ -13,7 +13,7 @@
                     <h2 class="text-xl font-bold">🔹 <?= $browser; ?> Steps:</h2>
                     <div>
                         <div class=" gap-2 mb-3">
-                            1. Tap the Share Icon in the <strong>"<?= $step; ?>"</strong>.
+                            1. Tap the Share Icon in the <strong>"<?= $step; ?>"</strong> of the browser.
                         </div>
                         <div class=" gap-2 mb-3">
                             2. Scroll down and select <strong>"Add to Home Screen"</strong>.
