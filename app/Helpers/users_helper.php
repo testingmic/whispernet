@@ -45,6 +45,7 @@ function mask_email_address($users) {
     if(empty($users) || !is_array($users)) return [];
     // loop through the users
     foreach($users as $key => $value) {
+        $value['user_id'] = (int) $value['user_id'];
         if(isset($value['last_login'])) {
             // convert the last login to date
             $users[$key]['last_login'] = convertTimestampToDate($value['last_login']);
