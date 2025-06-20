@@ -13,12 +13,7 @@
                     <h2 class="text-xl font-bold">🔹 <?= $browser; ?> Steps:</h2>
                     <div>
                         <div class="flex items-center gap-2 mb-2">
-                            1. Tap the Share Icon
-                            <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-gray-700" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <path d="M4 12v7a1 1 0 001 1h14a1 1 0 001-1v-7" />
-                                <path d="M16 6l-4-4-4 4" />
-                                <path d="M12 2v14" />
-                            </svg> in the <?= $step; ?>.
+                            1. Tap the Share Icon in the <?= $step; ?>.
                         </div>
                         <div class="flex items-center gap-2 mb-2">
                             2. Select “Add to Home Screen”.
