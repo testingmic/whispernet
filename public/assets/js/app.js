@@ -1733,10 +1733,13 @@ const AuthManager = {
             }
         } catch (error) {
             let parsedError = JSON.parse(error.responseText);
-            $.each(parsedError.data, (key, value) => {
-                AppState.showNotification(value, 'error', 6000);
-                console.log(key, value);
-            });
+            if(typeof parsedError?.data === 'object') {
+                $.each(parsedError?.data, (key, value) => {
+                    AppState.showNotification(value, 'error', 6000);
+                });
+            } else {
+                AppState.showNotification(parsedError?.data || 'Failed to create account. Please try again.', 'error', 6000);
+            }
         }
     },
 
