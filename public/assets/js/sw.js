@@ -1,4 +1,4 @@
-const CACHE_NAME = 'WhisperChat-v2';
+const CACHE_NAME = 'TalkLowKey-v2';
 const baseUrl = '';
 const ASSETS_TO_CACHE = [
     `/`,
@@ -96,7 +96,7 @@ self.addEventListener('push', (event) => {
     };
 
     event.waitUntil(
-        self.registration.showNotification('WhisperChat', options)
+        self.registration.showNotification('TalkLowKey', options)
     );
 });
 
@@ -148,7 +148,7 @@ async function syncPosts() {
 // IndexedDB setup
 function openDB() {
     return new Promise((resolve, reject) => {
-        const request = indexedDB.open('WhisperChatDB', 1);
+        const request = indexedDB.open('TalkLowKeyDB', 1);
 
         request.onerror = () => reject(request.error);
         request.onsuccess = () => resolve(request.result);

@@ -61,7 +61,7 @@ class Templates extends BaseController
             'userData' => $this->sessionObject->get('userData'),
             'userLoggedIn' => $this->user_loggedin(),
             'userToken' => $this->sessionObject->get('user_token'),
-            'appName' => 'WhisperChat',
+            'appName' => 'TalkLowKey',
         ];
     }
 

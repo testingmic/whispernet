@@ -1,7 +1,7 @@
 {
   "id": "/",
-  "name": "WhisperChat",
-  "short_name": "WhisperChat",
+  "name": "TalkLowKey",
+  "short_name": "TalkLowKey",
   "description": "Connect with your local community anonymously",
   "start_url": "/",
   "display": "standalone",
