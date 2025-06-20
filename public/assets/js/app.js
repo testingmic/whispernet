@@ -63,7 +63,9 @@ const AppState = {
         localStorage.removeItem('user');
         $.post(`${baseUrl}/api/auth/logout`, {
             token: localStorage.getItem('token'),
-            webapp: true
+            webapp: true,
+            longitude: longitude,
+            latitude: latitude
         }).then(() => {
             AppState.showNotification('Logged out successfully', 'success');
             setTimeout(() => {
