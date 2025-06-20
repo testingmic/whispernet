@@ -272,7 +272,7 @@ class RequestHandler extends BaseController
                 $payload['latitude'] = '';
                 $locationInfo = [];
             }
-            if(strlen($payload['longitude']) == 'null' || strlen($payload['latitude']) == 'null') {
+            if($payload['longitude'] == 'null' || $payload['latitude'] == 'null') {
                 $payload['longitude'] = '';
                 $payload['latitude'] = '';
                 $locationInfo = [];
