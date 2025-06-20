@@ -16,10 +16,10 @@
                             1. Tap the Share Icon in the <?= $step; ?>.
                         </div>
                         <div class="flex items-center gap-2 mb-2">
-                            2. Select “Add to Home Screen”.
+                            2. Scroll down and select “Add to Home Screen”.
                         </div>
                         <div class="flex items-center gap-2 mb-2">
-                            3. A pop-up will appear — edit the name if you want.
+                            3. A pop-up will appear — edit the name if you want and tap “Add”.
                         </div>
                         <div class="flex items-center gap-2">
                             4. Tap “Add”.
