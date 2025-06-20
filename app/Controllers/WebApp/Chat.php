@@ -30,7 +30,12 @@ class Chat extends WebAppController {
 
         // return the list
         return $this->templateObject->loadPage('chat', [
-            'pageTitle' => 'Chat', 'chatRooms' => $chatRooms, 'groupChats' => $groupChats, 'favicon_color' => 'chat', 'footerArray' => $footerArray
+            'pageTitle' => 'Chat', 
+            'chatRooms' => $chatRooms, 
+            'groupChats' => $groupChats, 
+            'favicon_color' => 'chat', 
+            'footerArray' => $footerArray,
+            'footerHidden' => true
         ]);
     }
 

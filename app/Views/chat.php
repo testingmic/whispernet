@@ -5,11 +5,11 @@ $currentChat = $currentChat ?? null;
 $messages = $messages ?? [];
 ?>
 
-<div class="dbg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 flex items-center justify-center p-4">
+<div class="dbg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 flex items-center justify-center p-2">
     <!-- Main Chat Interface -->
-    <div class="w-full max-w-7xl">
+    <div class="w-full">
         <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-xl border border-gray-200 dark:border-gray-700 overflow-hidden">
-            <div class="flex flex-col lg:flex-row h-[73vh] lg:h-[70vh]">
+            <div class="flex flex-col lg:flex-row h-[90vh] lg:h-[88vh]">
                 <!-- Left Sidebar - Chat List & Search -->
                 <div class="w-full lg:w-80 border-b lg:border-b-0 lg:border-r border-gray-200 dark:border-gray-700 flex flex-col h-[28rem] lg:h-full">
                     <!-- Header with New Chat Button -->
@@ -132,8 +132,8 @@ $messages = $messages ?? [];
                                     </svg>
                                 </div>
                                 <div>
-                                    <h3 id="chatTitle" class="text-lg font-semibold text-gray-900 dark:text-white">Go Back</h3>
-                                    <p id="chatStatus" class="text-sm text-gray-500 dark:text-gray-400">Offline</p>
+                                    <h3 id="chatTitle" class="text-lg font-semibold text-gray-900 dark:text-white">Select a chat to start messaging</h3>
+                                    <p id="chatStatus" class="text-sm text-gray-500 dark:text-gray-400">Choose from your conversations</p>
                                 </div>
                             </div>
                             <div class="flex items-center space-x-2">

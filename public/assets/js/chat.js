@@ -302,6 +302,15 @@ if (messageForm) {
 // Separate function to handle message submission
 function handleMessageSubmit() {
   const message = messageInput.value.trim();
+  
+  // Check if there are files to upload
+  if (selectedFiles.length > 0) {
+    // Handle file upload with message
+    handleFileUpload();
+    return;
+  }
+  
+  // Handle text-only message
   if (message.length === 0) return;
 
   // Add message to UI
@@ -656,6 +665,42 @@ style.textContent = `
     transform: translateY(-1px);
 }
 
+/* Media Preview Styles */
+#mediaPreviewArea {
+    animation: fadeIn 0.3s ease-out;
+}
+
+#mediaPreviewContainer {
+    max-height: 200px;
+    overflow-y: auto;
+}
+
+#mediaPreviewContainer::-webkit-scrollbar {
+    width: 4px;
+}
+
+#mediaPreviewContainer::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 2px;
+}
+
+#mediaPreviewContainer::-webkit-scrollbar-thumb {
+    background: #c1c1c1;
+    border-radius: 2px;
+}
+
+#mediaPreviewContainer::-webkit-scrollbar-thumb:hover {
+    background: #a8a8a8;
+}
+
+.remove-file-btn {
+    transition: all 0.2s ease;
+}
+
+.remove-file-btn:hover {
+    transform: scale(1.1);
+}
+
 /* Mobile optimizations */
 @media (max-width: 1023px) {
     .chat-item, .user-item {
@@ -683,9 +728,15 @@ style.textContent = `
 `;
 document.head.appendChild(style);
 
-// File upload functionality
+// File upload functionality with preview
 const attachButton = document.getElementById('attachButton');
 const fileInput = document.getElementById('fileInput');
+const mediaPreviewArea = document.getElementById('mediaPreviewArea');
+const mediaPreviewContainer = document.getElementById('mediaPreviewContainer');
+const clearAllMediaBtn = document.getElementById('clearAllMedia');
+
+// Store selected files for preview
+let selectedFiles = [];
 
 if (attachButton && fileInput) {
   // Handle attach button click
@@ -695,21 +746,124 @@ if (attachButton && fileInput) {
   
   // Handle file selection
   fileInput.addEventListener('change', function(e) {
-    const files = e.target.files;
+    const files = Array.from(e.target.files);
     if (files.length > 0) {
-      handleFileUpload(files);
+      addFilesToPreview(files);
     }
   });
 }
 
-// Handle file upload
-function handleFileUpload(files) {
+// Handle clear all media
+if (clearAllMediaBtn) {
+  clearAllMediaBtn.addEventListener('click', function() {
+    clearAllMedia();
+  });
+}
+
+// Add files to preview
+function addFilesToPreview(files) {
+  files.forEach(file => {
+    // Check if file is already selected
+    const isDuplicate = selectedFiles.some(existingFile => 
+      existingFile.name === file.name && existingFile.size === file.size
+    );
+    
+    if (!isDuplicate) {
+      selectedFiles.push(file);
+      createPreviewItem(file);
+    }
+  });
+  
+  // Show preview area if there are files
+  if (selectedFiles.length > 0) {
+    mediaPreviewArea.classList.remove('hidden');
+  }
+}
+
+// Create preview item
+function createPreviewItem(file) {
+  const previewItem = document.createElement('div');
+  previewItem.className = 'relative group';
+  previewItem.setAttribute('data-file-name', file.name);
+  
+  let previewContent = '';
+  
+  if (file.type.startsWith('image/')) {
+    previewContent = `
+      <img src="${URL.createObjectURL(file)}" alt="${file.name}" 
+           class="w-full h-20 object-cover rounded-lg border border-gray-200 dark:border-gray-600">
+    `;
+  } else if (file.type.startsWith('video/')) {
+    previewContent = `
+      <video class="w-full h-20 object-cover rounded-lg border border-gray-200 dark:border-gray-600">
+        <source src="${URL.createObjectURL(file)}" type="${file.type}">
+      </video>
+      <div class="absolute inset-0 flex items-center justify-center bg-black bg-opacity-30 rounded-lg">
+        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.828 14.828a4 4 0 01-5.656 0M9 10h1m4 0h1m-6 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+        </svg>
+      </div>
+    `;
+  }
+  
+  previewItem.innerHTML = `
+    ${previewContent}
+    <button type="button" class="remove-file-btn absolute -top-2 -right-2 w-6 h-6 bg-red-500 text-white rounded-full flex items-center justify-center text-xs opacity-0 group-hover:opacity-100 transition-opacity duration-200 hover:bg-red-600">
+      <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+      </svg>
+    </button>
+    <div class="mt-1 text-xs text-gray-500 dark:text-gray-400 truncate">${file.name}</div>
+  `;
+  
+  // Add remove functionality
+  const removeBtn = previewItem.querySelector('.remove-file-btn');
+  removeBtn.addEventListener('click', function() {
+    removeFileFromPreview(file);
+  });
+  
+  mediaPreviewContainer.appendChild(previewItem);
+}
+
+// Remove file from preview
+function removeFileFromPreview(file) {
+  // Remove from selectedFiles array
+  selectedFiles = selectedFiles.filter(f => 
+    !(f.name === file.name && f.size === file.size)
+  );
+  
+  // Remove preview item
+  const previewItem = mediaPreviewContainer.querySelector(`[data-file-name="${file.name}"]`);
+  if (previewItem) {
+    previewItem.remove();
+  }
+  
+  // Hide preview area if no files left
+  if (selectedFiles.length === 0) {
+    mediaPreviewArea.classList.add('hidden');
+  }
+}
+
+// Clear all media
+function clearAllMedia() {
+  selectedFiles = [];
+  mediaPreviewContainer.innerHTML = '';
+  mediaPreviewArea.classList.add('hidden');
+  fileInput.value = '';
+}
+
+// Handle file upload with preview
+function handleFileUpload() {
+  if (selectedFiles.length === 0) {
+    return; // No files to upload
+  }
+  
   const formData = new FormData();
   
   // Add files to FormData
-  for (let i = 0; i < files.length; i++) {
-    formData.append('media[]', files[i]);
-  }
+  selectedFiles.forEach(file => {
+    formData.append('media[]', file);
+  });
   
   // Add other necessary data
   formData.append('message', messageInput.value.trim());
@@ -740,11 +894,11 @@ function handleFileUpload(files) {
     success: function(response) {
       if (response.status === "success") {
         // Add message to UI with media
-        addMessageWithMediaToUI(messageInput.value.trim(), "sent", files);
+        addMessageWithMediaToUI(messageInput.value.trim(), "sent", selectedFiles);
         
-        // Clear input and file input
+        // Clear input and preview
         messageInput.value = "";
-        fileInput.value = "";
+        clearAllMedia();
         
         // Update chat data
         selectedChatId = response.record.roomId;
