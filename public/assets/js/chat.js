@@ -367,7 +367,7 @@ function selectUser(userId) {
   // Update chat header
   chatTitle.textContent = userName;
   chatStatus.textContent = "Online";
-  chatAvatar.innerHTML = userName.charAt(0).toUpperCase();
+  chatAvatar.innerHTML = userName?.charAt(0)?.toUpperCase() ?? '';
 
   // Show chat area
   welcomeMessage.classList.add("hidden");
