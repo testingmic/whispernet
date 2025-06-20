@@ -126,7 +126,7 @@ $user = $user ?? null;
                         </div>
 
                         <!-- Post Footer -->
-                        <div class="px-6 py-4 bg-gray-50 dark:bg-gray-700/50">
+                        <div class="px-6 py-4 bg-gray-50 dark:bg-gray-700/50" onclick="return PostManager.changeDirection(<?= $post['post_id'] ?>)">
                             <div class="flex items-center justify-between text-sm text-gray-500 dark:text-gray-400">
                                 <div class="flex items-center space-x-4">
                                     <span class="flex items-center space-x-1">
