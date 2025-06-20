@@ -359,10 +359,10 @@ if (searchInput) {
 
 function selectUser(userId) {
   // User Selection
-  const userName = searchedUsersList.find(
-    (user) => user.user_id === userId
+  const userName = searchedUsersList?.find(
+    (user) => user.user_id === parseInt(userId)
   )?.username;
-  selectedUserId = userId;
+  selectedUserId = parseInt(userId);
 
   // Update chat header
   chatTitle.textContent = userName;
@@ -498,7 +498,7 @@ function loadingMessages(roomId, receiverId = 0) {
 function loadMessages(userId, type) {
   selectedChatType = type;
   selectedUserId = parseInt(userId);
-  selectedUserInfo = searchedUsersList.find(
+  selectedUserInfo = searchedUsersList?.find(
     (user) => user.user_id === selectedUserId
   );
 
@@ -506,7 +506,7 @@ function loadMessages(userId, type) {
 
   $(`p[id="chatStatus"]`).text(selectedUserInfo?.online_status ?? "Offline");
 
-  loadingMessages(selectedChatId, selectedUserInfo.user_id);
+  loadingMessages(selectedChatId, selectedUserInfo?.user_id ?? 0);
 }
 
 function addMessageToUI(content, type, time = '') {
