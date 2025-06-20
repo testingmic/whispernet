@@ -308,8 +308,8 @@ class RequestHandler extends BaseController
 
         // if the latitude and longitude are not set, set the latitude and longitude from the raw payload
         if(!empty($rawPayload['latitude']) && !empty($rawPayload['longitude'])) {
-            $payload['latitude'] = $rawPayload['latitude'];
-            $payload['longitude'] = $rawPayload['longitude'];
+            $location['latitude'] = $rawPayload['latitude'];
+            $location['longitude'] = $rawPayload['longitude'];
         }
 
         $payload['finalLocation'] = [
