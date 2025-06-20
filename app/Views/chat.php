@@ -180,11 +180,24 @@ $messages = $messages ?? [];
 
                     <!-- Message Input -->
                     <div id="messageInputArea" class="p-2 pt-3 border-t border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 hidden">
+                        <!-- Media Preview Area -->
+                        <div id="mediaPreviewArea" class="mb-3 hidden">
+                            <div class="flex items-center justify-between mb-2">
+                                <h4 class="text-sm font-medium text-gray-700 dark:text-gray-300">Media Preview</h4>
+                                <button type="button" id="clearAllMedia" class="text-xs text-red-500 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300">
+                                    Clear All
+                                </button>
+                            </div>
+                            <div id="mediaPreviewContainer" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2">
+                                <!-- Preview items will be added here -->
+                            </div>
+                        </div>
+                        
                         <form id="messageForm" class="flex items-end space-x-2 sm:space-x-4">
                             <!-- Hidden file input -->
                             <input type="file" id="fileInput" accept="image/*,video/*" multiple class="hidden">
                             
-                            <button type="button" id="attachButton" class="p-2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+                            <button type="button" id="attachButton" class="p-2 hidden text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
                                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"></path>
                                 </svg>
