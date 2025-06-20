@@ -1,4 +1,16 @@
 <?php
+/**
+ * Get the user IP address
+ * 
+ * @return string
+ */
+function getUserIpaddress() {
+    $userIpaddress = $_SERVER['REMOTE_ADDR'] ?? '';
+    if(empty($userIpaddress) || strlen($userIpaddress) < 6) {
+        $userIpaddress = $_SERVER['HTTP_HOST'];
+    }
+    return $userIpaddress;
+}
 
 /**
  * Get the location by IP
@@ -29,6 +41,7 @@ function getLocationByIP($longitude = null, $latitude = null) {
     if ($response !== false) {
         $data = json_decode($response, true);
         $data['api_url'] = $urlPath;
+        $data['ip'] = !empty($userIpaddress) ? $userIpaddress : $_SERVER['HTTP_HOST'];
         return $data;
     }
 }

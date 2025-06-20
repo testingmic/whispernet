@@ -260,99 +260,62 @@ class RequestHandler extends BaseController
      */
     private function setLocationByIP($payload) {
 
-        // get the cache key
-        $cacheKey = create_cache_key('user', 'location', ['user_id' => $payload['userId']]);
-        $locationInfo = $this->cacheObject->get($cacheKey);
+        // set the final location to an empty array
+        $payload['finalLocation'] = [];
 
-        $rawPayload = $payload;
-
-        if(!empty($payload['longitude']) && !empty($payload['latitude'])) {
-            if(strlen($payload['longitude']) == '4' || strlen($payload['latitude']) == '4') {
-                $payload['longitude'] = '';
-                $payload['latitude'] = '';
-                $locationInfo = [];
-            }
-            if($payload['longitude'] == 'null' || $payload['latitude'] == 'null') {
-                $payload['longitude'] = '';
-                $payload['latitude'] = '';
-                $locationInfo = [];
-            }
+        if(!empty($payload['longitude']) && strlen($payload['longitude']) == 4) {
+            $payload['longitude'] = '';
         }
 
-        $byPassCheck = false;
+        if(!empty($payload['latitude']) && strlen($payload['latitude']) == 4) {
+            $payload['latitude'] = '';
+        }
 
-        if(!empty($rawPayload['longitude']) && !empty($rawPayload['latitude'])) {
-            $cacheKey2 = create_cache_key('user', 'location2', ['longitude' => $payload['longitude'], 'latitude' => $payload['latitude']]);
-            $locationInfo2 = $this->cacheObject->get($cacheKey2);
-            if(!empty($locationInfo2)) {
-                $location = $locationInfo2;
-            } else {
-                // get the location by IP
-                $location = getLocationByIP($payload['longitude'], $payload['latitude']);
-                // handle the user location data
-                if(isset($location['results'][0]['components']['town'])) {
-                    $location['latitude'] = $location['results'][0]['geometry']['lat'] ?? ($payload['latitude'] ?? '');
-                    $location['longitude'] = $location['results'][0]['geometry']['lng'] ?? ($payload['longitude'] ?? '');
-                    $location['city'] = $location['results'][0]['components']['town'] ?? null;
-                    $location['country'] = $location['results'][0]['components']['country'] ?? null;
-                    $location['district'] = $location['results'][0]['components']['county'] ?? null;
-                }
-                // save the location to the cache for 5 minutes
-                $this->cacheObject->save($cacheKey2, $location, 'user.location2', null, 60 * 60);
+        if(empty($payload['longitude']) && empty($payload['latitude'])) {
+            $cacheKey = create_cache_key('user', 'location', ['user_id' => $payload['userId'].getUserIpaddress()]);
+            $locationInfo = $this->cacheObject->get($cacheKey);
+
+            // get the data to use
+            $dataToUse = !empty($locationInfo) ? $locationInfo : getLocationByIP();
+
+            if(!empty($dataToUse)) {
+                $locs = explode(',', $dataToUse['loc']);
+                $payload['longitude'] = $locs[0];
+                $payload['latitude'] = $locs[1];
+                $payload['city'] = $dataToUse['city'];
+                $payload['country'] = $dataToUse['country'];
+                $payload['district'] = $dataToUse['region'];
+                $this->cacheObject->save($cacheKey, $dataToUse, 'user.location', null, 60 * 60);
             }
-            $byPassCheck = true;
+
         }
 
-        if(!$byPassCheck) {
-            if(!empty($locationInfo)) {
-                $location = $locationInfo;
-            } else {
-                // get the location by IP
-                $location = getLocationByIP($payload['longitude'] ?? '', $payload['latitude'] ?? '');
+        elseif(!empty($payload['longitude']) && !empty($payload['latitude'])) {
 
-                // handle the user location data
-                if(isset($location['results'][0]['components']['town'])) {
-                    $location['latitude'] = $location['results'][0]['geometry']['lat'] ?? ($payload['latitude'] ?? '');
-                    $location['longitude'] = $location['results'][0]['geometry']['lng'] ?? ($payload['longitude'] ?? '');
-                    $location['city'] = $location['results'][0]['components']['town'] ?? null;
-                    $location['country'] = $location['results'][0]['components']['country'] ?? null;
-                    $location['district'] = $location['results'][0]['components']['county'] ?? null;
-                }
+            // get the cache key
+            $cacheKey = create_cache_key('user', 'location', ['latitude' => $payload['latitude'], 'longitude' => $payload['longitude']]);
+            $locationInfo = $this->cacheObject->get($cacheKey);
 
-                // save the location to the cache for 5 minutes
-                $this->cacheObject->save($cacheKey, $location, 'user.location', null, 60 * 60);
+            // get the data to use
+            $dataToUse = !empty($locationInfo) ? $locationInfo : getLocationByIP($payload['longitude'], $payload['latitude']);
+            
+            // handle the user location data
+            if(isset($dataToUse['results'][0]['components']['town'])) {
+                $payload['city'] = $dataToUse['results'][0]['components']['town'] ?? null;
+                $payload['country'] = $dataToUse['results'][0]['components']['country'] ?? null;
+                $payload['district'] = $dataToUse['results'][0]['components']['county'] ?? null;
+
+                $this->cacheObject->save($cacheKey, $dataToUse, 'user.location', null, 60 * 60);
             }
-        }
-
-        if(!empty($location['loc'])) {
-            $longs = explode(',', $location['loc']);
-        }
-
-        $payload['city'] = $location['city'] ?? null;
-        $payload['country'] = $location['country'] ?? null;
-        
-        $payload['latitude'] = $location['latitude'] ?? ($longs[0] ?? $rawPayload['latitude'] ?? '');
-        $payload['longitude'] = $location['longitude'] ?? ($longs[1] ?? $rawPayload['longitude'] ?? '');
-
-        // if the latitude and longitude are not set, set the latitude and longitude from the raw payload
-        if(!empty($rawPayload['latitude']) && !empty($rawPayload['longitude'])) {
-            $location['latitude'] = $rawPayload['latitude'];
-            $location['longitude'] = $rawPayload['longitude'];
         }
 
         $final = [
-            'city' => $location['city'] ?? '',
-            'district' => $location['district'] ?? '',
-            'country' => $location['country'] ?? '',
-            'latitude' => $location['latitude'] ?? ($longs[0] ?? $rawPayload['latitude'] ?? ''),
-            'longitude' => $location['longitude'] ?? ($longs[1] ?? $rawPayload['longitude'] ?? ''),
+            'city' => $payload['city'] ?? '',
+            'district' => $payload['district'] ?? '',
+            'country' => $payload['country'] ?? '',
+            'latitude' => $payload['latitude'] ?? '',
+            'longitude' => $payload['longitude'] ?? '',
         ];
-
-        if(empty($final['city']) && isset($location['results'][0]['components']['town'])) {
-            $final['city'] = $location['results'][0]['components']['town'];
-            $final['country'] = $location['results'][0]['components']['country'];
-            $final['district'] = $location['results'][0]['components']['county'];
-        }
 
         $payload['finalLocation'] = $final;
 
