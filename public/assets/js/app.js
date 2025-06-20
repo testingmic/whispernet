@@ -619,8 +619,10 @@ const PostManager = {
             const data = await response.json();
 
             if(data.status == 'error') {
-                AppState.showNotification(data, 'error');
-                return;
+                if(typeof data.must_login !== 'undefined') {
+                    AppState.logout();
+                    return;
+                }
             }
             this.posts = [...this.posts, ...data.data];
             this.lastPostId = data?.data[0]?.post_id || 0;
