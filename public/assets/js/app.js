@@ -441,7 +441,8 @@ const PostManager = {
     },
     openCreateModal() {
         $('#postCreationForm').removeClass('hidden');
-        $('#postContent').focus();
+        $(`form[id="createPostFormUnique"] textarea[id="content"]`).val('');
+        $(`form[id="createPostFormUnique"] textarea[id="content"]`).focus();
     },
     loadPost() {
         const postContainer = document.getElementById('postContainer');
