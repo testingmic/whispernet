@@ -33,7 +33,7 @@ class ChatsModel extends Model {
      */
     public function connectToDb($db = 'chats') {
         // if the database group is default, use the default database
-        if(in_array(configs('db_group'), ['default', 'production'])) {
+        if(in_array(configs('db_group'), ['default'])) {
             $this->chatsDb = $this->db;
             return;
         }
