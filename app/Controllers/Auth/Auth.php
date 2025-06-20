@@ -21,6 +21,11 @@ class Auth extends LoadController {
      */
     public function login($email = null, $password = null, $payload = []) {
 
+        // check if the email is valid
+        if(!isValidEmail($this->payload['email'] ?? $email)) {
+            return Routing::error('Sorry! You cannot use a disposable email address.');
+        }
+
         // Find user by email
         $user = $this->usersModel->findByEmail($this->payload['email'] ?? $email);
         if(empty($user)) {
@@ -132,6 +137,12 @@ class Auth extends LoadController {
      * @return array
      */
     public function register() {
+
+        // check if the email is valid
+        if(!isValidEmail($this->payload['email'])) {
+            return Routing::error('Sorry! You cannot use a disposable email address.');
+        }
+
         // Find user by email
         $user = $this->usersModel->findByEmail($this->payload['email']);
         if(!empty($user)) {
