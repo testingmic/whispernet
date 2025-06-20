@@ -125,10 +125,12 @@ class Chats extends LoadController {
             'self_destruct_at' => $selfDestruct
         ];
 
+        $messageId = $this->chatsModel->postMessage($payload);
+
         return Routing::created(['data' => 'Message sent successfully', 'record' => [
-            'roomId' => $theRoomId,
+            'roomId' => (int)$theRoomId,
             'userId' => (int)$this->payload['sender'],
-            'messageId' => $this->chatsModel->postMessage($payload)
+            'messageId' => $messageId
         ]]);
 
     }

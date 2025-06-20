@@ -204,7 +204,7 @@ class ChatsModel extends Model {
      * @param string $content
      * @param string $mediaUrl
      * @param string $mediaType
-     * @return array
+     * @return int
      */
     public function postMessage($payload) {
         try {
@@ -224,7 +224,7 @@ class ChatsModel extends Model {
             // return the message id
             return $this->db->insertID();
         } catch (DatabaseException $e) {
-            return $e->getMessage();
+            return 0;
         }
     }
 
