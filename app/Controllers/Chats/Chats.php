@@ -127,7 +127,7 @@ class Chats extends LoadController {
 
         return Routing::created(['data' => 'Message sent successfully', 'record' => [
             'roomId' => $theRoomId,
-            'userId' => $this->payload['sender'],
+            'userId' => (int)$this->payload['sender'],
             'messageId' => $this->chatsModel->postMessage($payload)
         ]]);
 
