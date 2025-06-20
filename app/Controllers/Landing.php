@@ -81,4 +81,16 @@ class Landing extends WebAppController
 
     }
 
+    /**
+     * Load a page
+     * 
+     * @param string $path
+     * @param string $classMethod
+     * @param array $params
+     * @return string
+     */
+    public function load($path = null, $classMethod = null, $params = []) {
+        return $this->routing($path, 'GET', []);
+    }
+
 }

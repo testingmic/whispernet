@@ -17,6 +17,9 @@ $routes->set404Override(function() {
 });
 
 $routes->get("/dashboard/install", "WebApp\Dashboard::install");
+$routes->get("/login", "Landing::load/login");
+$routes->get("/signup", "Landing::load/signup");
+$routes->get("/forgot-password", "Landing::load/forgot-password");
 
 use App\Controllers\Api;
 
