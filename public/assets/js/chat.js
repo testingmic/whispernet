@@ -1,6 +1,6 @@
-let selectedChatId = null;
-let selectedChatType = null;
-let selectedUserId = null;
+let selectedChatId = 0;
+let selectedChatType = 'individual';
+let selectedUserId = 0;
 let selectedUserInfo = [];
 let searchedUsersList = [];
 let mostRecentMessageId = 0;
@@ -358,7 +358,6 @@ if (searchInput) {
 }
 
 function selectUser(userId) {
-  console.log(userId);
   // User Selection
   const userName = searchedUsersList?.find(
     (user) => user.user_id === parseInt(userId)
