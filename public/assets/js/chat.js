@@ -242,12 +242,46 @@ if (messageInput) {
     this.style.height = Math.min(this.scrollHeight, 120) + "px";
   });
 
+  // Handle Enter key press - Multiple event listeners for Firefox compatibility
   messageInput.addEventListener("keydown", function (e) {
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
-      if (this.value.trim().length > 0) {
-        messageForm.dispatchEvent(new Event("submit"));
-      }
+      e.stopPropagation();
+      e.stopImmediatePropagation();
+      handleMessageSubmit();
+      return false;
+    }
+  });
+
+  messageInput.addEventListener("keypress", function (e) {
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault();
+      e.stopPropagation();
+      e.stopImmediatePropagation();
+      handleMessageSubmit();
+      return false;
+    }
+  });
+
+  messageInput.addEventListener("keyup", function (e) {
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault();
+      e.stopPropagation();
+      e.stopImmediatePropagation();
+      handleMessageSubmit();
+      return false;
+    }
+  });
+
+  // Additional safety: handle input events
+  messageInput.addEventListener("input", function (e) {
+    // Prevent any form submission from input events
+    if (e.target.form) {
+      e.target.form.onsubmit = function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        return false;
+      };
     }
   });
 
@@ -274,15 +308,6 @@ if (messageForm) {
       handleMessageSubmit();
     });
   }
-
-  // Handle Enter key press
-  messageInput.addEventListener("keydown", function (e) {
-    if (e.key === "Enter" && !e.shiftKey) {
-      e.preventDefault();
-      e.stopPropagation();
-      handleMessageSubmit();
-    }
-  });
 
   // Completely disable form submission
   messageForm.onsubmit = function(e) {
