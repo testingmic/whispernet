@@ -224,6 +224,7 @@ class ChatsModel extends Model {
             // return the message id
             return $this->db->insertID();
         } catch (DatabaseException $e) {
+            print_r($e->getMessage());
             return 0;
         }
     }
