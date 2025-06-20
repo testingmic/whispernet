@@ -197,4 +197,57 @@ function createPostForm() {
             </div>
         </form>';
 }
+
+/**
+ * Full view modal
+ * 
+ * @return string
+ */
+function full_view_modal() {
+    return '<div id="fullViewModal" class="fixed inset-0 z-50 hidden" role="dialog" aria-modal="true">
+    <div class="absolute inset-0 bg-black bg-opacity-90 backdrop-blur-sm"></div>
+    
+    <div class="relative h-full flex items-center justify-center p-4">
+        <!-- Close Button -->
+        <button id="closeModal" class="absolute top-6 right-6 z-10 bg-white/20 hover:bg-white/30 text-white rounded-full p-3 transition-all duration-200 backdrop-blur-sm border border-white/20">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+            </svg>
+        </button>
+
+        <!-- Navigation Buttons -->
+        <button id="prevBtn" class="absolute left-6 top-1/2 transform -translate-y-1/2 z-10 bg-white/20 hover:bg-white/30 text-white rounded-full p-3 transition-all duration-200 backdrop-blur-sm border border-white/20">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+            </svg>
+        </button>
+        
+        <button id="nextBtn" class="absolute right-6 top-1/2 transform -translate-y-1/2 z-10 bg-white/20 hover:bg-white/30 text-white rounded-full p-3 transition-all duration-200 backdrop-blur-sm border border-white/20">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+            </svg>
+        </button>
+
+        <!-- Content Container -->
+        <div id="modalContent" class="max-w-full max-h-full flex items-center justify-center">
+            <!-- Content will be dynamically inserted here -->
+        </div>
+
+        <!-- Enhanced Loading Spinner -->
+        <div id="loadingSpinner" class="absolute inset-0 flex items-center justify-center">
+            <div class="relative">
+                <div class="w-16 h-16 border-4 border-white/20 border-t-white rounded-full animate-spin"></div>
+                <div class="absolute inset-0 flex items-center justify-center">
+                    <div class="w-8 h-8 bg-white/10 rounded-full"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Media Counter -->
+        <div id="mediaCounter" class="absolute bottom-6 left-1/2 transform -translate-x-1/2 z-10 bg-black/50 text-white px-4 py-2 rounded-full backdrop-blur-sm text-sm font-medium">
+            <span id="currentIndex">1</span> of <span id="totalCount">1</span>
+        </div>
+    </div>
+</div>';
+}
 ?>
