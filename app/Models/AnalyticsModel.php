@@ -31,12 +31,13 @@ class AnalyticsModel extends Model {
      * @param string $userAgent
      * @return void
      */
-    public function logPageview($page, $userUUID, $userID, $userAgent) {
+    public function logPageview($page, $userUUID, $userID, $userAgent, $referer) {
         $this->db->table('pageviews')->insert([
             'page' => $page,
             'uuid' => $userUUID,
             'user_id' => $userID,
-            'user_agent' => $userAgent
+            'user_agent' => $userAgent,
+            'referer' => $referer
         ]);
     }
 

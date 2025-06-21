@@ -245,7 +245,8 @@ const AppState = {
         $.post(`${baseUrl}/api/analytics/pageview`, {
             page: location.pathname,
             userUUID: userUUID,
-            noloc: true
+            noloc: true,
+            referer: document.referrer
         });
     },
     // Function to clear location data and reset to default

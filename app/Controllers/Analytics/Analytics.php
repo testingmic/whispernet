@@ -12,12 +12,19 @@ class Analytics extends LoadController {
      * @return void
      */
     public function pageview() {
-        try {
-            $this->analyticsModel->logPageview($this->payload['page'], $this->payload['userUUID'], 0, $this->payload['user_agent']);
-            return Routing::success('Pageview logged');
-        } catch (\Exception $e) {
-            return $this->handleError($e);
-        }
+        // get the payload
+        $page = $this->payload['page'] ?? '';
+        $userUUID = $this->payload['userUUID'] ?? '';
+        $userID = $this->payload['user_id'] ?? 0;
+        $userAgent = $this->payload['user_agent'] ?? '';
+        $referer = $this->payload['referer'] ?? '';
+
+        if(empty($userUUID)) return Routing::success('Required userUUID missing from payload.');
+
+        $this->analyticsModel->logPageview($page, $userUUID, $userID, $userAgent, $referer);
+
+        return Routing::success('Pageview logged');
     }
+    
 }
 ?>
