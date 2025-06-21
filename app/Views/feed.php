@@ -5,8 +5,8 @@
         <div class="bg-white dark:bg-gray-800 shadow-xl border border-gray-200 dark:border-gray-700 p-3">
             <div class="flex items-center justify-between">
                 <div class="flex items-center space-x-4">
-                    <div class="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl flex items-center justify-center">
-                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <div class="w-6 h-6 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl flex items-center justify-center">
+                        <svg class="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
                         </svg>
@@ -16,7 +16,7 @@
                         <!-- <div class="position-display"></div> -->
                         <!-- <div class="raw-position-display"></div> -->
                         <p class="text-sm text-gray-600 dark:text-gray-400">
-                            Posts are displayed within a 35km radius of your location
+                            Showing posts within your location.
                         </p>
                     </div>
                 </div>

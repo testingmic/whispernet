@@ -747,7 +747,7 @@ const PostManager = {
             <div class="flex items-center justify-between mb-2">
                 <div class="flex items-center space-x-2 post-header-clickable">
                     <div class="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center">
-                        <span class="text-sm font-semibold">${post.username[0].toUpperCase()}${post.username[1].toUpperCase()}</span>
+                        <span class="text-sm font-semibold text-white">${post.username[0].toUpperCase()}${post.username[1].toUpperCase()}</span>
                     </div>
                     <div>
                         <div class="text-sm font-medium text-gray-900">${post.username}</div>
