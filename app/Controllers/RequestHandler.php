@@ -216,9 +216,6 @@ class RequestHandler extends BaseController
             // set the force auth
             $classObject->forceAuth = $forceAuth;
 
-            // if the latitude and longitude are not set, get the location by IP
-            $payload = $this->setLocationByIP($payload);
-
             // set the current user
             $classObject->currentUser = $userToken;
             $this->cacheObject->currentUser = $userToken;
@@ -260,66 +257,6 @@ class RequestHandler extends BaseController
      */
     private function setLocationByIP($payload) {
 
-        // set the final location to an empty array
-        $payload['finalLocation'] = [];
-
-        if(!empty($payload['longitude']) && strlen($payload['longitude']) == 4) {
-            $payload['longitude'] = '';
-        }
-
-        if(!empty($payload['latitude']) && strlen($payload['latitude']) == 4) {
-            $payload['latitude'] = '';
-        }
-
-        if(empty($payload['longitude']) && empty($payload['latitude'])) {
-            $cacheKey = create_cache_key('user', 'location', ['user_id' => $payload['userId'].getUserIpaddress()]);
-            $locationInfo = $this->cacheObject->get($cacheKey);
-
-            // get the data to use
-            $dataToUse = !empty($locationInfo) ? $locationInfo : getLocationByIP();
-
-            if(!empty($dataToUse)) {
-                $locs = explode(',', $dataToUse['loc']);
-                $payload['longitude'] = $locs[0];
-                $payload['latitude'] = $locs[1];
-                $payload['city'] = $dataToUse['city'];
-                $payload['country'] = $dataToUse['country'];
-                $payload['district'] = $dataToUse['region'];
-                $this->cacheObject->save($cacheKey, $dataToUse, 'user.location', null, 60 * 60);
-            }
-
-        }
-
-        elseif(!empty($payload['longitude']) && !empty($payload['latitude'])) {
-
-            // get the cache key
-            $cacheKey = create_cache_key('user', 'location', ['latitude' => $payload['latitude'], 'longitude' => $payload['longitude']]);
-            $locationInfo = $this->cacheObject->get($cacheKey);
-
-            // get the data to use
-            $dataToUse = !empty($locationInfo) ? $locationInfo : getLocationByIP($payload['longitude'], $payload['latitude']);
-            
-            // handle the user location data
-            if(isset($dataToUse['results'][0]['components']['town'])) {
-                $payload['city'] = $dataToUse['results'][0]['components']['town'] ?? null;
-                $payload['country'] = $dataToUse['results'][0]['components']['country'] ?? null;
-                $payload['district'] = $dataToUse['results'][0]['components']['county'] ?? null;
-
-                $this->cacheObject->save($cacheKey, $dataToUse, 'user.location', null, 60 * 60);
-            }
-        }
-
-        $final = [
-            'city' => $payload['city'] ?? '',
-            'district' => $payload['district'] ?? '',
-            'country' => $payload['country'] ?? '',
-            'latitude' => $payload['latitude'] ?? '',
-            'longitude' => $payload['longitude'] ?? '',
-        ];
-
-        $payload['finalLocation'] = $final;
-
-        return $payload;
     }
 
 }

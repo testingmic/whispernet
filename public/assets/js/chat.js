@@ -333,6 +333,7 @@ function handleMessageSubmit() {
     timestamp: new Date().getTime(),
     token: AppState.getToken(),
     uuid: messageUUID,
+    userUUID: userUUID,
   };
   selectedUserId = parseInt(selectedUserId);
   selectedChatId = parseInt(selectedChatId);
@@ -435,7 +436,7 @@ function debounce(fn, delay) {
 
 const debouncedFilterUsers = debounce(function (query) {
   const individualChats = document.getElementById("individualChats");
-  $.get(`${baseUrl}/api/users/search?query=${query}`, function (response) {
+  $.get(`${baseUrl}/api/users/search?query=${query}&userUUID=${userUUID}`, function (response) {
     let users = "";
     $.each(response.users, function (index, user) {
       if (user.user_id !== loggedInUserId) {
@@ -485,7 +486,7 @@ function loadingMessages(roomId, receiverId = 0) {
             <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
         </div>`;
 
-  $.get(`${baseUrl}/api/chats/messages?roomId=${roomId}&receiverId=${receiverId}&room=${selectedChatType}&token=${AppState.getToken()}`, function (response) {
+  $.get(`${baseUrl}/api/chats/messages?roomId=${roomId}&receiverId=${receiverId}&room=${selectedChatType}&token=${AppState.getToken()}&userUUID=${userUUID}`, function (response) {
     if (response.status === "success") {
       messagesContainer.innerHTML = '';
       response.data.forEach((message) => {
@@ -990,6 +991,7 @@ function handleFileUpload() {
   formData.append('timestamp', new Date().getTime());
   formData.append('token', AppState.getToken());
   formData.append('uuid', messageUUID);
+  formData.append('userUUID', userUUID);
   
   // Show loading state
   const submitButton = document.querySelector('#messageForm button[data-type="submit-message"]');

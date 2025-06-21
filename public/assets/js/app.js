@@ -1,5 +1,5 @@
 // Microphone Permission Manager
-var longitude = '', latitude = '', radius = 35;
+var longitude = '', latitude = '', radius = 35, userUUID = '';
 const MicrophoneManager = {
     permissionState: null,
     stream: null,
@@ -114,16 +114,18 @@ const AppState = {
         }
     },
     async checkLocation() {
-        if ('geolocation' in navigator && userLoggedIn) {
+        if ('geolocation' in navigator) {
             try {
                 const position = await new Promise((resolve, reject) => {
                     navigator.geolocation.getCurrentPosition(resolve, reject);
                 });
-                this.location = {
-                    latitude: position.coords.latitude,
-                    longitude: position.coords.longitude
-                };
-                this.updateLocationUI();
+                if(typeof position.coords !== 'undefined') {
+                    this.location = {
+                            latitude: position.coords?.latitude,
+                            longitude: position.coords?.longitude
+                    };
+                    this.updateLocationUI();
+                }
             } catch (error) {
                 // this.showNotification('Please enable location services to see local posts', 'error');
             }
@@ -479,7 +481,8 @@ const PostManager = {
         $.get(`${baseUrl}/api/posts/view/${postId}`, {
             token: AppState.getToken(),
             longitude,
-            latitude
+            latitude,
+            userUUID
         }).then(data => {
             if(data.status == 'success') {
                 postContainer.innerHTML = '';
@@ -636,7 +639,7 @@ const PostManager = {
                 whereClause = `&request_data=${requestData}`;
             }
 
-            const response = await fetch(`${baseUrl}/api/posts/nearby?last_record_id=${this.currentPage}${whereClause}&longitude=${longitude}&latitude=${latitude}&token=${AppState.getToken()}&limit=${limit}`);
+            const response = await fetch(`${baseUrl}/api/posts/nearby?last_record_id=${this.currentPage}${whereClause}&longitude=${longitude}&latitude=${latitude}&token=${AppState.getToken()}&limit=${limit}&userUUID=${userUUID}`);
             const data = await response.json();
 
             if(data.status == 'error') {
@@ -902,9 +905,9 @@ const PostManager = {
     async handleReport(button, section) {
         const postId = button.closest('.post-card').querySelector(`[data-${section}-id]`).dataset.postId;
         try {
-            await fetch(`${baseUrl}/api/posts/${postId}/report`, {
+            await fetch(`${baseUrl}/api/posts/report/${postId}`, {
                 method: 'POST',
-                body: JSON.stringify({ token: AppState.getToken(), longitude, latitude })
+                body: JSON.stringify({ token: AppState.getToken(), longitude, latitude, userUUID })
             });
             AppState.showNotification('Post reported successfully', 'success');
         } catch (error) {
@@ -913,7 +916,7 @@ const PostManager = {
     },
     async handleBookmark(postId, isBookmarked) {
         try {
-            const response = await fetch(`${baseUrl}/api/posts/bookmark/${postId}`, {
+            const response = await fetch(`${baseUrl}/api/posts/bookmark/${postId}?userUUID=${userUUID}`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -934,7 +937,7 @@ const PostManager = {
         try {
             let path = item === 'posts' ? '' : 'deletecomment/';
             let field = item === 'posts' ? 'post' : 'comment';
-            const response = await fetch(`${baseUrl}/api/posts/${path}${postId}`, {
+            const response = await fetch(`${baseUrl}/api/posts/${path}${postId}?userUUID=${userUUID}`, {
                 method: 'DELETE',
                 headers: {
                     'Content-Type': 'application/json'
@@ -1498,6 +1501,7 @@ const ImprovedPostCreationForm = {
         formData.append('longitude', longitude);
         formData.append('latitude', latitude);
         formData.append('token', AppState.getToken());
+        formData.append('userUUID', userUUID);
         // Send AJAX request to API endpoint
         fetch('/api/posts/create', {
             method: 'POST',
@@ -1677,6 +1681,7 @@ const AuthManager = {
                     password,
                     longitude,
                     latitude,
+                    userUUID,
                     webapp: true,
                     remember_me: rememberMe
                 }
@@ -1740,6 +1745,7 @@ const AuthManager = {
                     password,
                     longitude,
                     latitude,
+                    userUUID,
                     full_name: fullName,
                     password_confirm: confirmPassword,
                     terms_accepted: termsAccepted
@@ -1772,7 +1778,7 @@ const AuthManager = {
             const response = await $.ajax({
                 url: `${baseUrl}/api/auth/forgot-password`,
                 method: 'POST',
-                data: { email }
+                data: { email, longitude, latitude, userUUID }
             });
 
             if (response.success) {
@@ -1813,6 +1819,18 @@ const AuthManager = {
             AppState.showNotification(error.responseJSON?.message || 'Failed to reset password. Please try again.', 'error');
         }
     },
+    async loginUUID() {
+        userUUID = localStorage.getItem('userUUID');
+        if(!userUUID) {
+            userUUID = document.cookie.split('; ')?.find(row => row.startsWith('userUUID='))?.split('=')[1];
+        }
+        if(!userUUID) {
+            userUUID = AppState.generateUUID();
+            document.cookie = `userUUID=${userUUID}; path=/;`;
+            localStorage.setItem('userUUID', userUUID);
+        }
+        return userUUID;
+    },
     async loginCheck() {
         if($('#loginForm').length > 0) {
             let token = localStorage.getItem('token');
@@ -1820,7 +1838,7 @@ const AuthManager = {
                 token = document.cookie.split('; ')?.find(row => row.startsWith('user_token='))?.split('=')[1];
             }
             if(!token) return;
-            $.post(`${baseUrl}/api/auth/confirm`, { token: token, webapp: true, longitude, latitude }, (response) => {
+            $.post(`${baseUrl}/api/auth/confirm`, { token: token, webapp: true, longitude, latitude, userUUID }, (response) => {
                 if(response.success) {
                     window.location.href = `${baseUrl}`;
                 }
@@ -1963,7 +1981,7 @@ const NotificationManager = {
 
     async markAsRead(notificationId) {
         try {
-            const response = await fetch(`${baseUrl}/api/notifications/mark-read/${notificationId}`, {
+            const response = await fetch(`${baseUrl}/api/notifications/mark-read/${notificationId}?userUUID=${userUUID}`, {
                 method: 'POST',
                 headers: {
                     'X-Requested-With': 'XMLHttpRequest'
@@ -1988,7 +2006,7 @@ const NotificationManager = {
 
     async markAllAsRead() {
         try {
-            const response = await fetch(`${baseUrl}/api/notifications/mark-all-read`, {
+            const response = await fetch(`${baseUrl}/api/notifications/mark-all-read?userUUID=${userUUID}`, {
                 method: 'POST',
                 headers: {
                     'X-Requested-With': 'XMLHttpRequest'
@@ -2009,7 +2027,7 @@ const NotificationManager = {
 
     async deleteNotification(notificationId) {
         try {
-            const response = await fetch(`${baseUrl}/api/notifications/${notificationId}`, {
+            const response = await fetch(`${baseUrl}/api/notifications/${notificationId}?userUUID=${userUUID}`, {
                 method: 'DELETE',
                 headers: {
                     'X-Requested-With': 'XMLHttpRequest'
@@ -2036,7 +2054,8 @@ const NotificationManager = {
             const response = $.post(`${baseUrl}/api/notifications/recent`, {
                 token: AppState.getToken(),
                 latitude,
-                longitude
+                longitude,
+                userUUID
             }).then((response) => {
                 const container = document.querySelector('.notifications-container');
                 if (container) {
@@ -2296,7 +2315,8 @@ const PostCommentManager = {
             token: AppState.getToken(),
             postId: this.postId,
             longitude,
-            latitude
+            latitude,
+            userUUID
         }).then(data => {
             if(data.status == 'success') {
                 const commentsContainer = document.getElementById('commentsList');
@@ -2395,7 +2415,7 @@ const ProfileManager = {
                 iconSpan.classList.toggle('opacity-100');
 
                 try {
-                    const response = await fetch(`${baseUrl}/api/profile/settings`, {
+                    const response = await fetch(`${baseUrl}/api/profile/settings?userUUID=${userUUID}`, {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',
@@ -2583,6 +2603,7 @@ if(document.getElementById('menuButton')) {
 
 // Initialize the app
 document.addEventListener('DOMContentLoaded', () => {
+    AuthManager.loginUUID();
     AppState.init();
     PostManager.init();
     AuthManager.init();

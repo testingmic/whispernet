@@ -249,6 +249,12 @@ class Api extends BaseController
         // create a new class for handling the resource
         $classObject = new $classname($payload);
 
+        // create the cache object
+        $cacheObject = !empty($classObject->cacheObject) ? $classObject->cacheObject : new Caching();
+
+        // manage the user location
+        $payload = manageUserLocation($payload, $cacheObject);
+
         // set the unique id
         $classObject->uniqueId = $this->uniqueId;
 
@@ -278,9 +284,6 @@ class Api extends BaseController
                 'message' => 'Sorry! The record id is required to perform this action.',
             ];
         }
-
-        // create the cache object
-        $cacheObject = !empty($classObject->cacheObject) ? $classObject->cacheObject : new Caching();
 
         // validate the request
         $validObject = new RequestHandler();

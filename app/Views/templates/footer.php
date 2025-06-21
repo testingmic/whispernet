@@ -96,7 +96,9 @@ $favicon_color = $favicon_color ?? 'dashboard';
 <script src="<?= $baseUrl ?>/assets/js/app.js?v=<?= $version ?>" defer></script>
 <script src="<?= $baseUrl ?>/assets/js/websocket.js?v=<?= $version ?>" defer></script>
 <script src="<?= $baseUrl ?>/assets/js/feed-context.js?v=<?= $version ?>" defer></script>
-<script src="<?= $baseUrl ?>/assets/js/chat.js?v=<?= $version ?>" defer></script>
+<?php if(!empty($chatSection)) { ?>
+    <script src="<?= $baseUrl ?>/assets/js/chat.js?v=<?= $version ?>" defer></script>
+<?php } ?>
 
 <script>
 // Enhanced PWA Installation Handler
@@ -142,110 +144,6 @@ if ('serviceWorker' in navigator) {
             .catch(err => { });
     });
 }
-
-// Before Install Prompt Event
-window.addEventListener('beforeinstallprompt', (e) => {
-    e.preventDefault();
-    deferredPrompt = e;
-    
-    if (installButton) {
-        installButton.classList.remove('hidden');
-        
-        // Add entrance animation
-        installButton.style.opacity = '0';
-        installButton.style.transform = 'translateY(20px)';
-        
-        setTimeout(() => {
-            installButton.style.transition = 'all 0.3s ease-out';
-            installButton.style.opacity = '1';
-            installButton.style.transform = 'translateY(0)';
-        }, 100);
-    }
-});
-
-// App Installed Event
-window.addEventListener('appinstalled', (evt) => {
-    if (installButton) {
-        // Add success animation before hiding
-        installButton.style.transform = 'scale(1.1)';
-        installButton.style.backgroundColor = '#10B981';
-        
-        setTimeout(() => {
-            installButton.classList.add('hidden');
-        }, 500);
-    }
-    deferredPrompt = null;
-    
-    // Show success notification
-    showNotification('App installed successfully! 🎉', 'success');
-});
-
-// Enhanced Install Button Click Handler
-document.addEventListener('click', function(e) {
-    if (e.target.closest('#installButton')) {
-        e.preventDefault();
-        
-        if (deferredPrompt) {
-            // Add loading state
-            const button = e.target.closest('#installButton');
-            const originalContent = button.innerHTML;
-            
-            button.innerHTML = `
-                <div class="flex flex-col items-center">
-                    <div class="w-8 h-8 rounded-full bg-gradient-to-br from-purple-500 to-purple-600 flex items-center justify-center">
-                        <div class="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
-                    </div>
-                    <span class="text-xs mt-1 font-medium">Installing...</span>
-                </div>
-            `;
-            
-            deferredPrompt.prompt();
-            
-            deferredPrompt.userChoice.then((choiceResult) => {
-                if (choiceResult.outcome === 'accepted') {
-                } else {
-                    // Restore original content
-                    button.innerHTML = originalContent;
-                }
-                deferredPrompt = null;
-            });
-        }
-    }
-});
-
-// Add CSS animations for enhanced footer
-const footerStyle = document.createElement('style');
-footerStyle.textContent = `
-    #footerBanner {
-        backdrop-filter: blur(10px);
-        -webkit-backdrop-filter: blur(10px);
-    }
-    
-    #footerBanner a:hover,
-    #footerBanner button:hover {
-        transform: translateY(-2px);
-    }
-    
-    .animate-pulse {
-        animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
-    }
-    
-    @keyframes pulse {
-        0%, 100% {
-            opacity: 1;
-        }
-        50% {
-            opacity: .5;
-        }
-    }
-    
-    @media (max-width: 640px) {
-        #footerBanner {
-            padding-bottom: env(safe-area-inset-bottom);
-        }
-    }
-`;
-document.head.appendChild(footerStyle);
 </script>
 </body>
 
