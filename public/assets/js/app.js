@@ -2607,10 +2607,10 @@ if(document.getElementById('menuButton')) {
 
 // Initialize the app
 document.addEventListener('DOMContentLoaded', () => {
+    AuthManager.init();
     AuthManager.loginUUID();
     AppState.init();
     PostManager.init();
-    AuthManager.init();
     PostCreationForm.init();
     PostCommentManager.init();
     ProfileManager.init();
