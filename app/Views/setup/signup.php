@@ -1,22 +1,45 @@
 <div class="min-h-[calc(100vh-4rem)] flex items-center justify-center bg-gray-50 dark:bg-gray-900 px-4 py-12 sm:px-6 lg:px-8">
-    <div class="max-w-md w-full space-y-8">
-        <div class="flex items-center justify-center">
-            <img src="<?= $baseUrl; ?>/assets/images/logo.png" alt="<?= $appName ?>" class="h-16 w-auto">
-        </div>
+    <div class="max-w-md w-full space-y-6">
         <div class="text-center">
             <h2 class="mt-6 text-3xl font-extrabold text-gray-900 dark:text-white">
                 Create your account
             </h2>
             <p class="mt-2 text-sm text-gray-600 dark:text-gray-400">
-                Already have an account?
-                <a href="<?= $baseUrl; ?>/login" class="font-medium text-blue-600 hover:text-blue-500 dark:text-blue-400 dark:hover:text-blue-300">
-                    Sign in
-                </a>
+                Join <?= $appName ?> and start your journey today.
             </p>
         </div>
 
+        <!-- Prominent Sign-in Button for Existing Users -->
+        <div class="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-lg p-4 border border-blue-200 dark:border-blue-700/30 shadow-sm">
+            <div class="text-center">
+                <p class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
+                    Already have an account?
+                </p>
+                <a href="<?= $baseUrl; ?>/login" 
+                   class="w-full inline-flex justify-center items-center px-4 py-3 border border-transparent text-sm font-semibold rounded-lg text-white bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transform transition-all duration-200 hover:scale-105 shadow-lg hover:shadow-xl">
+                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1" />
+                    </svg>
+                    Sign In to Your Account
+                </a>
+                <p class="text-xs text-gray-500 dark:text-gray-400 mt-2">
+                    Welcome back! Access your existing account
+                </p>
+            </div>
+        </div>
+
+        <!-- Divider -->
+        <div class="relative">
+            <div class="absolute inset-0 flex items-center">
+                <div class="w-full border-t border-gray-300 dark:border-gray-600"></div>
+            </div>
+            <div class="relative flex justify-center text-sm">
+                <span class="px-4 bg-gray-50 dark:bg-gray-900 text-gray-500 dark:text-gray-400 font-medium">or create new account</span>
+            </div>
+        </div>
+
         <!-- Signup Form -->
-        <form id="signupForm" class="mt-8 space-y-6 mb-0" action="<?= $baseUrl; ?>/register" method="POST">
+        <form id="signupForm" class="space-y-6 mb-0" action="<?= $baseUrl; ?>/register" method="POST">
             <div class="rounded-md shadow-sm -space-y-px">
                 <!-- Full Name -->
                 <div>
