@@ -1,5 +1,5 @@
 // Microphone Permission Manager
-var longitude = '', latitude = '', radius = 35, userUUID = '';
+var longitude = '-0.2012376', latitude = '5.5571096', radius = 35, userUUID = '';
 const MicrophoneManager = {
     permissionState: null,
     stream: null,
@@ -114,23 +114,72 @@ const AppState = {
         }
     },
     async checkLocation() {
-        if ('geolocation' in navigator) {
+        if (!('geolocation' in navigator)) {
+            // Fallback to default location if geolocation is not supported
+            return;
+        }
+
+        // Check if we have stored location data first
+        const storedLocation = localStorage.getItem('userLocation');
+        if (storedLocation) {
             try {
-                const position = await new Promise((resolve, reject) => {
-                    navigator.geolocation.getCurrentPosition(resolve, reject);
-                });
-                if(typeof position.coords !== 'undefined') {
-                    this.location = {
-                            latitude: position.coords?.latitude,
-                            longitude: position.coords?.longitude
-                    };
+                const locationData = JSON.parse(storedLocation);
+                if (locationData.latitude && locationData.longitude) {
+                    this.location = locationData;
+                    longitude = locationData.longitude;
+                    latitude = locationData.latitude;
                     this.updateLocationUI();
+                    return;
                 }
-            } catch (error) {
-                // set the location to Accra, Ghana
-                latitude = '5.5571096';
-                longitude = '-0.2012376';
+            } catch (e) {
+                // Invalid stored data, continue with fresh request
             }
+        }
+
+        // Check permission state first
+        if ('permissions' in navigator) {
+            try {
+                const permission = await navigator.permissions.query({ name: 'geolocation' });
+                if (permission.state === 'denied') {
+                    return;
+                }
+                if (permission.state === 'granted') {
+                    await this.getCurrentLocation();
+                    return;
+                }
+                
+                // Permission state is 'prompt', will show browser prompt
+            } catch (e) {
+                // Permissions API not supported, fall back to direct geolocation
+            }
+        }
+
+        // Fallback: try to get location (will show prompt if needed)
+        await this.getCurrentLocation();
+    },
+    async getCurrentLocation() {
+        try {
+            const position = await new Promise((resolve, reject) => {
+                const options = {
+                    enableHighAccuracy: true,
+                    timeout: 10000,
+                    maximumAge: 300000
+                };
+                navigator.geolocation.getCurrentPosition(resolve, reject, options);
+            });
+
+            if (position && position.coords) {
+                this.location = {
+                    latitude: position.coords.latitude,
+                    longitude: position.coords.longitude
+                };
+                localStorage.setItem('userLocation', JSON.stringify(this.location));
+                longitude = this.location.longitude;
+                latitude = this.location.latitude;
+                this.updateLocationUI();
+            }
+        } catch (error) {
+            console.log('Location access error:', error.message);
         }
     },
     updateLocationUI() {
@@ -178,6 +227,27 @@ const AppState = {
         hex.slice(8, 10).join(''),
         hex.slice(10, 16).join('')
         ].join('-');
+    },
+    // Function to manually refresh location (clears cache and gets fresh location)
+    async refreshLocation() {
+        // Clear stored location to force fresh request
+        localStorage.removeItem('userLocation');
+        
+        // Show loading state
+        this.showNotification('Updating location...', 'info', 2000);
+        
+        // Get fresh location
+        await this.getCurrentLocation();
+        
+        this.showNotification('Location updated successfully!', 'success', 2000);
+    },
+    // Function to clear location data and reset to default
+    clearLocationData() {
+        localStorage.removeItem('userLocation');
+        this.location = null;
+        latitude = '5.5571096';
+        longitude = '-0.2012376';
+        this.updateLocationUI();
     }
 };
 
@@ -1874,6 +1944,7 @@ const AuthManager = {
         // Clear local storage
         localStorage.removeItem('user');
         localStorage.removeItem('token');
+        AppState.clearLocationData();
         
         // Update AppState
         AppState.user = null;

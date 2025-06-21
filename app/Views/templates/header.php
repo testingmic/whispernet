@@ -497,6 +497,22 @@ $favicon_color = $favicon_color ?? 'dashboard';
                     </a>
                   </div>
 
+                  <!-- What's New -->
+                  <div class="px-3">
+                    <a href="<?= $baseUrl ?>/updates" 
+                       class="group flex items-center px-3 py-2.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-orange-50 dark:hover:bg-gray-700 rounded-lg transition-all duration-200 hover:translate-x-1">
+                      <div class="w-8 h-8 bg-orange-100 dark:bg-orange-900/30 rounded-lg flex items-center justify-center mr-3 group-hover:bg-orange-200 dark:group-hover:bg-orange-800/50 transition-colors duration-200">
+                        <svg class="w-4 h-4 text-orange-600 dark:text-orange-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                        </svg>
+                      </div>
+                      <div>
+                        <p class="font-medium">What's New</p>
+                        <p class="text-xs text-gray-500 dark:text-gray-400">Latest updates</p>
+                      </div>
+                    </a>
+                  </div>
+
                   <!-- Help Center (Hidden) -->
                   <div class="px-3 py-2 hidden">
                     <a href="<?= $baseUrl ?>/help" 
