@@ -1,5 +1,5 @@
 <div class="flex items-center min-h-[calc(100vh-4rem)] justify-center bg-gray-50 dark:bg-gray-900 px-4 py-12 sm:px-6 lg:px-8">
-    <div class="max-w-md w-full space-y-8">
+    <div class="max-w-md w-full space-y-6">
 
         <!-- Prominent Signup Button -->
         <div class="bg-gradient-to-r from-green-50 to-blue-50 dark:from-green-900/20 dark:to-blue-900/20 rounded-lg p-4 border border-green-200 dark:border-green-700/30 shadow-sm">
@@ -26,7 +26,7 @@
                 <div class="w-full border-t border-gray-300 dark:border-gray-600"></div>
             </div>
             <div class="relative flex justify-center text-sm">
-                <span class="px-4 bg-gray-50 dark:bg-gray-900 text-gray-500 dark:text-gray-400 font-medium">or sign in</span>
+                <span class="px-4 bg-gray-50 dark:bg-gray-900 text-gray-1000 dark:text-gray-400 font-medium">or sign in</span>
             </div>
         </div>
 
@@ -93,7 +93,7 @@
         </form>
 
         <!-- Social Login -->
-        <div class="mt-6">
+        <div>
             <div class="relative">
                 <div class="absolute inset-0 flex items-center">
                     <div class="w-full border-t border-gray-300 dark:border-gray-600"></div>
@@ -103,9 +103,9 @@
                 </div>
             </div>
 
-            <div class="mt-6 grid grid-cols-1">
+            <div class="mt-3 grid grid-cols-1">
                 <a href="<?= $baseUrl; ?>/dashboard/install" type="button"
-                    class="w-full inline-flex justify-center py-2 px-4 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm bg-white dark:bg-gray-800 text-sm font-medium text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700">
+                    class="w-full inline-flex justify-center py-2 px-4 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm bg-white dark:bg-gray-800 text-sm text-gray-900 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700">
                     <svg xmlns="http://www.w3.org/2000/svg"
                         class="w-6 h-6 text-gray-700"
                         fill="none"
