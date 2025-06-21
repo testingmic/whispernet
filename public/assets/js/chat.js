@@ -157,6 +157,9 @@ function closeModal() {
 function individualChatBtnClick() {
     hideModal(newChatModal);
     showModal(userSearchModal);
+    if(!isMobileView) {
+      $(`textarea[id="messageInput"]`).focus();
+    }
 }
 
 function groupChatBtnClick() {
@@ -420,7 +423,9 @@ function beginChat(roomId, type) {
   $(`p[id="chatStatus"]`).text(roomInfo?.state ?? 'Offline');
   $(`div[id="chatAvatar"]`).html(roomInfo?.username?.charAt(0)?.toUpperCase() ?? '');
 
-  $(`textarea[id="messageInput"]`).focus();
+  if(!isMobileView) {
+    $(`textarea[id="messageInput"]`).focus();
+  }
   // Load messages
   loadingMessages(roomId, selectedUserId);
 }
