@@ -7,7 +7,7 @@ $favicon_color = $favicon_color ?? 'dashboard';
 <!-- Modern Professional Footer -->
 <nav id="footerBanner" data-footer-hidden="<?= !empty($footerHidden) ?>" <?= !empty($footerHidden) ? 'style="display: none;"' : '' ?> class="bg-white dark:bg-gray-800 shadow-2xl border-t border-gray-200 dark:border-gray-700 fixed bottom-0 left-0 right-0 z-50 backdrop-blur-lg bg-white/95 dark:bg-gray-800/95">
   <div class="max-w-7xl mx-auto px-4">
-    <div class="flex justify-around h-20">
+    <div class="flex justify-around">
       <?php if (empty($footerHidden) && $userLoggedIn) { ?>
         <!-- Home Navigation -->
         <a href="<?= $baseUrl ?>" class="flex flex-col items-center justify-center px-4 py-3 rounded-xl transition-all duration-300 group <?= $favicon_color == 'dashboard' ? 'text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/20' : 'text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20' ?>">

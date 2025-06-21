@@ -104,7 +104,7 @@
             </div>
 
             <div class="mt-3 grid grid-cols-1">
-                <a href="<?= $baseUrl; ?>/dashboard/install" type="button"
+                <a href="<?= $baseUrl; ?>/install" type="button"
                     class="w-full inline-flex justify-center py-2 px-4 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm bg-white dark:bg-gray-800 text-sm text-gray-900 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700">
                     <svg xmlns="http://www.w3.org/2000/svg"
                         class="w-6 h-6 text-gray-700"

@@ -483,7 +483,7 @@ $favicon_color = $favicon_color ?? 'dashboard';
 
                   <!-- Install Guide -->
                   <div class="px-3">
-                    <a href="<?= $baseUrl ?>/dashboard/install" 
+                    <a href="<?= $baseUrl ?>/install" 
                        class="group flex items-center px-3 py-2.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-purple-50 dark:hover:bg-gray-700 rounded-lg transition-all duration-200 hover:translate-x-1">
                       <div class="w-8 h-8 bg-purple-100 dark:bg-purple-900/30 rounded-lg flex items-center justify-center mr-3 group-hover:bg-purple-200 dark:group-hover:bg-purple-800/50 transition-colors duration-200">
                         <svg class="w-4 h-4 text-purple-600 dark:text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">

@@ -55,4 +55,13 @@ class Dashboard extends WebAppController {
         return $this->templateObject->loadPage('updates', ['pageTitle' => 'Updates', 'noInstallation' => true, 'footerHidden' => true]);
     }
 
+    /**
+     * Report page
+     * 
+     * @return void
+     */
+    public function report() {
+        return $this->templateObject->loadPage('report', ['pageTitle' => 'Report', 'noInstallation' => true, 'footerHidden' => true]);
+    }
+
 }
