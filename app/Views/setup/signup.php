@@ -103,20 +103,6 @@
             </div>
         </div>
 
-        <!-- Prominent Sign-in Button for Existing Users -->
-        <div class="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-lg p-4 border border-blue-200 dark:border-blue-700/30 shadow-sm">
-            <div class="text-center">
-                <a href="<?= $baseUrl; ?>/login" 
-                   class="w-full inline-flex justify-center items-center px-4 py-3 border border-transparent text-sm font-semibold rounded-lg text-white bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transform transition-all duration-200 hover:scale-105 shadow-lg hover:shadow-xl">
-                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1" />
-                    </svg>
-                    Sign In to Your Account
-                </a>
-                <p class="text-xs text-gray-500 dark:text-gray-400 mt-2">
-                    Welcome back! Access your existing account
-                </p>
-            </div>
-        </div>
+        <?= custom_button('Sign In to Your Account', $baseUrl.'/login', 'Welcome back! Access your existing account') ?>
     </div>
 </div>

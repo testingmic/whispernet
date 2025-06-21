@@ -170,7 +170,9 @@
                     </div>
                 </div>
             </div>
+            <?= custom_button('Go to Home', $baseUrl.'', 'Go to home screen') ?>
         </div>
+
 
         <!-- Footer -->
         <div class="text-center mt-8">

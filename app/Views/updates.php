@@ -123,6 +123,9 @@
                 </div>
             </div>
         </div>
+
+        <?= custom_button('How to install', $baseUrl.'/install', 'Follow the steps to install the app on your device') ?>
+
         <!-- Today's Updates -->
         <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
             <div class="flex items-center mb-6">
