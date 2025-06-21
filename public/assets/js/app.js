@@ -642,7 +642,9 @@ const PostManager = {
                 whereClause = `&request_data=${requestData}`;
             }
 
-            const response = await fetch(`${baseUrl}/api/posts/nearby?last_record_id=${this.currentPage}${whereClause}&longitude=${longitude}&latitude=${latitude}&token=${AppState.getToken()}&limit=${limit}&userUUID=${userUUID}`);
+            radius = postRadius;
+
+            const response = await fetch(`${baseUrl}/api/posts/nearby?last_record_id=${this.currentPage}${whereClause}&longitude=${longitude}&latitude=${latitude}&token=${AppState.getToken()}&limit=${limit}&userUUID=${userUUID}&radius=${radius}`);
             const data = await response.json();
 
             if(data.status == 'error') {
@@ -2474,6 +2476,106 @@ if(document.getElementById('menuButton')) {
     document.dispatchEvent(toggleEvent);
   });
 }
+
+// Password Toggle Functionality
+const PasswordToggle = {
+  init() {
+    this.setupPasswordToggles();
+  },
+
+  setupPasswordToggles() {
+    const toggleButtons = document.querySelectorAll('.password-toggle-btn');
+    
+    toggleButtons.forEach(button => {
+      // Ensure button is always visible and interactive
+      button.style.display = 'flex';
+      button.style.visibility = 'visible';
+      button.style.opacity = '1';
+      button.style.pointerEvents = 'auto';
+      
+      button.addEventListener('click', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        
+        const targetId = button.getAttribute('data-target');
+        const input = document.getElementById(targetId);
+        const eyeClosed = button.querySelector('.password-eye-closed');
+        const eyeOpen = button.querySelector('.password-eye-open');
+        
+        if (input && eyeClosed && eyeOpen) {
+          this.togglePasswordVisibility(input, eyeClosed, eyeOpen, button);
+        }
+      });
+
+      // Add keyboard support for accessibility
+      button.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          button.click();
+        }
+      });
+
+      // Add ARIA attributes for accessibility
+      button.setAttribute('role', 'button');
+      button.setAttribute('tabindex', '0');
+      button.setAttribute('aria-label', 'Toggle password visibility');
+
+      // Ensure button remains visible when input is focused
+      const targetId = button.getAttribute('data-target');
+      const input = document.getElementById(targetId);
+      if (input) {
+        input.addEventListener('focus', () => {
+          button.style.visibility = 'visible';
+          button.style.opacity = '1';
+          button.style.pointerEvents = 'auto';
+        });
+        
+        input.addEventListener('blur', () => {
+          button.style.visibility = 'visible';
+          button.style.opacity = '1';
+          button.style.pointerEvents = 'auto';
+        });
+      }
+    });
+  },
+
+  togglePasswordVisibility(input, eyeClosed, eyeOpen, button) {
+    const isPassword = input.type === 'password';
+    
+    if (isPassword) {
+      // Show password
+      input.type = 'text';
+      eyeClosed.classList.add('hidden');
+      eyeOpen.classList.remove('hidden');
+      
+      // Add visual feedback
+      button.classList.add('text-blue-600', 'dark:text-blue-400');
+      button.setAttribute('aria-label', 'Hide password');
+      
+      // Auto-hide password after 3 seconds for security
+      setTimeout(() => {
+        if (input.type === 'text') {
+          this.togglePasswordVisibility(input, eyeClosed, eyeOpen, button);
+        }
+      }, 3000);
+      
+    } else {
+      // Hide password
+      input.type = 'password';
+      eyeClosed.classList.remove('hidden');
+      eyeOpen.classList.add('hidden');
+      
+      // Remove visual feedback
+      button.classList.remove('text-blue-600', 'dark:text-blue-400');
+      button.setAttribute('aria-label', 'Show password');
+    }
+  }
+};
+
+// Initialize password toggle functionality
+document.addEventListener('DOMContentLoaded', () => {
+  PasswordToggle.init();
+});
 
 (function() {
     const pageLoader = document.getElementById('pageLoader');

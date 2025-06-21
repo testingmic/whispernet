@@ -56,6 +56,9 @@ class Templates extends BaseController
         return [
             'baseUrl' => $urlPath,
             'version' => '1.2.41',
+            'privacyVersion' => '1.0',
+            'postRadius' => $this->defaultRadius,
+            'privacyUpdatedDate' => 'June 20, 2025',
             'userId' => (int) $this->sessionObject->user_id,
             'websocketUrl' => $socketUrl,
             'userData' => $this->sessionObject->get('userData'),

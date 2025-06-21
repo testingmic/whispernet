@@ -17,10 +17,13 @@ $routes->set404Override(function() {
 });
 
 $routes->get("/dashboard/install", "WebApp\Dashboard::install");
+$routes->get("/privacy", "WebApp\Dashboard::privacy");
+$routes->get("/terms", "WebApp\Dashboard::terms");
 $routes->get("/chat", "WebApp\Chat::index");
 $routes->get("/login", "Landing::load/login");
 $routes->get("/signup", "Landing::load/signup");
 $routes->get("/forgot-password", "Landing::load/forgot-password");
+
 
 use App\Controllers\Api;
 

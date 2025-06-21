@@ -37,7 +37,7 @@ $favicon_color = $favicon_color ?? 'dashboard';
       loggedInUserId = <?= $userId ?? 0 ?>,
       footerArray = <?= json_encode($footerArray ?? []) ?>,
       userLoggedIn = <?= !empty($userLoggedIn) ? 'true' : 'false' ?>,
-      websocketUrl = '<?= $websocketUrl ?>',
+      websocketUrl = '<?= $websocketUrl ?>', postRadius = <?= $postRadius ?>,
       loadingSkeleton = `<?= function_exists('loadingSkeleton') ? loadingSkeleton() : '' ?>`;
     <?php if (!empty($userToken)) { ?>
       localStorage.setItem('token', '<?= $userToken ?>');
@@ -84,6 +84,94 @@ $favicon_color = $favicon_color ?? 'dashboard';
     /* Ensure menu appears above other content */
     #menuHelper {
       z-index: 9999;
+    }
+
+    /* Password toggle button styles */
+    .password-toggle-btn {
+      cursor: pointer;
+      transition: all 0.2s ease-in-out;
+      z-index: 10;
+      pointer-events: auto;
+    }
+
+    .password-toggle-btn:hover {
+      transform: scale(1.05);
+    }
+
+    .password-toggle-btn:focus {
+      outline: none;
+      ring: 2px;
+      ring-color: rgb(59 130 246);
+      ring-offset: 2px;
+    }
+
+    /* Ensure password input has proper padding for the toggle button */
+    input[type="password"], input[type="text"] {
+      padding-right: 2.5rem !important;
+    }
+
+    /* Ensure toggle button is always visible and clickable */
+    .password-toggle-btn {
+      position: absolute !important;
+      right: 0.75rem !important;
+      top: 50% !important;
+      transform: translateY(-50%) !important;
+      background: transparent !important;
+      border: none !important;
+      padding: 0.25rem !important;
+      margin: 0 !important;
+      z-index: 20 !important;
+    }
+
+    /* Ensure the button stays above the input field */
+    .relative {
+      position: relative !important;
+    }
+
+    /* Make sure the button is always interactive */
+    .password-toggle-btn * {
+      pointer-events: none;
+    }
+
+    .password-toggle-btn {
+      pointer-events: auto !important;
+    }
+
+    /* Additional rules to ensure button is always visible */
+    .password-toggle-btn {
+      display: flex !important;
+      visibility: visible !important;
+      opacity: 1 !important;
+      position: absolute !important;
+      right: 0.75rem !important;
+      top: 50% !important;
+      transform: translateY(-50%) !important;
+      z-index: 30 !important;
+      background: transparent !important;
+      border: none !important;
+      padding: 0.25rem !important;
+      margin: 0 !important;
+      min-width: 1.5rem !important;
+      min-height: 1.5rem !important;
+      align-items: center !important;
+      justify-content: center !important;
+    }
+
+    /* Ensure button stays visible even when input is focused */
+    input:focus + .password-toggle-btn,
+    input:focus ~ .password-toggle-btn {
+      visibility: visible !important;
+      opacity: 1 !important;
+      pointer-events: auto !important;
+    }
+
+    /* Override any potential hiding from other styles */
+    .password-toggle-btn.hidden,
+    .password-toggle-btn[style*="display: none"],
+    .password-toggle-btn[style*="visibility: hidden"] {
+      display: flex !important;
+      visibility: visible !important;
+      opacity: 1 !important;
     }
   </style>
 </head>

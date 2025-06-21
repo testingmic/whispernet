@@ -28,4 +28,22 @@ class Dashboard extends WebAppController {
         return $this->templateObject->loadPage('install', ['pageTitle' => 'Install', 'noInstallation' => true, 'footerHidden' => true]);
     }
 
+    /**
+     * Privacy policy page
+     * 
+     * @return void
+     */
+    public function privacy() {
+        return $this->templateObject->loadPage('privacy', ['pageTitle' => 'Privacy Policy', 'noInstallation' => true, 'footerHidden' => true]);
+    }
+
+    /**
+     * Terms of service page
+     * 
+     * @return void
+     */
+    public function terms() {
+        return $this->templateObject->loadPage('terms', ['pageTitle' => 'Terms of Service', 'noInstallation' => true, 'footerHidden' => true]);
+    }
+
 }
