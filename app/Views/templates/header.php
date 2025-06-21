@@ -13,6 +13,7 @@ $favicon_color = $favicon_color ?? 'dashboard';
   <link rel="manifest" href="<?= $baseUrl ?>/manifest.json">
   <meta name="theme-color" content="#2196F3">
   <script src="https://cdn.tailwindcss.com"></script>
+  <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
   <link rel="apple-touch-icon" href="<?= $baseUrl ?>/assets/icons/Icon.192.png">
   <link rel="icon" type="image/png" href="<?= $baseUrl ?>/assets/icons/Icon.32.png">
 
@@ -64,6 +65,25 @@ $favicon_color = $favicon_color ?? 'dashboard';
     #app {
       position: relative;
       z-index: 1;
+    }
+
+    /* Menu positioning and animations */
+    .menu-container {
+      position: relative;
+    }
+
+    #menuButton {
+      transition: all 0.2s ease-in-out;
+    }
+
+    #menuButton.menu-open {
+      background-color: rgba(59, 130, 246, 0.1);
+      color: rgb(59, 130, 246);
+    }
+
+    /* Ensure menu appears above other content */
+    #menuHelper {
+      z-index: 9999;
     }
   </style>
 </head>
@@ -251,7 +271,7 @@ $favicon_color = $favicon_color ?? 'dashboard';
   </div>
   </div>
 
-  <div id="app" class="flex flex-col min-h-screen">
+  <div id="app" class="flex flex-col">
     <!-- Top Navigation -->
     <nav class="bg-white shadow-md fixed top-0 left-0 right-0 z-50">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -265,86 +285,174 @@ $favicon_color = $favicon_color ?? 'dashboard';
             </div>
           </div>
           <?php if (!empty($userLoggedIn)) { ?>
-            <div class="flex items-center">
-              <button id="menuButton" class="p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none">
+            <div class="flex items-center relative" x-data="{ 
+              open: false,
+              init() {
+                // Listen for custom toggle event
+                document.addEventListener('toggleMenu', (e) => {
+                  this.open = !this.open;
+                });
+                
+                // Close menu when clicking outside
+                document.addEventListener('click', (e) => {
+                  if (!this.$el.contains(e.target)) {
+                    this.open = false;
+                  }
+                });
+                
+                // Close menu on escape key
+                document.addEventListener('keydown', (e) => {
+                  if (e.key === 'Escape' && this.open) {
+                    this.open = false;
+                  }
+                });
+              }
+            }">
+              <button id="menuButton" 
+                      :class="{ 'menu-open': open }"
+                      class="p-2 rounded-lg text-gray-500 hover:text-gray-700 hover:bg-gray-100 dark:text-gray-400 dark:hover:text-gray-200 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all duration-200">
                 <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
                 </svg>
               </button>
+
+              <!-- Menu Dropdown -->
+              <div x-show="open"
+                x-cloak
+                x-transition:enter="transition ease-out duration-200"
+                x-transition:enter-start="transform opacity-0 scale-95 translate-y-2"
+                x-transition:enter-end="transform opacity-100 scale-100 translate-y-0"
+                x-transition:leave="transition ease-in duration-150"
+                x-transition:leave-start="transform opacity-100 scale-100 translate-y-0"
+                x-transition:leave-end="transform opacity-0 scale-95 translate-y-2"
+                id="menuHelper"
+                class="absolute right-0 top-12 w-64 rounded-xl shadow-2xl bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 backdrop-blur-sm bg-opacity-95 dark:bg-opacity-95 z-50 overflow-hidden">
+                
+                <!-- Header Section -->
+                <div class="bg-gradient-to-r from-blue-500 to-purple-600 px-4 py-4">
+                  <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center">
+                      <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                      </svg>
+                    </div>
+                    <div class="flex-1 min-w-0">
+                      <p class="text-sm font-medium text-white">Welcome back</p>
+                      <p class="text-xs text-blue-100 truncate"><?= session()->get('userData')['full_name'] ?? 'User' ?></p>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Menu Items -->
+                <div class="py-2">
+                  <!-- Profile Section -->
+                  <div class="px-3">
+                    <a href="<?= $baseUrl ?>/profile" 
+                       class="group flex items-center px-3 py-2.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-blue-50 dark:hover:bg-gray-700 rounded-lg transition-all duration-200 hover:translate-x-1">
+                      <div class="w-8 h-8 bg-blue-100 dark:bg-blue-900/30 rounded-lg flex items-center justify-center mr-3 group-hover:bg-blue-200 dark:group-hover:bg-blue-800/50 transition-colors duration-200">
+                        <svg class="w-4 h-4 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                        </svg>
+                      </div>
+                      <div>
+                        <p class="font-medium">Your Profile</p>
+                        <p class="text-xs text-gray-500 dark:text-gray-400">View and edit your profile</p>
+                      </div>
+                    </a>
+                  </div>
+
+                  <!-- Settings -->
+                  <div class="px-3">
+                    <a href="<?= $baseUrl ?>/profile/edit" 
+                       class="group flex items-center px-3 py-2.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-green-50 dark:hover:bg-gray-700 rounded-lg transition-all duration-200 hover:translate-x-1">
+                      <div class="w-8 h-8 bg-green-100 dark:bg-green-900/30 rounded-lg flex items-center justify-center mr-3 group-hover:bg-green-200 dark:group-hover:bg-green-800/50 transition-colors duration-200">
+                        <svg class="w-4 h-4 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                        </svg>
+                      </div>
+                      <div>
+                        <p class="font-medium">Settings</p>
+                        <p class="text-xs text-gray-500 dark:text-gray-400">Customize your experience</p>
+                      </div>
+                    </a>
+                  </div>
+
+                  <!-- Saved Items -->
+                  <div class="px-3">
+                    <a href="<?= $baseUrl ?>/profile/saved" 
+                       class="group flex items-center px-3 py-2.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-yellow-50 dark:hover:bg-gray-700 rounded-lg transition-all duration-200 hover:translate-x-1">
+                      <div class="w-8 h-8 bg-yellow-100 dark:bg-yellow-900/30 rounded-lg flex items-center justify-center mr-3 group-hover:bg-yellow-200 dark:group-hover:bg-yellow-800/50 transition-colors duration-200">
+                        <svg class="w-4 h-4 text-yellow-600 dark:text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
+                        </svg>
+                      </div>
+                      <div>
+                        <p class="font-medium">Saved Items</p>
+                        <p class="text-xs text-gray-500 dark:text-gray-400">Your bookmarked content</p>
+                      </div>
+                    </a>
+                  </div>
+
+                  <!-- Install Guide -->
+                  <div class="px-3">
+                    <a href="<?= $baseUrl ?>/dashboard/install" 
+                       class="group flex items-center px-3 py-2.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-purple-50 dark:hover:bg-gray-700 rounded-lg transition-all duration-200 hover:translate-x-1">
+                      <div class="w-8 h-8 bg-purple-100 dark:bg-purple-900/30 rounded-lg flex items-center justify-center mr-3 group-hover:bg-purple-200 dark:group-hover:bg-purple-800/50 transition-colors duration-200">
+                        <svg class="w-4 h-4 text-purple-600 dark:text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M7 10l5 5m0 0l5-5m-5 5V4" />
+                        </svg>
+                      </div>
+                      <div>
+                        <p class="font-medium">How to Install</p>
+                        <p class="text-xs text-gray-500 dark:text-gray-400">Add to home screen</p>
+                      </div>
+                    </a>
+                  </div>
+
+                  <!-- Help Center (Hidden) -->
+                  <div class="px-3 py-2 hidden">
+                    <a href="<?= $baseUrl ?>/help" 
+                       class="group flex items-center px-3 py-2.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-indigo-50 dark:hover:bg-gray-700 rounded-lg transition-all duration-200 hover:translate-x-1">
+                      <div class="w-8 h-8 bg-indigo-100 dark:bg-indigo-900/30 rounded-lg flex items-center justify-center mr-3 group-hover:bg-indigo-200 dark:group-hover:bg-indigo-800/50 transition-colors duration-200">
+                        <svg class="w-4 h-4 text-indigo-600 dark:text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                      </div>
+                      <div>
+                        <p class="font-medium">Help Center</p>
+                        <p class="text-xs text-gray-500 dark:text-gray-400">Get support</p>
+                      </div>
+                    </a>
+                  </div>
+
+                  <!-- Divider -->
+                  <div class="border-t border-gray-200 dark:border-gray-700 mx-3 my-2"></div>
+
+                  <!-- Logout -->
+                  <div class="px-3">
+                    <button onclick="return AppState.logout()" 
+                            class="group w-full flex items-center px-3 py-1 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-all duration-200 hover:translate-x-1">
+                      <div class="w-8 h-8 bg-red-100 dark:bg-red-900/30 rounded-lg flex items-center justify-center mr-3 group-hover:bg-red-200 dark:group-hover:bg-red-800/50 transition-colors duration-200">
+                        <svg class="w-4 h-4 text-red-600 dark:text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                        </svg>
+                      </div>
+                      <div>
+                        <p class="font-medium">Sign out</p>
+                      </div>
+                    </button>
+                  </div>
+                </div>
+              </div>
             </div>
           <?php } ?>
         </div>
       </div>
-    </nav>
-    <main class="flex-grow pt-<?= $topMargin ?? 16 ?>">
-      <?php if (!empty($userLoggedIn)) { ?>
-        <div class="relative" x-data="{ open: false }">
-          <div x-show="open"
-            x-cloak
-            @click.away="open = false"
-            x-transition:enter="transition ease-out duration-100"
-            x-transition:enter-start="transform opacity-0 scale-95"
-            x-transition:enter-end="transform opacity-100 scale-100"
-            x-transition:leave="transition ease-in duration-75"
-            x-transition:leave-start="transform opacity-100 scale-100"
-            x-transition:leave-end="transform opacity-0 scale-95"
-            id="menuHelper"
-            class="mr-2 mt-1 hidden fixed right-0 mt-2 w-48 rounded-md shadow-lg bg-white dark:bg-gray-800 ring-1 ring-black ring-opacity-5 focus:outline-none z-50">
-            <div class="py-1">
-              <!-- Profile Section -->
-              <div class="px-4 py-2 border-b border-gray-200 dark:border-gray-700 flex items-center justify-start space-x-2">
-                <p class="text-sm font-medium text-gray-900 dark:text-white">Hello</p>
-                <p class="text-sm text-gray-500 dark:text-gray-400 truncate"><?= session()->get('userData')['full_name'] ?? '' ?></p>
-              </div>
+    </div>
+  </div>
 
-              <!-- Menu Items -->
-              <a href="<?= $baseUrl ?>/profile" class="flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">
-                <svg class="mr-3 h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                </svg>
-                Your Profile
-              </a>
-
-              <a href="<?= $baseUrl ?>/profile/edit" class="flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">
-                <svg class="mr-3 h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                </svg>
-                Settings
-              </a>
-
-              <a href="<?= $baseUrl ?>/profile/saved" class="flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">
-                <svg class="mr-3 h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
-                </svg>
-                Saved Items
-              </a>
-
-              <a href="<?= $baseUrl ?>/dashboard/install" class="flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">
-                <svg class="mr-3 h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M7 10l5 5m0 0l5-5m-5 5V4" />
-                </svg>
-                How to Install
-              </a>
-
-              <a href="<?= $baseUrl ?>/help" class="flex hidden items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">
-                <svg class="mr-3 h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-                Help Center
-              </a>
-
-              <!-- Divider -->
-              <div class="border-t border-gray-200 dark:border-gray-700 my-1"></div>
-
-              <!-- Logout -->
-              <a onclick="return AppState.logout()" class="flex items-center px-4 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-gray-100 dark:hover:bg-gray-700">
-                <svg class="mr-3 h-5 w-5 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-                </svg>
-                Sign out
-              </a>
-            </div>
-          </div>
-        </div>
-      <?php } ?>
+  <main class="flex-grow pt-<?= $topMargin ?? 16 ?>">
+    <?php if (!empty($userLoggedIn)) { ?>
+      <!-- This section is now handled in the navigation above -->
+    <?php } ?>

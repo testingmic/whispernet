@@ -2461,17 +2461,21 @@ const ProfileManager = {
     }
 };
 
-// check if the user clicked on menuButton if so check if menuHelper has the class hidden if it does remove it if not then add it
+// Modern Menu Management
 if(document.getElementById('menuButton')) {
-    document.getElementById('menuButton').addEventListener('click', () => {
-        const menuHelper = document.getElementById('menuHelper');
-        if (menuHelper.classList.contains('hidden')) {
-            menuHelper.classList.remove('hidden');
-        } else {
-            menuHelper.classList.add('hidden');
-        }
+  document.getElementById('menuButton').addEventListener('click', (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    
+    // Dispatch a custom event to toggle the menu
+    const toggleEvent = new CustomEvent('toggleMenu', {
+      detail: { action: 'toggle' }
     });
-}(function() {
+    document.dispatchEvent(toggleEvent);
+  });
+}
+
+(function() {
     const pageLoader = document.getElementById('pageLoader');
     const progressBar = document.getElementById('progressBar');
     let progress = 0;
