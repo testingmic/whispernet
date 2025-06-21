@@ -181,6 +181,19 @@ const AppState = {
     }
 };
 
+// Platform Updates Manager
+function hidePlatformUpdates() {
+    const updatesElement = document.getElementById('platformUpdates');
+    if (updatesElement) {
+        updatesElement.style.transition = 'all 0.3s ease';
+        updatesElement.style.opacity = '0';
+        updatesElement.style.transform = 'translateY(-10px)';
+        setTimeout(() => {
+            updatesElement.remove();
+        }, 300);
+    }
+}
+
 const MediaManager = {
     postMediaPreview: null,
 

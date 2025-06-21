@@ -114,9 +114,45 @@
                 </div>
             </div>
         </div>
+        <!-- Platform Updates Notification -->
+        <div id="platformUpdates" class="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 border border-blue-200 dark:border-blue-700 rounded-xl p-4 mb-2 shadow-sm">
+            <div class="flex items-start justify-between">
+                <div class="flex items-start space-x-3">
+                    <div class="w-10 h-10 bg-blue-100 dark:bg-blue-900/30 rounded-lg flex items-center justify-center flex-shrink-0">
+                        <svg class="w-5 h-5 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                        </svg>
+                    </div>
+                    <div class="flex-1">
+                        <div class="flex items-center space-x-2 mb-1">
+                            <h3 class="font-semibold text-gray-900 dark:text-white">What's New in <?= $appName ?></h3>
+                            <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-200 animate-pulse">
+                                New
+                            </span>
+                        </div>
+                        <p class="text-sm text-gray-700 dark:text-gray-300 mb-3">
+                            We've added Privacy & Terms pages, enhanced password security, improved navigation, and much more!
+                            Check out all the latest updates and improvements.
+                        </p>
+                        <div class="flex items-center space-x-3">
+                            <a href="<?= $baseUrl ?>/updates" class="inline-flex items-center px-3 py-1.5 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition-colors">
+                                <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"></path>
+                                </svg>
+                                View Updates
+                            </a>
+                            <button onclick="hidePlatformUpdates()" class="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 text-sm transition-colors">
+                                Dismiss
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
 
         <!-- Feed Container -->
         <div id="feedContainer" class="scroll-sentinel">
+
             <?= loadingSkeleton(1, false); ?>
         </div>
 
@@ -161,95 +197,95 @@
 </div>
 <div class="h-20"></div>
 <script>
-// Enhanced Location Modal Management
-document.addEventListener('DOMContentLoaded', function() {
-    const changeLocationBtn = document.getElementById('changeLocationBtn');
-    const locationModal = document.getElementById('locationModal');
-    const closeLocationModal = document.getElementById('closeLocationModal');
-    const cancelLocationBtn = document.getElementById('cancelLocationBtn');
-    const locationForm = document.getElementById('locationFormd');
-    const radiusInput = document.getElementById('radiusInput');
-    const radiusValue = document.getElementById('radiusValue');
+    // Enhanced Location Modal Management
+    document.addEventListener('DOMContentLoaded', function() {
+        const changeLocationBtn = document.getElementById('changeLocationBtn');
+        const locationModal = document.getElementById('locationModal');
+        const closeLocationModal = document.getElementById('closeLocationModal');
+        const cancelLocationBtn = document.getElementById('cancelLocationBtn');
+        const locationForm = document.getElementById('locationFormd');
+        const radiusInput = document.getElementById('radiusInput');
+        const radiusValue = document.getElementById('radiusValue');
 
-    // Open modal
-    if (changeLocationBtn) {
-        changeLocationBtn.addEventListener('click', function() {
-            locationModal.classList.remove('hidden');
-            locationModal.querySelector('.inline-block').classList.add('animate-fadeIn');
-        });
-    }
-
-    // Close modal handlers
-    [closeLocationModal, cancelLocationBtn].forEach(btn => {
-        if (btn) {
-            btn.addEventListener('click', () => {
-                locationModal.classList.add('hidden');
-                locationModal.querySelector('.inline-block').classList.remove('animate-fadeIn');
+        // Open modal
+        if (changeLocationBtn) {
+            changeLocationBtn.addEventListener('click', function() {
+                locationModal.classList.remove('hidden');
+                locationModal.querySelector('.inline-block').classList.add('animate-fadeIn');
             });
         }
-    });
 
-    // Click outside to close
-    locationModal.addEventListener('click', (e) => {
-        if (e.target === locationModal) {
-            locationModal.classList.add('hidden');
-            locationModal.querySelector('.inline-block').classList.remove('animate-fadeIn');
-        }
-    });
-
-    // Radius input update
-    if (radiusInput && radiusValue) {
-        radiusInput.addEventListener('input', function() {
-            radiusValue.textContent = this.value + 'km';
+        // Close modal handlers
+        [closeLocationModal, cancelLocationBtn].forEach(btn => {
+            if (btn) {
+                btn.addEventListener('click', () => {
+                    locationModal.classList.add('hidden');
+                    locationModal.querySelector('.inline-block').classList.remove('animate-fadeIn');
+                });
+            }
         });
-    }
 
-    // Form submission
-    if (locationForm) {
-        locationForm.addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            const submitBtn = locationForm.querySelector('button[type="submit"]');
-            const originalText = submitBtn.textContent;
-            
-            // Show loading state
-            submitBtn.disabled = true;
-            submitBtn.innerHTML = `
+        // Click outside to close
+        locationModal.addEventListener('click', (e) => {
+            if (e.target === locationModal) {
+                locationModal.classList.add('hidden');
+                locationModal.querySelector('.inline-block').classList.remove('animate-fadeIn');
+            }
+        });
+
+        // Radius input update
+        if (radiusInput && radiusValue) {
+            radiusInput.addEventListener('input', function() {
+                radiusValue.textContent = this.value + 'km';
+            });
+        }
+
+        // Form submission
+        if (locationForm) {
+            locationForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+
+                const submitBtn = locationForm.querySelector('button[type="submit"]');
+                const originalText = submitBtn.textContent;
+
+                // Show loading state
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = `
                 <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                     <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                     <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                 </svg>
                 Updating...
             `;
-            
-            // Simulate update
-            setTimeout(() => {
-                submitBtn.innerHTML = `
+
+                // Simulate update
+                setTimeout(() => {
+                    submitBtn.innerHTML = `
                     <svg class="w-5 h-5 text-white mr-2" fill="currentColor" viewBox="0 0 20 20">
                         <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
                     </svg>
                     Updated!
                 `;
-                submitBtn.classList.remove('from-blue-500', 'to-purple-600', 'hover:from-blue-600', 'hover:to-purple-700');
-                submitBtn.classList.add('from-green-500', 'to-green-600');
-                
-                // Close modal after success
-                setTimeout(() => {
-                    locationModal.classList.add('hidden');
-                    locationForm.reset();
-                    submitBtn.disabled = false;
-                    submitBtn.textContent = originalText;
-                    submitBtn.classList.remove('from-green-500', 'to-green-600');
-                    submitBtn.classList.add('from-blue-500', 'to-purple-600', 'hover:from-blue-600', 'hover:to-purple-700');
-                }, 1000);
-            }, 1500);
-        });
-    }
-});
+                    submitBtn.classList.remove('from-blue-500', 'to-purple-600', 'hover:from-blue-600', 'hover:to-purple-700');
+                    submitBtn.classList.add('from-green-500', 'to-green-600');
 
-// Add CSS animations
-const style = document.createElement('style');
-style.textContent = `
+                    // Close modal after success
+                    setTimeout(() => {
+                        locationModal.classList.add('hidden');
+                        locationForm.reset();
+                        submitBtn.disabled = false;
+                        submitBtn.textContent = originalText;
+                        submitBtn.classList.remove('from-green-500', 'to-green-600');
+                        submitBtn.classList.add('from-blue-500', 'to-purple-600', 'hover:from-blue-600', 'hover:to-purple-700');
+                    }, 1000);
+                }, 1500);
+            });
+        }
+    });
+
+    // Add CSS animations
+    const style = document.createElement('style');
+    style.textContent = `
     @keyframes fadeIn {
         from { opacity: 0; transform: scale(0.95); }
         to { opacity: 1; transform: scale(1); }
@@ -258,5 +294,5 @@ style.textContent = `
         animation: fadeIn 0.3s ease-out;
     }
 `;
-document.head.appendChild(style);
+    document.head.appendChild(style);
 </script>

@@ -46,4 +46,13 @@ class Dashboard extends WebAppController {
         return $this->templateObject->loadPage('terms', ['pageTitle' => 'Terms of Service', 'noInstallation' => true, 'footerHidden' => true]);
     }
 
+    /**
+     * Updates page
+     * 
+     * @return void
+     */
+    public function updates() {
+        return $this->templateObject->loadPage('updates', ['pageTitle' => 'Updates', 'noInstallation' => true, 'footerHidden' => true]);
+    }
+
 }

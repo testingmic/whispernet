@@ -376,10 +376,8 @@ $favicon_color = $favicon_color ?? 'dashboard';
             <div class="flex items-center relative" x-data="{ 
               open: false,
               init() {
-                // Listen for custom toggle event
-                document.addEventListener('toggleMenu', (e) => {
-                  this.open = !this.open;
-                });
+                // Ensure menu starts closed
+                this.open = false;
                 
                 // Close menu when clicking outside
                 document.addEventListener('click', (e) => {
@@ -397,6 +395,7 @@ $favicon_color = $favicon_color ?? 'dashboard';
               }
             }">
               <button id="menuButton" 
+                      @click="open = !open"
                       :class="{ 'menu-open': open }"
                       class="p-2 rounded-lg text-gray-500 hover:text-gray-700 hover:bg-gray-100 dark:text-gray-400 dark:hover:text-gray-200 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all duration-200">
                 <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
