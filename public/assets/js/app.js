@@ -241,6 +241,13 @@ const AppState = {
         
         this.showNotification('Location updated successfully!', 'success', 2000);
     },
+    logPageView() {
+        $.post(`${baseUrl}/api/analytics/pageview`, {
+            page: location.pathname,
+            userUUID: userUUID,
+            noloc: true
+        });
+    },
     // Function to clear location data and reset to default
     clearLocationData() {
         localStorage.removeItem('userLocation');
@@ -2741,8 +2748,9 @@ document.addEventListener('DOMContentLoaded', () => {
     PostCommentManager.init();
     ProfileManager.init();
     MediaManager.init();
-    NotificationManager.init();
+    NotificationManager.init(); 
     ImprovedPostCreationForm.init();
+    AppState.logPageView();
 });
 
 // Audio Recording Handler

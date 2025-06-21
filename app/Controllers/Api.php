@@ -86,6 +86,7 @@ class Api extends BaseController
         // generate a user fingerprint
         $fingerprint = $this->generateFingerprint();
         $payload['ipaddress'] = $fingerprint['ipaddress'];
+        $payload['user_agent'] = $fingerprint['user_agent'];
 
         $payload['fingerprint'] = md5(json_encode($fingerprint));
 
@@ -253,7 +254,9 @@ class Api extends BaseController
         $cacheObject = !empty($classObject->cacheObject) ? $classObject->cacheObject : new Caching();
 
         // manage the user location
-        $payload = manageUserLocation($payload, $cacheObject);
+        if(!empty($payload['noloc'])) {
+            $payload = manageUserLocation($payload, $cacheObject);
+        }
 
         // set the unique id
         $classObject->uniqueId = $this->uniqueId;

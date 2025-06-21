@@ -23,6 +23,15 @@ $databases = [
         updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     );
     CREATE UNIQUE INDEX IF NOT EXISTS user_id ON users (user_id);",
+    "CREATE TABLE IF NOT EXISTS pageviews (
+        pageview_id INTEGER PRIMARY KEY AUTOINCREMENT,
+        user_id INTEGER,
+        uuid TEXT,
+        user_agent TEXT,
+        page TEXT NOT NULL,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    );
+    CREATE INDEX IF NOT EXISTS user_id ON pageviews (user_id);",
     "CREATE TABLE IF NOT EXISTS bookmarks (
         bookmark_id INTEGER PRIMARY KEY AUTOINCREMENT,
         user_id INTEGER NOT NULL,

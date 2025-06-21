@@ -1,77 +1,20 @@
-<?php 
+<?php
 
-namespace App\Models;
+namespace App\Controllers\Analytics;
 
-use CodeIgniter\Model;
-use App\Models\DbTables;
-use CodeIgniter\Database\Exceptions\DatabaseException;
+use App\Controllers\LoadController;
 
-class AnalyticsModel extends Model {
-
-    public $payload = [];
-    protected $table;
-    protected $primaryKey = "id";
-
-    public function __construct() {
-        parent::__construct();
-        
-        $this->table = DbTables::$userTable;
-        foreach(DbTables::initTables() as $key) {
-            if (property_exists($this, $key)) {
-                $this->{$key} = DbTables::${$key};
-            }
-        }
-    }
-
-    /**
-     * Log pageview
-     * 
-     * @param string $page
-     * @param string $userUUID
-     * @param string $userAgent
-     * @return void
-     */
-    public function logPageview($page, $userUUID, $userID, $userAgent) {
-        $this->db->table('pageviews')->insert([
-            'page' => $page,
-            'uuid' => $userUUID,
-            'user_id' => $userID,
-            'user_agent' => $userAgent
-        ]);
-    }
-
-    /**
-     * Track event
-     * 
-     * @param string $eventType
-     * @param string $deviceId
-     * @param float $latitude
-     * @param float $longitude
-     * @param array $metadata
-     * @return int
-     */
-    public function trackEvent($eventType, $deviceId = null, $latitude = null, $longitude = null, $metadata = []) {
+class Analytics extends LoadController {
+    
+    public function trackEvent() {
         try {
-            $this->db->table('analytics')->insert([
-                'event_type' => $eventType,
-                'device_id' => $deviceId,
-                'latitude' => $latitude,
-                'longitude' => $longitude,
-                'metadata' => json_encode($metadata)
-            ]);
-
-            return $this->db->insertID();
+            $this->analyticsModel->trackEvent($this->payload['event_type'], $this->payload['device_id'], $this->payload['latitude'], $this->payload['longitude'], $this->payload['metadata']);
+            return $this->success();
         } catch (\Exception $e) {
             return $this->handleError($e);
         }
     }
 
-    /**
-     * Get activity heatmap
-     * 
-     * @param string $timeframe
-     * @return array
-     */
     public function getActivityHeatmap($timeframe = '24h') {
         try {
             $timeCondition = $this->getTimeframeCondition($timeframe);
@@ -89,19 +32,14 @@ class AnalyticsModel extends Model {
                 HAVING activity_count > 0
             ";
 
-            return $this->db->query($query)->getResultArray();
+            $stmt = $this->db->prepare($query);
+            $stmt->execute();
+            return $this->success($stmt->fetchAll(\PDO::FETCH_ASSOC));
         } catch (\Exception $e) {
             return $this->handleError($e);
         }
     }
 
-    /**
-     * Get user activity
-     * 
-     * @param string $deviceId
-     * @param string $timeframe
-     * @return array
-     */
     public function getUserActivity($deviceId, $timeframe = '24h') {
         try {
             $timeCondition = $this->getTimeframeCondition($timeframe);
@@ -117,18 +55,14 @@ class AnalyticsModel extends Model {
                 ORDER BY hour DESC
             ";
 
-            return $this->db->query($query, [$deviceId])->getResultArray();
+            $stmt = $this->db->prepare($query);
+            $stmt->execute([$deviceId]);
+            return $this->success($stmt->fetchAll(\PDO::FETCH_ASSOC));
         } catch (\Exception $e) {
             return $this->handleError($e);
         }
     }
 
-    /** 
-     * Get system metrics
-     * 
-     * @param string $timeframe
-     * @return array
-     */
     public function getSystemMetrics($timeframe = '24h') {
         try {
             $timeCondition = $this->getTimeframeCondition($timeframe);
@@ -146,12 +80,6 @@ class AnalyticsModel extends Model {
         }
     }
 
-    /**
-     * Get user activity metrics
-     * 
-     * @param string $timeCondition
-     * @return array
-     */
     private function getUserActivityMetrics($timeCondition) {
         $query = "
             SELECT 
@@ -161,15 +89,11 @@ class AnalyticsModel extends Model {
             WHERE {$timeCondition}
         ";
 
-        return $this->db->query($query)->getRowArray();
+        $stmt = $this->db->prepare($query);
+        $stmt->execute();
+        return $stmt->fetch(\PDO::FETCH_ASSOC);
     }
 
-    /**
-     * Get content metrics
-     * 
-     * @param string $timeCondition
-     * @return array
-     */
     private function getContentMetrics($timeCondition) {
         $query = "
             SELECT 
@@ -180,15 +104,11 @@ class AnalyticsModel extends Model {
             WHERE {$timeCondition}
         ";
 
-        return $this->db->query($query)->getRowArray();
+        $stmt = $this->db->prepare($query);
+        $stmt->execute();
+        return $stmt->fetch(\PDO::FETCH_ASSOC);
     }
 
-    /**
-     * Get chat metrics
-     * 
-     * @param string $timeCondition
-     * @return array
-     */
     private function getChatMetrics($timeCondition) {
         $query = "
             SELECT 
@@ -199,15 +119,11 @@ class AnalyticsModel extends Model {
             WHERE {$timeCondition}
         ";
 
-        return $this->db->query($query)->getRowArray();
+        $stmt = $this->db->prepare($query);
+        $stmt->execute();
+        return $stmt->fetch(\PDO::FETCH_ASSOC);
     }
 
-    /**
-     * Get moderation metrics
-     * 
-     * @param string $timeCondition
-     * @return array
-     */
     private function getModerationMetrics($timeCondition) {
         $query = "
             SELECT 
@@ -218,15 +134,11 @@ class AnalyticsModel extends Model {
             WHERE {$timeCondition}
         ";
 
-        return $this->db->query($query)->getRowArray();
+        $stmt = $this->db->prepare($query);
+        $stmt->execute();
+        return $stmt->fetch(\PDO::FETCH_ASSOC);
     }
 
-    /**
-     * Get timeframe condition
-     * 
-     * @param string $timeframe
-     * @return string
-     */
     private function getTimeframeCondition($timeframe) {
         switch ($timeframe) {
             case '1h':
@@ -242,13 +154,6 @@ class AnalyticsModel extends Model {
         }
     }
 
-    /**
-     * Get popular tags
-     * 
-     * @param string $timeframe
-     * @param int $limit
-     * @return array
-     */
     public function getPopularTags($timeframe = '24h', $limit = 10) {
         try {
             $timeCondition = $this->getTimeframeCondition($timeframe);
@@ -266,19 +171,14 @@ class AnalyticsModel extends Model {
                 LIMIT ?
             ";
 
-            return $this->db->query($query, [$limit])->getResultArray();
+            $stmt = $this->db->prepare($query);
+            $stmt->execute([$limit]);
+            return $this->success($stmt->fetchAll(\PDO::FETCH_ASSOC));
         } catch (\Exception $e) {
             return $this->handleError($e);
         }
     }
 
-    /**
-     * Get active regions
-     * 
-     * @param string $timeframe
-     * @param int $limit
-     * @return array
-     */
     public function getActiveRegions($timeframe = '24h', $limit = 10) {
         try {
             $timeCondition = $this->getTimeframeCondition($timeframe);
@@ -298,10 +198,11 @@ class AnalyticsModel extends Model {
                 LIMIT ?
             ";
 
-            return $this->db->query($query, [$limit])->getResultArray();
+            $stmt = $this->db->prepare($query);
+            $stmt->execute([$limit]);
+            return $this->success($stmt->fetchAll(\PDO::FETCH_ASSOC));
         } catch (\Exception $e) {
             return $this->handleError($e);
         }
     }
-
-}
+} 
