@@ -1,25 +1,37 @@
 <div class="flex items-center min-h-[calc(100vh-4rem)] justify-center bg-gray-50 dark:bg-gray-900 px-4 py-12 sm:px-6 lg:px-8">
     <div class="max-w-md w-full space-y-8">
 
-        <div class="flex items-center justify-center">
-            <img src="<?= $baseUrl; ?>/assets/images/logo.png" alt="<?= $appName ?>" class="h-16 w-auto">
+        <!-- Prominent Signup Button -->
+        <div class="bg-gradient-to-r from-green-50 to-blue-50 dark:from-green-900/20 dark:to-blue-900/20 rounded-lg p-4 border border-green-200 dark:border-green-700/30 shadow-sm">
+            <div class="text-center">
+                <p class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
+                    New to <?= $appName ?>?
+                </p>
+                <a href="<?= $baseUrl; ?>/signup" 
+                   class="w-full inline-flex justify-center items-center px-4 py-3 border border-transparent text-sm font-semibold rounded-lg text-white bg-gradient-to-r from-green-600 to-blue-600 hover:from-green-700 hover:to-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transform transition-all duration-200 hover:scale-105 shadow-lg hover:shadow-xl">
+                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
+                    </svg>
+                    Create Your Account
+                </a>
+                <p class="text-xs text-gray-500 dark:text-gray-400 mt-2">
+                    It only takes a few seconds to get started
+                </p>
+            </div>
         </div>
 
-        <!-- Header -->
-        <div class="text-center">
-            <h2 class="mt-6 text-3xl font-extrabold text-gray-900 dark:text-white">
-                <?= $appName ?>
-            </h2>
-            <p class="mt-2 text-sm text-gray-600 dark:text-gray-400">
-                Don't have an account?
-                <a href="<?= $baseUrl; ?>/signup" class="font-medium text-blue-600 hover:text-blue-500 dark:text-blue-400 dark:hover:text-blue-300">
-                    Sign up
-                </a>
-            </p>
+        <!-- Divider -->
+        <div class="relative">
+            <div class="absolute inset-0 flex items-center">
+                <div class="w-full border-t border-gray-300 dark:border-gray-600"></div>
+            </div>
+            <div class="relative flex justify-center text-sm">
+                <span class="px-4 bg-gray-50 dark:bg-gray-900 text-gray-500 dark:text-gray-400 font-medium">or sign in</span>
+            </div>
         </div>
 
         <!-- Login Form -->
-        <form id="loginForm" class="mt-8 space-y-6" action="<?= $baseUrl; ?>/login" method="POST">
+        <form id="loginForm" class="space-y-6" action="<?= $baseUrl; ?>/login" method="POST">
             <div class="rounded-md shadow-sm -space-y-px">
                 <!-- Email Field -->
                 <div>
