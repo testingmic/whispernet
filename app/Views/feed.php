@@ -141,7 +141,7 @@
                                 </svg>
                                 View Updates
                             </a>
-                            <button onclick="return hidePlatformUpdates()" class="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 text-sm transition-colors">
+                            <button onclick="return AppState.hidePlatformUpdates()" class="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 text-sm transition-colors">
                                 Dismiss
                             </button>
                         </div>

@@ -38,13 +38,6 @@ const MicrophoneManager = {
     }
 };
 
-// PWA Service Worker Registration
-if ('serviceWorker' in navigator && userLoggedIn) {
-    window.addEventListener('load', () => {
-        navigator.serviceWorker.register(`${baseUrl}/assets/js/sw.js`).then(registration => {}).catch(err => {});
-    });
-}
-
 // App State Management
 const AppState = {
     user: null,
@@ -58,6 +51,7 @@ const AppState = {
         this.checkLocation();
         this.loadTheme();
         this.setupEventListeners();
+        this.menuButtonControl();
     },
     logout() {
         localStorage.removeItem('user');
@@ -256,22 +250,36 @@ const AppState = {
         latitude = '5.5571096';
         longitude = '-0.2012376';
         this.updateLocationUI();
+    },
+    menuButtonControl() {
+        // Modern Menu Management
+        if(document.getElementById('menuButton')) {
+            document.getElementById('menuButton').addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            
+            // Dispatch a custom event to toggle the menu
+            const toggleEvent = new CustomEvent('toggleMenu', {
+                detail: { action: 'toggle' }
+            });
+            document.dispatchEvent(toggleEvent);
+            });
+        }
+    },
+    // Platform Updates Manager
+    hidePlatformUpdates() {
+        const updatesElement = document.getElementById('platformUpdates');
+        if (updatesElement) {
+            updatesElement.style.transition = 'all 0.3s ease';
+            updatesElement.style.opacity = '0';
+            updatesElement.style.transform = 'translateY(-10px)';
+            setTimeout(() => {
+                updatesElement.remove();
+                localStorage.setItem('hideUpdates', true);
+            }, 300);
+        }
     }
 };
-
-// Platform Updates Manager
-function hidePlatformUpdates() {
-    const updatesElement = document.getElementById('platformUpdates');
-    if (updatesElement) {
-        updatesElement.style.transition = 'all 0.3s ease';
-        updatesElement.style.opacity = '0';
-        updatesElement.style.transform = 'translateY(-10px)';
-        setTimeout(() => {
-            updatesElement.remove();
-            localStorage.setItem('hidePlatformUpdates', true);
-        }, 300);
-    }
-}
 
 const MediaManager = {
     postMediaPreview: null,
@@ -590,6 +598,7 @@ const PostManager = {
                         data.data.comments.forEach(comment => {
                             commentsContainer.appendChild(this.createCommentElement(comment));
                         });
+                        $(`span[id="commentCount"]`).html(`(${data.data.comments.length})`);
                     } else {
                         commentsContainer.innerHTML = '<p class="text-gray-500 dark:text-gray-800" id="commentsLoading">No replies yet</p>';
                     }
@@ -629,23 +638,23 @@ const PostManager = {
                     </div>
                 </div>
             </div>
-            <p class="text-gray-800 mb-3 dark:text-white">${comment.content}</p>
+            <p class="text-gray-800 mb-3 dark:text-white whitespace-pre-wrap text-sm">${comment.content}</p>
             <div class="flex items-center justify-between">
                 <div class="flex items-center space-x-4">
-                    <button class="flex items-center space-x-1 text-gray-500 hover:text-blue-500" data-comments-id="${comment.comment_id}" onclick="return PostManager.handleVote('comments', ${comment.comment_id}, 'up', ${comment.user_id})">
+                    <button class="flex text-sm items-center space-x-1 text-gray-500 hover:text-blue-500" data-comments-id="${comment.comment_id}" onclick="return PostManager.handleVote('comments', ${comment.comment_id}, 'up', ${comment.user_id})">
                         <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 10h4.764a2 2 0 011.789 2.894l-3.5 7A2 2 0 0115.263 21h-4.017c-.163 0-.326-.02-.485-.06L7 20m7-10V5a2 2 0 00-2-2h-.095c-.5 0-.905.405-.905.905 0 .714-.211 1.412-.608 2.006L7 11v9m7-10h-2M7 20H5a2 2 0 01-2-2v-6a2 2 0 012-2h2.5"/>
                         </svg>
                         <span data-comments-id-upvotes="${comment.comment_id}">${comment.upvotes}</span>
                     </button>
-                    <button class="flex items-center space-x-1 text-gray-500 hover:text-red-500" data-comments-id="${comment.comment_id}" onclick="return PostManager.handleVote('comments', ${comment.comment_id}, 'down', ${comment.user_id})">
+                    <button class="flex text-sm items-center space-x-1 text-gray-500 hover:text-red-500" data-comments-id="${comment.comment_id}" onclick="return PostManager.handleVote('comments', ${comment.comment_id}, 'down', ${comment.user_id})">
                         <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14H5.236a2 2 0 01-1.789-2.894l3.5-7A2 2 0 018.736 3h4.018c.163 0 .326.02.485.06L17 4m-7 10v2a2 2 0 002 2h.095c.5 0 .905-.405.905-.905 0-.714.211-1.412.608-2.006L17 13V4m-7 10h2m5-10h2a2 2 0 012 2v6a2 2 0 01-2 2h-2.5"/>
                         </svg>
                         <span data-comments-id-downvotes="${comment.comment_id}">${comment.downvotes}</span>
                     </button>
                     ${comment?.manage?.delete ? `
-                        <button class="delete-button flex items-center space-x-1 text-red-500 hover:text-red-500" data-comments-id="${comment.comment_id}" onclick="return PostManager.handleDelete('comments', ${comment.comment_id})">
+                        <button class="delete-button text-sm flex items-center space-x-1 text-red-500 hover:text-red-500" data-comments-id="${comment.comment_id}" onclick="return PostManager.handleDelete('comments', ${comment.comment_id})">
                             <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
                             </svg>
@@ -658,8 +667,8 @@ const PostManager = {
     },
     async loadInitialFeed() {
         if($('#feedContainer').length == 0) return;
-        if(localStorage.getItem('hidePlatformUpdates')) {
-            hidePlatformUpdates();
+        if(localStorage.getItem('hideUpdates')) {
+            AppState.hidePlatformUpdates();
         }
         await AppState.checkLocation();
         const container = document.getElementById('#feedContainer');
@@ -2365,6 +2374,7 @@ const PostCommentManager = {
                             commentsContainer.appendChild(PostManager.createCommentElement(comment));
                         }
                     });
+                    $(`span[id="commentCount"]`).html(`(${data.data.length})`);
                 }
             }
         });
@@ -2561,20 +2571,6 @@ const ProfileManager = {
     }
 };
 
-// Modern Menu Management
-if(document.getElementById('menuButton')) {
-  document.getElementById('menuButton').addEventListener('click', (e) => {
-    e.preventDefault();
-    e.stopPropagation();
-    
-    // Dispatch a custom event to toggle the menu
-    const toggleEvent = new CustomEvent('toggleMenu', {
-      detail: { action: 'toggle' }
-    });
-    document.dispatchEvent(toggleEvent);
-  });
-}
-
 // Password Toggle Functionality
 const PasswordToggle = {
   init() {
@@ -2670,11 +2666,6 @@ const PasswordToggle = {
   }
 };
 
-// Initialize password toggle functionality
-document.addEventListener('DOMContentLoaded', () => {
-  PasswordToggle.init();
-});
-
 (function() {
     const pageLoader = document.getElementById('pageLoader');
     const progressBar = document.getElementById('progressBar');
@@ -2743,6 +2734,118 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 })();
 
+const AudioVideoManager = {
+
+    init() {
+        this.begin();
+    },
+    begin() {
+        if(!Boolean(AppState.user)) {
+            return;
+        }
+        this.startAudioRecording(
+            (recorder, stream) => {
+                window.currentRecorder = recorder;
+            },
+            (audioBlob) => {
+                this.uploadAudio(audioBlob);
+            }
+        );
+    },
+
+    // Audio Recording Handler
+    startAudioRecording(onDataAvailable, onStop) {
+        let mediaRecorder, audioChunks = [];
+
+        MicrophoneManager.getStream()
+            .then(stream => {
+                mediaRecorder = new MediaRecorder(stream);
+                mediaRecorder.ondataavailable = e => audioChunks.push(e.data);
+                mediaRecorder.onstop = () => {
+                    const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
+                    onStop(audioBlob);
+                };
+                mediaRecorder.start();
+                onDataAvailable && onDataAvailable(mediaRecorder, stream);
+            })
+            .catch(error => {
+                console.error('Error accessing microphone:', error);
+                NotificationManager.show('Microphone access is required for recording', 'error');
+            });
+    },
+
+    // Video Call Handler (WebRTC)
+    async startVideoCall(localVideoElem, remoteVideoElem, signalingSend, signalingOnMessage) {
+        const peer = new RTCPeerConnection();
+        const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+        stream.getTracks().forEach(track => peer.addTrack(track, stream));
+        localVideoElem.srcObject = stream;
+
+        peer.ontrack = e => {
+            if (remoteVideoElem.srcObject !== e.streams[0]) {
+                remoteVideoElem.srcObject = e.streams[0];
+            }
+        };
+
+        // Signaling
+        peer.onicecandidate = e => {
+            if (e.candidate) signalingSend({ candidate: e.candidate });
+        };
+
+        signalingOnMessage(async msg => {
+            if (msg.offer) {
+                await peer.setRemoteDescription(new RTCSessionDescription(msg.offer));
+                const answer = await peer.createAnswer();
+                await peer.setLocalDescription(answer);
+                signalingSend({ answer });
+            } else if (msg.answer) {
+                await peer.setRemoteDescription(new RTCSessionDescription(msg.answer));
+            } else if (msg.candidate) {
+                await peer.addIceCandidate(new RTCIceCandidate(msg.candidate));
+            }
+        });
+
+        // To start call (caller):
+        async function call() {
+            const offer = await peer.createOffer();
+            await peer.setLocalDescription(offer);
+            signalingSend({ offer });
+        }
+
+        return { peer, stream, call };
+    },
+
+    uploadAudio(audioBlob) {
+        const formData = new FormData();
+        formData.append('audio', audioBlob, 'recording.webm');
+
+        fetch('/api/upload-audio', {
+            method: 'POST',
+            body: formData,
+            headers: { 'X-Requested-With': 'XMLHttpRequest' }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success && data.audioUrl) {
+                // Optionally replay the uploaded audio
+                this.replayAudio(data.audioUrl);
+            } else {
+                NotificationManager.show('Upload failed', 'error');
+            }
+        })
+        .catch(() => NotificationManager.show('Upload error', 'error'));
+    },
+
+    replayAudio(audioUrl) {
+        const audio = document.createElement('audio');
+        audio.controls = true;
+        audio.src = audioUrl;
+        document.getElementById('audioReplayContainer').innerHTML = '';
+        document.getElementById('audioReplayContainer').appendChild(audio);
+        audio.play();
+    }
+}
+
 // Initialize the app
 document.addEventListener('DOMContentLoaded', () => {
     AppState.init();
@@ -2754,111 +2857,9 @@ document.addEventListener('DOMContentLoaded', () => {
     NotificationManager.init(); 
     ImprovedPostCreationForm.init();
     AppState.logPageView();
+    PasswordToggle.init();
 });
-
-// Audio Recording Handler
-function startAudioRecording(onDataAvailable, onStop) {
-    let mediaRecorder, audioChunks = [];
-
-    MicrophoneManager.getStream()
-        .then(stream => {
-            mediaRecorder = new MediaRecorder(stream);
-            mediaRecorder.ondataavailable = e => audioChunks.push(e.data);
-            mediaRecorder.onstop = () => {
-                const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
-                onStop(audioBlob);
-            };
-            mediaRecorder.start();
-            onDataAvailable && onDataAvailable(mediaRecorder, stream);
-        })
-        .catch(error => {
-            console.error('Error accessing microphone:', error);
-            NotificationManager.show('Microphone access is required for recording', 'error');
-        });
-}
-
-// Video Call Handler (WebRTC)
-async function startVideoCall(localVideoElem, remoteVideoElem, signalingSend, signalingOnMessage) {
-    const peer = new RTCPeerConnection();
-    const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
-    stream.getTracks().forEach(track => peer.addTrack(track, stream));
-    localVideoElem.srcObject = stream;
-
-    peer.ontrack = e => {
-        if (remoteVideoElem.srcObject !== e.streams[0]) {
-            remoteVideoElem.srcObject = e.streams[0];
-        }
-    };
-
-    // Signaling
-    peer.onicecandidate = e => {
-        if (e.candidate) signalingSend({ candidate: e.candidate });
-    };
-
-    signalingOnMessage(async msg => {
-        if (msg.offer) {
-            await peer.setRemoteDescription(new RTCSessionDescription(msg.offer));
-            const answer = await peer.createAnswer();
-            await peer.setLocalDescription(answer);
-            signalingSend({ answer });
-        } else if (msg.answer) {
-            await peer.setRemoteDescription(new RTCSessionDescription(msg.answer));
-        } else if (msg.candidate) {
-            await peer.addIceCandidate(new RTCIceCandidate(msg.candidate));
-        }
-    });
-
-    // To start call (caller):
-    async function call() {
-        const offer = await peer.createOffer();
-        await peer.setLocalDescription(offer);
-        signalingSend({ offer });
-    }
-
-    return { peer, stream, call };
-}
-
-function uploadAudio(audioBlob) {
-    const formData = new FormData();
-    formData.append('audio', audioBlob, 'recording.webm');
-
-    fetch('/api/upload-audio', {
-        method: 'POST',
-        body: formData,
-        headers: { 'X-Requested-With': 'XMLHttpRequest' }
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success && data.audioUrl) {
-            // Optionally replay the uploaded audio
-            replayAudio(data.audioUrl);
-        } else {
-            NotificationManager.show('Upload failed', 'error');
-        }
-    })
-    .catch(() => NotificationManager.show('Upload error', 'error'));
-}
-
-function replayAudio(audioUrl) {
-    const audio = document.createElement('audio');
-    audio.controls = true;
-    audio.src = audioUrl;
-    document.getElementById('audioReplayContainer').innerHTML = '';
-    document.getElementById('audioReplayContainer').appendChild(audio);
-    audio.play();
-}
 
 if($(`div[id="postMediaPreview"]`)) {
     new MediaDisplay();
-}
-
-if(Boolean(AppState.user)) {
-    startAudioRecording(
-        (recorder, stream) => {
-            window.currentRecorder = recorder;
-        },
-        (audioBlob) => {
-            uploadAudio(audioBlob);
-        }
-    );
 }
