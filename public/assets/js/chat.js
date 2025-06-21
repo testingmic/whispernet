@@ -142,10 +142,37 @@ if (backToChats) {
   });
 });
 
-function scrollToBottom() {
+function scrollToBottom(smooth = true, duration = 1000) {
     const chatDiv = document.getElementById('messagesArea');
     if (chatDiv) {
-      chatDiv.scrollTop = chatDiv.scrollHeight;
+        if (smooth) {
+            // Smooth scroll with animation
+            const startPosition = chatDiv.scrollTop;
+            const targetPosition = chatDiv.scrollHeight - chatDiv.clientHeight;
+            const distance = targetPosition - startPosition;
+            const startTime = performance.now();
+            
+            function easeOutCubic(t) {
+                return 1 - Math.pow(1 - t, 3);
+            }
+            
+            function animateScroll(currentTime) {
+                const elapsed = currentTime - startTime;
+                const progress = Math.min(elapsed / duration, 1);
+                const easedProgress = easeOutCubic(progress);
+                
+                chatDiv.scrollTop = startPosition + (distance * easedProgress);
+                
+                if (progress < 1) {
+                    requestAnimationFrame(animateScroll);
+                }
+            }
+            
+            requestAnimationFrame(animateScroll);
+        } else {
+            // Instant scroll (fallback)
+            chatDiv.scrollTop = chatDiv.scrollHeight;
+        }
     }
 }
 
@@ -506,7 +533,6 @@ function loadingMessages(roomId, receiverId = 0) {
           </div>
         `;
       }
-      scrollToBottom();
     }
   }).catch((error) => {
       messagesContainer.innerHTML = `
@@ -534,7 +560,7 @@ function loadingMessages(roomId, receiverId = 0) {
   setTimeout(() => {
     new MediaDisplay();
     scrollToBottom();
-  }, 1000);
+  }, 500);
 }
 
 // Self-destruct message dismiss functionality
