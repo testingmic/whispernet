@@ -143,20 +143,19 @@ function mask_email_address($users) {
             $users[$key]['last_login'] = convertTimestampToDate($value['last_login']);
             // check the last login to today
             $days_ago = timeDifference($users[$key]['last_login']);
+            // $users[$key]['date_range'] = $days_ago;
 
             // check the online status
             if($days_ago['months'] > 0) {
                 $users[$key]['online_status'] = $days_ago['months'] . ' Long time ago';
             } elseif($days_ago['days'] > 0) {
                 $users[$key]['online_status'] = $days_ago['days'] . ' day'.($days_ago['days'] > 1 ? 's' : '').' ago';
-            } elseif($days_ago['days'] > 0) {
-                $users[$key]['online_status'] = $days_ago['days'] . ' day'.($days_ago['days'] > 1 ? 's' : '').' ago';
             } else if($days_ago['hours'] > 0) {
                 $users[$key]['online_status'] = $days_ago['hours'] . ' hour'.($days_ago['hours'] > 1 ? 's' : '').' ago';
-            } else if($days_ago['minutes'] > 0) {
+            } else if($days_ago['minutes'] > 40) {
                 $users[$key]['online_status'] = $days_ago['minutes'] . ' minute'.($days_ago['minutes'] > 1 ? 's' : '').' ago';
             } else {
-                $users[$key]['online_status'] = 'Online';
+                $users[$key]['online_status'] = 'Offline';
             }
         }
         if(isset($value['email'])) {

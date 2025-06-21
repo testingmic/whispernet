@@ -22,6 +22,7 @@ class Chat extends WebAppController {
         foreach($chatRooms as $key => $chat) {
             $chat['last_login'] = convertTimestampToDate($chat['last_login']);
             $chat['state'] = userState($chat['last_login']);
+            // $chat['date_range'] = timeDifference($chat['last_login']);
             $footerArray[$chat['room_id']] = $chat;
             if($chat['room']['type'] === 'group') {
                 $groupChats[] = $chat;
