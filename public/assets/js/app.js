@@ -733,7 +733,7 @@ const PostManager = {
     },
     createPostElement(post, single = false) {
         const div = document.createElement('div');
-        div.className = `post-card bg-white border rounded-lg shadow-sm p-4 ${single ? '' : ' mb-4 hover:bg-gradient-to-r hover:from-blue-50 hover:to-indigo-50 rounded-lg hover:border-blue-400'} cursor-pointer hover:shadow-md transition-all duration-300 relative`;
+        div.className = `post-card bg-white border rounded-lg shadow-sm p-2 ${single ? '' : ' mb-2 hover:bg-gradient-to-r hover:from-blue-50 hover:to-indigo-50 rounded-lg hover:border-blue-400'} cursor-pointer hover:shadow-md transition-all duration-300 relative`;
         div.setAttribute('data-post-id', post.post_id);
         
         div.innerHTML = `

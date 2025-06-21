@@ -116,7 +116,7 @@
         </div>
 
         <!-- Feed Container -->
-        <div id="feedContainer" class="scroll-sentinel space-y-6">
+        <div id="feedContainer" class="scroll-sentinel">
             <?= loadingSkeleton(1, false); ?>
         </div>
 
