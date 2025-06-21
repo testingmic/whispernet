@@ -58,7 +58,7 @@ return [
     'valid_base64'          => 'The {field} field must be a valid base64 string.',
     'valid_email'           => 'The {field} field must contain a valid email address.',
     'valid_contact'         => 'The {field} field must contain a valid contact number.',
-    'valid_password'        => 'The {field} field must be at least 8 characters long, contain at least one uppercase letter and one lowercase letter.',
+    'valid_password'        => 'The {field} field must be at least 8 characters and contain at least one uppercase letter.',
     'valid_emails'          => 'The {field} field must contain all valid email addresses.',
     'valid_ip'              => 'The {field} field must contain a valid IP.',
     'valid_url'             => 'The {field} field must contain a valid URL.',
