@@ -496,7 +496,7 @@ function loadingMessages(roomId, receiverId = 0) {
           if(message.msgid > mostRecentMessageId) {
               mostRecentMessageId = message.msgid;
           }
-          addMessageToUI(message.message, message.type, message.time, message.uuid);
+          addMessageToUI(message.message, message.type, message.time, message.uuid, message.has_media, message.media);
       });
 
       if(!response.data.length) {
@@ -531,6 +531,9 @@ function loadingMessages(roomId, receiverId = 0) {
       }
     }, 10);
   }
+  setTimeout(() => {
+    new MediaDisplay();
+  }, 1000);
 }
 
 // Self-destruct message dismiss functionality
@@ -569,11 +572,16 @@ function loadMessages(userId, type) {
   loadingMessages(selectedChatId, selectedUserInfo?.user_id ?? 0);
 }
 
-function addMessageToUI(content, type, time = '', uuid = '') {
+function addMessageToUI(content, type, time = '', uuid = '', has_media = false, media = []) {
   const messageDiv = document.createElement("div");
   messageDiv.className = `flex ${
     type === "sent" ? "justify-end" : "justify-start"
   }`;
+
+  mediaContent = '';
+  if(has_media) {
+    mediaContent = MediaManager.renderMedia(media, true);
+  }
 
   messageDiv.innerHTML = `
         <div class="flex items-end space-x-2 max-w-[85%] sm:max-w-[70%]" data-uuid="${uuid}">
@@ -602,6 +610,9 @@ function addMessageToUI(content, type, time = '', uuid = '') {
                       minute: "2-digit",
                     })}
                 </span>
+                <div class="media-preview-container flex w-full" data-media-uuid="${uuid}">
+                  ${mediaContent}
+                </div>
             </div>
         </div>
     `;

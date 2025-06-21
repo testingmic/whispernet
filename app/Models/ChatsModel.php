@@ -244,11 +244,15 @@ class ChatsModel extends Model {
 
             // Check if user is a participant
             $offset = ($page - 1) * $limit;
-            $messages = $this->db->table('chat_messages')->where('room_id', $roomId)->orderBy('created_at', 'DESC')->limit($limit)->offset($offset)->get()->getResultArray();
-
-            // Update message status to 'read' for this user
-            // $this->db->table('message_status')->where('room_id', $roomId)->where('user_id', $userId)
-            //         ->where('status', '!=', 'read')->update(['status' => 'read', 'updated_at' => date('Y-m-d H:i:s')]);
+            $messages = $this->db->table('chat_messages c')
+                ->select('c.*, m.media')
+                ->where('c.room_id', $roomId)
+                ->join('media m', 'm.record_id = c.message_id', 'left')
+                ->select('c.*, m.media')
+                ->orderBy('c.created_at', 'DESC')
+                ->limit($limit)
+                ->offset($offset)
+                ->get()->getResultArray();
 
             return $messages;
         } catch (DatabaseException $e) {

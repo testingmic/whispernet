@@ -263,6 +263,10 @@ $messages = $messages ?? [];
                 </div>
             </div>
         </div>
+        <!-- Media Preview Section -->
+        <div id="postMediaPreview" class="media-display-container mb-3">
+            <!-- Media content will be dynamically inserted here -->
+        </div>
     </div>
 </div>
 
@@ -418,3 +422,5 @@ $messages = $messages ?? [];
         </div>
     </div>
 </div>
+
+<?= full_view_modal() ?>

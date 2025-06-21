@@ -218,6 +218,8 @@ class Chats extends LoadController {
                     'msgid' => $message['message_id'],
                     'message' => !empty($message['content']) ? $this->encrypter->decrypt(base64_decode($message['content'])) : '',
                     'sender' => $message['user_id'],
+                    'media' => !empty($message['media']) ? json_decode($message['media'], true) : [],
+                    'has_media' => !empty($message['media']),
                     'time' => date('h:i A', strtotime($message['created_at'])),
                     'uuid' => $message['unique_id'],
                     'created_at' => $message['created_at'],

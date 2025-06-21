@@ -290,13 +290,13 @@ const MediaManager = {
         this.audioPreview = document.getElementById('audioPreview');
         this.audioPlayer = document.getElementById('audioPlayer');
     },
-    renderMedia(mediaFiles = []) {
+    renderMedia(mediaFiles = [], returnData = false) {
         let html = '<div class="media-display-container space-y-4 mt-3">';
         if(typeof mediaFiles.images !== 'undefined') {
             if(mediaFiles.images?.files.length > 0) {
                 html += '<div class="media-grid grid grid-cols-3 gap-2">';
                 mediaFiles.images?.files.forEach((img, key) => {
-                    let _300thumb = mediaFiles.images?.thumbnails[key][0];
+                    let _300thumb = mediaFiles.images?.thumbnails[key][0] ?? img;
                     let image = img;
                     html += `
                         <div class="media-item image-item" data-type="image" data-src="${baseUrl}/assets/uploads/${image}" data-thumbnail="${baseUrl}/assets/uploads/${_300thumb}">
@@ -330,7 +330,12 @@ const MediaManager = {
         if(typeof mediaFiles.video !== 'undefined') {
             if(mediaFiles.video?.files.length > 0) {
                 mediaFiles.video?.files.forEach((video, key) => {
-                    let _300thumb = mediaFiles.video?.thumbnails[key][0];
+                    let _300thumb = '';
+                    if(typeof mediaFiles.video?.thumbnails !== 'undefined') {
+                        _300thumb = mediaFiles.video?.thumbnails[key][0] ?? video;
+                    } else {
+                        _300thumb = video;
+                    }
                     html += `<div class="media-item video-item" data-type="video" data-src="${baseUrl}/assets/uploads/${video}" data-thumbnail="${baseUrl}/assets/uploads/${_300thumb}">
                         <div class="relative group cursor-pointer overflow-hidden rounded-lg bg-gray-100 aspect-video">
                             <img src="${baseUrl}/assets/uploads/${_300thumb}" alt="Video Thumbnail" class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105">
@@ -354,6 +359,9 @@ const MediaManager = {
         }
 
         html += '</div>';
+
+        if(returnData) return html;
+
         $(`#postMediaPreview`).html(html);
         new MediaDisplay();
     }
