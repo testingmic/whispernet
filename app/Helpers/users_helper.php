@@ -66,9 +66,11 @@ function manageUserLocation($payload, $cacheObject) {
         // get the data to use
         $dataToUse = !empty($locationInfo) ? $locationInfo : getLocationByIP($payload['longitude'], $payload['latitude']);
         
+        $theCity = $dataToUse['results'][0]['components']['town'] ?? ($dataToUse['results'][0]['components']['city'] ?? null);
+       
         // handle the user location data
-        if(isset($dataToUse['results'][0]['components']['town'])) {
-            $payload['city'] = $dataToUse['results'][0]['components']['town'] ?? null;
+        if(!empty($theCity)) {
+            $payload['city'] = $theCity;
             $payload['country'] = $dataToUse['results'][0]['components']['country'] ?? null;
             $payload['district'] = $dataToUse['results'][0]['components']['county'] ?? null;
 
@@ -103,7 +105,7 @@ function getLocationByIP($longitude = null, $latitude = null) {
 
     // Fetch location data from ipapi.co
     $url = "https://ipinfo.io/{$userIpaddress}?token=2d64e9f7d9e7a2";
-    $reverseUrl = "https://api.opencagedata.com/geocode/v1/json?q={$longitude},{$latitude}&pretty=1&key=8cc86300ce5d4a03af06f30acbdb5946";
+    $reverseUrl = "https://api.opencagedata.com/geocode/v1/json?q={$latitude},{$longitude}&pretty=1&key=8cc86300ce5d4a03af06f30acbdb5946";
 
     // set the url path
     $urlPath = empty($longitude) && empty($latitude) ? $url : $reverseUrl;

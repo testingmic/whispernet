@@ -55,9 +55,9 @@ const AppState = {
     socketConnect: false,
     init() {
         this.loadUser();
+        this.checkLocation();
         this.loadTheme();
         this.setupEventListeners();
-        this.checkLocation();
     },
     logout() {
         localStorage.removeItem('user');
@@ -127,14 +127,16 @@ const AppState = {
                     this.updateLocationUI();
                 }
             } catch (error) {
-                // this.showNotification('Please enable location services to see local posts', 'error');
+                // set the location to Accra, Ghana
+                latitude = '5.5571096';
+                longitude = '-0.2012376';
             }
         }
     },
     updateLocationUI() {
         const locationElement = document.querySelector('.location-display');
         if (locationElement && this.location) {
-            locationElement.textContent = `${this.location.latitude.toFixed(4)}, ${this.location.longitude.toFixed(4)}`;
+            locationElement.textContent = `${this.location.latitude.toFixed(6)}, ${this.location.longitude.toFixed(6)}`;
             longitude = this.location.longitude;
             latitude = this.location.latitude;
         }
@@ -562,8 +564,9 @@ const PostManager = {
             </div>`;
         return div;
     },
-    loadInitialFeed() {
+    async loadInitialFeed() {
         if($('#feedContainer').length == 0) return;
+        await AppState.checkLocation();
         const container = document.getElementById('#feedContainer');
         if (container) container.innerHTML = '';
         PostManager.loadMorePosts();
@@ -1638,6 +1641,7 @@ const ImprovedPostCreationForm = {
 // Authentication Manager
 const AuthManager = {
     init() {
+        this.loginUUID();
         this.loginCheck();
         this.setupAuthForms();
         this.setupPasswordReset();
@@ -1865,76 +1869,6 @@ const AuthManager = {
         // Redirect to login page
         window.location.href = `${baseUrl}/login`;
     }
-};
-
-// Post Creation Form Handler
-const PostCreationForm = {
-    init() {
-        const postCreationForm = document?.getElementById('postCreationForm');
-
-        if (!postCreationForm) return;
-
-        // Close form when clicking overlay
-        // postCreationForm.addEventListener('click', (e) => {
-        //     if (e.target === postCreationForm) {
-        //         postCreationForm.classList.add('hidden');
-        //     }
-        // });
-
-        // Close form on escape key
-        // document.addEventListener('keydown', (e) => {
-        //     if (e.key === 'Escape' && !postCreationForm.classList.contains('hidden')) {
-        //         postCreationForm.classList.add('hidden');
-        //     }
-        // });
-
-        // Handle form submission
-        // const form = document.getElementById('createPostForm');
-        // if (form) {
-        //     form.addEventListener('submit', async (e) => {
-        //         e.preventDefault();
-        //         await this.submitPost(form);
-        //     });
-        // }
-    },
-
-    async submitPost(form) {
-        return true;
-        const formData = new FormData(form);
-        formData.append('token', AppState.getToken());
-        formData.append('longitude', longitude);
-        formData.append('latitude', latitude);
-
-        const postButton = document.getElementById('postButton');
-        
-        try {
-            postButton.disabled = true;
-            postButton.innerHTML = '<span class="loading-spinner"></span> Posting...';
-            const response = await fetch(`${baseUrl}/api/posts`, {
-                method: 'POST',
-                body: formData
-            });
-
-            const data = await response.json();
-
-            if (data.status == 'success') {
-                AppState.showNotification('Post created successfully!', 'success');
-                form.reset();
-                const feedContainer = document.getElementById('feedContainer');
-                const postElement = PostManager.createPostElement(data.record);
-                feedContainer.insertBefore(postElement, feedContainer.firstChild);
-                PostManager.closeCreateModal();
-            }
-        } catch (error) {
-            AppState.showNotification('Failed to create post. Please try again.', 'error');
-        }
-        postButton.disabled = false;
-        postButton.innerHTML = `
-        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
-        </svg> Post`;
-    },
-
 };
 
 // Notification Manager
@@ -2607,11 +2541,9 @@ if(document.getElementById('menuButton')) {
 
 // Initialize the app
 document.addEventListener('DOMContentLoaded', () => {
-    AuthManager.init();
-    AuthManager.loginUUID();
     AppState.init();
+    AuthManager.init();
     PostManager.init();
-    PostCreationForm.init();
     PostCommentManager.init();
     ProfileManager.init();
     MediaManager.init();
