@@ -506,6 +506,7 @@ function loadingMessages(roomId, receiverId = 0) {
           </div>
         `;
       }
+      scrollToBottom();
     }
   }).catch((error) => {
       messagesContainer.innerHTML = `
