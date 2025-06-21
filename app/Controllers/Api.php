@@ -254,7 +254,7 @@ class Api extends BaseController
         $cacheObject = !empty($classObject->cacheObject) ? $classObject->cacheObject : new Caching();
 
         // manage the user location
-        if(!empty($payload['noloc'])) {
+        if(empty($payload['noloc'])) {
             $payload = manageUserLocation($payload, $cacheObject);
         }
 

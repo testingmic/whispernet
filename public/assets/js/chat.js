@@ -157,7 +157,6 @@ function closeModal() {
 function individualChatBtnClick() {
     hideModal(newChatModal);
     showModal(userSearchModal);
-    $(`input[id="userSearchInput"]`).focus();
 }
 
 function groupChatBtnClick() {

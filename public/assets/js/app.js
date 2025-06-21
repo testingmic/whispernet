@@ -757,16 +757,18 @@ const PostManager = {
                 setInterval(() => this.loadLatestPosts(), 10000);
             }
 
-            this.userLocation = data?.location ?? this.userLocation;
             if(data.data.length == 0) {
                 document.getElementById('oldPostsContainer').classList.add('hidden');
             }
-            if(this.userLocation && $(`.location-display`).length > 0) {
-                if(this.userLocation.city) {
-                    $(`.location-display`).html(`${this.userLocation.city}, ${this.userLocation.country}`);
-                }
-                if(this.userLocation.latitude && this.userLocation.longitude) {
-                    $(`.position-display`).html(`${this.userLocation.latitude}, ${this.userLocation.longitude}`);
+            if(data?.location) {
+                this.userLocation = data?.location ?? this.userLocation;
+                if(this.userLocation && $(`.location-display`).length > 0) {
+                    if(this.userLocation.city) {
+                        $(`.location-display`).html(`${this.userLocation.city}, ${this.userLocation.country}`);
+                    }
+                    if(this.userLocation.latitude && this.userLocation.longitude) {
+                        $(`.position-display`).html(`${this.userLocation.latitude}, ${this.userLocation.longitude}`);
+                    }
                 }
             }
         } catch (error) {
