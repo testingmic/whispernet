@@ -418,7 +418,6 @@ function beginChat(roomId, type) {
   hideModal(userSearchModal);
   selectedUserId = roomInfo?.user_id ?? 0;
 
-  console.log(roomInfo);
   $(`h3[id="chatTitle"]`).text(roomInfo?.username ?? roomInfo?.full_name);
   $(`p[id="chatStatus"]`).text(roomInfo?.state ?? 'Offline');
   $(`div[id="chatAvatar"]`).html(roomInfo?.username?.charAt(0)?.toUpperCase() ?? '');
@@ -515,9 +514,44 @@ function loadingMessages(roomId, receiverId = 0) {
           <p class="text-gray-500 dark:text-gray-400">No messages yet. Start the conversation!</p>
       </div>`;
   });
-  setTimeout(() => {
-    $(`div[id="selfDestructMessage"]`).removeClass('hidden');
-  }, 1000);
+  if(!localStorage.getItem(`d${selectedUserId}`)) {
+    setTimeout(() => {
+      const selfDestructElement = document.getElementById('selfDestructMessage');
+      if (selfDestructElement) {
+        selfDestructElement.classList.remove('hidden');
+        // Add fade-in animation
+        selfDestructElement.style.opacity = '0';
+        selfDestructElement.style.transform = 'translateY(-10px)';
+        selfDestructElement.style.transition = 'all 0.3s ease-out';
+        
+        setTimeout(() => {
+          selfDestructElement.style.opacity = '1';
+          selfDestructElement.style.transform = 'translateY(0)';
+        }, 50);
+      }
+    }, 10);
+  }
+}
+
+// Self-destruct message dismiss functionality
+function initializeSelfDestructMessage() {
+  const dismissButton = document.getElementById('dismissSelfDestruct');
+  const selfDestructElement = document.getElementById('selfDestructMessage');
+  if (dismissButton && selfDestructElement) {
+    dismissButton.addEventListener('click', function() {
+      selfDestructElement.style.opacity = '0';
+      selfDestructElement.style.transform = 'translateY(-10px)';
+      selfDestructElement.style.transition = 'all 0.3s ease-out';
+      setTimeout(() => {
+        selfDestructElement.classList.add('hidden');
+        // Reset styles
+        selfDestructElement.style.opacity = '';
+        selfDestructElement.style.transform = '';
+        selfDestructElement.style.transition = '';
+      }, 300);
+      localStorage.setItem(`d${selectedUserId}`, 1);
+    });
+  }
 }
 
 // Helper Functions
@@ -1112,3 +1146,8 @@ function addMessageWithMediaToUI(message, type, files = null) {
   
   messagesContainer.appendChild(messageElement);
 }
+
+// Initialize self-destruct message functionality when the page loads
+document.addEventListener('DOMContentLoaded', function() {
+  initializeSelfDestructMessage();
+});

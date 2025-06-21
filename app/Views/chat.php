@@ -156,8 +156,39 @@ $messages = $messages ?? [];
                     <!-- Messages Area -->
                     <div id="messagesArea" class="flex-1 overflow-y-auto p-4 bg-gray-50 dark:bg-gray-700/50">
 
-                        <div id="selfDestructMessage" class="text-center hidden text-sm text-danger color-red-500 mb-4 border-b border-gray-200 dark:border-gray-700 p-4 bg-white dark:bg-gray-700/50 dark:text-white">
-                            <span class="text-red-500 dark:text-white">All messages in this chat will self destruct after 24 hours.</span>
+                        <!-- Enhanced Self-Destruct Message Notification -->
+                        <div id="selfDestructMessage" class="hidden mb-6">
+                            <div class="bg-gradient-to-r from-red-50 to-orange-50 dark:from-red-900/20 dark:to-orange-900/20 border border-red-200 dark:border-red-700/30 rounded-xl p-4 shadow-lg">
+                                <div class="flex items-start space-x-3">
+                                    <!-- Warning Icon -->
+                                    <div class="flex-shrink-0">
+                                        <div class="w-10 h-10 bg-gradient-to-r from-red-500 to-orange-500 rounded-full flex items-center justify-center">
+                                            <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"></path>
+                                            </svg>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Content -->
+                                    <div class="flex-1 min-w-0">
+                                        <div class="flex items-center justify-between mb-2">
+                                            <h4 class="text-sm font-semibold text-red-800 dark:text-red-200">
+                                                Self-Destruct Messages
+                                            </h4>
+                                            <button id="dismissSelfDestruct" class="text-red-400 hover:text-red-600 dark:hover:text-red-300 transition-colors">
+                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                                                </svg>
+                                            </button>
+                                        </div>
+                                        
+                                        <p class="text-sm text-red-700 dark:text-red-300">
+                                            ⏰ All messages in this chat will automatically disappear after <strong>24 hours</strong>.
+                                        </p>
+                                
+                                    </div>
+                                </div>
+                            </div>
                         </div>
 
                         <div id="welcomeMessage" class="flex items-center justify-center h-full">
