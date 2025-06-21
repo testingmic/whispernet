@@ -42,6 +42,7 @@ function formatPosts($posts = [], $single = false, $userId = null) {
             // 'longitude' => $post['longitude'],
             // 'latitude' => $post['latitude'],
             'views' => $post['views'] ?? 0,
+            'name' => empty($post['full_name']) ? $post['username'] : trim(explode(' ', $post['full_name'])[0]),
             'username' => $post['username'],
             'ago' => formatTimeAgo($post['created_at']),
             'comments_count' => $post['comments_count'] ?? 0,

@@ -260,6 +260,7 @@ function hidePlatformUpdates() {
         updatesElement.style.transform = 'translateY(-10px)';
         setTimeout(() => {
             updatesElement.remove();
+            localStorage.setItem('hidePlatformUpdates', true);
         }, 300);
     }
 }
@@ -602,7 +603,7 @@ const PostManager = {
                         <span class="text-gray-500 text-sm">${comment.username[0].toUpperCase()}${comment.username[1].toUpperCase()}</span>
                     </div>
                     <div>
-                        <div class="text-sm font-medium text-gray-900 dark:text-white">${comment.username}</div>
+                        <div class="text-sm font-medium text-gray-900 dark:text-white">${comment.full_name}</div>
                         <div class="text-xs text-gray-500 flex items-center space-x-1">
                             <span title="${comment.created_at}" class="text-xs text-gray-500 mr-2 flex items-center space-x-1">
                                 ${comment.ago}
@@ -649,6 +650,9 @@ const PostManager = {
     },
     async loadInitialFeed() {
         if($('#feedContainer').length == 0) return;
+        if(localStorage.getItem('hidePlatformUpdates')) {
+            hidePlatformUpdates();
+        }
         await AppState.checkLocation();
         const container = document.getElementById('#feedContainer');
         if (container) container.innerHTML = '';
@@ -835,7 +839,7 @@ const PostManager = {
                         <span class="text-sm font-semibold text-white">${post.username[0].toUpperCase()}${post.username[1].toUpperCase()}</span>
                     </div>
                     <div>
-                        <div class="text-sm font-medium text-gray-900">${post.username}</div>
+                        <div class="text-sm font-medium text-gray-900">${post.name}</div>
                         <div class="text-xs text-gray-500 dark:text-gray-800 flex items-center space-x-1">
                             <span title="${post.created_at}" class="text-xs text-gray-500 dark:text-gray-800 mr-2 flex items-center space-x-1">
                                 ${post.ago}

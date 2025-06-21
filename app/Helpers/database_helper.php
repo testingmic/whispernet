@@ -12,6 +12,7 @@ $databases = [
         password_hash TEXT NOT NULL,
         full_name TEXT,
         bio TEXT,
+        gender TEXT,
         statistics TEXT,
         two_factor_setup BOOLEAN DEFAULT 0,
         profile_image TEXT,

@@ -26,6 +26,16 @@
                     <p class="text-lg text-gray-600 dark:text-gray-400 mb-4">
                         <?= $user['email'] ?? 'user@example.com' ?>
                     </p>
+                    <p class="text-lg text-gray-600 dark:text-gray-400 mb-4 flex items-center justify-center">
+                        <svg class="svg-icon"
+                            style="width: 1em; height: 1em;vertical-align: middle;fill: currentColor;overflow: hidden;"
+                            viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg">
+                            <path
+                                d="M819.2 729.088V757.76c0 33.792-27.648 61.44-61.44 61.44H266.24c-33.792 0-61.44-27.648-61.44-61.44v-28.672c0-74.752 87.04-119.808 168.96-155.648 3.072-1.024 5.12-2.048 8.192-4.096 6.144-3.072 13.312-3.072 19.456 1.024C434.176 591.872 472.064 604.16 512 604.16c39.936 0 77.824-12.288 110.592-32.768 6.144-4.096 13.312-4.096 19.456-1.024 3.072 1.024 5.12 2.048 8.192 4.096 81.92 34.816 168.96 79.872 168.96 154.624z" />
+                            <path d="M359.424 373.76a168.96 152.576 90 1 0 305.152 0 168.96 152.576 90 1 0-305.152 0Z" />
+                        </svg>
+                        <?= $user['gender'] ?? 'Not Set' ?>
+                    </p>
                     <div class="flex flex-wrap gap-2 justify-center md:justify-start">
                         <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-200">
                             <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -116,7 +126,7 @@
                     Account Settings
                 </h3>
             </div>
-            
+
             <div class="p-6 space-y-6">
                 <!-- Notification Settings -->
                 <div class="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-700/50 rounded-xl">
@@ -281,80 +291,80 @@
 <div class="h-10"></div>
 
 <script>
-// Enhanced Settings Toggle Functionality
-document.addEventListener('DOMContentLoaded', function() {
-    const toggleButtons = document.querySelectorAll('[data-setting]');
-    
-    toggleButtons.forEach(button => {
-        button.addEventListener('click', function() {
-            const setting = this.getAttribute('data-setting');
-            const currentValue = this.getAttribute('data-value');
-            const newValue = currentValue === '1' ? '0' : '1';
-            
-            // Update button state
-            this.setAttribute('data-value', newValue);
-            this.setAttribute('aria-checked', newValue === '1' ? 'true' : 'false');
-            
-            // Update visual state
-            const toggle = this.querySelector('span');
-            const icon = this.querySelector('svg');
-            
-            if (newValue === '1') {
-                this.classList.remove('bg-gray-200', 'dark:bg-gray-700');
-                this.classList.add('bg-blue-600');
-                toggle.classList.remove('translate-x-0');
-                toggle.classList.add('translate-x-5');
-                if (icon) icon.classList.add('opacity-0');
-            } else {
-                this.classList.remove('bg-blue-600');
-                this.classList.add('bg-gray-200', 'dark:bg-gray-700');
-                toggle.classList.remove('translate-x-5');
-                toggle.classList.add('translate-x-0');
-                if (icon) icon.classList.remove('opacity-0');
-            }
-            
-            // Send update to server
-            updateSetting(setting, newValue);
+    // Enhanced Settings Toggle Functionality
+    document.addEventListener('DOMContentLoaded', function() {
+        const toggleButtons = document.querySelectorAll('[data-setting]');
+
+        toggleButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                const setting = this.getAttribute('data-setting');
+                const currentValue = this.getAttribute('data-value');
+                const newValue = currentValue === '1' ? '0' : '1';
+
+                // Update button state
+                this.setAttribute('data-value', newValue);
+                this.setAttribute('aria-checked', newValue === '1' ? 'true' : 'false');
+
+                // Update visual state
+                const toggle = this.querySelector('span');
+                const icon = this.querySelector('svg');
+
+                if (newValue === '1') {
+                    this.classList.remove('bg-gray-200', 'dark:bg-gray-700');
+                    this.classList.add('bg-blue-600');
+                    toggle.classList.remove('translate-x-0');
+                    toggle.classList.add('translate-x-5');
+                    if (icon) icon.classList.add('opacity-0');
+                } else {
+                    this.classList.remove('bg-blue-600');
+                    this.classList.add('bg-gray-200', 'dark:bg-gray-700');
+                    toggle.classList.remove('translate-x-5');
+                    toggle.classList.add('translate-x-0');
+                    if (icon) icon.classList.remove('opacity-0');
+                }
+
+                // Send update to server
+                updateSetting(setting, newValue);
+            });
         });
     });
-});
 
-async function updateSetting(setting, value) {
-    try {
-        const response = await fetch('/api/profile/settings', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-Requested-With': 'XMLHttpRequest'
-            },
-            body: JSON.stringify({
-                setting: setting,
-                value: value,
-                token: localStorage.getItem('token')
-            })
-        });
-        
-        if (!response.ok) {
-            throw new Error('Failed to update setting');
+    async function updateSetting(setting, value) {
+        try {
+            const response = await fetch('/api/profile/settings', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest'
+                },
+                body: JSON.stringify({
+                    setting: setting,
+                    value: value,
+                    token: localStorage.getItem('token')
+                })
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to update setting');
+            }
+
+            // Show success notification
+            showNotification('Setting updated successfully!', 'success');
+        } catch (error) {
+            console.error('Error updating setting:', error);
+            showNotification('Failed to update setting. Please try again.', 'error');
         }
-        
-        // Show success notification
-        showNotification('Setting updated successfully!', 'success');
-    } catch (error) {
-        console.error('Error updating setting:', error);
-        showNotification('Failed to update setting. Please try again.', 'error');
     }
-}
 
-// Notification function
-function showNotification(message, type = 'info') {
-    const notification = document.createElement('div');
-    notification.className = `fixed top-4 right-4 z-50 p-4 rounded-xl shadow-lg max-w-sm transform transition-all duration-300 translate-x-full`;
-    
-    const bgColor = type === 'success' ? 'bg-green-500' : type === 'error' ? 'bg-red-500' : 'bg-blue-500';
-    notification.classList.add(bgColor, 'text-white');
-    
-    notification.innerHTML = `
+    // Notification function
+    function showNotification(message, type = 'info') {
+        const notification = document.createElement('div');
+        notification.className = `fixed top-4 right-4 z-50 p-4 rounded-xl shadow-lg max-w-sm transform transition-all duration-300 translate-x-full`;
+
+        const bgColor = type === 'success' ? 'bg-green-500' : type === 'error' ? 'bg-red-500' : 'bg-blue-500';
+        notification.classList.add(bgColor, 'text-white');
+
+        notification.innerHTML = `
         <div class="flex items-center">
             <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
                 <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
@@ -362,20 +372,20 @@ function showNotification(message, type = 'info') {
             <span>${message}</span>
         </div>
     `;
-    
-    document.body.appendChild(notification);
-    
-    // Animate in
-    setTimeout(() => {
-        notification.classList.remove('translate-x-full');
-    }, 100);
-    
-    // Remove after 5 seconds
-    setTimeout(() => {
-        notification.classList.add('translate-x-full');
+
+        document.body.appendChild(notification);
+
+        // Animate in
         setTimeout(() => {
-            notification.remove();
-        }, 300);
-    }, 5000);
-}
+            notification.classList.remove('translate-x-full');
+        }, 100);
+
+        // Remove after 5 seconds
+        setTimeout(() => {
+            notification.classList.add('translate-x-full');
+            setTimeout(() => {
+                notification.remove();
+            }, 300);
+        }, 5000);
+    }
 </script>
