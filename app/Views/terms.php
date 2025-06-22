@@ -10,7 +10,7 @@
                 Please read these terms carefully before using our service. By using <?= $appName ?>, you agree to be bound by these terms.
             </p>
             <div class="mt-6 flex items-center justify-center space-x-4 text-sm text-gray-500 dark:text-gray-400">
-                <span>Last updated: <?= date('F j, Y') ?></span>
+                <span>Last updated: <?= $privacyUpdatedDate ?></span>
                 <span>•</span>
                 <span>Version 1.0</span>
             </div>
