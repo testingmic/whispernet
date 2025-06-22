@@ -12,10 +12,12 @@ class WebSocketManager {
             if(typeof data.type == 'undefined') return;
             if(data.type == 'chat' && data.sender == parseInt(selectedUserId)) {
                 addMessageToUI(data.message, data.direction, '', data.uuid, data.media, data.files);
-                scrollToBottom();
+                setTimeout(() => {
+                    new MediaDisplay();
+                    scrollToBottom();
+                  }, 500);
             }
         } catch(e) {
-            console.log(e);
         }
     }
 

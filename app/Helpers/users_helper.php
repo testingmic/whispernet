@@ -33,7 +33,7 @@ function mask_email_address($users, $first_part = false) {
 
         if(isset($value['last_login'])) {
             // convert the last login to date
-            $users[$key]['last_login'] = convertTimestampToDate($value['last_login']);
+            // $users[$key]['last_login'] = convertTimestampToDate($value['last_login']);
             // check the last login to today
             $days_ago = timeDifference($users[$key]['last_login']);
             // $users[$key]['date_range'] = $days_ago;

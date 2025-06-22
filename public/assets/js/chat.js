@@ -264,25 +264,25 @@ if (messageInput) {
     }
   });
 
-  messageInput.addEventListener("keypress", function (e) {
-    if (e.key === "Enter" && !e.shiftKey) {
-      e.preventDefault();
-      e.stopPropagation();
-      e.stopImmediatePropagation();
-      handleMessageSubmit();
-      return false;
-    }
-  });
+  // messageInput.addEventListener("keypress", function (e) {
+  //   if (e.key === "Enter" && !e.shiftKey) {
+  //     e.preventDefault();
+  //     e.stopPropagation();
+  //     e.stopImmediatePropagation();
+  //     handleMessageSubmit();
+  //     return false;
+  //   }
+  // });
 
-  messageInput.addEventListener("keyup", function (e) {
-    if (e.key === "Enter" && !e.shiftKey) {
-      e.preventDefault();
-      e.stopPropagation();
-      e.stopImmediatePropagation();
-      handleMessageSubmit();
-      return false;
-    }
-  });
+  // messageInput.addEventListener("keyup", function (e) {
+  //   if (e.key === "Enter" && !e.shiftKey) {
+  //     e.preventDefault();
+  //     e.stopPropagation();
+  //     e.stopImmediatePropagation();
+  //     handleMessageSubmit();
+  //     return false;
+  //   }
+  // });
 
   // Additional safety: handle input events
   messageInput.addEventListener("input", function (e) {
@@ -611,7 +611,7 @@ function addMessageToUI(content, type, time = '', uuid = '', has_media = false, 
   }
 
   messageDiv.innerHTML = `
-        <div class="flex items-end space-x-2 max-w-[85%] sm:max-w-[70%]" data-uuid="${uuid}">
+        <div class="flex items-end space-x-2 max-w-[85%] sm:max-w-[70%]" data-type="${type}" data-uuid="${uuid}">
             ${
               type === "received"
                 ? `
@@ -624,13 +624,15 @@ function addMessageToUI(content, type, time = '', uuid = '', has_media = false, 
             <div class="flex flex-col ${
               type === "sent" ? "items-end" : "items-start"
             }">
-                <div class="rounded-2xl px-4 py-2 ${
-                  type === "sent"
-                    ? "bg-blue-500 text-white"
-                    : "bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-white"
-                }">
-                  ${content.length > 0 ? `<p class="text-sm break-words">${content}</p>` : ''}
-                </div>
+                ${content.length > 0 ? `
+                  <div class="rounded-2xl px-4 py-2 ${
+                    type === "sent"
+                      ? "bg-blue-500 text-white"
+                      : "bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-white"
+                  }">
+                    ${content.length > 0 ? `<p class="text-sm break-words">${content}</p>` : ''}
+                  </div>` : ''
+                }
                 <span class="text-xs text-gray-500 dark:text-gray-400 mt-1">
                     ${time ? time : new Date().toLocaleTimeString([], {
                       hour: "2-digit",
@@ -643,15 +645,18 @@ function addMessageToUI(content, type, time = '', uuid = '', has_media = false, 
             </div>
         </div>
     `;
+
+  messagesContainer.appendChild(messageDiv);
 }
 
 function appendMediaToUI(media, uuid) {
   let mediaContent = '';
   mediaContent = MediaManager.renderMedia(media, true);
-  $(`div[class~="media-preview-container"][data-media-uuid="${uuid}"]`).html(mediaContent);
+  $(`div[data-type="sent"] div[class~="media-preview-container"][data-media-uuid="${uuid}"]`).html(mediaContent);
 
   setTimeout(() => {
     new MediaDisplay();
+    scrollToBottom();
   }, 500);
 }
 
@@ -1133,8 +1138,6 @@ function handleFileUpload() {
           type: 'chat',
           data: msgPayload,
         });
-        
-        scrollToBottom();
       }
     },
     error: function(xhr, status, error) {
@@ -1145,7 +1148,7 @@ function handleFileUpload() {
     complete: function() {
       // Restore button state
       submitButton.innerHTML = `<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path>
       </svg>`;
       submitButton.disabled = false;
     }
