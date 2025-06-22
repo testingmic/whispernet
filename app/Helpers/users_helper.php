@@ -12,6 +12,14 @@ function getUserIpaddress() {
     return $userIpaddress;
 }
 
+function formatUserSettings($settings) {
+    $formattedSettings = [];
+    foreach($settings as $setting) {
+        $formattedSettings[$setting['setting']] = (int)$setting['value'];
+    }
+    return $formattedSettings;
+}
+
 /**
  * Mask the email address
  * 

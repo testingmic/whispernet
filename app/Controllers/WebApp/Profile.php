@@ -33,23 +33,15 @@ class Profile extends WebAppController
         // Get recent activity
         $recentActivity = $this->getRecentActivity($userId);
 
-        $formattedSettings = [];
-
-        foreach($userModel->getUserSettings($userId) as $setting) {
-            $formattedSettings[$setting['setting']] = $setting['value'];
-        }
-
         $data = [
             'pageTitle' => 'Profile',
             'user' => $user,
-            'settings' => $formattedSettings,
+            'settings' => formatUserSettings($userModel->getUserSettings($userId)),
             'stats' => $stats,
             'recentActivity' => $recentActivity,
             'favicon_color' => 'profile'
         ];
 
-        // print_r($data);
-        // exit;
         // return the user profile information
         return $this->templateObject->loadPage('profile', $data);
     }
@@ -60,7 +52,23 @@ class Profile extends WebAppController
      * @return string
      */
     public function edit() {
-        return $this->templateObject->loadPage('edit_profile', ['pageTitle' => 'Edit Profile', 'favicon_color' => 'profile']);
+
+        // get the user model
+        $userModel = new \App\Models\UsersModel();
+        $userId = session()->get('user_id');
+
+        // get the user
+        $user = $userModel->find($userId);
+
+        // get the user settings
+        $userSettings = $userModel->getUserSettings($userId);
+
+        return $this->templateObject->loadPage('edit_profile', [
+            'pageTitle' => 'Edit Profile', 
+            'favicon_color' => 'profile',
+            'settings' => formatUserSettings($userSettings),
+            'user' => $user
+        ]);
     }
 
     /**

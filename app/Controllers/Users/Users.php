@@ -117,7 +117,7 @@ class Users extends LoadController {
         // get the settings
         $userSettings = $this->usersModel->getUserSettings($userId);
 
-        return Routing::created(['data' => 'User settings successfully saved.', 'record' => $userSettings]);
+        return Routing::created(['data' => 'User settings successfully saved.', 'record' => formatUserSettings($userSettings)]);
     }
 
     /**

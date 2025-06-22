@@ -2443,9 +2443,6 @@ const ProfileManager = {
                 
                 if (data.status == 'success') {
                     NotificationManager.show('Profile updated successfully', 'success');
-                    setTimeout(() => {
-                        window.location.href = '/profile';
-                    }, 1500);
                 } else {
                     throw new Error(data.message || 'Failed to update profile');
                 }
@@ -2464,8 +2461,8 @@ const ProfileManager = {
         toggles.forEach(toggle => {
             toggle.addEventListener('click', async () => {
                 const setting = toggle.dataset.setting;
-                const currentValue = toggle.dataset.value;
-                const newValue = currentValue === '1' ? '0' : '1';
+                const currentValue = parseInt(toggle.dataset.value);
+                const newValue = currentValue === 1 ? 0 : 1;
                 
                 // Update UI immediately
                 toggle.dataset.value = newValue;
@@ -2518,7 +2515,7 @@ const ProfileManager = {
                     toggle.dataset.value = currentValue;
                     toggle.classList.toggle('bg-blue-600');
                     toggle.classList.toggle('bg-gray-200', 'dark:bg-gray-700');
-                    toggle.setAttribute('aria-checked', currentValue === '1');
+                    toggle.setAttribute('aria-checked', currentValue === 1);
                     
                     const toggleSpan = toggle.querySelector('span');
                     toggleSpan.classList.toggle('translate-x-5');
