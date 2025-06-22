@@ -55,6 +55,7 @@ const AppState = {
     },
     logout() {
         localStorage.removeItem('user');
+        localStorage.removeItem('userLocation');
         $.post(`${baseUrl}/api/auth/logout`, {
             token: localStorage.getItem('token'),
             webapp: true,
