@@ -15,9 +15,9 @@ CREATE TABLE IF NOT EXISTS users (
     profile_image VARCHAR(255),
     is_verified TINYINT(1) DEFAULT 0,
     is_active TINYINT(1) DEFAULT 1,
-    last_login TIMESTAMP NULL DEFAULT NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    last_login DATETIME NULL DEFAULT NULL,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     INDEX idx_email (email),
     INDEX idx_username (username),
     INDEX idx_is_active (is_active)
@@ -30,9 +30,9 @@ CREATE TABLE IF NOT EXISTS user_token_auth (
     password VARCHAR(255) UNIQUE,
     hash_algo VARCHAR(50),
     system_token TINYINT(1) NOT NULL DEFAULT 0,
-    last_used TIMESTAMP NULL DEFAULT NULL,
-    date_created TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    date_expired TIMESTAMP NULL DEFAULT NULL,
+    last_used DATETIME NULL DEFAULT NULL,
+    date_created DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    date_expired DATETIME NULL DEFAULT NULL,
     INDEX idx_login (login),
     INDEX idx_password (password),
     INDEX idx_date_expired (date_expired)
@@ -44,9 +44,9 @@ CREATE TABLE IF NOT EXISTS user_devices (
     device_hash VARCHAR(255) NOT NULL,
     device_name VARCHAR(255),
     device_type VARCHAR(50),
-    last_active TIMESTAMP NULL DEFAULT NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    last_active DATETIME NULL DEFAULT NULL,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     INDEX idx_user_id (user_id),
     INDEX idx_device_hash (device_hash),
     INDEX idx_device_type (device_type)
@@ -58,7 +58,7 @@ CREATE TABLE IF NOT EXISTS user_locations (
     latitude DECIMAL(10, 8) NOT NULL,
     longitude DECIMAL(11, 8) NOT NULL,
     accuracy DECIMAL(10, 2),
-    last_updated TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    last_updated DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     INDEX idx_user_id (user_id),
     INDEX idx_coordinates (latitude, longitude)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -80,8 +80,8 @@ CREATE TABLE IF NOT EXISTS posts (
     upvotes INT UNSIGNED DEFAULT 0,
     downvotes INT UNSIGNED DEFAULT 0,
     is_hidden TINYINT(1) DEFAULT 0,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     INDEX idx_user_id (user_id),
     INDEX idx_media_type (media_type),
     INDEX idx_city (city),
@@ -93,7 +93,7 @@ CREATE TABLE IF NOT EXISTS posts (
 CREATE TABLE IF NOT EXISTS tags (
     tag_id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(50) NOT NULL UNIQUE,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     INDEX idx_name (name)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
@@ -112,7 +112,7 @@ CREATE TABLE IF NOT EXISTS pageviews (
     user_agent TEXT,
     referer TEXT,
     page TEXT NOT NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     INDEX idx_user_id (user_id),
     INDEX idx_uuid (uuid),
     INDEX idx_user_agent (user_agent),
@@ -131,8 +131,8 @@ CREATE TABLE IF NOT EXISTS comments (
     city VARCHAR(100),
     country VARCHAR(100),
     views INT UNSIGNED DEFAULT 0,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     INDEX idx_post_id (post_id),
     INDEX idx_user_id (user_id),
     INDEX idx_created_at (created_at)
@@ -142,15 +142,15 @@ CREATE TABLE IF NOT EXISTS bookmarks (
     bookmark_id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     user_id BIGINT UNSIGNED NOT NULL,
     post_id BIGINT UNSIGNED NOT NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     INDEX idx_user_id (user_id),
     INDEX idx_post_id (post_id)
 );
 
 CREATE TABLE IF NOT EXISTS chat_rooms (
     room_id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    last_message_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    last_message_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     name TEXT,
     sender_id BIGINT UNSIGNED NOT NULL,
     receiver_id BIGINT UNSIGNED NOT NULL,
@@ -168,8 +168,8 @@ CREATE TABLE IF NOT EXISTS chat_participants (
     room_id BIGINT UNSIGNED NOT NULL,
     user_id BIGINT UNSIGNED NOT NULL,
     is_blocked TINYINT(1) DEFAULT 0,
-    joined_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    last_read_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    joined_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    last_read_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY (room_id, user_id),
     INDEX idx_room_id (room_id),
     INDEX idx_user_id (user_id),
@@ -189,8 +189,8 @@ CREATE TABLE IF NOT EXISTS chat_messages (
     receiver_deleted TINYINT(1) DEFAULT 0,
     media_type ENUM('text', 'image', 'video') DEFAULT 'text',
     is_encrypted TINYINT(1) DEFAULT 1,
-    self_destruct_at TIMESTAMP NULL DEFAULT NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    self_destruct_at DATETIME NULL DEFAULT NULL,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     INDEX idx_room_id (room_id),
     INDEX idx_user_id (user_id),
     INDEX idx_created_at (created_at),
@@ -203,8 +203,8 @@ CREATE TABLE IF NOT EXISTS media (
     record_id VARCHAR(255) NOT NULL,
     section VARCHAR(100) NOT NULL,
     media TEXT,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
 
 CREATE INDEX IF NOT EXISTS idx_user_id ON media (user_id);
@@ -219,8 +219,8 @@ CREATE TABLE IF NOT EXISTS reports (
     reason ENUM('spam', 'abuse', 'inappropriate', 'other') NOT NULL,
     description TEXT,
     status ENUM('pending', 'reviewed', 'resolved') DEFAULT 'pending',
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     INDEX idx_reporter_id (reporter_id),
     INDEX idx_status (status),
     INDEX idx_reported_type (reported_type)
@@ -233,7 +233,7 @@ CREATE TABLE IF NOT EXISTS analytics (
     latitude DECIMAL(10, 8),
     longitude DECIMAL(11, 8),
     metadata JSON,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     INDEX idx_user_id (user_id),
     INDEX idx_event_type (event_type),
     INDEX idx_created_at (created_at)
@@ -244,7 +244,7 @@ CREATE TABLE IF NOT EXISTS rate_limits (
     user_id BIGINT UNSIGNED NOT NULL,
     action_type ENUM('post', 'comment', 'chat', 'vote') NOT NULL,
     count INT UNSIGNED DEFAULT 1,
-    window_start TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    window_start DATETIME DEFAULT CURRENT_TIMESTAMP,
     INDEX idx_user_id (user_id),
     INDEX idx_action_type (action_type),
     INDEX idx_window_start (window_start)
@@ -256,7 +256,7 @@ CREATE TABLE IF NOT EXISTS votes (
     user_id BIGINT UNSIGNED NOT NULL,
     section ENUM('posts', 'comments') NOT NULL,
     direction ENUM('up', 'down') NOT NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     INDEX idx_record_section (record_id, section),
     INDEX idx_user_section (user_id, section)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -266,7 +266,7 @@ CREATE TABLE IF NOT EXISTS views (
     user_id BIGINT UNSIGNED NOT NULL,
     section ENUM('posts', 'comments') NOT NULL,
     record_id BIGINT UNSIGNED NOT NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     INDEX idx_user_id (user_id),
     INDEX idx_section_record (section, record_id),
     INDEX idx_created_at (created_at)
@@ -280,7 +280,7 @@ CREATE TABLE IF NOT EXISTS notifications (
     reference_id BIGINT UNSIGNED,
     content TEXT NOT NULL,
     is_read TINYINT(1) DEFAULT 0,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     INDEX idx_user_id (user_id),
     INDEX idx_type (type),
     INDEX idx_is_read (is_read),
@@ -292,7 +292,7 @@ CREATE TABLE IF NOT EXISTS user_chat_rooms (
     room_id INTEGER NOT NULL,
     user_id INTEGER NOT NULL,
     type VARCHAR(50),
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     INDEX idx_user_id (user_id),
     INDEX idx_type (type)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

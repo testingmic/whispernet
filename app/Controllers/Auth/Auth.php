@@ -54,7 +54,7 @@ class Auth extends LoadController {
 
         // update the user last login date
         if(!$isLogger) {
-            $this->usersModel->update($user['user_id'], ['last_login' => time()]);
+            $this->usersModel->update($user['user_id'], ['last_login' => date('Y-m-d H:i:s')]);
         }
 
         // Check if two factor setup
@@ -156,7 +156,7 @@ class Auth extends LoadController {
             'full_name' => $this->payload['full_name'],
             'is_verified' => 0,
             'is_active' => 1,
-            'last_login' => time(),
+            'last_login' => date('Y-m-d H:i:s'),
         ];
 
         // Insert the user
