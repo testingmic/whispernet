@@ -66,9 +66,9 @@ function manageUserLocation($payload, $cacheObject) {
         // get the data to use
         $dataToUse = !empty($locationInfo) ? $locationInfo : getLocationByIP($payload['longitude'], $payload['latitude']);
         
-        print_r($dataToUse);
-        exit;
-        $theCity = $dataToUse['results'][0]['components']['town'] ?? ($dataToUse['results'][0]['components']['city'] ?? null);
+        $theCity = $dataToUse['results'][0]['components']['town'] ?? ($dataToUse['results'][0]['components']['city'] ?? (
+            $dataToUse['results'][0]['components']['suburb'] ?? null
+        ));
        
         // handle the user location data
         if(!empty($theCity)) {
@@ -78,6 +78,8 @@ function manageUserLocation($payload, $cacheObject) {
 
             $cacheObject->save($cacheKey, $dataToUse, 'user.location', null, 60 * 60);
         }
+        print_r($payload);
+        exit;
     }
 
     $final = [
