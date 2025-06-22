@@ -466,7 +466,7 @@ function debounce(fn, delay) {
 
 const debouncedFilterUsers = debounce(function (query) {
   const individualChats = document.getElementById("individualChats");
-  $.get(`${baseUrl}/api/users/search?query=${query}&userUUID=${userUUID}&first_part=true`, function (response) {
+  $.get(`${baseUrl}/api/users/search?query=${query}&userUUID=${userUUID}&first_part=true&token=${AppState.getToken()}`, function (response) {
     let users = "";
     $.each(response.users, function (index, user) {
       if (user.user_id !== loggedInUserId) {

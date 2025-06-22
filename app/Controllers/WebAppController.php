@@ -38,4 +38,15 @@ class WebAppController extends BaseController
         return true;
     }
 
+    /**
+     * Verify if the user is logged in
+     * 
+     * @return bool
+     */
+    public function verifyLogin() {
+        if($this->user_loggedin()) return true;
+        $this->templateObject->loadPage('setup/login', ['pageTitle' => 'Login', 'footerHidden' => true, 'userLoggedIn' => false]);
+        exit;
+    }
+
 }

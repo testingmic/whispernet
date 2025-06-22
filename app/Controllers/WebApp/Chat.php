@@ -13,6 +13,10 @@ class Chat extends WebAppController {
      * @return array
      */
     public function index() {
+
+        // verify if the user is logged in
+        $this->verifyLogin();
+        
         // get the user chat rooms
         $chatRooms = (new chatsModel())->getUserChatRooms($this->session->get('user_id'));
 

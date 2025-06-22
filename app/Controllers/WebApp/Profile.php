@@ -15,6 +15,9 @@ class Profile extends WebAppController
      */
     public function index()
     {
+        // verify if the user is logged in
+        $this->verifyLogin();
+
         // Get the current user's data
         $userModel = new \App\Models\UsersModel();
         $userId = session()->get('user_id');

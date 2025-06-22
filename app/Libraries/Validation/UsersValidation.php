@@ -15,6 +15,12 @@ class UsersValidation {
             'authenticate' => true,
             'payload' => [
             ]
+        ],
+        'search' => [
+            'method' => 'GET',
+            'authenticate' => true,
+            'payload' => [
+            ]
         ]
     ];
 }
