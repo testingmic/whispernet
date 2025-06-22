@@ -154,11 +154,11 @@ $messages = $messages ?? [];
                     </div>
 
                     <!-- Messages Area -->
-                    <div id="messagesArea" class="flex-1 overflow-y-auto p-4 bg-gray-50 dark:bg-gray-700/50">
+                    <div id="messagesArea" class="flex-1 overflow-y-auto p-4 bg-white dark:bg-gray-700/50">
 
                         <!-- Enhanced Self-Destruct Message Notification -->
                         <div id="selfDestructMessage" class="hidden mb-6">
-                            <div class="bg-gradient-to-r from-red-50 to-orange-50 dark:from-red-900/20 dark:to-orange-900/20 border border-red-200 dark:border-red-700/30 rounded-xl p-4 shadow-lg">
+                            <div class="bg-gradient-to-r from-red-50 to-orange-50 dark:from-red-900/20 dark:to-orange-900/20 border border-red-200 dark:border-red-700/30 rounded-xl p-3 shadow-lg">
                                 <div class="flex items-start space-x-3">
                                     <!-- Warning Icon -->
                                     <div class="flex-shrink-0">
@@ -238,10 +238,17 @@ $messages = $messages ?? [];
                                 <!-- only allow image uploads for now and later work on the video uploads -->
                                 <input type="file" id="fileInput" accept="image/*" multiple class="hidden">
 
-                                <button type="button" id="attachButton" class="p-2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
-                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"></path>
-                                    </svg>
+                                <button type="button" id="attachButton" class="p-2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-all duration-300 group">
+                                    <div class="relative">
+                                        <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-500 via-purple-500 to-pink-500 flex items-center justify-center transition-all duration-300 group-hover:scale-110 group-hover:shadow-lg">
+                                            <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path>
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                            </svg>
+                                        </div>
+                                        <!-- Shimmer effect -->
+                                        <div class="absolute inset-0 rounded-lg bg-gradient-to-r from-transparent via-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 animate-pulse"></div>
+                                    </div>
                                 </button>
                                 <div class="flex-1 relative">
                                     <textarea id="messageInput" rows="1" placeholder="Type a message..."

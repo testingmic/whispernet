@@ -129,7 +129,9 @@ class Api extends BaseController
             $handler['success'] = $handler['status'] == 'success';
         }
 
-        $handler['location'] = $this->userLocation;
+        if(!empty($this->userLocation)) {
+            $handler['location'] = $this->userLocation;
+        }
 
         // return the response
         return $this->fromBaseRoute ? $handler : $this->respond($handler, $this->statusCode);

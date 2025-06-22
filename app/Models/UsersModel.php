@@ -139,7 +139,7 @@ class UsersModel extends Model {
      * @param int $limit
      * @return array
      */
-    public function searchUsers($query, $page = 1, $limit = 20) {
+    public function searchUsers($query, $page = 1, $limit = 20, $first_part = false) {
         try {
             $offset = ($page - 1) * $limit;
             $searchTerm = "%$query%";
@@ -157,7 +157,7 @@ class UsersModel extends Model {
 
             return [
                 'success' => true,
-                'users' => mask_email_address($users),
+                'users' => mask_email_address($users, $first_part),
                 'pagination' => [
                     'total' => $total,
                     'page' => $page,

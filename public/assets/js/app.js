@@ -293,9 +293,9 @@ const MediaManager = {
     },
     renderMedia(mediaFiles = [], returnData = false) {
         let html = '<div class="media-display-container space-y-4 mt-3">';
+        html += '<div class="media-grid grid grid-cols-3 gap-2">';
         if(typeof mediaFiles.images !== 'undefined') {
             if(mediaFiles.images?.files.length > 0) {
-                html += '<div class="media-grid grid grid-cols-3 gap-2">';
                 mediaFiles.images?.files.forEach((img, key) => {
                     let _300thumb = mediaFiles.images?.thumbnails[key][0] ?? img;
                     let image = img;
@@ -314,9 +314,36 @@ const MediaManager = {
                             </div>
                         </div>`;
                 });
-                html += '</div>';
             }
         }
+        if(typeof mediaFiles.video !== 'undefined') {
+            if(mediaFiles.video?.files.length > 0) {
+                mediaFiles.video?.files.forEach((video, key) => {
+                    let _300thumb = '';
+                    if(typeof mediaFiles.video?.thumbnails !== 'undefined') {
+                        _300thumb = mediaFiles.video?.thumbnails[key][0] ?? `video-playback.png`;
+                    } else {
+                        _300thumb = `video-playback.png`;
+                    }
+                    html += `<div class="media-item video-item" data-type="video" data-src="${baseUrl}/assets/uploads/${video}" data-thumbnail="${baseUrl}/assets/uploads/${_300thumb}">
+                        <div class="relative group cursor-pointer overflow-hidden rounded-lg bg-gray-100">
+                            <img src="${baseUrl}/assets/uploads/${_300thumb}" style="min-height: 100px;" alt="Video Thumbnail" class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105">
+                            <div class="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-30 transition-all duration-300 flex items-center justify-center">
+                                <div class="bg-white bg-opacity-90 rounded-full p-3 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                                    <svg class="w-6 h-6 text-gray-800" fill="currentColor" viewBox="0 0 24 24">
+                                        <path d="M8 5v14l11-7z"/>
+                                    </svg>
+                                </div>
+                            </div>
+                            <div class="absolute bottom-2 left-2 bg-black bg-opacity-50 text-white text-xs px-2 py-1 rounded">
+                                Video
+                            </div>
+                        </div>
+                    </div>`;
+                });
+            }
+        }
+        html += '</div>';
         if(typeof mediaFiles.audio !== 'undefined') {
             if(mediaFiles.audio?.files.length > 0) {
                 mediaFiles.audio?.files.forEach((audio, key) => {
@@ -325,36 +352,6 @@ const MediaManager = {
                         <source src="${baseUrl}/assets/uploads/${audio}" type="audio/mpeg">
                         Your browser does not support the audio element.
                     </audio>`;
-                });
-            }
-        }
-        if(typeof mediaFiles.video !== 'undefined') {
-            if(mediaFiles.video?.files.length > 0) {
-                mediaFiles.video?.files.forEach((video, key) => {
-                    let _300thumb = '';
-                    if(typeof mediaFiles.video?.thumbnails !== 'undefined') {
-                        _300thumb = mediaFiles.video?.thumbnails[key][0] ?? video;
-                    } else {
-                        _300thumb = video;
-                    }
-                    html += `<div class="media-item video-item" data-type="video" data-src="${baseUrl}/assets/uploads/${video}" data-thumbnail="${baseUrl}/assets/uploads/${_300thumb}">
-                        <div class="relative group cursor-pointer overflow-hidden rounded-lg bg-gray-100 aspect-video">
-                            <img src="${baseUrl}/assets/uploads/${_300thumb}" alt="Video Thumbnail" class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105">
-                            <div class="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-30 transition-all duration-300 flex items-center justify-center">
-                                <div class="bg-white bg-opacity-90 rounded-full p-3 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                                    <svg class="w-6 h-6 text-gray-800" fill="currentColor" viewBox="0 0 24 24">
-                                        <path d="M8 5v14l11-7z"/>
-                                    </svg>
-                                </div>
-                            </div>
-                            <div class="absolute top-2 right-2 bg-black bg-opacity-50 text-white text-xs px-2 py-1 rounded">
-                                VID
-                            </div>
-                            <div class="absolute bottom-2 left-2 bg-black bg-opacity-50 text-white text-xs px-2 py-1 rounded">
-                                Video
-                            </div>
-                        </div>
-                    </div>`;
                 });
             }
         }
@@ -2118,7 +2115,7 @@ const NotificationManager = {
             if(!Boolean(AppState.user)) {
                 return;
             }
-            const response = $.post(`${baseUrl}/api/notifications/recent`, {
+            const response = $.get(`${baseUrl}/api/notifications/recent`, {
                 token: AppState.getToken(),
                 noloc: true,
                 userUUID

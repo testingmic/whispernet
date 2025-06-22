@@ -43,6 +43,7 @@ function manageUserLocation($payload, $cacheObject) {
        
         // handle the user location data
         if(!empty($theCity)) {
+            $usage = 'location';
             $payload['city'] = $theCity;
             $payload['country'] = $dataToUse['results'][0]['components']['country'] ?? null;
             $payload['district'] = $dataToUse['results'][0]['components']['county'] ?? null;
@@ -65,6 +66,7 @@ function manageUserLocation($payload, $cacheObject) {
         $dataToUse = !empty($locationInfo) ? $locationInfo : getLocationByIP();
 
         if(!empty($dataToUse)) {
+            $usage = 'ipaddress';
             $locs = explode(',', $dataToUse['loc']);
             $payload['latitude'] = $locs[0];
             $payload['longitude'] = $locs[1];
@@ -77,6 +79,7 @@ function manageUserLocation($payload, $cacheObject) {
     }
 
     $final = [
+        'mode' => $usage,
         'city' => $payload['city'] ?? '',
         'district' => $payload['district'] ?? '',
         'country' => $payload['country'] ?? '',

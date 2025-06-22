@@ -466,7 +466,7 @@ function debounce(fn, delay) {
 
 const debouncedFilterUsers = debounce(function (query) {
   const individualChats = document.getElementById("individualChats");
-  $.get(`${baseUrl}/api/users/search?query=${query}&userUUID=${userUUID}`, function (response) {
+  $.get(`${baseUrl}/api/users/search?query=${query}&userUUID=${userUUID}&first_part=true`, function (response) {
     let users = "";
     $.each(response.users, function (index, user) {
       if (user.user_id !== loggedInUserId) {
@@ -629,7 +629,7 @@ function addMessageToUI(content, type, time = '', uuid = '', has_media = false, 
                     ? "bg-blue-500 text-white"
                     : "bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-white"
                 }">
-                    <p class="text-sm break-words">${content}</p>
+                  ${content.length > 0 ? `<p class="text-sm break-words">${content}</p>` : ''}
                 </div>
                 <span class="text-xs text-gray-500 dark:text-gray-400 mt-1">
                     ${time ? time : new Date().toLocaleTimeString([], {
@@ -643,9 +643,16 @@ function addMessageToUI(content, type, time = '', uuid = '', has_media = false, 
             </div>
         </div>
     `;
+}
 
-  messagesContainer.appendChild(messageDiv);
-  messagesContainer.scrollTop = messagesContainer.scrollHeight;
+function appendMediaToUI(media, uuid) {
+  let mediaContent = '';
+  mediaContent = MediaManager.renderMedia(media, true);
+  $(`div[class~="media-preview-container"][data-media-uuid="${uuid}"]`).html(mediaContent);
+
+  setTimeout(() => {
+    new MediaDisplay();
+  }, 500);
 }
 
 function filterChats(query) {
@@ -1095,7 +1102,6 @@ function handleFileUpload() {
         // addMessageWithMediaToUI(messageInput.value.trim(), "sent", selectedFiles);
         
         // Clear input and preview
-        messageInput.value = "";
         clearAllMedia();
         
         // Update chat data
@@ -1114,8 +1120,14 @@ function handleFileUpload() {
           direction: 'sent',
           msgid: mostRecentMessageId,
           media: true,
+          uuid: messageUUID,
+          userUUID: userUUID,
           files: response.record.media || []
         };
+
+        appendMediaToUI(response.record.media || [], messageUUID);
+
+        messageInput.value = "";
         
         AppState.socketConnect.send({
           type: 'chat',

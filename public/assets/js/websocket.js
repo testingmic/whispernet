@@ -11,7 +11,7 @@ class WebSocketManager {
             
             if(typeof data.type == 'undefined') return;
             if(data.type == 'chat' && data.sender == parseInt(selectedUserId)) {
-                addMessageToUI(data.message, data.direction);
+                addMessageToUI(data.message, data.direction, '', data.uuid, data.media, data.files);
                 scrollToBottom();
             }
         } catch(e) {

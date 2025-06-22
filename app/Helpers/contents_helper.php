@@ -209,20 +209,20 @@ function full_view_modal() {
     
     <div class="relative h-full flex items-center justify-center p-4">
         <!-- Close Button -->
-        <button id="closeModal" class="absolute top-6 right-6 z-10 bg-white/20 hover:bg-white/30 text-white rounded-full p-3 transition-all duration-200 backdrop-blur-sm border border-white/20">
+        <button id="closeModal" class="absolute top-6 right-6 z-10 bg-white/60 hover:bg-white/80 text-black rounded-full p-3 transition-all duration-200 backdrop-blur-sm border border-white/20">
             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
             </svg>
         </button>
 
         <!-- Navigation Buttons -->
-        <button id="prevBtn" class="absolute left-6 top-1/2 transform -translate-y-1/2 z-10 bg-white/20 hover:bg-white/30 text-white rounded-full p-3 transition-all duration-200 backdrop-blur-sm border border-white/20">
+        <button id="prevBtn" class="absolute left-6 top-1/2 transform -translate-y-1/2 z-10 bg-white/50 hover:border-gray-700 hover:bg-white/30 text-gray-400 rounded-full p-3 transition-all duration-200 backdrop-blur-sm border border-gray-400">
             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
             </svg>
         </button>
         
-        <button id="nextBtn" class="absolute right-6 top-1/2 transform -translate-y-1/2 z-10 bg-white/20 hover:bg-white/30 text-white rounded-full p-3 transition-all duration-200 backdrop-blur-sm border border-white/20">
+        <button id="nextBtn" class="absolute right-6 top-1/2 transform -translate-y-1/2 z-10 bg-white/50 hover:border-gray-700 hover:bg-white/30 text-gray-400 rounded-full p-3 transition-all duration-200 backdrop-blur-sm border border-gray-400">
             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
             </svg>

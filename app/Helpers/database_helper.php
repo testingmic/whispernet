@@ -18,9 +18,9 @@ $databases = [
         profile_image TEXT,
         is_verified BOOLEAN DEFAULT 0,
         is_active BOOLEAN DEFAULT 1,
-        last_login TIMESTAMP,
-        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        last_login DATETIME,
+        created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+        updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
     );
     CREATE UNIQUE INDEX IF NOT EXISTS user_id ON users (user_id);",
     "CREATE TABLE IF NOT EXISTS pageviews (
@@ -265,7 +265,8 @@ $databases = [
 
 // alter tables
 $alterTables = [
-    // "ALTER TABLE chat_rooms ADD COLUMN description TEXT;",
+    // "ALTER TABLE users RENAME TO users2",
+    // "ALTER TABLE users2 RENAME TO users",
 ];
 
 $votesTables = [

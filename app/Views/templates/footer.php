@@ -139,57 +139,58 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Back to Top Button Functionality
     const backToTopBtn = document.getElementById('backToTopBtn');
-    
-    // Show/hide button based on scroll position
-    function toggleBackToTopButton() {
-        if (window.pageYOffset > 300) {
-            backToTopBtn.classList.remove('scale-0', 'opacity-0');
-            backToTopBtn.classList.add('scale-100', 'opacity-100');
-        } else {
-            backToTopBtn.classList.add('scale-0', 'opacity-0');
-            backToTopBtn.classList.remove('scale-100', 'opacity-100');
-        }
+    if(backToTopBtn) {
+      // Show/hide button based on scroll position
+      function toggleBackToTopButton() {
+          if (window.pageYOffset > 300) {
+              backToTopBtn.classList.remove('scale-0', 'opacity-0');
+              backToTopBtn.classList.add('scale-100', 'opacity-100');
+          } else {
+              backToTopBtn.classList.add('scale-0', 'opacity-0');
+              backToTopBtn.classList.remove('scale-100', 'opacity-100');
+          }
+      }
+
+      // Smooth scroll to top function
+      function scrollToTop() {
+          const startPosition = window.pageYOffset;
+          const targetPosition = 0;
+          const distance = targetPosition - startPosition;
+          const duration = 800;
+          const startTime = performance.now();
+          
+          function easeOutCubic(t) {
+              return 1 - Math.pow(1 - t, 3);
+          }
+          
+          function animateScroll(currentTime) {
+              const elapsed = currentTime - startTime;
+              const progress = Math.min(elapsed / duration, 1);
+              const easedProgress = easeOutCubic(progress);
+              
+              window.scrollTo(0, startPosition + (distance * easedProgress));
+              
+              if (progress < 1) {
+                  requestAnimationFrame(animateScroll);
+              }
+          }
+          
+          requestAnimationFrame(animateScroll);
+      }
+
+      // Add event listeners
+      window.addEventListener('scroll', toggleBackToTopButton);
+      backToTopBtn.addEventListener('click', scrollToTop);
+
+      // Add click animation to back to top button
+      backToTopBtn.addEventListener('click', function() {
+          // Add click animation
+          this.style.transform = 'scale(0.95)';
+          setTimeout(() => {
+              this.style.transform = '';
+          }, 150);
+      });
     }
-
-    // Smooth scroll to top function
-    function scrollToTop() {
-        const startPosition = window.pageYOffset;
-        const targetPosition = 0;
-        const distance = targetPosition - startPosition;
-        const duration = 800;
-        const startTime = performance.now();
-        
-        function easeOutCubic(t) {
-            return 1 - Math.pow(1 - t, 3);
-        }
-        
-        function animateScroll(currentTime) {
-            const elapsed = currentTime - startTime;
-            const progress = Math.min(elapsed / duration, 1);
-            const easedProgress = easeOutCubic(progress);
-            
-            window.scrollTo(0, startPosition + (distance * easedProgress));
-            
-            if (progress < 1) {
-                requestAnimationFrame(animateScroll);
-            }
-        }
-        
-        requestAnimationFrame(animateScroll);
-    }
-
-    // Add event listeners
-    window.addEventListener('scroll', toggleBackToTopButton);
-    backToTopBtn.addEventListener('click', scrollToTop);
-
-    // Add click animation to back to top button
-    backToTopBtn.addEventListener('click', function() {
-        // Add click animation
-        this.style.transform = 'scale(0.95)';
-        setTimeout(() => {
-            this.style.transform = '';
-        }, 150);
-    });
 });
 
 // Service Worker Registration with Enhanced Error Handling

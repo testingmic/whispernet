@@ -19,12 +19,18 @@ function getUserIpaddress() {
  * 
  * @return array
  */
-function mask_email_address($users) {
+function mask_email_address($users, $first_part = false) {
     // check if the users is empty or not an array
     if(empty($users) || !is_array($users)) return [];
+    
     // loop through the users
     foreach($users as $key => $value) {
         $users[$key]['user_id'] = (int) $value['user_id'];
+
+        if(!empty($value['full_name'])) {
+            $users[$key]['full_name'] = $first_part ? explode(' ', $value['full_name'])[0] : $value['full_name'];
+        }
+
         if(isset($value['last_login'])) {
             // convert the last login to date
             $users[$key]['last_login'] = convertTimestampToDate($value['last_login']);
