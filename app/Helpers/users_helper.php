@@ -78,8 +78,6 @@ function manageUserLocation($payload, $cacheObject) {
 
             $cacheObject->save($cacheKey, $dataToUse, 'user.location', null, 60 * 60);
         }
-        print_r($payload);
-        exit;
     }
 
     $final = [
