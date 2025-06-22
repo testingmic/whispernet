@@ -2108,8 +2108,7 @@ const NotificationManager = {
             }
             const response = $.post(`${baseUrl}/api/notifications/recent`, {
                 token: AppState.getToken(),
-                latitude,
-                longitude,
+                noloc: true,
                 userUUID
             }).then((response) => {
                 const container = document.querySelector('.notifications-container');
@@ -2196,7 +2195,7 @@ const NotificationManager = {
         // Poll for new notifications every 30 seconds
         setInterval(() => {
             this.refreshNotifications();
-        }, 30000);
+        }, 60000);
     },
 
     show(message, type = 'info', duration = 3000) {
