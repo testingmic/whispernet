@@ -28,7 +28,7 @@ class AuthValidation {
             'method' => 'POST',
             'payload' => [
                 'email' => 'required|valid_email|max_length[100]',
-                'password' => 'required|min_length[8]|max_length[32]',
+                'password' => 'required|min_length[6]|max_length[32]',
                 'rememberme' => 'in_list[0,1]'
             ]
         ],
@@ -48,7 +48,7 @@ class AuthValidation {
             'method' => 'POST',
             'payload' => [
                 'email' => 'required|valid_email|max_length[100]',
-                'password' => 'required|valid_password|min_length[8]|max_length[32]',
+                'password' => 'required|min_length[6]|max_length[32]',
                 'password_confirm' => 'required|matches[password]',
                 'code' => 'required|max_length[6]|numeric'
             ]

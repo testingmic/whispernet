@@ -1,9 +1,10 @@
 const CACHE_NAME = 'TalkLowKey-v2';
 const baseUrl = '';
 const ASSETS_TO_CACHE = [
-    `/`,
     `/assets/css/app.css`,
     `/assets/js/app.js`,
+    `/assets/js/chat.js`,
+    `/assets/js/websocket.js`,
     `/assets/images/logo.png`,
     `/assets/icons/Icon.192.png`,
     `/assets/icons/Icon.512.png`
@@ -110,40 +111,6 @@ self.addEventListener('notificationclick', (event) => {
         );
     }
 });
-
-// Background Sync
-self.addEventListener('sync', (event) => {
-    if (event.tag === 'sync-posts') {
-        event.waitUntil(syncPosts());
-    }
-});
-
-async function syncPosts() {
-    try {
-        const db = await openDB();
-        const posts = await db.getAll('pendingPosts');
-        
-        for (const post of posts) {
-            try {
-                const response = await fetch(`/api/posts`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(post)
-                });
-
-                if (response.ok) {
-                    await db.delete('pendingPosts', post.id);
-                }
-            } catch (error) {
-                console.error('Error syncing post:', error);
-            }
-        }
-    } catch (error) {
-        console.error('Error in sync:', error);
-    }
-}
 
 // IndexedDB setup
 function openDB() {
