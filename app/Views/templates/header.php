@@ -16,6 +16,7 @@ $favicon_color = $favicon_color ?? 'dashboard';
   <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
   <link rel="apple-touch-icon" href="<?= $baseUrl ?>/assets/icons/Icon.192.png">
   <link rel="icon" type="image/png" href="<?= $baseUrl ?>/assets/icons/Icon.32.png">
+  <meta name="google-site-verification" content="LvqtogwJfOW-lu5ScIs_fEdHOZcPHi-yPheUZEQUfSA" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="apple-mobile-web-app-capable" content="yes">
