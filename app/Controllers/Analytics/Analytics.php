@@ -20,7 +20,7 @@ class Analytics extends LoadController {
         $referer = $this->payload['referer'] ?? '';
 
         if(!empty($userAgent)) {
-            foreach(['facebook', 'snapchat', 'instagram', 'tiktok'] as $platform) {
+            foreach(['facebook', 'snapchat', 'instagram', 'tiktok', 'google'] as $platform) {
                 if(strpos(strtolower($userAgent), $platform) !== false) {
                     $referer = 'https://www.'.$platform.'.com';
                 }
