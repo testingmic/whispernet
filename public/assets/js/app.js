@@ -56,11 +56,11 @@ const AppState = {
     logout() {
         localStorage.removeItem('user');
         localStorage.removeItem('userLocation');
+        this.clearLocationData();
         $.post(`${baseUrl}/api/auth/logout`, {
             token: localStorage.getItem('token'),
             webapp: true,
-            longitude: longitude,
-            latitude: latitude
+            noloc: true
         }).then(() => {
             AppState.showNotification('Logged out successfully', 'success');
             setTimeout(() => {
@@ -248,9 +248,8 @@ const AppState = {
     clearLocationData() {
         localStorage.removeItem('userLocation');
         this.location = null;
-        latitude = '5.5571096';
-        longitude = '-0.2012376';
-        this.updateLocationUI();
+        latitude = '';
+        longitude = '';
     },
     menuButtonControl() {
         // Modern Menu Management
