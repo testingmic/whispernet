@@ -19,6 +19,14 @@ class Analytics extends LoadController {
         $userAgent = $this->payload['user_agent'] ?? '';
         $referer = $this->payload['referer'] ?? '';
 
+        if(!empty($userAgent)) {
+            foreach(['facebook', 'snapchat', 'instagram', 'tiktok'] as $platform) {
+                if(strpos(strtolower($userAgent), $platform) !== false) {
+                    $referer = 'https://www.'.$platform.'.com';
+                }
+            }
+        }
+
         if(empty($userUUID)) return Routing::success('Required userUUID missing from payload.');
 
         $this->analyticsModel->logPageview($page, $userUUID, $userID, $userAgent, $referer);
