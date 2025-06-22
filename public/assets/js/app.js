@@ -1,5 +1,5 @@
 // Microphone Permission Manager
-var longitude = '-0.2012376', latitude = '5.5571096', radius = 35, userUUID = '';
+var longitude = '', latitude = '', radius = 35, userUUID = '';
 const MicrophoneManager = {
     permissionState: null,
     stream: null,
