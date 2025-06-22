@@ -22,11 +22,10 @@ foreach(['report', 'privacy', 'terms', 'updates', 'install'] as $route) {
     $routes->get("/{$route}", "WebApp\Dashboard::{$route}");
 }
 
-// $routes->get("/privacy", "WebApp\Dashboard::privacy");
-// $routes->get("/terms", "WebApp\Dashboard::terms");
-// $routes->get("/report", "WebApp\Dashboard::report");
-// $routes->get("/updates", "WebApp\Dashboard::updates");
+// Profile routes
+$routes->get("profile", "WebApp\Profile::index");
 
+// Chat routes
 $routes->get("/chat", "WebApp\Chat::index");
 $routes->get("/login", "Landing::load/login");
 $routes->get("/signup", "Landing::load/signup");

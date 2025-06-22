@@ -4,6 +4,7 @@ namespace App\Controllers\WebApp;
 
 use App\Controllers\WebAppController;
 use App\Models\PostsModel;
+use App\Models\UsersModel;
 
 class Profile extends WebAppController
 {
@@ -32,13 +33,25 @@ class Profile extends WebAppController
         // Get recent activity
         $recentActivity = $this->getRecentActivity($userId);
 
-        return $this->templateObject->loadPage('profile', [
+        $formattedSettings = [];
+
+        foreach($userModel->getUserSettings($userId) as $setting) {
+            $formattedSettings[$setting['setting']] = $setting['value'];
+        }
+
+        $data = [
             'pageTitle' => 'Profile',
             'user' => $user,
+            'settings' => $formattedSettings,
             'stats' => $stats,
             'recentActivity' => $recentActivity,
             'favicon_color' => 'profile'
-        ]);
+        ];
+
+        // print_r($data);
+        // exit;
+        // return the user profile information
+        return $this->templateObject->loadPage('profile', $data);
     }
 
     /**

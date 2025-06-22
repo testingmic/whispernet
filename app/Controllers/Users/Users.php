@@ -62,6 +62,65 @@ class Users extends LoadController {
     }
 
     /**
+     * Get user settings
+     * 
+     * @return array
+     */
+    public function settings() {
+
+        // get the user id
+        $userId = $this->payload['userId'] ?? $this->currentUser['user_id'];
+
+        // get user settings
+        $userSettings = $this->usersModel->getUserSettings($userId);
+
+        return Routing::success($userSettings);
+
+    }
+
+    /**
+     * Get user settings
+     * 
+     * @return array
+     */
+    public function update() {
+
+        // get the user id
+        $userId = $this->payload['userId'] ?? $this->currentUser['user_id'];
+
+        // get user settings
+        $userSettings = $this->usersModel->getUserSettings($userId);
+
+        // if the user settings is empty, create a new one
+        if(empty($userSettings)) {
+            $setting = $this->payload['setting'] ?? null;
+            $settingValue = $this->payload['value'] ?? null;
+
+            if(!empty($setting) && !empty($settingValue)) {
+                $this->usersModel->createUserSettings($userId, trim($setting), trim($settingValue));
+            }
+        } else {
+            // user settings
+            $settingsSet = array_column($userSettings, 'setting');
+
+            // loop through the settings and confirm if the setting is not already saved
+            if(!empty($this->payload['setting'])) {
+                $isetting = trim($this->payload['setting']);
+                if(in_array($isetting, $settingsSet)) {
+                    $this->usersModel->updateUserSettings($userId, $isetting, $this->payload['value']);
+                } else {
+                    $this->usersModel->createUserSettings($userId, $isetting, $this->payload['value']);
+                }
+            }
+        }
+
+        // get the settings
+        $userSettings = $this->usersModel->getUserSettings($userId);
+
+        return Routing::created(['data' => 'User settings successfully saved.', 'record' => $userSettings]);
+    }
+
+    /**
      * Search users
      * 
      * @return array

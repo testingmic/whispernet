@@ -143,9 +143,9 @@
                             <p class="text-gray-600 dark:text-gray-400">Receive email notifications for new messages and mentions</p>
                         </div>
                     </div>
-                    <button type="button" data-setting="email_notifications" data-value="<?= $user['email_notifications'] ?? '0' ?>" class="relative inline-flex flex-shrink-0 h-6 w-11 border-2 border-transparent rounded-full cursor-pointer transition-colors ease-in-out duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 <?= ($user['email_notifications'] ?? '0') == '1' ? 'bg-blue-600' : 'bg-gray-200 dark:bg-gray-700' ?>" role="switch" aria-checked="<?= ($user['email_notifications'] ?? '0') == '1' ? 'true' : 'false' ?>">
-                        <span class="<?= ($user['email_notifications'] ?? '0') == '1' ? 'translate-x-5' : 'translate-x-0' ?> pointer-events-none relative inline-block h-5 w-5 rounded-full bg-white shadow transform ring-0 transition ease-in-out duration-200">
-                            <span class="<?= ($user['email_notifications'] ?? '0') == '1' ? 'opacity-0' : 'opacity-100' ?> ease-in duration-200 absolute inset-0 h-full w-full flex items-center justify-center transition-opacity" aria-hidden="true">
+                    <button type="button" data-setting="email_notifications" data-value="<?= $settings['email_notifications'] ?? '0' ?>" class="relative inline-flex flex-shrink-0 h-6 w-11 border-2 border-transparent rounded-full cursor-pointer transition-colors ease-in-out duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 <?= ($settings['email_notifications'] ?? '0') == 1 ? 'bg-blue-600' : 'bg-gray-200 dark:bg-gray-700' ?>" role="switch" aria-checked="<?= ($settings['email_notifications'] ?? '0') == 1 ? 'true' : 'false' ?>">
+                        <span class="<?= ($settings['email_notifications'] ?? '0') == 1 ? 'translate-x-5' : 'translate-x-0' ?> pointer-events-none relative inline-block h-5 w-5 rounded-full bg-white shadow transform ring-0 transition ease-in-out duration-200">
+                            <span class="<?= ($settings['email_notifications'] ?? '0') == 1 ? 'opacity-0' : 'opacity-100' ?> ease-in duration-200 absolute inset-0 h-full w-full flex items-center justify-center transition-opacity" aria-hidden="true">
                                 <svg class="h-3 w-3 text-gray-400" fill="none" viewBox="0 0 12 12">
                                     <path d="M4 8l2-2m0 0l2-2M6 6L4 4m2 2l2 2" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
                                 </svg>
@@ -168,9 +168,9 @@
                             <p class="text-gray-600 dark:text-gray-400">Make your profile visible to other users</p>
                         </div>
                     </div>
-                    <button type="button" data-setting="profile_visibility" data-value="<?= $user['profile_visibility'] ?? '1' ?>" class="relative inline-flex flex-shrink-0 h-6 w-11 border-2 border-transparent rounded-full cursor-pointer transition-colors ease-in-out duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 <?= ($user['profile_visibility'] ?? '1') == '1' ? 'bg-blue-600' : 'bg-gray-200 dark:bg-gray-700' ?>" role="switch" aria-checked="<?= ($user['profile_visibility'] ?? '1') == '1' ? 'true' : 'false' ?>">
-                        <span class="<?= ($user['profile_visibility'] ?? '1') == '1' ? 'translate-x-5' : 'translate-x-0' ?> pointer-events-none relative inline-block h-5 w-5 rounded-full bg-white shadow transform ring-0 transition ease-in-out duration-200">
-                            <span class="<?= ($user['profile_visibility'] ?? '1') == '1' ? 'opacity-0' : 'opacity-100' ?> ease-in duration-200 absolute inset-0 h-full w-full flex items-center justify-center transition-opacity" aria-hidden="true">
+                    <button type="button" data-setting="profile_visibility" data-value="<?= $settings['profile_visibility'] ?? 1 ?>" class="relative inline-flex flex-shrink-0 h-6 w-11 border-2 border-transparent rounded-full cursor-pointer transition-colors ease-in-out duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 <?= ($settings['profile_visibility'] ?? '1') == 1 ? 'bg-blue-600' : 'bg-gray-200 dark:bg-gray-700' ?>" role="switch" aria-checked="<?= ($settings['profile_visibility'] ?? 1) == 1 ? 'true' : 'false' ?>">
+                        <span class="<?= ($settings['profile_visibility'] ?? 1) == 1 ? 'translate-x-5' : 'translate-x-0' ?> pointer-events-none relative inline-block h-5 w-5 rounded-full bg-white shadow transform ring-0 transition ease-in-out duration-200">
+                            <span class="<?= ($settings['profile_visibility'] ?? 1) == 1 ? 'opacity-0' : 'opacity-100' ?> ease-in duration-200 absolute inset-0 h-full w-full flex items-center justify-center transition-opacity" aria-hidden="true">
                                 <svg class="h-3 w-3 text-gray-400" fill="none" viewBox="0 0 12 12">
                                     <path d="M4 8l2-2m0 0l2-2M6 6L4 4m2 2l2 2" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
                                 </svg>
@@ -192,9 +192,9 @@
                             <p class="text-gray-600 dark:text-gray-400">Make your profile appear in search results</p>
                         </div>
                     </div>
-                    <button type="button" data-setting="search_visibility" data-value="<?= $user['search_visibility'] ?? '0' ?>" class="relative inline-flex flex-shrink-0 h-6 w-11 border-2 border-transparent rounded-full cursor-pointer transition-colors ease-in-out duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 <?= ($user['search_visibility'] ?? '0') == '1' ? 'bg-blue-600' : 'bg-gray-200 dark:bg-gray-700' ?>" role="switch" aria-checked="<?= ($user['search_visibility'] ?? '0') == '1' ? 'true' : 'false' ?>">
-                        <span class="<?= ($user['search_visibility'] ?? '0') == '1' ? 'translate-x-5' : 'translate-x-0' ?> pointer-events-none relative inline-block h-5 w-5 rounded-full bg-white shadow transform ring-0 transition ease-in-out duration-200">
-                            <span class="<?= ($user['search_visibility'] ?? '0') == '1' ? 'opacity-0' : 'opacity-100' ?> ease-in duration-200 absolute inset-0 h-full w-full flex items-center justify-center transition-opacity" aria-hidden="true">
+                    <button type="button" data-setting="search_visibility" data-value="<?= $settings['search_visibility'] ?? '0' ?>" class="relative inline-flex flex-shrink-0 h-6 w-11 border-2 border-transparent rounded-full cursor-pointer transition-colors ease-in-out duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 <?= ($settings['search_visibility'] ?? '0') == 1 ? 'bg-blue-600' : 'bg-gray-200 dark:bg-gray-700' ?>" role="switch" aria-checked="<?= ($settings['search_visibility'] ?? '0') == 1 ? 'true' : 'false' ?>">
+                        <span class="<?= ($settings['search_visibility'] ?? '0') == 1 ? 'translate-x-5' : 'translate-x-0' ?> pointer-events-none relative inline-block h-5 w-5 rounded-full bg-white shadow transform ring-0 transition ease-in-out duration-200">
+                            <span class="<?= ($settings['search_visibility'] ?? '0') == 1 ? 'opacity-0' : 'opacity-100' ?> ease-in duration-200 absolute inset-0 h-full w-full flex items-center justify-center transition-opacity" aria-hidden="true">
                                 <svg class="h-3 w-3 text-gray-400" fill="none" viewBox="0 0 12 12">
                                     <path d="M4 8l2-2m0 0l2-2M6 6L4 4m2 2l2 2" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
                                 </svg>
@@ -216,9 +216,9 @@
                             <p class="text-gray-600 dark:text-gray-400">Switch between light and dark theme</p>
                         </div>
                     </div>
-                    <button type="button" data-setting="dark_mode" data-value="<?= $user['dark_mode'] ?? '0' ?>" class="relative inline-flex flex-shrink-0 h-6 w-11 border-2 border-transparent rounded-full cursor-pointer transition-colors ease-in-out duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 <?= ($user['dark_mode'] ?? '0') == '1' ? 'bg-blue-600' : 'bg-gray-200 dark:bg-gray-700' ?>" role="switch" aria-checked="<?= ($user['dark_mode'] ?? '0') == '1' ? 'true' : 'false' ?>">
-                        <span class="<?= ($user['dark_mode'] ?? '0') == '1' ? 'translate-x-5' : 'translate-x-0' ?> pointer-events-none relative inline-block h-5 w-5 rounded-full bg-white shadow transform ring-0 transition ease-in-out duration-200">
-                            <span class="<?= ($user['dark_mode'] ?? '0') == '1' ? 'opacity-0' : 'opacity-100' ?> ease-in duration-200 absolute inset-0 h-full w-full flex items-center justify-center transition-opacity" aria-hidden="true">
+                    <button type="button" data-setting="dark_mode" data-value="<?= $settings['dark_mode'] ?? '0' ?>" class="relative inline-flex flex-shrink-0 h-6 w-11 border-2 border-transparent rounded-full cursor-pointer transition-colors ease-in-out duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 <?= ($settings['dark_mode'] ?? '0') == '1' ? 'bg-blue-600' : 'bg-gray-200 dark:bg-gray-700' ?>" role="switch" aria-checked="<?= ($settings['dark_mode'] ?? '0') == 1 ? 'true' : 'false' ?>">
+                        <span class="<?= ($settings['dark_mode'] ?? '0') == 1 ? 'translate-x-5' : 'translate-x-0' ?> pointer-events-none relative inline-block h-5 w-5 rounded-full bg-white shadow transform ring-0 transition ease-in-out duration-200">
+                            <span class="<?= ($settings['dark_mode'] ?? '0') == 1 ? 'opacity-0' : 'opacity-100' ?> ease-in duration-200 absolute inset-0 h-full w-full flex items-center justify-center transition-opacity" aria-hidden="true">
                                 <svg class="h-3 w-3 text-gray-400" fill="none" viewBox="0 0 12 12">
                                     <path d="M4 8l2-2m0 0l2-2M6 6L4 4m2 2l2 2" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
                                 </svg>
@@ -291,103 +291,3 @@
     </div>
 </div>
 <div class="h-10"></div>
-
-<script>
-    // Enhanced Settings Toggle Functionality
-    document.addEventListener('DOMContentLoaded', function() {
-        const toggleButtons = document.querySelectorAll('[data-setting]');
-
-        toggleButtons.forEach(button => {
-            button.addEventListener('click', function() {
-                const setting = this.getAttribute('data-setting');
-                const currentValue = this.getAttribute('data-value');
-                const newValue = currentValue === '1' ? '0' : '1';
-
-                // Update button state
-                this.setAttribute('data-value', newValue);
-                this.setAttribute('aria-checked', newValue === '1' ? 'true' : 'false');
-
-                // Update visual state
-                const toggle = this.querySelector('span');
-                const icon = this.querySelector('svg');
-
-                if (newValue === '1') {
-                    this.classList.remove('bg-gray-200', 'dark:bg-gray-700');
-                    this.classList.add('bg-blue-600');
-                    toggle.classList.remove('translate-x-0');
-                    toggle.classList.add('translate-x-5');
-                    if (icon) icon.classList.add('opacity-0');
-                } else {
-                    this.classList.remove('bg-blue-600');
-                    this.classList.add('bg-gray-200', 'dark:bg-gray-700');
-                    toggle.classList.remove('translate-x-5');
-                    toggle.classList.add('translate-x-0');
-                    if (icon) icon.classList.remove('opacity-0');
-                }
-
-                // Send update to server
-                updateSetting(setting, newValue);
-            });
-        });
-    });
-
-    async function updateSetting(setting, value) {
-        try {
-            const response = await fetch('/api/profile/settings', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-Requested-With': 'XMLHttpRequest'
-                },
-                body: JSON.stringify({
-                    setting: setting,
-                    value: value,
-                    token: localStorage.getItem('token')
-                })
-            });
-
-            if (!response.ok) {
-                throw new Error('Failed to update setting');
-            }
-
-            // Show success notification
-            showNotification('Setting updated successfully!', 'success');
-        } catch (error) {
-            console.error('Error updating setting:', error);
-            showNotification('Failed to update setting. Please try again.', 'error');
-        }
-    }
-
-    // Notification function
-    function showNotification(message, type = 'info') {
-        const notification = document.createElement('div');
-        notification.className = `fixed top-4 right-4 z-50 p-4 rounded-xl shadow-lg max-w-sm transform transition-all duration-300 translate-x-full`;
-
-        const bgColor = type === 'success' ? 'bg-green-500' : type === 'error' ? 'bg-red-500' : 'bg-blue-500';
-        notification.classList.add(bgColor, 'text-white');
-
-        notification.innerHTML = `
-        <div class="flex items-center">
-            <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
-            </svg>
-            <span>${message}</span>
-        </div>
-    `;
-
-        document.body.appendChild(notification);
-
-        // Animate in
-        setTimeout(() => {
-            notification.classList.remove('translate-x-full');
-        }, 100);
-
-        // Remove after 5 seconds
-        setTimeout(() => {
-            notification.classList.add('translate-x-full');
-            setTimeout(() => {
-                notification.remove();
-            }, 300);
-        }, 5000);
-    }
-</script>

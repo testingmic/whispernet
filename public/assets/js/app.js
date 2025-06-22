@@ -2431,14 +2431,17 @@ const ProfileManager = {
                 `;
 
                 const formData = new FormData(form);
-                const response = await fetch('/profile/update', {
+                formData.append('token', AppState.getToken());
+                formData.append('userUUID', userUUID);
+                formData.append('noloc', true);
+                const response = await fetch('/api/users/update', {
                     method: 'POST',
                     body: formData
                 });
 
                 const data = await response.json();
                 
-                if (data.success) {
+                if (data.status == 'success') {
                     NotificationManager.show('Profile updated successfully', 'success');
                     setTimeout(() => {
                         window.location.href = '/profile';
@@ -2479,7 +2482,7 @@ const ProfileManager = {
                 iconSpan.classList.toggle('opacity-100');
 
                 try {
-                    const response = await fetch(`${baseUrl}/api/profile/settings?userUUID=${userUUID}`, {
+                    const response = await fetch(`${baseUrl}/api/users/update?userUUID=${userUUID}`, {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',
@@ -2487,7 +2490,10 @@ const ProfileManager = {
                         },
                         body: JSON.stringify({
                             setting: setting,
-                            value: newValue
+                            value: newValue,
+                            token: AppState.getToken(),
+                            userUUID: userUUID,
+                            noloc: true
                         })
                     });
 
@@ -2497,7 +2503,7 @@ const ProfileManager = {
 
                     const data = await response.json();
                     
-                    if (data.success) {
+                    if (data.status == 'success') {
                         // If it's dark mode setting, update the theme
                         if (setting === 'dark_mode') {
                             AppState.setTheme(newValue === '1' ? 'dark' : 'light');
@@ -2548,10 +2554,12 @@ const ProfileManager = {
                 }
 
                 const formData = new FormData();
-                formData.append('profile_picture', file);
+                formData.append('token', AppState.getToken());
+                formData.append('userUUID', userUUID);
+                formData.append('noloc', true);
 
                 try {
-                    const response = await fetch('/profile/update', {
+                    const response = await fetch('/api/users/update', {
                         method: 'POST',
                         body: formData
                     });

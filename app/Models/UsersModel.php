@@ -132,6 +132,56 @@ class UsersModel extends Model {
     }
 
     /**
+     * Get user settings
+     * 
+     * @param string $userId
+     * @return array
+     */
+    public function getUserSettings($userId) {
+        try {
+            return $this->db->table('settings')
+                            ->select('id, setting, value')
+                            ->where('user_id', $userId)
+                            ->get()
+                            ->getResultArray();
+        } catch (DatabaseException $e) {
+            return [];
+        }
+    }
+
+    /**
+     * Create user settings
+     * 
+     * @param string $userId
+     * @param string $setting
+     * @param string $value
+     * @return array
+     */
+    public function createUserSettings($userId, $setting, $value) {
+        try {
+            return $this->db->table('settings')->insert(['user_id' => $userId, 'setting' => $setting, 'value' => $value]);
+        } catch (DatabaseException $e) {
+            return false;
+        }
+    }
+
+    /**
+     * Update user settings
+     * 
+     * @param string $userId
+     * @param string $setting
+     * @param string $value
+     * @return array
+     */
+    public function updateUserSettings($userId, $setting, $value) {
+        try {
+            return $this->db->table('settings')->where(['user_id' => $userId, 'setting' => $setting])->update(['value' => $value]);
+        } catch (DatabaseException $e) {
+            return false;
+        }
+    }
+
+    /**
      * Search users
      * 
      * @param string $query
