@@ -241,6 +241,7 @@ const AppState = {
             page: location.pathname,
             userUUID: userUUID,
             noloc: true,
+            user_id: loggedInUserId,
             referer: document.referrer
         });
     },
@@ -771,7 +772,7 @@ const PostManager = {
 
             // if requestLimit is not defined, load latest posts
             if(!dontTrigger && !lastOldPostId && typeof requestLimit === 'undefined') {
-                setInterval(() => this.loadLatestPosts(), 10000);
+                setInterval(() => this.loadLatestPosts(), 30000);
             }
 
             if(data.data.length == 0) {
@@ -784,6 +785,17 @@ const PostManager = {
                         $(`.location-display`).html(`${this.userLocation.city}, ${this.userLocation.country}`);
                     }
                     if(this.userLocation.latitude && this.userLocation.longitude) {
+                        longitude = this.userLocation.longitude;
+                        latitude = this.userLocation.latitude;
+
+                        if(!localStorage.getItem('userLocation')) {
+                            let newLoc = {
+                                latitude: data?.location.latitude,
+                                longitude: data?.location.longitude
+                            };
+                            localStorage.setItem('userLocation', JSON.stringify(newLoc));
+                        }
+
                         $(`.position-display`).html(`${this.userLocation.latitude}, ${this.userLocation.longitude}`);
                     }
                 }

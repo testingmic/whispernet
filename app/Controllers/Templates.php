@@ -59,7 +59,7 @@ class Templates extends BaseController
             'privacyVersion' => '1.0',
             'postRadius' => $this->defaultRadius,
             'privacyUpdatedDate' => 'June 20, 2025',
-            'userId' => (int) $this->sessionObject->user_id,
+            'userId' => (int) (!empty($this->sessionObject->user_id) ? $this->sessionObject->user_id : 0),
             'websocketUrl' => $socketUrl,
             'userData' => $this->sessionObject->get('userData'),
             'userLoggedIn' => $this->user_loggedin(),
