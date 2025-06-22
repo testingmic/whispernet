@@ -66,6 +66,8 @@ function manageUserLocation($payload, $cacheObject) {
         // get the data to use
         $dataToUse = !empty($locationInfo) ? $locationInfo : getLocationByIP($payload['longitude'], $payload['latitude']);
         
+        print_r($dataToUse);
+        exit;
         $theCity = $dataToUse['results'][0]['components']['town'] ?? ($dataToUse['results'][0]['components']['city'] ?? null);
        
         // handle the user location data
