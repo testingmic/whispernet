@@ -87,6 +87,14 @@ $favicon_color = $favicon_color ?? 'dashboard';
   <div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-blue-500 via-purple-500 to-green-500"></div>
 </nav>
 
+<!-- Floating Back to Top Button -->
+<button id="backToTopBtn" class="fixed bottom-40 right-8 z-50 bg-gradient-to-r from-green-200 to-green-600 text-white rounded-full p-3 shadow-lg hover:shadow-xl transition-all duration-300 transform scale-0 opacity-0 hover:scale-110 group">
+  <svg class="w-6 h-6 transition-transform duration-300 group-hover:-translate-y-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18"></path>
+  </svg>
+  <span class="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">↑</span>
+</button>
+
 <!-- Bottom Spacer for Fixed Footer -->
 <?php } ?>
 
@@ -127,6 +135,60 @@ document.addEventListener('DOMContentLoaded', function() {
                 this.style.transform = '';
             }, 150);
         });
+    });
+
+    // Back to Top Button Functionality
+    const backToTopBtn = document.getElementById('backToTopBtn');
+    
+    // Show/hide button based on scroll position
+    function toggleBackToTopButton() {
+        if (window.pageYOffset > 300) {
+            backToTopBtn.classList.remove('scale-0', 'opacity-0');
+            backToTopBtn.classList.add('scale-100', 'opacity-100');
+        } else {
+            backToTopBtn.classList.add('scale-0', 'opacity-0');
+            backToTopBtn.classList.remove('scale-100', 'opacity-100');
+        }
+    }
+
+    // Smooth scroll to top function
+    function scrollToTop() {
+        const startPosition = window.pageYOffset;
+        const targetPosition = 0;
+        const distance = targetPosition - startPosition;
+        const duration = 800;
+        const startTime = performance.now();
+        
+        function easeOutCubic(t) {
+            return 1 - Math.pow(1 - t, 3);
+        }
+        
+        function animateScroll(currentTime) {
+            const elapsed = currentTime - startTime;
+            const progress = Math.min(elapsed / duration, 1);
+            const easedProgress = easeOutCubic(progress);
+            
+            window.scrollTo(0, startPosition + (distance * easedProgress));
+            
+            if (progress < 1) {
+                requestAnimationFrame(animateScroll);
+            }
+        }
+        
+        requestAnimationFrame(animateScroll);
+    }
+
+    // Add event listeners
+    window.addEventListener('scroll', toggleBackToTopButton);
+    backToTopBtn.addEventListener('click', scrollToTop);
+
+    // Add click animation to back to top button
+    backToTopBtn.addEventListener('click', function() {
+        // Add click animation
+        this.style.transform = 'scale(0.95)';
+        setTimeout(() => {
+            this.style.transform = '';
+        }, 150);
     });
 });
 
