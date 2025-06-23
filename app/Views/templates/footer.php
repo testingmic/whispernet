@@ -99,38 +99,6 @@ $favicon_color = $favicon_color ?? 'dashboard';
 <?php } ?>
 
 </div>
-<?php if (!empty($userLoggedIn) && !empty($firebaseConfig)) { ?>
-  <script>const firebaseConfigs = <?= json_encode($firebaseConfig) ?>;</script>
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-app.js";
-    import { getAnalytics } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-analytics.js";
-    // import { getMessaging, getToken, onMessage } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-messaging.js";
-
-    const firebaseConfig = firebaseConfigs;
-    const app = initializeApp(firebaseConfig);
-    const analytics = getAnalytics(app);
-
-    const messaging = getMessaging();
-    onMessage(messaging, (payload) => {
-      console.log('Message received. ', payload);
-      // ...
-    });
-
-    // Get registration token. Initially this makes a network call, once retrieved
-    // subsequent calls to getToken will return from cache.
-    getToken(messaging, {
-      vapidKey: '<?= $firebaseConfig['vapidKey'] ?>'
-    }).then((currentToken) => {
-      if (currentToken) {
-        console.log('Registration token: ', currentToken);
-      } else {
-        console.log('No registration token available. Request permission to generate one.');
-      }
-    }).catch((err) => {
-      console.log('An error occurred while retrieving token. ', err);
-    });
-  </script>
-<?php } ?>
 <!-- Enhanced Scripts -->
 <script src="<?= $baseUrl ?>/assets/js/app.js?v=<?= $version ?>" defer></script>
 <?php if (!empty($userLoggedIn)) { ?>

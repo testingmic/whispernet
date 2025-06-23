@@ -58,7 +58,7 @@ class Posts extends LoadController {
         // upload the media files if any
         if(!empty($this->payload['file_uploads'])) {
             $media = new Media();
-            $media->uploadMedia('posts', $postId, $this->payload['userId'], $this->payload['file_uploads']);
+            $media->uploadMedia('posts', $postId, $this->currentUser['user_id'], $this->payload['file_uploads']);
         }
 
         // set the just created flag
@@ -68,8 +68,14 @@ class Posts extends LoadController {
         $this->currentUser['statistics']['posts'] = ($this->currentUser['statistics']['posts'] ?? 0) + 1;
 
         // update the statistics
-        $this->usersModel->db->table('users')->where('user_id', $this->payload['userId'])->update(['statistics' => json_encode($this->currentUser['statistics'])]);
+        $this->usersModel->db->table('users')->where('user_id', $this->currentUser['user_id'])->update(['statistics' => json_encode($this->currentUser['statistics'])]);
         
+        // connect to the votes database
+        $this->postsModel->connectToDb('views');
+        
+        // record the view
+        $this->postsModel->recordView($postId, $this->currentUser['user_id'], 'posts');
+
         // return the post id
         return Routing::created(['data' => 'Post created successfully', 'record' => $this->view()['data']]);
 
