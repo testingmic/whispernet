@@ -565,6 +565,48 @@ class PostsModel extends Model {
     }
 
     /**
+     * Insert hashtags
+     * 
+     * @param string $postId
+     * @param array $hashtags
+     * 
+     * @return array
+     */
+    public function insertHashtags($hashtags, $isLocal = false) {
+        try {
+            $hashIds = [];
+            $keyword = !$isLocal ? "IGNORE" : "";
+            foreach($hashtags as $hashtag) {
+                $sql = "INSERT {$keyword} INTO hashtags (name) VALUES (?)";
+                $this->db->query($sql, [$hashtag]);
+                $hashIds[$hashtag] = $this->db->insertID();
+            }
+            return $hashIds;
+        } catch (DatabaseException $e) {
+            return [];
+        }
+    }
+
+    /**
+     * Insert post hashtags
+     * 
+     * @param string $postId
+     * @param array $hashtags
+     * 
+     * @return array
+     */
+    public function insertPostHashtags($postId, $hashtags) {
+        try {
+            foreach($hashtags as $hashtag) {
+                $sql = "INSERT INTO post_hashtags (post_id, hashtag_id) VALUES (?, ?)";
+                $this->db->query($sql, [$postId, $hashtag]);
+            }
+        } catch (DatabaseException $e) {
+            return [];
+        }
+    }
+
+    /**
      * Record votes
      * 
      * @return array

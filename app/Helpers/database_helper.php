@@ -127,6 +127,22 @@ $databases = [
     CREATE INDEX IF NOT EXISTS city ON posts (city);
     CREATE INDEX IF NOT EXISTS country ON posts (country);",
 
+    "CREATE TABLE IF NOT EXISTS hashtags (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        name TEXT NOT NULL UNIQUE
+    );
+    CREATE INDEX IF NOT EXISTS name ON hashtags (name);",
+    
+    "CREATE TABLE IF NOT EXISTS post_hashtags (
+        post_id INTEGER NOT NULL,
+        hashtag_id INTEGER NOT NULL,
+        PRIMARY KEY (post_id, hashtag_id),
+        FOREIGN KEY (post_id) REFERENCES posts(post_id) ON DELETE CASCADE,
+        FOREIGN KEY (hashtag_id) REFERENCES hashtags(id) ON DELETE CASCADE
+    );
+    CREATE INDEX IF NOT EXISTS post_id ON post_hashtags (post_id);
+    CREATE INDEX IF NOT EXISTS hashtag_id ON post_hashtags (hashtag_id);",
+
     "CREATE TABLE IF NOT EXISTS tags (
         tag_id INTEGER PRIMARY KEY,
         name TEXT NOT NULL UNIQUE,

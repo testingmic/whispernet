@@ -805,6 +805,9 @@ const PostManager = {
         }
     },
     showUnreadPosts() {
+        if($(`div[id="unreadPostsCountContainer"]`).length == 0) {
+            return;
+        }
         this.renderPosts(this.unreadPosts, true, false);
         this.unreadPosts = [];
         this.unreadPostsCount = 0;
@@ -1651,16 +1654,24 @@ const ImprovedPostCreationForm = {
         })
         .then(data => {
             if (data.status == 'success') {
-                PostManager.showUnreadPosts();
-                // Show success message
-                AppState.showNotification('Post created successfully!', 'success');
-                ImprovedPostCreationForm.resetForm();
-                const feedContainer = document.getElementById('feedContainer');
-                const postElement = PostManager.createPostElement(data.record);
-                feedContainer.insertBefore(postElement, feedContainer.firstChild);
+                // first close the modal
                 PostManager.closeCreateModal();
                 PostManager.loadedPostIds.push(data.record.post_id);
                 PostManager.currentPage = data.record.post_id;
+
+                // then show the unread posts
+                PostManager.showUnreadPosts();
+
+                // Show success message
+                AppState.showNotification('Post created successfully!', 'success');
+                ImprovedPostCreationForm.resetForm();
+
+                // then add the post to the feed
+                const feedContainer = document.getElementById('feedContainer');
+                if(feedContainer) {
+                    const postElement = PostManager.createPostElement(data.record);
+                    feedContainer.insertBefore(postElement, feedContainer.firstChild);
+                }
             } else {
                 // Show error message
                 showNotification(data.message || 'Failed to create post. Please try again.', 'error');

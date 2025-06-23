@@ -152,7 +152,6 @@
 
         <!-- Feed Container -->
         <div id="feedContainer" class="scroll-sentinel">
-
             <?= loadingSkeleton(1, false); ?>
         </div>
 

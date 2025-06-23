@@ -72,6 +72,15 @@ class Posts extends LoadController {
         
         // connect to the votes database
         $this->postsModel->connectToDb('views');
+
+        // extract the hashtags
+        $hashtags = extractHashtags($this->payload['content']);
+
+        // insert the hashtags
+        if(!empty($hashtags)) {
+            $hashIds = $this->postsModel->insertHashtags($hashtags, configs('is_local'));
+            $this->postsModel->insertPostHashtags($postId, $hashIds);
+        }
         
         // record the view
         $this->postsModel->recordView($postId, $this->currentUser['user_id'], 'posts');
@@ -157,6 +166,9 @@ class Posts extends LoadController {
         $comment['manage'] = [
             'delete' => (bool)($comment['user_id'] == $this->payload['userId']),
         ];
+
+        // linkify the comment content
+        $comment['content'] = linkifyContent($comment['content']);
 
         $comment['comment_id'] = (int)$comment['comment_id'];
 
@@ -316,6 +328,7 @@ class Posts extends LoadController {
         if($this->addComments) {
             $post['comments'] = $this->postsModel->viewComments($post['post_id']);
             foreach($post['comments'] as $key => $comment) {
+                $post['comments'][$key]['content'] = linkifyContent($comment['content']);
                 $post['comments'][$key]['manage'] = [
                     'delete' => (bool)($comment['user_id'] == $this->payload['userId']),
                     'report' => (bool)($comment['user_id'] !== $this->payload['userId']),

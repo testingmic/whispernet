@@ -27,7 +27,7 @@ function formatPosts($posts = [], $single = false, $userId = null) {
 
         $formattedPosts[$key] = [
             'post_id' => $post['post_id'],
-            'content' => $post['content'],
+            'content' => linkifyContent($post['content']),
             'created_at' => $post['created_at'],
             'updated_at' => $post['updated_at'],
             'user_id' => $post['user_id'],
@@ -64,6 +64,38 @@ function formatPosts($posts = [], $single = false, $userId = null) {
     }
 
     return $single ? $formattedPosts[0] : $formattedPosts;
+}
+
+/**
+ * Extract hashtags from content
+ * 
+ * @param string $comment
+ * @return array
+ */
+function extractHashtags($comment, $itag = "#") {
+    $escapedItag = preg_quote($itag, '/');
+    preg_match_all("/{$escapedItag}([a-zA-Z0-9_]+)/", $comment, $matches);
+    return $matches[1]; 
+}
+
+/**
+ * Linkify content
+ * 
+ * @param string $content
+ * @return string
+ */
+function linkifyContent($comment, $itag = "#") {
+
+    // Escape the tag character for the regex
+    $escapedItag = preg_quote($itag, '/');
+    $label = $itag == "#" ? "posts/tags" : "users";
+
+    // Apply link conversion
+    return preg_replace_callback("/{$escapedItag}([a-zA-Z0-9_]+)/", function ($match) use ($itag, $label) {
+        $value = $match[1];
+        return "<a href=\"/{$label}/{$value}\" title=\"View posts related to {$value}\" class=\"text-blue-500 hover:text-purple-600 hashtag\">{$itag}{$value}</a>";
+    }, $comment);
+
 }
 
 /**
