@@ -911,7 +911,7 @@ const PostManager = {
                             </svg>
                             <span>View Post</span>
                         </a>` : ''}
-                        ${post?.user_id !== AppState.user.user_id ? `
+                        ${post?.user_id !== AppState?.user?.user_id ? `
                         <button class="w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center space-x-2" onclick="event.stopPropagation(); PostManager.handleBookmark(${post.post_id}, ${post.manage.save})">
                             <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"/>

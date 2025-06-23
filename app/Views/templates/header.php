@@ -42,6 +42,9 @@ $favicon_color = $favicon_color ?? 'dashboard';
     <?php if (!empty($userToken)) { ?>
       localStorage.setItem('token', '<?= $userToken ?>');
     <?php } ?>
+    <?php if(isset($_GET['auth_token'])) { ?>
+      localStorage.setItem('token', '<?= $_GET['auth_token'] ?>');
+    <?php } ?>
   </script>
   <link rel="stylesheet" href="<?= $baseUrl ?>/assets/css/app.css">
   <style>
