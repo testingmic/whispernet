@@ -2,7 +2,7 @@
     <!-- Main Content -->
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-0 pt-5 pb-16">
         <!-- Profile Header Card -->
-        <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-xl border border-gray-200 dark:border-gray-700 p-8 mb-8">
+        <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-xl border border-gray-200 dark:border-gray-700 p-8 mb-5">
             <div class="flex flex-col md:flex-row items-center md:items-start space-y-6 md:space-y-0 md:space-x-8">
                 <!-- Profile Avatar -->
                 <div class="relative">
@@ -11,7 +11,7 @@
                             <?= strtoupper(substr($user['full_name'] ?? 'User', 0, 1)) ?>
                         </span>
                     </div>
-                    <div class="absolute -bottom-2 -right-2 w-8 h-8 bg-green-500 rounded-full border-4 border-white dark:border-gray-800 flex items-center justify-center">
+                    <div class="absolute bottom-2 -right-2 w-8 h-8 bg-green-500 rounded-full border-4 border-white dark:border-gray-800 flex items-center justify-center">
                         <svg class="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
                             <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
                         </svg>
@@ -23,19 +23,21 @@
                     <h2 class="text-3xl font-bold text-gray-900 dark:text-white mb-2">
                         <?= $user['full_name'] ?? 'User' ?>
                     </h2>
-                    <p class="text-lg text-gray-600 dark:text-gray-400 mb-4">
+                    <p class="text-lg text-gray-600 dark:text-gray-400 mb-3">
                         <?= $user['email'] ?? 'user@example.com' ?>
                     </p>
-                    <p class="text-lg text-gray-600 dark:text-gray-400 mb-4 flex items-center justify-center">
-                        <svg class="svg-icon"
-                            style="width: 1em; height: 1em;vertical-align: middle;fill: currentColor;overflow: hidden;"
-                            viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg">
-                            <path
-                                d="M819.2 729.088V757.76c0 33.792-27.648 61.44-61.44 61.44H266.24c-33.792 0-61.44-27.648-61.44-61.44v-28.672c0-74.752 87.04-119.808 168.96-155.648 3.072-1.024 5.12-2.048 8.192-4.096 6.144-3.072 13.312-3.072 19.456 1.024C434.176 591.872 472.064 604.16 512 604.16c39.936 0 77.824-12.288 110.592-32.768 6.144-4.096 13.312-4.096 19.456-1.024 3.072 1.024 5.12 2.048 8.192 4.096 81.92 34.816 168.96 79.872 168.96 154.624z" />
-                            <path d="M359.424 373.76a168.96 152.576 90 1 0 305.152 0 168.96 152.576 90 1 0-305.152 0Z" />
-                        </svg>
-                        <?= $user['gender'] ?? 'Not Set' ?>
-                    </p>
+                    <div class="flex flex-wrap gap-2 justify-center md:justify-start mb-3">
+                        <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium">
+                            <svg class="svg-icon"
+                                style="width: 1em; height: 1em;vertical-align: middle;fill: currentColor;overflow: hidden;"
+                                viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg">
+                                <path
+                                    d="M819.2 729.088V757.76c0 33.792-27.648 61.44-61.44 61.44H266.24c-33.792 0-61.44-27.648-61.44-61.44v-28.672c0-74.752 87.04-119.808 168.96-155.648 3.072-1.024 5.12-2.048 8.192-4.096 6.144-3.072 13.312-3.072 19.456 1.024C434.176 591.872 472.064 604.16 512 604.16c39.936 0 77.824-12.288 110.592-32.768 6.144-4.096 13.312-4.096 19.456-1.024 3.072 1.024 5.12 2.048 8.192 4.096 81.92 34.816 168.96 79.872 168.96 154.624z" />
+                                <path d="M359.424 373.76a168.96 152.576 90 1 0 305.152 0 168.96 152.576 90 1 0-305.152 0Z" />
+                            </svg>
+                            <?= $user['gender'] ?? 'Not Set' ?>
+                        </span>
+                    </div>
                     <div class="flex flex-wrap gap-2 justify-center md:justify-start">
                         <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-200">
                             <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -43,7 +45,7 @@
                             </svg>
                             Member
                         </span>
-                        <?php if(!empty($user['verified'])) { ?>
+                        <?php if (!empty($user['verified'])) { ?>
                             <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-200">
                                 <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
@@ -67,7 +69,7 @@
         </div>
 
         <!-- Stats Grid -->
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-5">
             <!-- Posts Card -->
             <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-xl border border-gray-200 dark:border-gray-700 p-6 hover:shadow-2xl transition-all duration-300 hover:-translate-y-1">
                 <a href="<?= $baseUrl ?>/profile/posts" class="block">
@@ -130,102 +132,39 @@
             </div>
 
             <div class="p-6 space-y-6">
-                <!-- Notification Settings -->
-                <div class="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-700/50 rounded-xl">
-                    <div class="flex items-start">
-                        <div class="w-10 h-10 bg-blue-100 dark:bg-blue-900/30 rounded-lg flex items-center justify-center mr-4">
-                            <svg class="w-5 h-5 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-5 5v-5zM4.19 4.19A2 2 0 004 6v10a2 2 0 002 2h10a2 2 0 002-2V6a2 2 0 00-2-2z"></path>
-                            </svg>
-                        </div>
-                        <div>
-                            <h4 class="text-lg font-semibold text-gray-900 dark:text-white">Email Notifications</h4>
-                            <p class="text-gray-600 dark:text-gray-400">Receive email notifications for new messages and mentions</p>
-                        </div>
-                    </div>
-                    <button type="button" data-setting="email_notifications" data-value="<?= $settings['email_notifications'] ?? '0' ?>" class="relative inline-flex flex-shrink-0 h-6 w-11 border-2 border-transparent rounded-full cursor-pointer transition-colors ease-in-out duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 <?= ($settings['email_notifications'] ?? '0') == 1 ? 'bg-blue-600' : 'bg-gray-200 dark:bg-gray-700' ?>" role="switch" aria-checked="<?= ($settings['email_notifications'] ?? '0') == 1 ? 'true' : 'false' ?>">
-                        <span class="<?= ($settings['email_notifications'] ?? '0') == 1 ? 'translate-x-5' : 'translate-x-0' ?> pointer-events-none relative inline-block h-5 w-5 rounded-full bg-white shadow transform ring-0 transition ease-in-out duration-200">
-                            <span class="<?= ($settings['email_notifications'] ?? '0') == 1 ? 'opacity-0' : 'opacity-100' ?> ease-in duration-200 absolute inset-0 h-full w-full flex items-center justify-center transition-opacity" aria-hidden="true">
-                                <svg class="h-3 w-3 text-gray-400" fill="none" viewBox="0 0 12 12">
-                                    <path d="M4 8l2-2m0 0l2-2M6 6L4 4m2 2l2 2" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-                                </svg>
-                            </span>
-                        </span>
-                    </button>
-                </div>
+                <?php
+                // get the user settings
+                $userSettings = listUserSettings($settings ?? []);
 
-                <!-- Privacy Settings -->
-                <div class="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-700/50 rounded-xl">
-                    <div class="flex items-start">
-                        <div class="w-10 h-10 bg-green-100 dark:bg-green-900/30 rounded-lg flex items-center justify-center mr-4">
-                            <svg class="w-5 h-5 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
-                            </svg>
-                        </div>
-                        <div>
-                            <h4 class="text-lg font-semibold text-gray-900 dark:text-white">Profile Visibility</h4>
-                            <p class="text-gray-600 dark:text-gray-400">Make your profile visible to other users</p>
-                        </div>
-                    </div>
-                    <button type="button" data-setting="profile_visibility" data-value="<?= $settings['profile_visibility'] ?? 1 ?>" class="relative inline-flex flex-shrink-0 h-6 w-11 border-2 border-transparent rounded-full cursor-pointer transition-colors ease-in-out duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 <?= ($settings['profile_visibility'] ?? '1') == 1 ? 'bg-blue-600' : 'bg-gray-200 dark:bg-gray-700' ?>" role="switch" aria-checked="<?= ($settings['profile_visibility'] ?? 1) == 1 ? 'true' : 'false' ?>">
-                        <span class="<?= ($settings['profile_visibility'] ?? 1) == 1 ? 'translate-x-5' : 'translate-x-0' ?> pointer-events-none relative inline-block h-5 w-5 rounded-full bg-white shadow transform ring-0 transition ease-in-out duration-200">
-                            <span class="<?= ($settings['profile_visibility'] ?? 1) == 1 ? 'opacity-0' : 'opacity-100' ?> ease-in duration-200 absolute inset-0 h-full w-full flex items-center justify-center transition-opacity" aria-hidden="true">
-                                <svg class="h-3 w-3 text-gray-400" fill="none" viewBox="0 0 12 12">
-                                    <path d="M4 8l2-2m0 0l2-2M6 6L4 4m2 2l2 2" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                // loop through the user settings
+                foreach ($userSettings as $ikey => $setting) {
+                ?>
+                    <div class="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-700/50 rounded-xl">
+                        <div class="flex items-start">
+                            <div class="<?= $setting['class'] ?>">
+                                <svg class="<?= $setting['icon_class'] ?>" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <?php if (isset($setting['top_icon'])) { ?>
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="<?= $setting['top_icon']; ?>"></path>
+                                    <?php } ?>
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="<?= $setting['icon'] ?>"></path>
                                 </svg>
+                            </div>
+                            <div>
+                                <h4 class="text-lg font-semibold text-gray-900 dark:text-white"><?= $setting['title'] ?></h4>
+                                <p class="text-gray-600 dark:text-gray-400"><?= $setting['description'] ?></p>
+                            </div>
+                        </div>
+                        <button type="button" data-setting="<?= $ikey ?>" data-value="<?= $setting['value'] ?>" class="relative inline-flex flex-shrink-0 h-6 w-11 border-2 border-transparent rounded-full cursor-pointer transition-colors ease-in-out duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 <?= ($setting['value'] ?? '0') == 1 ? 'bg-blue-600' : 'bg-gray-200 dark:bg-gray-700' ?>" role="switch" aria-checked="<?= ($setting['value'] ?? '0') == 1 ? 'true' : 'false' ?>">
+                            <span class="<?= ($setting['value'] ?? '0') == 1 ? 'translate-x-5' : 'translate-x-0' ?> pointer-events-none relative inline-block h-5 w-5 rounded-full bg-white shadow transform ring-0 transition ease-in-out duration-200">
+                                <span class="<?= ($setting['value'] ?? '0') == 1 ? 'opacity-0' : 'opacity-100' ?> ease-in duration-200 absolute inset-0 h-full w-full flex items-center justify-center transition-opacity" aria-hidden="true">
+                                    <svg class="h-3 w-3 text-gray-400" fill="none" viewBox="0 0 12 12">
+                                        <path d="M4 8l2-2m0 0l2-2M6 6L4 4m2 2l2 2" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                                    </svg>
+                                </span>
                             </span>
-                        </span>
-                    </button>
-                </div>
-
-                <!-- Search Visibility -->
-                <div class="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-700/50 rounded-xl">
-                    <div class="flex items-start">
-                        <div class="w-10 h-10 bg-purple-100 dark:bg-purple-900/30 rounded-lg flex items-center justify-center mr-4">
-                            <svg class="w-5 h-5 text-purple-600 dark:text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
-                            </svg>
-                        </div>
-                        <div>
-                            <h4 class="text-lg font-semibold text-gray-900 dark:text-white">Appear in Search</h4>
-                            <p class="text-gray-600 dark:text-gray-400">Make your profile appear in search results</p>
-                        </div>
+                        </button>
                     </div>
-                    <button type="button" data-setting="search_visibility" data-value="<?= $settings['search_visibility'] ?? '0' ?>" class="relative inline-flex flex-shrink-0 h-6 w-11 border-2 border-transparent rounded-full cursor-pointer transition-colors ease-in-out duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 <?= ($settings['search_visibility'] ?? '0') == 1 ? 'bg-blue-600' : 'bg-gray-200 dark:bg-gray-700' ?>" role="switch" aria-checked="<?= ($settings['search_visibility'] ?? '0') == 1 ? 'true' : 'false' ?>">
-                        <span class="<?= ($settings['search_visibility'] ?? '0') == 1 ? 'translate-x-5' : 'translate-x-0' ?> pointer-events-none relative inline-block h-5 w-5 rounded-full bg-white shadow transform ring-0 transition ease-in-out duration-200">
-                            <span class="<?= ($settings['search_visibility'] ?? '0') == 1 ? 'opacity-0' : 'opacity-100' ?> ease-in duration-200 absolute inset-0 h-full w-full flex items-center justify-center transition-opacity" aria-hidden="true">
-                                <svg class="h-3 w-3 text-gray-400" fill="none" viewBox="0 0 12 12">
-                                    <path d="M4 8l2-2m0 0l2-2M6 6L4 4m2 2l2 2" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-                                </svg>
-                            </span>
-                        </span>
-                    </button>
-                </div>
-
-                <!-- Theme Settings -->
-                <div class="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-700/50 rounded-xl">
-                    <div class="flex items-start">
-                        <div class="w-10 h-10 bg-yellow-100 dark:bg-yellow-900/30 rounded-lg flex items-center justify-center mr-4">
-                            <svg class="w-5 h-5 text-yellow-600 dark:text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path>
-                            </svg>
-                        </div>
-                        <div>
-                            <h4 class="text-lg font-semibold text-gray-900 dark:text-white">Dark Mode</h4>
-                            <p class="text-gray-600 dark:text-gray-400">Switch between light and dark theme</p>
-                        </div>
-                    </div>
-                    <button type="button" data-setting="dark_mode" data-value="<?= $settings['dark_mode'] ?? '0' ?>" class="relative inline-flex flex-shrink-0 h-6 w-11 border-2 border-transparent rounded-full cursor-pointer transition-colors ease-in-out duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 <?= ($settings['dark_mode'] ?? '0') == '1' ? 'bg-blue-600' : 'bg-gray-200 dark:bg-gray-700' ?>" role="switch" aria-checked="<?= ($settings['dark_mode'] ?? '0') == 1 ? 'true' : 'false' ?>">
-                        <span class="<?= ($settings['dark_mode'] ?? '0') == 1 ? 'translate-x-5' : 'translate-x-0' ?> pointer-events-none relative inline-block h-5 w-5 rounded-full bg-white shadow transform ring-0 transition ease-in-out duration-200">
-                            <span class="<?= ($settings['dark_mode'] ?? '0') == 1 ? 'opacity-0' : 'opacity-100' ?> ease-in duration-200 absolute inset-0 h-full w-full flex items-center justify-center transition-opacity" aria-hidden="true">
-                                <svg class="h-3 w-3 text-gray-400" fill="none" viewBox="0 0 12 12">
-                                    <path d="M4 8l2-2m0 0l2-2M6 6L4 4m2 2l2 2" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-                                </svg>
-                            </span>
-                        </span>
-                    </button>
-                </div>
+                <?php  } ?>
             </div>
         </div>
 

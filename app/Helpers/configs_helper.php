@@ -9,15 +9,21 @@ if (!function_exists('configs')) {
      */
     function configs($key) {
         $configuration = [
-            'baseUrl' => 'http://localhost:8085/public',
+            // get the base url
+            'baseUrl' => getenv('baseURL'),
+
+            // get the ipinfo token
+            'ipinfo' => getenv('IPINFO'),
+            'opencage' => getenv('OPENCAGE'),
             
+            // get the database group
             'db_group' => config('Database')?->defaultGroup,
             'testing_mode' => config('General')?->testing_mode,
-            'membership' => getenv('MEMBERSHIP_URL'),
             'app_url' => getenv('APP_URL'),
             'is_local' => config('Database')?->defaultGroup == 'tests',
             'login_attempts' => 5,
 
+            // get the security config
             'algo' => config('Security')?->algo,
             'salt' => config('Security')?->salt,
 

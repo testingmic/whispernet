@@ -91,6 +91,15 @@ class Users extends LoadController {
         // get user settings
         $userSettings = $this->usersModel->getUserSettings($userId);
 
+        // if the setting is not empty, validate the setting
+        if(!empty($this->payload['setting'])) {
+            $setting = trim($this->payload['setting']);
+            // check if the setting is valid
+            if(!in_array($setting, array_keys(listUserSettings()))) {
+                return Routing::error("Invalid setting:- {$setting}");
+            }
+        }
+
         // if the user settings is empty, create a new one
         if(empty($userSettings)) {
             $setting = $this->payload['setting'] ?? null;

@@ -151,11 +151,7 @@ class Api extends BaseController
         $string .= $_SERVER['HTTP_ACCEPT_LANGUAGE'] ?? '';
 
         // get the ip address
-        $forwardedAddr = $_SERVER['HTTP_X_FORWARDED_FOR'] ?? ($_SERVER['HTTP_CLOUDFRONT_VIEWER_ADDRESS'] ?? $_SERVER['REMOTE_ADDR']);
-		$ipAddress = explode(",", $forwardedAddr)[0];
-		if(isset($_SERVER['HTTP_CLOUDFRONT_VIEWER_ADDRESS'])) {
-			$ipAddress = explode(":", $_SERVER['HTTP_CLOUDFRONT_VIEWER_ADDRESS'])[0];
-		}
+        $ipAddress = getUserIpaddress();
 
         // get the server info
         $string .= $ipAddress;

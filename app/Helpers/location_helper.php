@@ -99,14 +99,19 @@ function manageUserLocation($payload, $cacheObject) {
  */
 function getLocationByIP($longitude = null, $latitude = null) {
 
+    // get the user ip address
     $userIpaddress = $_SERVER['REMOTE_ADDR'] ?? '';
     if(empty($userIpaddress) || strlen($userIpaddress) < 6) {
         $userIpaddress = '';
     }
 
+    // get the ipinfo and opencage keys
+    $ipInfoKey = explode(';', configs('ipinfo'));
+    $opencageKey = explode(';', configs('opencage'));
+
     // Fetch location data from ipapi.co
-    $url = "https://ipinfo.io/{$userIpaddress}?token=2d64e9f7d9e7a2";
-    $reverseUrl = "https://api.opencagedata.com/geocode/v1/json?q={$latitude},{$longitude}&pretty=1&key=8cc86300ce5d4a03af06f30acbdb5946";
+    $url = "https://ipinfo.io/{$userIpaddress}?token=" . trim($ipInfoKey[0]);
+    $reverseUrl = "https://api.opencagedata.com/geocode/v1/json?q={$latitude},{$longitude}&pretty=1&key=" . trim($opencageKey[0]);
 
     // set the url path
     $urlPath = empty($longitude) && empty($latitude) ? $url : $reverseUrl;

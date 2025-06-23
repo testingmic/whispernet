@@ -73,42 +73,11 @@
             <div class="p-6 space-y-6">
 
                 <?php 
-                $userSettings = [
-                    'email_notifications' => [
-                        'title' => 'Email Notifications',
-                        'class' => 'w-10 h-10 bg-blue-100 dark:bg-blue-900/30 rounded-lg flex items-center justify-center mr-4',
-                        'description' => 'Receive email notifications for new messages and mentions',
-                        'icon_class' => 'w-5 h-5 text-blue-600 dark:text-blue-400',
-                        'icon' => 'M15 17h5l-5 5v-5zM4.19 4.19A2 2 0 004 6v10a2 2 0 002 2h10a2 2 0 002-2V6a2 2 0 00-2-2z',
-                        'value' => $settings['email_notifications'] ?? '0'
-                    ],
-                    'profile_visibility' => [
-                        'title' => 'Profile Visibility',
-                        'class' => 'w-10 h-10 bg-green-100 dark:bg-green-900/30 rounded-lg flex items-center justify-center mr-4',
-                        'description' => 'Make your profile visible to other users',
-                        'icon_class' => 'w-5 h-5 text-green-600 dark:text-green-400',
-                        'top_icon' => 'M15 12a3 3 0 11-6 0 3 3 0 016 0z',
-                        'icon' => 'M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z',
-                        'value' => $settings['profile_visibility'] ?? '1',
-                    ],
-                    'search_visibility' => [
-                        'title' => 'Search Visibility',
-                        'class' => 'w-10 h-10 bg-purple-100 dark:bg-purple-900/30 rounded-lg flex items-center justify-center mr-4',
-                        'description' => 'Make your profile appear in search results',
-                        'icon_class' => 'w-5 h-5 text-purple-600 dark:text-purple-400',
-                        'icon' => 'M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z',
-                        'value' => $settings['search_visibility'] ?? '0',
-                    ],
-                    'dark_mode' => [
-                        'title' => 'Dark Mode',
-                        'class' => 'w-10 h-10 bg-yellow-100 dark:bg-yellow-900/30 rounded-lg flex items-center justify-center mr-4',
-                        'description' => 'Switch between light and dark theme',
-                        'icon_class' => 'w-5 h-5 text-yellow-600 dark:text-yellow-400',
-                        'icon' => 'M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z',
-                        'value' => $settings['dark_mode'] ?? '0',
-                    ]
-                ];
-                foreach($userSettings as $setting) {
+                // get the user settings
+                $userSettings = listUserSettings($settings ?? []);
+
+                // loop through the user settings
+                foreach($userSettings as $ikey => $setting) {
                 ?>
                 <div class="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-700/50 rounded-xl">
                     <div class="flex items-start">
@@ -125,7 +94,7 @@
                             <p class="text-gray-600 dark:text-gray-400"><?= $setting['description'] ?></p>
                         </div>
                     </div>
-                    <button type="button" data-setting="<?= $setting['title'] ?>" data-value="<?= $setting['value'] ?>" class="relative inline-flex flex-shrink-0 h-6 w-11 border-2 border-transparent rounded-full cursor-pointer transition-colors ease-in-out duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 <?= ($setting['value'] ?? '0') == 1 ? 'bg-blue-600' : 'bg-gray-200 dark:bg-gray-700' ?>" role="switch" aria-checked="<?= ($setting['value'] ?? '0') == 1 ? 'true' : 'false' ?>">
+                    <button type="button" data-setting="<?= $ikey ?>" data-value="<?= $setting['value'] ?>" class="relative inline-flex flex-shrink-0 h-6 w-11 border-2 border-transparent rounded-full cursor-pointer transition-colors ease-in-out duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 <?= ($setting['value'] ?? '0') == 1 ? 'bg-blue-600' : 'bg-gray-200 dark:bg-gray-700' ?>" role="switch" aria-checked="<?= ($setting['value'] ?? '0') == 1 ? 'true' : 'false' ?>">
                         <span class="<?= ($setting['value'] ?? '0') == 1 ? 'translate-x-5' : 'translate-x-0' ?> pointer-events-none relative inline-block h-5 w-5 rounded-full bg-white shadow transform ring-0 transition ease-in-out duration-200">
                             <span class="<?= ($setting['value'] ?? '0') == 1 ? 'opacity-0' : 'opacity-100' ?> ease-in duration-200 absolute inset-0 h-full w-full flex items-center justify-center transition-opacity" aria-hidden="true">
                                 <svg class="h-3 w-3 text-gray-400" fill="none" viewBox="0 0 12 12">
