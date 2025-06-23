@@ -131,7 +131,7 @@
                             </span>
                         </div>
                         <p class="text-sm text-gray-700 dark:text-gray-300 mb-3">
-                            We've added Privacy & Terms pages, enhanced password security, improved navigation, and much more!
+                            We've added Tags section, enhanced password security, improved navigation, and much more!
                             Check out all the latest updates and improvements.
                         </p>
                         <div class="flex items-center space-x-3">
