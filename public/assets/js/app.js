@@ -2115,7 +2115,7 @@ const NotificationManager = {
             if(!Boolean(AppState.user)) {
                 return;
             }
-            const response = $.get(`${baseUrl}/api/notifications/recent`, {
+            $.post(`${baseUrl}/api/notifications/recent`, {
                 token: AppState.getToken(),
                 noloc: true,
                 userUUID

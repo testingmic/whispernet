@@ -143,7 +143,7 @@ class Templates extends BaseController
         $data = array_merge($this->globalVariables(), $data);
 
         // get the page description
-        $data['pgDesc'] = $this->pgDesc($page);
+        $data['pgDesc'] = $this->pgDesc('404');
 
         // print the files contents
         echo $this->loadHeader($data);

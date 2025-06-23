@@ -44,19 +44,32 @@ class Landing extends WebAppController
         // get the class name
         $className = '\\App\\Controllers\\WebApp\\'.ucfirst($className);
 
+        $skipLogin = false;
+
         // if the class name is a setup page, return the template page
         if(in_array($baseClassName, ['login', 'signup', 'forgot-password', 'logout'])) {
+            // if the user is not logged in, return the login page
+            if($this->user_loggedin()) {
+                $skipLogin = true;
+                $baseClassName = 'dashboard';
+            }
+
+            // if the class name is logout, logout the user and return the login page
             if($baseClassName == 'logout') {
                 $this->templateObject->logout();
                 $baseClassName = 'login';
             }
-            return $this->templateObject->loadPage('setup/'.$baseClassName, [
-                'pageTitle' => ucfirst($className), 
-                'footerHidden' => true, 
-                'logoutUser' => true, 
-                'pageTitle' => ucwords($baseClassName),
-                'userLoggedIn' => false
-            ]);
+            
+            // if the user is not logged in, return the login page
+            if(!$skipLogin) {
+                return $this->templateObject->loadPage('setup/'.$baseClassName, [
+                    'pageTitle' => ucfirst($className), 
+                    'footerHidden' => true, 
+                    'logoutUser' => true, 
+                    'pageTitle' => ucwords($baseClassName),
+                    'userLoggedIn' => false
+                ]);
+            }
         }
 
         // if the user is not logged in, return the login page

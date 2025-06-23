@@ -5,7 +5,7 @@ class NotificationsValidation {
 
     public $routes = [
         'recent' => [
-            'method' => 'GET',
+            'method' => 'POST',
             'authenticate' => true,
             'payload' => []
         ]
