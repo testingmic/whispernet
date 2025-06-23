@@ -138,6 +138,7 @@
 
                 // loop through the user settings
                 foreach ($userSettings as $ikey => $setting) {
+                    if(!empty($setting['noDisplay'])) continue;
                 ?>
                     <div class="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-700/50 rounded-xl">
                         <div class="flex items-start">

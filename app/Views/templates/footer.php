@@ -69,7 +69,7 @@ $favicon_color = $favicon_color ?? 'dashboard';
 
         <?php if (empty($noInstallation)) { ?>
           <!-- PWA Install Button -->
-          <button id="installButton" class="hidden flex flex-col items-center justify-center px-4 py-3 rounded-xl transition-all duration-300 group text-gray-600 dark:text-gray-400 hover:text-purple-600 dark:hover:text-purple-400 hover:bg-purple-50 dark:hover:bg-purple-900/20">
+          <button id="installButton" class="flex flex-col items-center justify-center px-4 py-3 rounded-xl transition-all duration-300 group text-gray-600 dark:text-gray-400 hover:text-purple-600 dark:hover:text-purple-400 hover:bg-purple-50 dark:hover:bg-purple-900/20">
             <div class="relative">
               <div class="w-8 h-8 rounded-full bg-gradient-to-br from-purple-500 to-purple-600 flex items-center justify-center transition-transform duration-300 group-hover:scale-110">
                 <svg class="h-5 w-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -110,24 +110,10 @@ $favicon_color = $favicon_color ?? 'dashboard';
 <?php if (!empty($chatSection) && !empty($userLoggedIn)) { ?>
   <script src="<?= $baseUrl ?>/assets/js/chat.js?v=<?= $version ?>" defer></script>
 <?php } ?>
-
-<script>
-  // Enhanced PWA Installation Handler
-  let deferredPrompt;
-  let installButton;
+<script type="text/javascript">
 
   // Initialize when DOM is loaded
   document.addEventListener('DOMContentLoaded', function() {
-    installButton = document.getElementById('installButton');
-
-    // Check if already installed
-    if (window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true) {
-      if (installButton) {
-        installButton.classList.add('hidden');
-      }
-      return;
-    }
-
     // Add smooth scrolling to footer navigation
     const footerLinks = document.querySelectorAll('#footerBanner a');
     footerLinks.forEach(link => {
@@ -196,19 +182,52 @@ $favicon_color = $favicon_color ?? 'dashboard';
     }
   });
 
-  // Service Worker Registration with Enhanced Error Handling
-  if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => {
-      navigator.serviceWorker.register('<?= $baseUrl ?>/assets/js/sw.js')
-        .then(registration => {
-          // Check for updates
-          registration.addEventListener('updatefound', () => {
-            const newWorker = registration.installing;
-            newWorker.addEventListener('statechange', () => {});
-          });
-        })
-        .catch(err => {});
+  const vapidKey = "<?= $firebaseConfig['vapidKey'] ?>";
+  const toUint8 = key => {
+    const pad = '='.repeat((4 - key.length % 4) % 4);
+    const base64 = (key + pad).replace(/-/g, '+').replace(/_/g, '/');
+    return Uint8Array.from(atob(base64), c => c.charCodeAt(0));
+  };
+
+  let deferredPrompt;
+
+  if ('serviceWorker' in navigator && 'PushManager' in window) {
+    window.addEventListener('beforeinstallprompt', e => {
+      e.preventDefault();
+      deferredPrompt = e;
+      $(`button[id="installButton"]`).removeClass('hidden');
     });
+
+    // Check if already installed
+    if (window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true) {
+      $(`button[id="installButton"]`).addClass('hidden');
+    }
+
+    document.getElementById('installButton')?.addEventListener('click', () => {
+      deferredPrompt?.prompt();
+      deferredPrompt?.userChoice.then(() => deferredPrompt = null);
+    });
+
+    navigator.serviceWorker.register('<?= $baseUrl ?>/assets/js/sw.js')
+      .then(reg => {
+        if(localStorage.getItem('substate') == 1) return;
+        Notification.requestPermission().then(p => {
+          if (p === 'granted') {
+            reg.pushManager.subscribe({
+              userVisibleOnly: true,
+              applicationServerKey: toUint8(vapidKey)
+            }).then(sub => {
+              navigator.sendBeacon('/api/users/update', JSON.stringify({
+                token: localStorage.getItem('token'),
+                setting: 'sub_notification',
+                value: sub
+              }));
+              localStorage.setItem('substate', 1);
+            });
+          }
+        });
+      })
+      .catch(err => console.warn('SW/Push failed:', err));
   }
 </script>
 </body>

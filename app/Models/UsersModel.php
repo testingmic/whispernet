@@ -159,6 +159,7 @@ class UsersModel extends Model {
      */
     public function createUserSettings($userId, $setting, $value) {
         try {
+            $value = is_array($value) ? json_encode($value) : $value;
             return $this->db->table('settings')->insert(['user_id' => $userId, 'setting' => $setting, 'value' => $value]);
         } catch (DatabaseException $e) {
             return false;
@@ -175,6 +176,7 @@ class UsersModel extends Model {
      */
     public function updateUserSettings($userId, $setting, $value) {
         try {
+            $value = is_array($value) ? json_encode($value) : $value;
             return $this->db->table('settings')->where(['user_id' => $userId, 'setting' => $setting])->update(['value' => $value]);
         } catch (DatabaseException $e) {
             return false;

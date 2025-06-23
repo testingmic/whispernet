@@ -22,7 +22,8 @@ function getUserIpaddress() {
 function formatUserSettings($settings) {
     $formattedSettings = [];
     foreach($settings as $setting) {
-        $formattedSettings[$setting['setting']] = (int)$setting['value'];
+        $iValue = in_array($setting['setting'], ['sub_notification']) ? json_decode($setting['value'], true) : $setting['value'];
+        $formattedSettings[$setting['setting']] = $iValue;
     }
     return $formattedSettings;
 }
@@ -36,6 +37,9 @@ function formatUserSettings($settings) {
  */
 function listUserSettings($settings = []) {
     $userSettings = [
+        'sub_notification' => [
+            'noDisplay' => true,
+        ],
         'push_notifications' => [
             'title' => 'Push Notifications',
             'class' => 'w-10 h-10 bg-blue-100 dark:bg-blue-900/30 rounded-lg flex items-center justify-center mr-4',

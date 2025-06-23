@@ -73,6 +73,7 @@ self.addEventListener('fetch', (event) => {
 
 // Push Notification Event
 self.addEventListener('push', (event) => {
+    console.log('Push Notification Event', event);
     const options = {
         body: event.data.text(),
         icon: `/assets/icons/Icon.192.png`,
@@ -97,7 +98,7 @@ self.addEventListener('push', (event) => {
     };
 
     event.waitUntil(
-        self.registration.showNotification('TalkLowKey', options)
+        self.registration.showNotification(event.data.title, options)
     );
 });
 

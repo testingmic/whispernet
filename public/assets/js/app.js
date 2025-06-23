@@ -237,13 +237,13 @@ const AppState = {
         this.showNotification('Location updated successfully!', 'success', 2000);
     },
     logPageView() {
-        $.post(`${baseUrl}/api/analytics/pageview`, {
+        navigator.sendBeacon(`${baseUrl}/api/analytics/pageview`, JSON.stringify({
             page: location.pathname,
             userUUID: userUUID,
             noloc: true,
             user_id: loggedInUserId,
             referer: document.referrer
-        });
+        }));
     },
     // Function to clear location data and reset to default
     clearLocationData() {

@@ -106,7 +106,7 @@ class Users extends LoadController {
             $settingValue = $this->payload['value'] ?? null;
 
             if(!empty($setting) && !empty($settingValue)) {
-                $this->usersModel->createUserSettings($userId, trim($setting), trim($settingValue));
+                $this->usersModel->createUserSettings($userId, trim($setting), $settingValue);
             }
         } else {
             // user settings
@@ -114,7 +114,7 @@ class Users extends LoadController {
 
             // loop through the settings and confirm if the setting is not already saved
             if(!empty($this->payload['setting'])) {
-                $isetting = trim($this->payload['setting']);
+                $isetting = !is_array($this->payload['setting']) ? trim($this->payload['setting']) : $this->payload['setting'];
                 if(in_array($isetting, $settingsSet)) {
                     $this->usersModel->updateUserSettings($userId, $isetting, $this->payload['value']);
                 } else {
