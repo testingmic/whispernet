@@ -30,8 +30,6 @@ $favicon_color = $favicon_color ?? 'dashboard';
 
   <!-- <link rel="stylesheet" href="<?= $baseUrl ?>/assets/css/tailwind.min.css"> -->
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-  <script src="<?= $baseUrl ?>/assets/js/groups.js?v=<?= $version ?>"></script>
-  <script src="<?= $baseUrl ?>/assets/js/search.js?v=<?= $version ?>"></script>
   <script>
     localStorage.setItem('baseUrl', '<?= $baseUrl ?>');
     const baseUrl = '<?= $baseUrl ?>',

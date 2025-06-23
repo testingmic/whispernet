@@ -128,6 +128,19 @@ class Templates extends BaseController
         // get the page description
         $data['pgDesc'] = $this->pgDesc($page);
 
+        if(!empty($data['userLoggedIn'])) {
+            $data['firebaseConfig'] = [
+                'vapidKey' => "BIqv7LD8m_879KPTe3cmA2Hsg8UJVm4zpvgaiYKVRwe0BHoM4JsxglPFbYMmBjMFI0feK5jRK0pfH33jUUQqlyU",
+                'apiKey' => "AIzaSyA5Ze-H8EmHaP5cM4jyIlbwxPpy6EPz5y4",
+                'authDomain' => "talk-low-key-app.firebaseapp.com",
+                'projectId' => "talk-low-key-app",
+                'storageBucket' => "talk-low-key-app.firebasestorage.app",
+                'messagingSenderId' => "616002011429",
+                'appId' => "1:616002011429:web:805864b9c5f0e2b61edacc",
+                'measurementId' => "G-GXVFYTX3EM"
+            ];
+        }
+
         // print the files contents
         echo $this->loadHeader($data);
         echo view($page, $data);
