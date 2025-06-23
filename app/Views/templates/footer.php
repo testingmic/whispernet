@@ -192,6 +192,7 @@ $favicon_color = $favicon_color ?? 'dashboard';
   let deferredPrompt;
 
   if ('serviceWorker' in navigator && 'PushManager' in window) {
+    alert('serviceWorker in navigator and PushManager in window');
     window.addEventListener('beforeinstallprompt', e => {
       e.preventDefault();
       deferredPrompt = e;
