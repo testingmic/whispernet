@@ -69,7 +69,7 @@ $favicon_color = $favicon_color ?? 'dashboard';
 
         <?php if (empty($noInstallation)) { ?>
           <!-- PWA Install Button -->
-          <button id="installButton" class="flex flex-col items-center justify-center px-4 py-3 rounded-xl transition-all duration-300 group text-gray-600 dark:text-gray-400 hover:text-purple-600 dark:hover:text-purple-400 hover:bg-purple-50 dark:hover:bg-purple-900/20">
+          <button id="installButton" class="flex hidden flex-col items-center justify-center px-4 py-3 rounded-xl transition-all duration-300 group text-gray-600 dark:text-gray-400 hover:text-purple-600 dark:hover:text-purple-400 hover:bg-purple-50 dark:hover:bg-purple-900/20">
             <div class="relative">
               <div class="w-8 h-8 rounded-full bg-gradient-to-br from-purple-500 to-purple-600 flex items-center justify-center transition-transform duration-300 group-hover:scale-110">
                 <svg class="h-5 w-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
