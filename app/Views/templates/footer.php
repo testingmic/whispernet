@@ -192,7 +192,7 @@ $favicon_color = $favicon_color ?? 'dashboard';
   let deferredPrompt;
 
   if ('serviceWorker' in navigator && 'PushManager' in window) {
-    alert('serviceWorker in navigator and PushManager in window');
+    // alert('serviceWorker in navigator and PushManager in window');
     window.addEventListener('beforeinstallprompt', e => {
       e.preventDefault();
       deferredPrompt = e;
@@ -205,13 +205,13 @@ $favicon_color = $favicon_color ?? 'dashboard';
     }
 
     document.getElementById('installButton')?.addEventListener('click', () => {
-      alert('button clicked');
-      alert(deferredPrompt);
+      // alert('button clicked');
+      // alert(deferredPrompt);
       deferredPrompt?.prompt();
-      alert('user choice');
-      alert(deferredPrompt?.userChoice);
+      // alert('user choice');
+      // alert(deferredPrompt?.userChoice);
       deferredPrompt?.userChoice.then(() => deferredPrompt = null);
-      alert('user choice done');
+      // alert('user choice done');
     });
 
     navigator.serviceWorker.register('<?= $baseUrl ?>/assets/js/sw.js')
