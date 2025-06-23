@@ -120,7 +120,7 @@ function timeDifference($specificDate) {
  * @param string    $specificDate
  * @param bool      $returnDays
  * 
- * @return string
+ * @return string|object
  */
 function daysDifference($specificDate, $returnDays = false) {
 
@@ -139,6 +139,10 @@ function daysDifference($specificDate, $returnDays = false) {
     // Get the difference in months and days
     $monthsDifference = $interval->m + ($interval->y * 12);
     $daysDifference = $interval->d;
+
+    if($returnDays == 'everything') {
+        return $interval;
+    }
 
     if($returnDays) return $daysDifference;
 

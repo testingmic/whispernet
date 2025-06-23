@@ -15,11 +15,66 @@ class Auth extends LoadController {
     private $internal = false;
 
     /**
+     * Login attempts
+     * 
+     * @param string $attemptKey
+     * @param array $loginLogs
+     * @param int $loginAttempts
+     * @return void
+     */
+    public function loginAttempts($attemptKey, $loginLogs, $loginAttempts) {
+        // increment the login attempts
+        $loginAttempts = ($loginLogs['value'] ?? $loginAttempts) + 1;
+
+        // if the login logs are not empty, update the cache
+        if(!empty($loginLogs)) {
+            $this->cacheObject->dbObject->query("UPDATE cache SET value = {$loginAttempts} WHERE cache_key = '{$attemptKey}'");
+        } else {
+            // insert the cache
+            $this->cacheObject->dbObject->table('cache')->insert([
+                'cache_key' => $attemptKey,
+                'value' => 1,
+                'setup' => 'login.attempt',
+                'secondary_key' => $this->payload['email'],
+                'account_id' => 0,
+                'expires' => date('Y-m-d H:i:s', strtotime("+1 hour")),
+                'server_time' => date('Y-m-d H:i:s')
+            ]);
+        }
+    }
+
+    /**
      * Login the user
      * 
      * @return array
      */
     public function login($email = null, $password = null, $payload = []) {
+
+        // if the fingerprint is not empty, set the fingerprint
+        $fingerprint = !empty($payload) ? $payload['fingerprint'] : $this->payload['fingerprint'];
+        
+        // get the login attempts counter
+        $attemptKey = md5('login_' . $fingerprint);
+        $loginLogs = $this->cacheObject->dbObject->query("SELECT * FROM cache WHERE setup = 'login.attempt' AND cache_key = '{$attemptKey}'")->getRowArray();
+
+        $loginAttempts = 1;
+
+        // if the login attempts counter is empty, set it to 0
+        if(!empty($loginLogs) && (int)$loginLogs['value'] >= configs('login_attempts')) {
+
+            // get the time ago
+            $agoTimer = daysDifference($loginLogs['server_time'], 'everything');
+
+            // if the time ago is less than 1 hour, return an error
+            if($agoTimer->i < 10) {
+                return Routing::error('Too many login attempts. Please try again later.', [], 429);
+            }
+
+            if($agoTimer->i >= 10) {
+                $this->cacheObject->dbObject->query("DELETE FROM cache WHERE cache_key = '{$attemptKey}' AND setup = 'login.attempt'");
+                $loginLogs = [];
+            }
+        }
 
         // check if the email is valid
         if(!isValidEmail($this->payload['email'] ?? $email)) {
@@ -29,6 +84,7 @@ class Auth extends LoadController {
         // Find user by email
         $user = $this->usersModel->findByEmail($this->payload['email'] ?? $email);
         if(empty($user)) {
+            $this->loginAttempts($attemptKey, $loginLogs, $loginAttempts);
             return Routing::error('Invalid login credentials.');
         }
 
@@ -40,6 +96,7 @@ class Auth extends LoadController {
 
         // Verify password
         if(!password_verify(md5($this->payload['password'] ?? $password), $user['password_hash'])) {
+            $this->loginAttempts($attemptKey, $loginLogs, $loginAttempts);
             return Routing::error('Invalid login credentials.');
         }
 
@@ -88,6 +145,9 @@ class Auth extends LoadController {
             
             $sessionObject->set('userData', $user);
         }
+
+        // delete the login logs
+        $this->cacheObject->dbObject->query("DELETE FROM cache WHERE cache_key = '{$attemptKey}' AND setup = 'login.attempt'");
         
         // Return the response
         return [
