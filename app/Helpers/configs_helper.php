@@ -15,6 +15,10 @@ if (!function_exists('configs')) {
             // get the ipinfo token
             'ipinfo' => getenv('IPINFO'),
             'opencage' => getenv('OPENCAGE'),
+
+            // get the vapid keys
+            'vapid_private' => getenv('VAPID_PRIVATE'),
+            'vapid_public' => getenv('VAPID_PUBLIC'),
             
             // get the database group
             'db_group' => config('Database')?->defaultGroup,

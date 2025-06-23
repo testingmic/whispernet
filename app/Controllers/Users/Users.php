@@ -74,7 +74,7 @@ class Users extends LoadController {
         // get user settings
         $userSettings = $this->usersModel->getUserSettings($userId);
 
-        return Routing::success($userSettings);
+        return Routing::success(formatUserSettings($userSettings, true));
 
     }
 

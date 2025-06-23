@@ -54,17 +54,15 @@ const AppState = {
         this.menuButtonControl();
     },
     logout() {
-        localStorage.removeItem('user');
-        localStorage.removeItem('userLocation');
+        let token = localStorage.getItem('token');
         this.clearLocationData();
         $.post(`${baseUrl}/api/auth/logout`, {
-            token: localStorage.getItem('token'),
+            token: token,
             webapp: true,
             noloc: true
         }).then(() => {
             AppState.showNotification('Logged out successfully', 'success');
             setTimeout(() => {
-                localStorage.removeItem('token');
                 document.cookie = 'user=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
                 document.cookie = 'token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
                 document.cookie = 'user_token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
@@ -248,6 +246,9 @@ const AppState = {
     // Function to clear location data and reset to default
     clearLocationData() {
         localStorage.removeItem('userLocation');
+        localStorage.removeItem('user');
+        localStorage.removeItem('token');
+        localStorage.removeItem('substate');
         this.location = null;
         latitude = '';
         longitude = '';
@@ -1982,8 +1983,6 @@ const AuthManager = {
     },
     logout() {
         // Clear local storage
-        localStorage.removeItem('user');
-        localStorage.removeItem('token');
         AppState.clearLocationData();
         
         // Update AppState

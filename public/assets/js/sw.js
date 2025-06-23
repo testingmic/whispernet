@@ -73,15 +73,16 @@ self.addEventListener('fetch', (event) => {
 
 // Push Notification Event
 self.addEventListener('push', (event) => {
-    console.log('Push Notification Event', event);
+    const payload = event.data.json();
     const options = {
-        body: event.data.text(),
+        body: payload.body,
         icon: `/assets/icons/Icon.192.png`,
         badge: `/assets/icons/Icon.72.png`,
         vibrate: [100, 50, 100],
         data: {
             dateOfArrival: Date.now(),
-            primaryKey: 1
+            primaryKey: 1,
+            url: payload.urlPath || '/',
         },
         actions: [
             {
@@ -98,7 +99,7 @@ self.addEventListener('push', (event) => {
     };
 
     event.waitUntil(
-        self.registration.showNotification(event.data.title, options)
+        self.registration.showNotification(payload.title, options)
     );
 });
 

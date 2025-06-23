@@ -182,7 +182,7 @@ $favicon_color = $favicon_color ?? 'dashboard';
     }
   });
 
-  const vapidKey = "<?= $firebaseConfig['vapidKey'] ?>";
+  const vapidKey = "<?= $firebaseConfig['vapidKey'] ?? '' ?>";
   const toUint8 = key => {
     const pad = '='.repeat((4 - key.length % 4) % 4);
     const base64 = (key + pad).replace(/-/g, '+').replace(/_/g, '/');

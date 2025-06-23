@@ -8,6 +8,12 @@ class NotificationsValidation {
             'method' => 'POST',
             'authenticate' => true,
             'payload' => []
+        ],
+        'push' => [
+            'method' => 'GET',
+            'payload' => [
+                'userId' => 'required|integer',
+            ]
         ]
     ];
 }

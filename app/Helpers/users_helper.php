@@ -19,11 +19,16 @@ function getUserIpaddress() {
  * 
  * @return array
  */
-function formatUserSettings($settings) {
+function formatUserSettings($settings, $alldata = false) {
     $formattedSettings = [];
     foreach($settings as $setting) {
         $iValue = in_array($setting['setting'], ['sub_notification']) ? json_decode($setting['value'], true) : $setting['value'];
-        $formattedSettings[$setting['setting']] = $iValue;
+        if(!$alldata) {
+            $formattedSettings[$setting['setting']] = $iValue;
+        } else {
+            $setting['value'] = $iValue;
+            $formattedSettings[] = $setting;
+        }
     }
     return $formattedSettings;
 }

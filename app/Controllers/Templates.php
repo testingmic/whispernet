@@ -130,7 +130,7 @@ class Templates extends BaseController
 
         if(!empty($data['userLoggedIn'])) {
             $data['firebaseConfig'] = [
-                'vapidKey' => "BIqv7LD8m_879KPTe3cmA2Hsg8UJVm4zpvgaiYKVRwe0BHoM4JsxglPFbYMmBjMFI0feK5jRK0pfH33jUUQqlyU",
+                'vapidKey' => configs('vapid_public'),
                 'apiKey' => "AIzaSyA5Ze-H8EmHaP5cM4jyIlbwxPpy6EPz5y4",
                 'authDomain' => "talk-low-key-app.firebaseapp.com",
                 'projectId' => "talk-low-key-app",

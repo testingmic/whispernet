@@ -1,6 +1,9 @@
 class WebSocketManager {
     constructor() {
+        this.retryCount = 0;
+        this.maxRetries = 5;
         this.socket = '';
+        this.isConnected = false;
         this.websocketUrl = websocketUrl;
         this.disconnectBeforeUnload();
     }
@@ -36,6 +39,7 @@ class WebSocketManager {
         };
 
         this.socket.onclose = () => {
+            this.isConnected = false;
             setTimeout(() => {
                 this.retryConnection();
             }, 5000);
@@ -53,8 +57,21 @@ class WebSocketManager {
     retryConnection() {
         this.socket = new WebSocket(this.websocketUrl);
         this.socket.onopen = () => {
+            this.isConnected = true;
+            this.retryCount = 0;
             console.log("✅ Connected to WebSocket server");
         };
+        
+        this.socket.onerror = (event) => {
+            this.isConnected = false;
+            if(this.retryCount < this.maxRetries) {
+                this.retryCount++;
+                setTimeout(() => {
+                    this.retryConnection();
+                }, 5000);
+            }
+        };
+
     }
 
     send(message) {

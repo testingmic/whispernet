@@ -70,6 +70,7 @@ logs
 heatmap_db*
 test.php
 test_2.php
+test_3.php
 
 vendor/
 writable/logs/*
