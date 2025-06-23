@@ -19,6 +19,9 @@ if (!function_exists('configs')) {
             // get the vapid keys
             'vapid_private' => getenv('VAPID_PRIVATE'),
             'vapid_public' => getenv('VAPID_PUBLIC'),
+
+            'sms_api_key' => getenv('MNOTIFY'),
+            'sms_sender' => 'TalkLowKey',
             
             // get the database group
             'db_group' => config('Database')?->defaultGroup,

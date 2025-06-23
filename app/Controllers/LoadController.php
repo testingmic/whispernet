@@ -89,6 +89,12 @@ class LoadController extends BaseController
                 $this->{$propertyName}->payload = $this->payload;
             }
         }
+
+        // initialize the tags model if it is requested
+        if(in_array('posts', $models)) {
+            $this->tagsModel = new TagsModel();
+        }
+
     }
 
     /**

@@ -24,258 +24,183 @@ class TagsModel extends Model {
     }
 
     /**
-     * Create tag
+     * Get posts list by hashtag
      * 
-     * @param string $name
-     * @return int
-     */
-    public function createTag($name) {
-        try {
-            // Validate tag name
-            $name = trim($name);
-
-            // Check if tag already exists
-            $existingTag = $this->db->table('tags')->where('name', $name)->get()->getRowArray();
-
-            if ($existingTag) {
-                return [
-                    'success' => true,
-                    'tag_id' => $existingTag['tag_id'],
-                    'message' => 'Tag already exists'
-                ];
-            }
-
-            // Create new tag
-            $tagId = $this->db->table('tags')->insert([
-                'name' => $name
-            ]);
-
-            return $tagId;
-        } catch (DatabaseException $e) {
-            return $e->getMessage();
-        }
-    }
-
-    /**
-     * Add tag to post
+     * @param string $hashtagId
      * 
-     * @param int $postId
-     * @param string $tagName
-     * @return bool
-     */
-    public function addTagToPost($postId, $tagName) {
-        try {
-            // First ensure tag exists
-            $tagResult = $this->createTag($tagName);
-            if (!$tagResult['success']) {
-                return [
-                    'success' => false,
-                    'message' => 'Failed to create tag'
-                ];
-            }
-            $tagId = $tagResult['tag_id'];
-
-            // Check if post exists
-            $post = $this->db->table('posts')->where('post_id', $postId)->get()->getRowArray();
-            if (!$post) {
-                return [
-                    'success' => false,
-                    'message' => 'Post not found'
-                ];
-            }
-
-            // Check if tag is already assigned to post
-            $postTag = $this->db->table('post_tags')->where('post_id', $postId)->where('tag_id', $tagId)->get()->getRowArray();
-            if ($postTag) {
-                return [
-                    'success' => true,
-                    'message' => 'Tag already assigned to post'
-                ];
-            }
-
-            // Assign tag to post
-            $this->db->table('post_tags')->insert([
-                'post_id' => $postId,
-                'tag_id' => $tagId
-            ]);
-
-            return true;
-        } catch (DatabaseException $e) {
-            return $e->getMessage();
-        }
-    }
-
-    /**
-     * Remove tag from post
-     * 
-     * @param int $postId
-     * @param int $tagId
-     * @return bool
-     */
-    public function removeTagFromPost($postId, $tagId) {
-        try {
-            $this->db->table('post_tags')->where('post_id', $postId)->where('tag_id', $tagId)->delete();
-
-            return true;
-        } catch (DatabaseException $e) {
-            return $e->getMessage();
-        }
-    }
-
-    /**
-     * Get post tags
-     * 
-     * @param int $postId
      * @return array
      */
-    public function getPostTags($postId) {
+    public function getPostsListByHashtag($hashtag, $column = 'name') {
         try {
-            $sql = "SELECT t.* FROM tags t 
-                    INNER JOIN post_tags pt ON t.tag_id = pt.tag_id 
-                    WHERE pt.post_id = ?";
-            $tags = $this->db->query($sql, [$postId])->getResultArray();
-
-            return [
-                'success' => true,
-                'tags' => $tags
-            ];
+            $query = $this->db->table('post_hashtags')
+                    ->select('posts.*, u.full_name, u.username as username, u.profile_image')
+                    ->join('hashtags', 'hashtags.id = post_hashtags.hashtag_id')
+                    ->join('posts', 'posts.post_id = post_hashtags.post_id')
+                    ->join('users u', 'posts.user_id = u.user_id')
+                    ->where("hashtags.{$column}", $hashtag)
+                    ->get();
+            return $query->getResultArray();
         } catch (DatabaseException $e) {
-            return $e->getMessage();
+            return [];
         }
     }
 
     /**
-     * Get posts by tag
+     * Get hashtags
      * 
-     * @param string $tagName
-     * @param int $page
-     * @param int $limit
+     * @param array $hashtags
+     * 
      * @return array
      */
-    public function getPostsByTag($tagName, $page = 1, $limit = 20) {
+    public function getHashtags() {
         try {
-            $offset = ($page - 1) * $limit;
-            
-            $sql = "SELECT p.* FROM posts p 
-                    INNER JOIN post_tags pt ON p.post_id = pt.post_id 
-                    INNER JOIN tags t ON pt.tag_id = t.tag_id 
-                    WHERE t.name = ? 
-                    ORDER BY p.created_at DESC 
-                    LIMIT ? OFFSET ?";
-            $posts = $this->db->table('posts')->where('name', $tagName)->limit($limit)->offset($offset)->get()->getResultArray();
-
-            // Get total count for pagination
-            $sql = "SELECT COUNT(*) FROM posts p 
-                    INNER JOIN post_tags pt ON p.post_id = pt.post_id 
-                    INNER JOIN tags t ON pt.tag_id = t.tag_id 
-                    WHERE t.name = ?";
-            $total = $this->db->query($sql, [$tagName])->getRowArray()['COUNT(*)'];
-
-            return [
-                'success' => true,
-                'posts' => $posts,
-                'pagination' => [
-                    'total' => $total,
-                    'page' => $page,
-                    'limit' => $limit,
-                    'pages' => ceil($total / $limit)
-                ]
-            ];
+            return $this->db->table('hashtags')->get()->getResultArray();
         } catch (DatabaseException $e) {
-            return $e->getMessage();
+            return [];
         }
     }
 
     /**
-     * Get popular tags
+     * Get hashtag
      * 
-     * @param int $limit
+     * @param string $hashtag
+     * 
      * @return array
      */
-    public function getPopularTags($limit = 10) {
+    public function getHashtag($hashtag) {
         try {
-            $tags = $this->db->query("SELECT t.*, COUNT(pt.post_id) as usage_count 
-                    FROM tags t 
-                    INNER JOIN post_tags pt ON t.tag_id = pt.tag_id 
-                    GROUP BY t.tag_id 
-                    ORDER BY usage_count DESC 
-                    LIMIT ?", [$limit])->getResultArray();
-
-            return $tags;
+            return $this->db->table('hashtags')->where('name', $hashtag)->get()->getRowArray();
         } catch (DatabaseException $e) {
-            return $e->getMessage();
+            return [];
         }
     }
 
     /**
-     * Search tags
+     * Get similar hashtags
      * 
-     * @param string $query
-     * @param int $limit
+     * @param string $hashtag
+     * 
      * @return array
      */
-    public function searchTags($query, $limit = 10) {
+    public function getSimilarHashtags($hashtag) {
         try {
-            $sql = "SELECT * FROM tags 
-                    WHERE name LIKE ? 
-                    ORDER BY name 
-                    LIMIT ?";
-            $tags = $this->db->query($sql, [$query, $limit])->getResultArray();
-
-            return $tags;
+            return $this->db->table('hashtags')->like('name', $hashtag)->get()->getResultArray();
         } catch (DatabaseException $e) {
-            return $e->getMessage();
+            return [];
         }
     }
 
     /**
-     * Delete tag
+     * Get post hashtags
      * 
-     * @param int $tagId
-     * @return bool
+     * @param string $postId
+     * 
+     * @return array
      */
-    public function deleteTag($tagId) {
+    public function getPostHashtags($postId) {
         try {
-            // Check if tag exists
-            $tag = $this->db->table('tags')->where('tag_id', $tagId)->get()->getRowArray();
-            if (!$tag) {
-                return [
-                    'success' => false,
-                    'message' => 'Tag not found'
-                ];
+            return $this->db->table('post_hashtags')->where('post_id', $postId)->get()->getResultArray();
+        } catch (DatabaseException $e) {
+            return [];
+        }
+    }
+
+    /**
+     * Get posts by hashtag
+     * 
+     * @param string $hashtagId
+     * 
+     * @return array
+     */
+    public function getPostsByHashtagId($hashtagId) {
+        try {
+            return $this->db->table('post_hashtags')->where('hashtag_id', $hashtagId)->get()->getResultArray();
+        } catch (DatabaseException $e) {
+            return [];
+        }
+    }
+
+    /**
+     * Get popular hashtags
+     * 
+     * @return array
+     */
+    public function getPopularHashtags($limit = 100) {
+        try {
+
+            // $list = $this->db->table('post_hashtags')->get()->getResultArray();
+            // $list = $this->db->table('hashtags')->get()->getResultArray();
+
+            // print_r($list);
+            // exit;
+
+            return $this->db->table('post_hashtags')
+                            ->select('hashtags.name, COUNT(*) as usage_count, hashtags.id as tag_id')
+                            ->join('hashtags', 'hashtags.id = post_hashtags.hashtag_id', 'left')
+                            ->groupBy('hashtags.name')
+                            ->orderBy('usage_count', 'desc')
+                            ->limit($limit)
+                            ->get()->getResultArray();
+        } catch (DatabaseException $e) {
+            return [];
+        }
+    }
+
+    /**
+     * Get hashtags by list
+     * 
+     * @param array $hashtags
+     * 
+     * @return array
+     */
+    public function getHashtagsByList($hashtags = []) {
+        try {
+            $query = $this->db->table('hashtags')->whereIn('name', $hashtags)->get();
+            return $query->getResultArray();
+        } catch (DatabaseException $e) {
+            return [];
+        }
+    }
+
+    /**
+     * Insert hashtags
+     * 
+     * @param string $postId
+     * @param array $hashtags
+     * 
+     * @return array
+     */
+    public function createhashtags($hashtags, $isLocal = false) {
+        try {
+            $hashIds = [];
+            $keyword = !$isLocal ? "IGNORE" : "";
+            foreach($hashtags as $hashtag) {
+                $sql = "INSERT {$keyword} INTO hashtags (name) VALUES (?)";
+                $this->db->query($sql, [trim(strtolower($hashtag))]);
+                $hashIds[$hashtag] = $this->db->insertID();
             }
-
-            // Delete tag (post_tags entries will be automatically deleted due to foreign key constraint)
-            $this->db->table('tags')->where('tag_id', $tagId)->delete();
-
-            return true;
+            return $hashIds;
         } catch (DatabaseException $e) {
-            return $e->getMessage();
+            return [];
         }
     }
 
     /**
-     * Get related tags
+     * Insert post hashtags
      * 
-     * @param int $tagId
-     * @param int $limit
+     * @param string $postId
+     * @param array $hashtags
+     * 
      * @return array
      */
-    public function getRelatedTags($tagId, $limit = 5) {
+    public function createposthashtags($postId, $hashtags) {
         try {
-            $sql = "SELECT t2.*, COUNT(*) as co_occurrence 
-                    FROM post_tags pt1 
-                    INNER JOIN post_tags pt2 ON pt1.post_id = pt2.post_id 
-                    INNER JOIN tags t2 ON pt2.tag_id = t2.tag_id 
-                    WHERE pt1.tag_id = ? AND pt2.tag_id != ? 
-                    GROUP BY t2.tag_id 
-                    ORDER BY co_occurrence DESC 
-                    LIMIT ?";
-            $tags = $this->db->query($sql, [$tagId, $tagId, $limit])->getResultArray();
-
-            return $tags;
+            foreach($hashtags as $hashtag) {
+                $sql = "INSERT INTO post_hashtags (post_id, hashtag_id) VALUES (?, ?)";
+                $this->db->query($sql, [$postId, trim(strtolower($hashtag))]);
+            }
         } catch (DatabaseException $e) {
-            return $e->getMessage();
+            return [];
         }
     }
 

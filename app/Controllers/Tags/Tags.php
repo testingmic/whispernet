@@ -8,83 +8,45 @@ use App\Libraries\Routing;
 class Tags extends LoadController {
 
     /**
-     * Create tag
+     * Get popular hashtags
      * 
      * @return array
      */
-    public function createTag() {
-        return $this->tagsModel->createTag($this->payload['name']);
+    public function popular() {
+        $popularTags = $this->tagsModel->getPopularHashtags();
+        return Routing::success($popularTags);
     }
 
     /**
-     * Add tag to post
+     * Get posts list by hashtag
+     * 
+     * @param string $hashtag
      * 
      * @return array
      */
-    public function addTagToPost() {
-        return $this->tagsModel->addTagToPost($this->payload['postId'], $this->payload['tagName']);
+    public function posts() {
+        if(empty($this->payload['hashtag'])) {
+            return Routing::error('Hashtag is required');
+        }
+        $posts = $this->tagsModel->getPostsListByHashtag($this->payload['hashtag']);
+        return Routing::success(formatPosts($posts));
     }
 
     /**
-     * Remove tag from post
+     * Get posts list by hashtag
+     * 
+     * @param string $hashtag
      * 
      * @return array
      */
-    public function removeTagFromPost() {
-        return $this->tagsModel->removeTagFromPost($this->payload['postId'], $this->payload['tagId']);
+    public function postsbyid() {
+
+        if(empty($this->payload['tag_id'])) {
+            return Routing::error('Tag ID is required');
+        }
+
+        $posts = $this->tagsModel->getPostsListByHashtag($this->payload['tag_id'], 'id');
+        return Routing::success(formatPosts($posts));
     }
 
-    /**
-     * Get post tags
-     * 
-     * @return array
-     */
-    public function getPostTags() {
-        return $this->tagsModel->getPostTags($this->payload['postId']);
-    }
-
-    /**
-     * Get posts by tag
-     * 
-     * @return array
-     */
-    public function getPostsByTag() {
-        return $this->tagsModel->getPostsByTag($this->payload['tagName'], $this->payload['page'], $this->payload['limit']);
-    }
-
-    /**
-     * Get popular tags
-     * 
-     * @return array
-     */
-    public function getPopularTags() {
-        return $this->tagsModel->getPopularTags($this->payload['limit']);
-    }
-
-    /**
-     * Search tags
-     * 
-     * @return array
-     */
-    public function searchTags() {
-        return $this->tagsModel->searchTags($this->payload['query'], $this->payload['limit']);
-    }
-
-    /**
-     * Delete tag
-     * 
-     * @return array
-     */
-    public function deleteTag() {
-        return $this->tagsModel->deleteTag($this->payload['tagId']);
-    }
-
-    /**
-     * Get related tags
-     * 
-     * @return array
-     */
-    public function getRelatedTags() {
-        return $this->tagsModel->getRelatedTags($this->payload['tagId'], $this->payload['limit']);
-    }
 } 

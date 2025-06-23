@@ -69,24 +69,31 @@ class Posts extends LoadController {
 
         // update the statistics
         $this->usersModel->db->table('users')->where('user_id', $this->currentUser['user_id'])->update(['statistics' => json_encode($this->currentUser['statistics'])]);
-        
-        // connect to the votes database
-        $this->postsModel->connectToDb('views');
 
         // extract the hashtags
         $hashtags = extractHashtags($this->payload['content']);
 
         // insert the hashtags
         if(!empty($hashtags)) {
-            $hashIds = $this->postsModel->insertHashtags($hashtags, configs('is_local'));
-            $this->postsModel->insertPostHashtags($postId, $hashIds);
+
+            $existingTags = $this->tagsModel->getHashtagsByList($hashtags);
+            $existingIds = array_column($existingTags, 'id');
+            $existingNames = array_column($existingTags, 'name');
+
+            $noneExistingHashtags = array_diff($hashtags, $existingNames);
+            $hashIds = $this->tagsModel->createhashtags($noneExistingHashtags, configs('is_local'));
+            $allHashIds = array_merge($existingIds, $hashIds);
+            $this->tagsModel->createposthashtags($postId, $allHashIds);
         }
+        
+        // connect to the votes database
+        $this->postsModel->connectToDb('views');
         
         // record the view
         $this->postsModel->recordView($postId, $this->currentUser['user_id'], 'posts');
 
         // return the post id
-        return Routing::created(['data' => 'Post created successfully', 'record' => $this->view()['data']]);
+        return Routing::error(['data' => 'Post created successfully', 'record' => $this->view()['data']]);
 
     }
 

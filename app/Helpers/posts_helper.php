@@ -32,6 +32,7 @@ function formatPosts($posts = [], $single = false, $userId = null) {
             'updated_at' => $post['updated_at'],
             'user_id' => $post['user_id'],
             'city' => $post['city'],
+            'hashtags' => extractHashtags($post['content']),
             'manage' => [
                 'delete' => (bool)($post['user_id'] == $userId),
                 'report' => (bool)($post['user_id'] !== $userId),
@@ -72,10 +73,13 @@ function formatPosts($posts = [], $single = false, $userId = null) {
  * @param string $comment
  * @return array
  */
-function extractHashtags($comment, $itag = "#") {
+function extractHashtags($comment = "", $itag = "#") {
+    if(empty($comment)) return [];
     $escapedItag = preg_quote($itag, '/');
     preg_match_all("/{$escapedItag}([a-zA-Z0-9_]+)/", $comment, $matches);
-    return $matches[1]; 
+
+    // return the lowercase hashtags
+    return array_map('strtolower', $matches[1]); 
 }
 
 /**

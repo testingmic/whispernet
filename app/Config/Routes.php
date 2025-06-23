@@ -23,6 +23,10 @@ foreach(['report', 'privacy', 'terms', 'updates', 'install'] as $route) {
     $routes->get("/{$route}", "WebApp\Dashboard::{$route}");
 }
 
+$routes->get("/posts/view/(:segment)", "WebApp\Posts::view/$1");
+$routes->get("/posts/tags/(:segment)", "WebApp\Posts::tags/$1");
+$routes->get("/posts/tags", "WebApp\Posts::tags");
+
 // WebApp routes
 foreach(['profile', 'chat', 'notifications'] as $route) {
     $iroute = ucwords($route);
