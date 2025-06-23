@@ -93,7 +93,7 @@ class Posts extends LoadController {
         $this->postsModel->recordView($postId, $this->currentUser['user_id'], 'posts');
 
         // return the post id
-        return Routing::error(['data' => 'Post created successfully', 'record' => $this->view()['data']]);
+        return Routing::created(['data' => 'Post created successfully', 'record' => $this->view()['data']]);
 
     }
 
