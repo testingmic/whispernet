@@ -69,6 +69,31 @@ class Templates extends BaseController
     }
 
     /**
+     * Get the page description
+     * 
+     * @param string $page
+     * @return string
+     */
+    public function pgDesc($page) {
+
+        $page = explode('/', $page);
+        $page = end($page);
+
+        // get the page description
+        $metaDescriptions = [
+            'install' => 'Download and install TalkLowKey – the anonymous social app where you can post freely, connect privately, and share without judgment.',
+            'terms' => 'Read the terms and conditions for using TalkLowKey. Understand your rights, responsibilities, and our platform policies.',
+            'privacy' => 'Learn how TalkLowKey protects your privacy. We are committed to keeping your identity safe and your data secure.',
+            'signup' => 'Create your anonymous profile on TalkLowKey and start connecting with a community that listens—no names, no pressure.',
+            'login' => 'Login to TalkLowKey and jump back into anonymous conversations, confessions, and trending topics.',
+            'forgot-password' => 'Forgot your password? Reset your TalkLowKey account securely and regain access to your anonymous community.'
+        ];
+
+        // return the page description
+        return $metaDescriptions[$page] ?? 'TalkLowKey is an anonymous social app where you can post freely, connect privately, and share without judgment.';
+    }
+
+    /**
      * Load the header template
      * 
      * @return void
@@ -97,6 +122,9 @@ class Templates extends BaseController
         // merge the global variables with the data
         $data = array_merge($this->globalVariables(), $data);
 
+        // get the page description
+        $data['pgDesc'] = $this->pgDesc($page);
+
         // print the files contents
         echo $this->loadHeader($data);
         echo view($page, $data);
@@ -113,6 +141,9 @@ class Templates extends BaseController
 
         // merge the global variables with the data
         $data = array_merge($this->globalVariables(), $data);
+
+        // get the page description
+        $data['pgDesc'] = $this->pgDesc($page);
 
         // print the files contents
         echo $this->loadHeader($data);

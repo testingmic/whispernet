@@ -9,7 +9,7 @@ $favicon_color = $favicon_color ?? 'dashboard';
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title><?= $pageTitle ?? 'Dashboard' ?> - <?= $appName ?></title>
-  <meta name="description" content="Connect with your local community anonymously">
+  <meta name="description" content="<?= $pgDesc ?>">
   <link rel="manifest" href="<?= $baseUrl ?>/manifest.json">
   <meta name="theme-color" content="#2196F3">
   <script src="https://cdn.tailwindcss.com"></script>
