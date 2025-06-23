@@ -57,12 +57,12 @@ Options All -Indexes
 # ----------------------------------------------------------------------
 # File Restrictions
 # ----------------------------------------------------------------------
-<Files ~ ".env|.gitignore|composer|php.ini|spark|heatmap_db">
+<Files ~ ".env|.gitignore|composer|php.ini|spark|whispernet_db">
     Order allow,deny
     Deny from all
 </Files>
 
-<FilesMatch ".(env|htaccess|htpasswd|ini|psd|log|sh|spark|heatmap_db)$">
+<FilesMatch ".(env|htaccess|htpasswd|ini|psd|log|sh|spark|whispernet_db)$">
 	Order Allow,Deny
 	Deny from all
 </FilesMatch>

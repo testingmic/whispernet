@@ -8,7 +8,7 @@ set_time_limit(60);
 $minPhpVersion = '8.2'; // If you update this, don't forget to update `spark`.
 if (version_compare(PHP_VERSION, $minPhpVersion, '<')) {
     $message = sprintf(
-        'Your PHP version must be %s or higher to run Heatmap. Current version: %s',
+        'Your PHP version must be %s or higher to run TalkLowKey. Current version: %s',
         $minPhpVersion,
         PHP_VERSION
     );

@@ -93,5 +93,5 @@ define('EVENT_PRIORITY_NORMAL', 100);
  */
 define('EVENT_PRIORITY_HIGH', 10);
 
-// define the heatmap document root
-define('HEATMAP_DOCUMENT_ROOT', dirname(dirname(__FILE__)) == '/' ? '' : dirname(dirname(__FILE__)));
+// define the talklowkey document root
+define('TALKLOWKEY_DOCUMENT_ROOT', dirname(dirname(__FILE__)) == '/' ? '' : dirname(dirname(__FILE__)));
