@@ -18,15 +18,17 @@ $routes->set404Override(function() {
 
 $routes->get("/dashboard/install", "WebApp\Dashboard::install");
 
+// Dashboard routes
 foreach(['report', 'privacy', 'terms', 'updates', 'install'] as $route) {
     $routes->get("/{$route}", "WebApp\Dashboard::{$route}");
 }
 
-// Profile routes
-$routes->get("profile", "WebApp\Profile::index");
+// WebApp routes
+foreach(['profile', 'chat', 'notifications'] as $route) {
+    $iroute = ucwords($route);
+    $routes->get("/{$route}", "WebApp\\{$iroute}::index");
+}
 
-// Chat routes
-$routes->get("/chat", "WebApp\Chat::index");
 $routes->get("/login", "Landing::load/login");
 $routes->get("/signup", "Landing::load/signup");
 $routes->get("/forgot-password", "Landing::load/forgot-password");

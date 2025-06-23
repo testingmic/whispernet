@@ -227,6 +227,9 @@ class Auth extends LoadController {
         // update the username of the user
         $this->usersModel->update($userId, ['username' => "user{$userId}"]);
 
+        // create the user settings
+        $this->usersModel->createUserSettings($userId, 'profile_visibility', 1);
+
         // set the internal to true
         $this->internal = true;
 

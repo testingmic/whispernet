@@ -86,7 +86,10 @@ class Templates extends BaseController
             'privacy' => 'Learn how TalkLowKey protects your privacy. We are committed to keeping your identity safe and your data secure.',
             'signup' => 'Create your anonymous profile on TalkLowKey and start connecting with a community that listens—no names, no pressure.',
             'login' => 'Login to TalkLowKey and jump back into anonymous conversations, confessions, and trending topics.',
-            'forgot-password' => 'Forgot your password? Reset your TalkLowKey account securely and regain access to your anonymous community.'
+            'forgot-password' => 'Forgot your password? Reset your TalkLowKey account securely and regain access to your anonymous community.',
+            'chat' => 'Chat with TalkLowKey users anonymously. Share your thoughts, connect with others, and explore trending topics without revealing your identity.',
+            'notifications' => 'View your notifications on TalkLowKey. Stay updated with likes, comments, and messages from your anonymous community.',
+            'profile' => 'View your profile on TalkLowKey. Manage your settings, update your bio, and connect with other users.'
         ];
 
         // return the page description
