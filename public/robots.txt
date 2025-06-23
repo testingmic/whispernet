@@ -1,8 +1,31 @@
+# Google
 User-agent: Googlebot
 Disallow:
 
+# Google Mobile
 User-agent: Googlebot-Mobile
 Disallow:
 
+# Bing
+User-agent: Bingbot
+Disallow:
+
+# Yahoo (uses Slurp)
+User-agent: Slurp
+Disallow:
+
+# DuckDuckGo (uses DuckDuckBot)
+User-agent: DuckDuckBot
+Disallow:
+
+# Allow only specific pages for all approved bots
+Allow: /install
+Allow: /terms
+Allow: /privacy
+Allow: /signup
+Allow: /login
+Allow: /forgot-password
+
+# Disallow all other bots entirely
 User-agent: *
 Disallow: /
