@@ -217,21 +217,23 @@ $favicon_color = $favicon_color ?? 'dashboard';
     navigator.serviceWorker.register('<?= $baseUrl ?>/assets/js/sw.js')
       .then(reg => {
         if(localStorage.getItem('substate') == 1) return;
-        Notification.requestPermission().then(p => {
-          if (p === 'granted') {
-            reg.pushManager.subscribe({
-              userVisibleOnly: true,
-              applicationServerKey: toUint8(vapidKey)
-            }).then(sub => {
-              navigator.sendBeacon('/api/users/update', JSON.stringify({
-                token: localStorage.getItem('token'),
-                setting: 'sub_notification',
-                value: sub
-              }));
-              localStorage.setItem('substate', 1);
-            });
-          }
-        });
+        if(vapidKey.length > 0) {
+          Notification.requestPermission().then(p => {
+            if (p === 'granted') {
+              reg.pushManager.subscribe({
+                userVisibleOnly: true,
+                applicationServerKey: toUint8(vapidKey)
+              }).then(sub => {
+                navigator.sendBeacon('/api/users/update', JSON.stringify({
+                  token: localStorage.getItem('token'),
+                  setting: 'sub_notification',
+                  value: sub
+                }));
+                localStorage.setItem('substate', 1);
+              });
+            }
+          });
+        }
       })
       .catch(err => console.warn('SW/Push failed:', err));
   }
