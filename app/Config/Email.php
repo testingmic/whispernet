@@ -9,12 +9,12 @@ class Email extends BaseConfig
     /**
      * The "from" email address.
      */
-    public string $fromEmail = 'dev@emmallextech.com';
+    public string $fromEmail = '';
 
     /**
      * The "from" name.
      */
-    public string $fromName = 'eLearn Consult';
+    public string $fromName = 'TalkLowKey';
 
     /**
      * The "to" email address.
@@ -39,17 +39,17 @@ class Email extends BaseConfig
     /**
      * SMTP Server Hostname
      */
-    public string $SMTPHost = 'mail.emmallextech.com';
+    public string $SMTPHost = '';
 
     /**
      * SMTP Username
      */
-    public string $SMTPUser = 'dev@emmallextech.com';
+    public string $SMTPUser = '';
 
     /**
      * SMTP Password
      */
-    public string $SMTPPass = 'C30C5aamUl';
+    public string $SMTPPass = '';
 
     /**
      * SMTP Port

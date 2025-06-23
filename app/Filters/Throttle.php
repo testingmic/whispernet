@@ -8,6 +8,13 @@ use Config\Services;
 
 class Throttle implements FilterInterface {
 
+    /**
+     * Before filter
+     * 
+     * @param RequestInterface $request
+     * @param mixed $arguments
+     * @return mixed
+     */
     public function before(RequestInterface $request, $arguments = null) {
         
         $throttler = Services::throttler();
@@ -27,6 +34,14 @@ class Throttle implements FilterInterface {
 
     }
 
+    /**
+     * After filter
+     * 
+     * @param RequestInterface $request
+     * @param ResponseInterface $response
+     * @param mixed $arguments
+     * @return void
+     */
     public function after(RequestInterface $request, ResponseInterface $response, $arguments = null) {
 
     }

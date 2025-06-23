@@ -1909,12 +1909,12 @@ const AuthManager = {
 
         try {
             const response = await $.ajax({
-                url: `${baseUrl}/api/auth/forgot-password`,
+                url: `${baseUrl}/api/auth/forgotten`,
                 method: 'POST',
-                data: { email, longitude, latitude, userUUID }
+                data: { email, userUUID, noloc: true }
             });
 
-            if (response.success) {
+            if (response.status == 'success') {
                 AppState.showNotification('Password reset instructions have been sent to your email.', 'success');
                 // Clear the form
                 $('#forgotPasswordForm')[0].reset();

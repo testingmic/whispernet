@@ -11,12 +11,13 @@ class Emailing {
 
     public function __construct() {
         $this->replacements = [
-            '__APPLOGO__' => 'https://c.heatmap.com/assets/logo.avif',
-            '__TITLE__' => 'Heatmap.com',
-            '__TEAM__' => 'Team - Heatmap.com',
-            '__INVITE_URL__' => rtrim(configs('app_url'), '/') . '/auth/signup'
+            '__APPLOGO__' => 'https://talklowkey.com/assets/images/logo.png',
+            '__TITLE__' => 'TalkLowKey',
+            '__TEAM__' => 'Team - TalkLowKey',
+            '__INVITE_URL__' => rtrim(configs('app_url'), '/') . '/signup'
         ];
 
+        // initialize the email object
         $this->emailObject = new PHPMailer(true);
 
         $this->initialize();
@@ -49,7 +50,7 @@ class Emailing {
         $this->emailObject->Password = configs('email.pass') ? configs('email.pass') : $emailConfig?->SMTPPass;
         $this->emailObject->SMTPSecure = configs('email.crypto') ? configs('email.crypto') : $emailConfig?->SMTPCrypto;
         $this->emailObject->Port = configs('email.port') ? configs('email.port') : $emailConfig?->SMTPPort;
-        $this->emailObject->setFrom($this->emailObject->Username , "Heatmap.com", false);
+        $this->emailObject->setFrom($this->emailObject->Username , "TalkLowKey.com", false);
         $this->emailObject->isHTML(true);
     }
 
@@ -74,6 +75,7 @@ class Emailing {
                 $template = str_replace($key, $value, $template);
             }
 
+            // if the app is in local mode, return true
             if(configs('is_local')) {
                 return true;
             }
@@ -82,7 +84,7 @@ class Emailing {
             $this->emailObject->addAddress($email);
 
             // Set email details
-            $this->emailObject->Subject = ($message['__subject__'] ?? 'Heatmap.com');
+            $this->emailObject->Subject = ($message['__subject__'] ?? 'TalkLowKey.com');
             $this->emailObject->Body = $template;
             
             return  $this->emailObject->send();
@@ -113,7 +115,7 @@ class Emailing {
             $this->emailObject->addAddress($email);
 
             // Set email details
-            $this->emailObject->Subject = ($message['__subject__'] ?? 'Heatmap.com');
+            $this->emailObject->Subject = ($message['__subject__'] ?? 'TalkLowKey.com');
             $this->emailObject->Body = $template;
 
             return  $this->emailObject->send();

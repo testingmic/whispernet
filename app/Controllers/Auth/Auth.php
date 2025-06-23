@@ -22,7 +22,7 @@ class Auth extends LoadController {
      * @param int $loginAttempts
      * @return void
      */
-    public function loginAttempts($attemptKey, $loginLogs, $loginAttempts) {
+    public function loginAttempts($attemptKey, $loginLogs, $loginAttempts, $setup = 'login.attempt') {
         // increment the login attempts
         $loginAttempts = ($loginLogs['value'] ?? $loginAttempts) + 1;
 
@@ -34,7 +34,7 @@ class Auth extends LoadController {
             $this->cacheObject->dbObject->table('cache')->insert([
                 'cache_key' => $attemptKey,
                 'value' => 1,
-                'setup' => 'login.attempt',
+                'setup' => $setup,
                 'secondary_key' => $this->payload['email'],
                 'account_id' => 0,
                 'expires' => date('Y-m-d H:i:s', strtotime("+1 hour")),
@@ -49,6 +49,11 @@ class Auth extends LoadController {
      * @return array
      */
     public function login($email = null, $password = null, $payload = []) {
+
+        // check if the email is valid
+        if(!isValidEmail($this->payload['email'] ?? $email)) {
+            return Routing::error('Sorry! You cannot use a disposable email address.');
+        }
 
         // if the fingerprint is not empty, set the fingerprint
         $fingerprint = !empty($payload) ? $payload['fingerprint'] : $this->payload['fingerprint'];
@@ -74,11 +79,6 @@ class Auth extends LoadController {
                 $this->cacheObject->dbObject->query("DELETE FROM cache WHERE cache_key = '{$attemptKey}' AND setup = 'login.attempt'");
                 $loginLogs = [];
             }
-        }
-
-        // check if the email is valid
-        if(!isValidEmail($this->payload['email'] ?? $email)) {
-            return Routing::error('Sorry! You cannot use a disposable email address.');
         }
 
         // Find user by email
@@ -172,9 +172,10 @@ class Auth extends LoadController {
         
         // if the webapp is true, set the session
         if(!empty($this->payload['webapp'])) {
-            session()->set('user_token', $this->payload['token']);
-            session()->set('user_id', $this->currentUser['user_id']);
-            session()->set('user_loggedin', true);
+            $sessionObject = session();
+            $sessionObject->set('user_token', $this->payload['token']);
+            $sessionObject->set('user_id', $this->currentUser['user_id']);
+            $sessionObject->set('user_loggedin', true);
         }
 
         return [
@@ -391,20 +392,57 @@ class Auth extends LoadController {
      */
     public function forgotten() {
 
+        // check if the email is valid
+        if(!isValidEmail($this->payload['email'])) {
+            return Routing::error('Sorry! You cannot use a disposable email address.');
+        }
+
+        // if the fingerprint is not empty, set the fingerprint
+        $fingerprint = !empty($payload) ? $payload['fingerprint'] : $this->payload['fingerprint'];
+
+        // set the login attempts counter
+        $loginAttempts = 1;
+
+        // get the login attempts counter
+        $attemptKey = md5('forgotten_' . $fingerprint);
+        $loginLogs = $this->cacheObject->dbObject->query("SELECT * FROM cache WHERE setup = 'forgotten.attempt' AND cache_key = '{$attemptKey}'")->getRowArray();
+
+
+        // if the login attempts counter is empty, set it to 0
+        if(!empty($loginLogs) && (int)$loginLogs['value'] >= configs('login_attempts')) {
+
+            // get the time ago
+            $agoTimer = daysDifference($loginLogs['server_time'], 'everything');
+
+            // if the time ago is less than 1 hour, return an error
+            if($agoTimer->i < 10) {
+                return Routing::error('Too many login attempts. Please try again later.', [], 429);
+            }
+
+            if($agoTimer->i >= 10) {
+                $this->cacheObject->dbObject->query("DELETE FROM cache WHERE cache_key = '{$attemptKey}' AND setup = 'forgotten.attempt'");
+                $loginLogs = [];
+            }
+        }
+        
+
         // Find user by email
         $getUser = $this->usersModel->findByEmail($this->payload['email']);
         if(empty($getUser)) {
+            $this->loginAttempts($attemptKey, $loginLogs, $loginAttempts, 'forgotten.attempt');
             return Routing::success('Check your email for a link to reset your password.');
         }
 
+        // delete the alt user record
         $this->usersModel->deleteAltUser(['email' => $this->payload['email']]);
-        
+
+        // generate the verification code
         $ver_code = random_string("nozero", 6);
 
         // Send email
         $utilsObject = new \App\Libraries\Emailing();
         $utilsObject->send($getUser['email'], [
-            '__code__' => $ver_code, '__fullname__' => $getUser['firstname'] . ' ' . $getUser['lastname'],
+            '__code__' => $ver_code, '__fullname__' => $getUser['full_name'],
             '__subject__' => 'Password Reset Request Confirmation'
         ], "verify.reset");
 
@@ -420,32 +458,6 @@ class Auth extends LoadController {
         ]);
 
         return Routing::success('A 6 digits OTP have been sent to your email.');
-    }
-
-    /**
-     * Reset password
-     * 
-     * @return array
-     */
-    public function reset() {
-
-        // Verify the code
-        // $verify = $this->verify();
-        // if($verify['status'] == 'error') {
-        //     return $verify;
-        // }
-
-        // Update the user password
-        $this->usersModel->updateRecordByEmail($this->payload['email'], [
-            'password' => hash_password($this->payload['password'])
-        ]);
-
-        // Delete the alt user record
-        $this->usersModel->deleteAltUser([
-            'email' => $this->payload['email']
-        ]);
-
-        return Routing::success('Password reset successful.');
     }
 
     /**
