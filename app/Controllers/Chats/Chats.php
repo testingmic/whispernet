@@ -115,7 +115,7 @@ class Chats extends LoadController {
         $theRoomId = $room['room_id'] ?? $room;
 
         // get the self destruct time
-        $selfDestruct  = time() + ($this->selfDestruct * 60);
+        $selfDestruct  =  date('Y-m-d H:i:s', strtotime("+24 hours"));
 
         $this->getEncrypter($theRoomId);
         
@@ -198,7 +198,7 @@ class Chats extends LoadController {
         // remove unwanted messages from list
         foreach($messages as $key => $message) {
             // check if the message is self destructing
-            if(!empty($message['self_destruct_at']) && time() > $message['self_destruct_at']) continue;
+            if(!empty($message['self_destruct_at']) && time() > strtotime($message['self_destruct_at'])) continue;
 
             $append = false;
 
@@ -223,6 +223,7 @@ class Chats extends LoadController {
                     'time' => date('h:i A', strtotime($message['created_at'])),
                     'uuid' => $message['unique_id'],
                     'created_at' => $message['created_at'],
+                    'self_destruct_at' => $message['self_destruct_at'],
                     'type' => $type,
                 ];
             }

@@ -208,7 +208,7 @@ $databases = [
         receiver_deleted BOOLEAN DEFAULT 0,
         media_type TEXT CHECK(media_type IN ('text', 'image', 'video')) DEFAULT 'text',
         is_encrypted BOOLEAN DEFAULT 1,
-        self_destruct_at TIMESTAMP,
+        self_destruct_at DATETIME DEFAULT CURRENT_TIMESTAMP,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         FOREIGN KEY (room_id) REFERENCES chat_rooms(room_id) ON DELETE CASCADE,
         FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE

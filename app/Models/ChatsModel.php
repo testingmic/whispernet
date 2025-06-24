@@ -213,6 +213,7 @@ class ChatsModel extends Model {
                 'room_id' => $payload['room_id'],
                 'user_id' => $payload['user_id'],
                 'content' => $payload['content'],
+                'self_destruct_at' => $payload['self_destruct_at'] ?? date('Y-m-d H:i:s', strtotime("+24 hours")),
                 'unique_id' => $payload['unique_id'],
                 'media_url' => $payload['media_url'] ?? '',
                 'media_type' => $payload['media_type'] ?? 'text',
