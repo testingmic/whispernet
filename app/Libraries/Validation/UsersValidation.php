@@ -8,6 +8,9 @@ class UsersValidation {
             'method' => 'POST',
             'authenticate' => true,
             'payload' => [
+                'name' => 'string|max_length[32]',
+                'gender' => 'string|in_list[Male,Female,Other]',
+                'setting' => 'string|max_length[100]',
             ]
         ],
         'settings' => [

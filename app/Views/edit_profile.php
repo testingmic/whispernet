@@ -46,8 +46,14 @@
                         <input type="text" name="name" id="name" value="<?= $user['full_name'] ?? '' ?>" class="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 placeholder-gray-500 dark:placeholder-gray-400 text-gray-900 dark:text-white rounded-t-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm dark:bg-gray-800">
                     </div>
                     <div>
-                        <label for="username" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Username</label>
-                        <input type="text" name="username" id="username" value="<?= $user['username'] ?? '' ?>" class="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 placeholder-gray-500 dark:placeholder-gray-400 text-gray-900 dark:text-white rounded-t-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm dark:bg-gray-800">
+                        <label for="gender" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Gender</label>
+                        <select name="gender" id="gender" class="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 placeholder-gray-500 dark:placeholder-gray-400 text-gray-900 dark:text-white rounded-t-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm dark:bg-gray-800">
+                            <?php foreach(['Male', 'Female', 'Other'] as $gender) { ?>
+                                <option <?= $user['gender'] == $gender ? 'selected' : '' ?> value="<?= $gender ?>"><?= $gender ?></option>
+                            <?php } ?>
+                        </select>
+                        <span class="text-xs text-gray-500 dark:text-gray-400">(Not Visible to other users)</span>
+                    </div>
                     </div>
                     <div>
                         <label for="email" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Email Address</label>
@@ -61,7 +67,7 @@
                     <a href="<?= $baseUrl ?>/profile" class="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-700 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500">
                         Go Back
                     </a>
-                    <button type="submit" class="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                    <button id="saveProfile" type="submit" class="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
                         Save Changes
                     </button>
                 </div>

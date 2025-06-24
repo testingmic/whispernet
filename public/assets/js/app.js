@@ -2432,7 +2432,7 @@ const ProfileManager = {
 
         form.addEventListener('submit', async (e) => {
             e.preventDefault();
-            const submitButton = form.querySelector('button[type="submit"]');
+            const submitButton = document.querySelector('button[type="submit"][id="saveProfile"]');
             const originalText = submitButton.innerHTML;
             
             try {
