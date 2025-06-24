@@ -287,6 +287,21 @@ class PostsModel extends Model {
     }
 
     /**
+     * Update the raw pageviews of the post
+     * 
+     * @param int $postId
+     * 
+     * @return bool
+     */
+    public function updatePostViews($postId) {
+        try {
+            return $this->db->query("UPDATE posts SET pageviews = pageviews + 1 WHERE post_id = ?", [$postId]);
+        } catch (DatabaseException $e) {
+            return false;
+        }
+    }
+
+    /**
      * Delete a post
      * 
      * @return array

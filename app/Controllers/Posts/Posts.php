@@ -348,6 +348,10 @@ class Posts extends LoadController {
 
         // if the post is not just created, record the view
         if(!$this->justCreated) {
+
+            // update the raw post views
+            $this->postsModel->updatePostViews($post['post_id']);
+
             // connect to the votes database
             $this->postsModel->connectToDb('views');
 

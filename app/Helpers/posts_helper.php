@@ -42,6 +42,7 @@ function formatPosts($posts = [], $single = false, $userId = null) {
             // 'media_url' => $post['media_url'],
             // 'longitude' => $post['longitude'],
             // 'latitude' => $post['latitude'],
+            'pageviews' => $post['pageviews'] ?? 0,
             'views' => $post['views'] ?? 0,
             'name' => empty($post['full_name']) ? $post['username'] : trim(explode(' ', $post['full_name'])[0]),
             'username' => $post['username'],

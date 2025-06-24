@@ -74,7 +74,7 @@ $messages = $messages ?? [];
                                                 </svg>
                                             </div>
                                             <div class="flex-1 min-w-0">
-                                                <p class="text-sm font-semibold text-gray-900 dark:text-white"><?= !empty($chat['room']['name']) ? $chat['room']['name'] : $chat['full_name']; ?></p>
+                                                <p class="text-sm font-semibold text-gray-900 dark:text-white"><?= !empty($chat['room']['name']) ? $chat['room']['name'] : explode(' ', $chat['full_name'])[0]; ?></p>
                                                 <p class="text-xs text-gray-500 dark:text-gray-400"><?= !empty($chat['room']['description']) ? $chat['room']['description'] : $chat['username']; ?></p>
                                             </div>
                                         </div>

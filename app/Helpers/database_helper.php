@@ -112,6 +112,7 @@ $databases = [
         latitude REAL NOT NULL,
         longitude REAL NOT NULL,
         city TEXT,
+        pageviews INTEGER DEFAULT 1,
         comments_count INTEGER DEFAULT 0,
         country TEXT,
         views INTEGER DEFAULT 0,
@@ -290,8 +291,7 @@ $databases = [
 
 // alter tables
 $alterTables = [
-    // "ALTER TABLE users RENAME TO users2",
-    // "ALTER TABLE users2 RENAME TO users",
+    // "ALTER TABLE posts ADD COLUMN pageviews INTEGER DEFAULT 0",
 ];
 
 $votesTables = [

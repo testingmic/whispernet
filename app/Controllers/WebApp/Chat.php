@@ -24,9 +24,10 @@ class Chat extends WebAppController {
         $groupChats = [];
         $footerArray = [];
         foreach($chatRooms as $key => $chat) {
-            // $chat['last_login'] = convertTimestampToDate($chat['last_login']);
             $chat['state'] = userState($chat['last_login']);
-            // $chat['date_range'] = timeDifference($chat['last_login']);
+            if(!empty($chat['full_name'])) {
+                $chat['full_name'] = explode(' ', $chat['full_name'])[0];
+            }
             $footerArray[$chat['room_id']] = $chat;
             if($chat['room']['type'] === 'group') {
                 $groupChats[] = $chat;
