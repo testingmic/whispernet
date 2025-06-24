@@ -229,8 +229,7 @@ class PostsModel extends Model {
     public function deleteComment($commentId) {
         try {
 
-            $sql = "DELETE FROM comments WHERE comment_id = ?";
-            $this->db->query($sql, [$commentId]);
+            $this->db->query("DELETE FROM comments WHERE comment_id = ?", [$commentId]);
 
             if ($this->db->affectedRows() === 0) {
                 return false;
@@ -300,6 +299,11 @@ class PostsModel extends Model {
 
             if ($this->db->affectedRows() === 0) {
                 return false;
+            }
+
+            // delete the post tags created for this post
+            foreach(['post_tags', 'post_hashtags', 'comments', 'bookmarks'] as $table) {
+                $this->db->query("DELETE FROM {$table} WHERE post_id = ?", [$this->payload['postId']]);
             }
 
             return true;
