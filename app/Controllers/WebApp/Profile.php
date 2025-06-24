@@ -66,6 +66,9 @@ class Profile extends WebAppController
         // get the user settings
         $userSettings = $userModel->getUserSettings($userId);
 
+        // print_r($user);
+        // exit;
+
         return $this->templateObject->loadPage('edit_profile', [
             'pageTitle' => 'Edit Profile', 
             'favicon_color' => 'profile',

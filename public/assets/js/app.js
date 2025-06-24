@@ -362,6 +362,7 @@ const MediaManager = {
         if(returnData) return html;
 
         $(`#postMediaPreview`).html(html);
+        // $(`div[class^="show-image-here-"]`).html(html);
         new MediaDisplay();
     }
 }
@@ -963,7 +964,9 @@ const PostManager = {
                         </svg>
                         Audio
                     </span>` : ''}
-                </div>` : ''
+                </div>
+                <!-- Media Preview Section -->
+                <div id="postMediaPreview" class="media-display-container mb-3"></div>` : ''
             }
             <div class="flex items-center justify-between">
                 <div class="flex items-center space-x-4">

@@ -1,6 +1,7 @@
 <?php
 // set the favicon color
 $favicon_color = $favicon_color ?? 'dashboard';
+$classPosition = "absolute -top-1 -right-1 w-3 h-3 bg-blue-500 rounded-full animate-pulse"
 ?>
 </main>
 <?php if (empty($footerHidden)) { ?>
@@ -19,23 +20,10 @@ $favicon_color = $favicon_color ?? 'dashboard';
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z" />
               </svg>
               <?php if ($favicon_color == 'dashboard'): ?>
-                <div class="absolute -top-1 -right-1 w-3 h-3 bg-blue-500 rounded-full animate-pulse"></div>
+                <div class="<?= $classPosition ?>"></div>
               <?php endif; ?>
             </div>
             <span class="text-xs mt-1 font-medium">Feed</span>
-          </a>
-
-          <!-- Chat Navigation -->
-          <a href="<?= $baseUrl ?>/chat" class="flex flex-col items-center justify-center px-4 py-3 rounded-xl transition-all duration-300 group <?= $favicon_color == 'chat' ? 'text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/20' : 'text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20' ?>">
-            <div class="relative">
-              <svg class="h-6 w-6 transition-transform duration-300 group-hover:scale-110" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
-              </svg>
-              <?php if ($favicon_color == 'chat'): ?>
-                <div class="absolute -top-1 -right-1 w-3 h-3 bg-blue-500 rounded-full animate-pulse"></div>
-              <?php endif; ?>
-            </div>
-            <span class="text-xs mt-1 font-medium">Chat</span>
           </a>
 
           <!-- Notifications Navigation -->
@@ -45,10 +33,23 @@ $favicon_color = $favicon_color ?? 'dashboard';
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
               </svg>
               <?php if ($favicon_color == 'notifications'): ?>
-                <div class="absolute -top-1 -right-1 w-3 h-3 bg-blue-500 rounded-full animate-pulse"></div>
+                <div class="<?= $classPosition ?>"></div>
               <?php endif; ?>
             </div>
             <span class="text-xs mt-1 font-medium">Alerts</span>
+          </a>
+
+          <!-- Chat Navigation -->
+          <a href="<?= $baseUrl ?>/chat" class="flex flex-col items-center justify-center px-4 py-3 rounded-xl transition-all duration-300 group <?= $favicon_color == 'chat' ? 'text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/20' : 'text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20' ?>">
+            <div class="relative">
+              <svg class="h-6 w-6 transition-transform duration-300 group-hover:scale-110" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+              </svg>
+              <?php if ($favicon_color == 'chat'): ?>
+                <div class="<?= $classPosition ?>"></div>
+              <?php endif; ?>
+            </div>
+            <span class="text-xs mt-1 font-medium">Chat</span>
           </a>
 
           <!-- Profile Navigation -->
@@ -60,7 +61,7 @@ $favicon_color = $favicon_color ?? 'dashboard';
                 </svg>
               </div>
               <?php if ($favicon_color == 'profile'): ?>
-                <div class="absolute -top-1 -right-1 w-3 h-3 bg-blue-500 rounded-full animate-pulse"></div>
+                <div class="<?= $classPosition ?>"></div>
               <?php endif; ?>
             </div>
             <span class="text-xs mt-1 font-medium">Profile</span>

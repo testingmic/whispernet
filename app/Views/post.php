@@ -59,13 +59,8 @@
         </div>
 
         <!-- Post Container -->
-        <div id="postContainer" class="singlePostContainer shadow-lg rounded-lg bg-gradient-to-br from-red-200 via-green-200 to-blue-200 p-2 rounded-xl shadow-md border border-gray-200 dark:border-gray-700" data-posts-id="<?= $postId ?>">
+        <div id="postContainer" class="singlePostContainer shadow-lg rounded-lg bg-gradient-to-br from-red-200 via-green-200 to-blue-200 p-2 rounded-xl shadow-md border border-gray-200 dark:border-gray-700 mb-4" data-posts-id="<?= $postId ?>">
             <?= loadingSkeleton(1, false); ?>
-        </div>
-
-        <!-- Media Preview Section -->
-        <div id="postMediaPreview" class="media-display-container mb-3">
-            <!-- Media content will be dynamically inserted here -->
         </div>
 
         <!-- Comments Section -->

@@ -24,7 +24,8 @@
                         <?= $user['full_name'] ?? 'User' ?>
                     </h2>
                     <p class="text-lg text-gray-600 dark:text-gray-400 mb-3">
-                        <?= $user['email'] ?? 'user@example.com' ?>
+                        <?= $user['email'] ?? 'user@example.com' ?> 
+                        <span class="text-xs text-gray-500 dark:text-gray-400">(hidden)</span>
                     </p>
                     <div class="flex flex-wrap gap-2 justify-center md:justify-start mb-3">
                         <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium">
