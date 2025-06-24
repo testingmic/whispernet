@@ -572,11 +572,13 @@ const PostManager = {
         this.loadPost();
     },
     closeCreateModal() {
+        $(`#backToTopBtn`).removeClass('hidden');
         $('#postCreationForm')?.addClass('hidden');
         document?.getElementById('createPostForm')?.reset();
         ImprovedPostCreationForm.resetForm();
     },
     openCreateModal() {
+        $(`#backToTopBtn`).addClass('hidden');
         $('#postCreationForm').removeClass('hidden');
         $(`form[id="createPostFormUnique"] textarea[id="content"]`).val('');
         $(`form[id="createPostFormUnique"] textarea[id="content"]`).focus();
