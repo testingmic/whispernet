@@ -117,16 +117,23 @@ const AppState = {
         if (storedLocation) {
             try {
                 const locationData = JSON.parse(storedLocation);
-                if (locationData.latitude && locationData.longitude) {
+                let proceed = false;
+                if(typeof locationData._lastUpdated !== 'undefined') {
+                    let lastChecked = new Date().getTime() - locationData._lastUpdated;
+                    let lastCheckedSeconds = Math.floor(lastChecked / 1000);
+                    console.log({lastCheckedSeconds});
+                    if(lastCheckedSeconds < 3600) {
+                        proceed = true;
+                    }
+                }
+                if ((locationData.latitude && locationData.longitude) && proceed) {
                     this.location = locationData;
                     longitude = locationData.longitude;
                     latitude = locationData.latitude;
                     this.updateLocationUI();
                     return;
                 }
-            } catch (e) {
-                // Invalid stored data, continue with fresh request
-            }
+            } catch (e) {}
         }
 
         // Check permission state first
@@ -140,7 +147,6 @@ const AppState = {
                     await this.getCurrentLocation();
                     return;
                 }
-                
                 // Permission state is 'prompt', will show browser prompt
             } catch (e) {
                 // Permissions API not supported, fall back to direct geolocation
@@ -164,7 +170,8 @@ const AppState = {
             if (position && position.coords) {
                 this.location = {
                     latitude: position.coords.latitude,
-                    longitude: position.coords.longitude
+                    longitude: position.coords.longitude,
+                    _lastUpdated: new Date().getTime()
                 };
                 localStorage.setItem('userLocation', JSON.stringify(this.location));
                 longitude = this.location.longitude;
@@ -792,7 +799,8 @@ const PostManager = {
                         if(!localStorage.getItem('userLocation')) {
                             let newLoc = {
                                 latitude: data?.location.latitude,
-                                longitude: data?.location.longitude
+                                longitude: data?.location.longitude,
+                                _lastUpdated: new Date().getTime()
                             };
                             localStorage.setItem('userLocation', JSON.stringify(newLoc));
                         }
@@ -876,7 +884,7 @@ const PostManager = {
         div.setAttribute('data-post-id', post.post_id);
         
         div.innerHTML = `
-            <div class="flex items-center justify-between mb-2">
+            <div class="flex items-center grid grid-cols-2 grid-cols-[80%_20%] items-center mb-2">
                 <div class="flex items-center space-x-2 post-header-clickable">
                     <div class="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center">
                         <span class="text-sm font-semibold text-white">${post.username[0].toUpperCase()}${post.username[1].toUpperCase()}</span>
@@ -899,8 +907,8 @@ const PostManager = {
                         </div>
                     </div>
                 </div>
-                <div class="relative">
-                    <button class="post-menu-button text-gray-400 hover:text-gray-500 dark:text-gray-500 dark:hover:text-gray-400 p-1 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+                <div class="relative text-right">
+                    <button class="post-menu-button text-gray-400 hover:bg-blue-500 hover:text-white dark:text-gray-500 dark:hover:text-gray-400 p-1 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
                         <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z"/>
                         </svg>
