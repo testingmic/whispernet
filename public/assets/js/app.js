@@ -2548,61 +2548,87 @@ const ProfileManager = {
 
     setupProfilePictureUpload() {
         const uploadButton = document.querySelector('button[type="button"][id="mediaUpload"]');
-        if (!uploadButton) return;
+        const fileInput = document.getElementById('profileImageInput');
+        
+        if (!uploadButton || !fileInput) return;
 
         uploadButton.addEventListener('click', () => {
-            const input = document.createElement('input');
-            input.type = 'file';
-            input.accept = 'image/*';
-            input.style.display = 'none';
-            
-            input.addEventListener('change', async (e) => {
-                const file = e.target.files[0];
-                if (!file) return;
+            fileInput.click();
+        });
+        
+        fileInput.addEventListener('change', async (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
 
-                if (file.size > 2 * 1024 * 1024) {
-                    NotificationManager.show('File size must be less than 2MB', 'error');
-                    return;
-                }
+            // Validate file type
+            if (!file.type.startsWith('image/')) {
+                NotificationManager.show('Please select a valid image file', 'error');
+                return;
+            }
 
+            // Validate file size (2MB limit)
+            if (file.size > 2 * 1024 * 1024) {
+                NotificationManager.show('File size must be less than 2MB', 'error');
+                return;
+            }
+
+            // Show loading state
+            uploadButton.disabled = true;
+            const originalHTML = uploadButton.innerHTML;
+            uploadButton.innerHTML = `
+                <svg class="animate-spin w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+            `;
+
+            try {
                 const formData = new FormData();
+                formData.append('profile_image', file);
                 formData.append('token', AppState.getToken());
                 formData.append('userUUID', userUUID);
                 formData.append('noloc', true);
 
-                try {
-                    const response = await fetch('/api/users/update', {
-                        method: 'POST',
-                        body: formData
-                    });
+                const response = await fetch('/api/users/update', {
+                    method: 'POST',
+                    body: formData
+                });
 
-                    const data = await response.json();
+                const data = await response.json();
+                
+                if (data.status === 'success') {
+                    // Update profile picture preview
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+                        const profilePicture = document.querySelector('.w-20.h-20.sm\\:w-24.sm\\:h-24.rounded-full');
+                        if (profilePicture) {
+                            // Clear existing content
+                            profilePicture.innerHTML = '';
+                            
+                            // Create and add the image
+                            const img = document.createElement('img');
+                            img.src = e.target.result;
+                            img.alt = 'Profile Picture';
+                            img.className = 'w-full h-full object-cover';
+                            profilePicture.appendChild(img);
+                        }
+                    };
+                    reader.readAsDataURL(file);
                     
-                    if (data.success) {
-                        // Update profile picture preview
-                        const reader = new FileReader();
-                        reader.onload = (e) => {
-                            const profilePicture = document.querySelector('.rounded-full');
-                            if (profilePicture) {
-                                profilePicture.style.backgroundImage = `url(${e.target.result})`;
-                                profilePicture.style.backgroundSize = 'cover';
-                                profilePicture.style.backgroundPosition = 'center';
-                            }
-                        };
-                        reader.readAsDataURL(file);
-                        
-                        NotificationManager.show('Profile picture updated successfully', 'success');
-                    } else {
-                        throw new Error(data.message || 'Failed to update profile picture');
-                    }
-                } catch (error) {
-                    NotificationManager.show(error.message || 'Failed to update profile picture', 'error');
+                    NotificationManager.show('Profile picture updated successfully', 'success');
+                } else {
+                    throw new Error(data.message || 'Failed to update profile picture');
                 }
-            });
-
-            document.body.appendChild(input);
-            input.click();
-            document.body.removeChild(input);
+            } catch (error) {
+                NotificationManager.show(error.message || 'Failed to update profile picture', 'error');
+            } finally {
+                // Reset button state
+                uploadButton.disabled = false;
+                uploadButton.innerHTML = originalHTML;
+                
+                // Clear the file input
+                fileInput.value = '';
+            }
         });
     }
 };

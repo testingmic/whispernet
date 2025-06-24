@@ -22,7 +22,16 @@ if (!function_exists('configs')) {
 
             'sms_api_key' => getenv('MNOTIFY'),
             'sms_sender' => 'TalkLowKey',
-            
+
+            // get the firebase config
+            'firebase_app_id' => getenv('FIREBASE_APP_ID'),
+            'firebase_api_key' => getenv('FIREBASE_API_KEY'),
+            'firebase_sender_id' => getenv('FIREBASE_SENDER_ID'),
+            'firebase_auth_domain' => getenv('FIREBASE_AUTH_DOMAIN'),
+            'firebase_storage_bucket' => getenv('FIREBASE_STORAGE_BUCKET'),
+            'firebase_measurement_id' => getenv('FIREBASE_MEASUREMENT_ID'),
+            'firebase_project_id' => getenv('FIREBASE_PROJECT_ID'),
+
             // get the database group
             'db_group' => config('Database')?->defaultGroup,
             'testing_mode' => config('General')?->testing_mode,

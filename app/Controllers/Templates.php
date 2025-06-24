@@ -2,6 +2,8 @@
 
 namespace App\Controllers;
 
+use Predis\Command\Redis\CONFIG;
+
 class Templates extends BaseController
 {
     private $userId;
@@ -131,13 +133,13 @@ class Templates extends BaseController
         if(!empty($data['userLoggedIn'])) {
             $data['firebaseConfig'] = [
                 'vapidKey' => configs('vapid_public'),
-                'apiKey' => "AIzaSyA5Ze-H8EmHaP5cM4jyIlbwxPpy6EPz5y4",
-                'authDomain' => "talk-low-key-app.firebaseapp.com",
-                'projectId' => "talk-low-key-app",
-                'storageBucket' => "talk-low-key-app.firebasestorage.app",
-                'messagingSenderId' => "616002011429",
-                'appId' => "1:616002011429:web:805864b9c5f0e2b61edacc",
-                'measurementId' => "G-GXVFYTX3EM"
+                'apiKey' => configs('firebase_api_key'),
+                'authDomain' => configs('firebase_auth_domain'),
+                'projectId' => configs('firebase_project_id'),
+                'storageBucket' => configs('firebase_storage_bucket'),
+                'messagingSenderId' =>  configs('firebase_sender_id'),
+                'appId' => configs('firebase_app_id'),
+                'measurementId' => configs('firebase_measurement_id')
             ];
         }
 
