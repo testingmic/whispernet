@@ -226,8 +226,8 @@ class ChatsModel extends Model {
             if(!empty($participants) && is_array($participants)) {
                 $users = $this->db->table('users')
                                 ->select('user_id, full_name, username, profile_image, last_login')
+                                ->where('is_active', '1')
                                 ->whereIn('user_id', $participants)
-                                ->where('is_active', 1)
                                 ->get()
                                 ->getResultArray();
             }
