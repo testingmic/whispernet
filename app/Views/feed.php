@@ -115,7 +115,7 @@
             </div>
         </div>
         <!-- Platform Updates Notification -->
-        <div id="platformUpdates" class="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 border border-blue-200 dark:border-blue-700 rounded-xl p-4 mb-2 shadow-sm">
+        <div id="platformUpdates" class="update-card bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 rounded-lg p-6 border border-green-200 dark:border-green-700 hover:shadow-lg transition-all duration-300 mb-2">
             <div class="flex items-start justify-between">
                 <div class="flex items-start space-x-3">
                     <div class="w-10 h-10 bg-blue-100 dark:bg-blue-900/30 rounded-lg flex items-center justify-center flex-shrink-0">
@@ -131,11 +131,10 @@
                             </span>
                         </div>
                         <p class="text-sm text-gray-700 dark:text-gray-300 mb-3">
-                            We've added Tags section, enhanced password security, improved navigation, and much more!
-                            Check out all the latest updates and improvements.
+                            We've added a new feature to create chat groups and have total control over your chats.
                         </p>
                         <div class="flex items-center space-x-3">
-                            <a href="<?= $baseUrl ?>/updates" class="inline-flex items-center px-3 py-1.5 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition-colors">
+                            <a href="<?= $baseUrl ?>/updates" class="inline-flex items-center px-3 py-1.5 bg-green-600 text-white text-sm font-medium rounded-lg hover:bg-green-700 transition-colors">
                                 <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"></path>
                                 </svg>

@@ -70,8 +70,8 @@ class ChatsModel extends Model {
             // update the group info if it exists
             if(!empty($groupInfo)) {
                 $this->db->table('chat_rooms')->update([
-                    'name' => $groupInfo['name'] ?? '',
-                    'description' => $groupInfo['description'] ?? ''
+                    'name' => substr($groupInfo['name'], 0, 60),
+                    'description' => !empty($groupInfo['description']) ? substr($groupInfo['description'], 0, 100) : ''
                 ], ['room_id' => $roomId]);
             }
 
@@ -104,6 +104,32 @@ class ChatsModel extends Model {
     public function getChatRoom($roomId) {
         try {
             return $this->db->table('chat_rooms')->where('room_id', $roomId)->get()->getRowArray();
+        } catch (DatabaseException $e) {
+            return false;
+        }
+    }
+
+    /**
+     * Update chat room
+     * 
+     * @param int $roomId
+     * @param int $userId
+     * @param array $data
+     * @return bool
+     */
+    public function joinChatRoom($roomId, $userId, $data) {
+        try {
+            // update the main chat room
+            $this->db->table('chat_rooms')->where('room_id', $roomId)->update($data);
+
+            // update the chats database
+            $this->connectToDb('chats');
+            $this->chatsDb->table('user_chat_rooms')->insert([
+                'room_id' => (int)$roomId,
+                'user_id' => (int)$userId,
+                'type' => 'group',
+            ]);
+            return true;
         } catch (DatabaseException $e) {
             return false;
         }
@@ -289,12 +315,11 @@ class ChatsModel extends Model {
 
             // Check if user is a participant
             $offset = ($page - 1) * $limit;
-            $messages = $this->db->table('chat_messages c')
-                ->select('c.*, m.media')
-                ->where('c.room_id', $roomId)
-                ->join('media m', 'm.record_id = c.message_id', 'left')
-                ->select('c.*, m.media')
-                ->orderBy('c.created_at', 'DESC')
+            $messages = $this->db->table("chat_messages c")
+                ->select("c.*, m.media")
+                ->join("media m", "m.record_id = c.message_id AND m.section='chats'", "left")
+                ->where("c.room_id", $roomId)
+                ->orderBy("c.created_at", "DESC")
                 ->limit($limit)
                 ->offset($offset)
                 ->get()->getResultArray();
@@ -305,31 +330,35 @@ class ChatsModel extends Model {
         }
     }
 
-    public function addParticipant($roomId, $userId, $addedByUserId) {
+    /**
+     * Delete chat
+     * 
+     * @param int $roomId
+     * @param string $type
+     * @param int $userId
+     */
+    public function deleteChat($roomId, $type, $userId) {
         try {
 
-            // Check if adder is a participant
-            $participant = $this->db->table('chat_participants')->where('room_id', $roomId)->where('user_id', $addedByUserId)->get()->getRowArray();
-            if (!$participant) {
-                return ('Unauthorized to add participants');
-            }
+            // get the chat room
+            $this->connectToDb('chats');
 
-            // Check if user is already a participant
-            $participant = $this->db->table('chat_participants')->where('room_id', $roomId)->where('user_id', $userId)->get()->getRowArray();
-            if ($participant) {
-                return ('User is already a participant');
-            }
+            // delete the user chat room
+            // $this->chatsDb->table('user_chat_rooms')->where('user_id', $userId)->where('room_id', $roomId)->delete();
 
-            // Add user as participant
-            $this->db->table('chat_participants')->insert([
-                'room_id' => $roomId,
-                'user_id' => $userId
-            ]);
+            // delete the messages for the sender
+            $this->db->table('chat_messages')->set('sender_deleted', 1)
+                                                    ->where('user_id', $userId)
+                                                    ->where('room_id', $roomId)
+                                                    ->update();
 
-            return [
-                'success' => true,
-                'message' => 'Participant added successfully'
-            ];
+            // delete the messages for the receiver
+            $this->db->table('chat_messages')->set('receiver_deleted', 1)
+                                                    ->where('user_id !=', $userId)
+                                                    ->where('room_id', $roomId)
+                                                    ->update();
+
+            return true;
         } catch (DatabaseException $e) {
             return $e->getMessage();
         }

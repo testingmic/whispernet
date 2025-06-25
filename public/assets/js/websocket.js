@@ -13,12 +13,19 @@ class WebSocketManager {
             const data = JSON.parse(message);
             
             if(typeof data.type == 'undefined') return;
-            if(data.type == 'chat' && data.sender == parseInt(selectedUserId)) {
+            if((data.type == 'chat' && data.sender == parseInt(selectedUserId)) && (data.msgtype == 'individual')) {
                 addMessageToUI(data.message, data.direction, '', data.uuid, data.media, data.files);
+            }
+
+            if((data.roomId == parseInt(selectedChatId)) && (data.msgtype == 'group')) {
+                addMessageToUI(data.message, data.direction, '', data.uuid, data.media, data.files);
+            }
+
+            if(data.type == 'chat') {
                 setTimeout(() => {
                     new MediaDisplay();
                     scrollToBottom();
-                  }, 500);
+                }, 500);
             }
         } catch(e) {
         }

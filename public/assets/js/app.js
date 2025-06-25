@@ -982,7 +982,7 @@ const PostManager = {
             ${post.has_media ? `
                 <div class="post-content-clickable flex flex-wrap gap-2 text-sm text-gray-500 mb-2">
                     ${post.media_types.includes('images') ? `
-                    <span class="inline-flex items-center px-2 py-1 bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300 rounded-full">
+                    <span class="inline-flex items-center px-2 py-1 bg-blue-100 text-blue-800 dark:bg-blue-500 dark:text-white rounded-full">
                         <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 24 24">
                             <path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/>
                         </svg>

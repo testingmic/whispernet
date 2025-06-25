@@ -27,6 +27,8 @@ $routes->get("/posts/view/(:segment)", "WebApp\Posts::view/$1");
 $routes->get("/posts/tags/(:segment)", "WebApp\Posts::tags/$1");
 $routes->get("/posts/tags", "WebApp\Posts::tags");
 
+$routes->get("/chat/join/(:any)", "WebApp\Chat::join/$1/$2/$3");
+
 // WebApp routes
 foreach(['profile', 'chat', 'notifications'] as $route) {
     $iroute = ucwords($route);

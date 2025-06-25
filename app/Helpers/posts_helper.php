@@ -104,6 +104,23 @@ function linkifyContent($comment, $itag = "#") {
 }
 
 /**
+ * Converts /chat/join/{string} to clickable links in a text.
+ *
+ * @param string $text The input text.
+ * @return string The text with /chat/join links converted to anchor tags.
+ */
+function linkifyChatJoin($text) {
+    return preg_replace_callback(
+        '#(/chat/join/[^\s]+)#',
+        function ($matches) {
+            $url = htmlspecialchars($matches[1]);
+            return '<a class="text-white dark:text-white text-blue-500 hover:text-white hover:font-bold hover:underline" href="' . $url . '">' . $url . '</a>';
+        },
+        $text
+    );
+}
+
+/**
  * Format time ago
  * 
  * @param string $datetime

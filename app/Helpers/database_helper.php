@@ -93,7 +93,7 @@ $databases = [
     "CREATE TABLE IF NOT EXISTS media (
         media_id INTEGER PRIMARY KEY,
         user_id INTEGER NOT NULL,
-        record_id TEXT NOT NULL,
+        record_id INTEGER NOT NULL,
         section TEXT NOT NULL,
         media TEXT,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,

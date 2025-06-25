@@ -84,7 +84,7 @@ class Chats extends LoadController {
 
         // check the chat type
         $isIndividual = (bool)($this->payload['type'] == 'individual');
-        if(empty($this->payload['roomId'])) {
+        if(empty($this->payload['roomId']) && $isIndividual) {
             $room = $isIndividual ? $this->chatsModel->getIndividualChatRoomId((int)$this->payload['sender'], (int)$this->payload['receiver']) : [];
             if(!empty($room) && ((int)$room['sender_deleted'] == 1)) {
                 return Routing::error('Chat room not found');
@@ -173,6 +173,11 @@ class Chats extends LoadController {
                 return Routing::error('Group name is required');
             }
 
+            // check if the group name is too long
+            if(strlen($this->payload['newGroupInfo']['name']) > 60) {
+                return Routing::error('Group name must be less than 60 characters');
+            }
+
             // create the chat room
             $roomId = $this->chatsModel->createChatRoom($senderId, 0, 'group', [$senderId], $roomUUID, $this->payload['newGroupInfo']);
 
@@ -227,16 +232,23 @@ class Chats extends LoadController {
                 $append = true;
                 $type = "sent";
             }
-
-            if(($message['user_id'] == $receiverId) && (int)$message['receiver_deleted'] !== 1) {
+            elseif(($message['user_id'] == $receiverId) && (int)$message['receiver_deleted'] !== 1) {
+                $append = true;
+                $type = "received";
+            } else {
                 $append = true;
                 $type = "received";
             }
 
             if($append) {
+                
+                // decrypt the message
+                $imessage = !empty($message['content']) ? $this->encrypter->decrypt(base64_decode($message['content'])) : '';
+
                 $allowedMessages[] = [
+                    'roomId' => $message['room_id'],
                     'msgid' => $message['message_id'],
-                    'message' => !empty($message['content']) ? $this->encrypter->decrypt(base64_decode($message['content'])) : '',
+                    'message' => linkifyChatJoin($imessage),
                     'sender' => $message['user_id'],
                     'media' => !empty($message['media']) ? json_decode($message['media'], true) : [],
                     'has_media' => !empty($message['media']),
@@ -251,6 +263,27 @@ class Chats extends LoadController {
 
         return Routing::success(array_reverse($allowedMessages));
 
+    }
+
+    /**
+     * Delete chat
+     * 
+     * @return array
+     */
+    public function delete() {
+        if(empty($this->payload['roomId'])) {
+            return Routing::error('Room ID is required');
+        }
+
+        if(empty($this->payload['type'])) {
+            return Routing::error('Type is required');
+        }
+
+        // delete the chat
+        $this->chatsModel->deleteChat($this->payload['roomId'], $this->payload['type'], $this->currentUser['user_id']);
+
+        // delete the chat room
+        return Routing::success('Chat deleted successfully');
     }
 
     /**

@@ -35,6 +35,31 @@ const backToChats = document.getElementById("backToChats");
 const startIndividualChat = document.getElementById("startIndividualChat");
 const startGroupChat = document.getElementById("startGroupChat");
 
+// Chat Info Dropdown Elements
+const chatInfoBtn = document.getElementById("chatInfoBtn");
+const chatInfoDropdown = document.getElementById("chatInfoDropdown");
+const shareChatLink = document.getElementById("shareChatLink");
+const muteChat = document.getElementById("muteChat");
+const blockUser = document.getElementById("blockUser");
+const leaveGroup = document.getElementById("leaveGroup");
+const deleteChat = document.getElementById("deleteChat");
+const muteText = document.getElementById("muteText");
+const blockText = document.getElementById("blockText");
+
+// Confirmation Modal Elements
+const leaveGroupModal = document.getElementById("leaveGroupModal");
+const deleteChatModal = document.getElementById("deleteChatModal");
+const blockUserModal = document.getElementById("blockUserModal");
+const cancelLeaveGroup = document.getElementById("cancelLeaveGroup");
+const confirmLeaveGroup = document.getElementById("confirmLeaveGroup");
+const cancelDeleteChat = document.getElementById("cancelDeleteChat");
+const confirmDeleteChat = document.getElementById("confirmDeleteChat");
+const cancelBlockUser = document.getElementById("cancelBlockUser");
+const confirmBlockUser = document.getElementById("confirmBlockUser");
+const deleteChatType = document.getElementById("deleteChatType");
+const blockUserAction = document.getElementById("blockUserAction");
+const confirmBlockUserText = document.getElementById("confirmBlockUserText");
+
 // Mobile view management
 let isMobileView = window.innerWidth < 1024;
 let currentView = "chat-list";
@@ -144,6 +169,417 @@ if (backToChats) {
   });
 });
 
+// Confirmation Modal Event Listeners
+if (cancelLeaveGroup) {
+  cancelLeaveGroup.addEventListener("click", function(e) {
+    e.preventDefault();
+    hideModal(leaveGroupModal);
+  });
+}
+
+if (confirmLeaveGroup) {
+  confirmLeaveGroup.addEventListener("click", function(e) {
+    e.preventDefault();
+    hideModal(leaveGroupModal);
+    performLeaveGroupAction();
+  });
+}
+
+if (cancelDeleteChat) {
+  cancelDeleteChat.addEventListener("click", function(e) {
+    e.preventDefault();
+    hideModal(deleteChatModal);
+  });
+}
+
+if (confirmDeleteChat) {
+  confirmDeleteChat.addEventListener("click", function(e) {
+    e.preventDefault();
+    hideModal(deleteChatModal);
+    performDeleteChatAction();
+  });
+}
+
+if (cancelBlockUser) {
+  cancelBlockUser.addEventListener("click", function(e) {
+    e.preventDefault();
+    hideModal(blockUserModal);
+  });
+}
+
+if (confirmBlockUser) {
+  confirmBlockUser.addEventListener("click", function(e) {
+    e.preventDefault();
+    hideModal(blockUserModal);
+    performBlockUserAction();
+  });
+}
+
+// Close confirmation modals when clicking outside
+[leaveGroupModal, deleteChatModal, blockUserModal].forEach((modal) => {
+  if (modal) {
+    modal.addEventListener("click", (e) => {
+      if (e.target === modal) hideModal(modal);
+    });
+  }
+});
+
+// Chat Info Dropdown Management
+if (chatInfoBtn) {
+  chatInfoBtn.addEventListener("click", function(e) {
+    e.preventDefault();
+    e.stopPropagation();
+    toggleChatInfoDropdown();
+  });
+}
+
+// Close dropdown when clicking outside
+document.addEventListener("click", function(e) {
+  if (chatInfoDropdown && !chatInfoDropdown.contains(e.target) && !chatInfoBtn.contains(e.target)) {
+    hideChatInfoDropdown();
+  }
+});
+
+// Chat Info Dropdown Functions
+function toggleChatInfoDropdown() {
+  if (chatInfoDropdown.classList.contains("hidden")) {
+    showChatInfoDropdown();
+  } else {
+    hideChatInfoDropdown();
+  }
+}
+
+function showChatInfoDropdown() {
+  if (chatInfoDropdown) {
+    chatInfoDropdown.classList.remove("hidden");
+    updateDropdownOptions();
+  }
+}
+
+function hideChatInfoDropdown() {
+  if (chatInfoDropdown) {
+    chatInfoDropdown.classList.add("hidden");
+  }
+}
+
+function updateDropdownOptions() {
+  // Show/hide options based on chat type
+  if (selectedChatType === 'individual') {
+    if (blockUser) blockUser.classList.remove("hidden");
+    if (leaveGroup) leaveGroup.classList.add("hidden");
+  } else if (selectedChatType === 'group') {
+    if (blockUser) blockUser.classList.add("hidden");
+    if (leaveGroup) leaveGroup.classList.remove("hidden");
+  }
+  
+  // Update button text based on current state
+  if (muteText) {
+    muteText.textContent = isChatMuted ? "Unmute Notifications" : "Mute Notifications";
+  }
+  
+  if (blockText) {
+    blockText.textContent = isUserBlocked ? "Unblock User" : "Block User";
+  }
+}
+
+// Chat Info Action Handlers
+if (shareChatLink) {
+  shareChatLink.addEventListener("click", function(e) {
+    e.preventDefault();
+    shareChatLinkAction();
+  });
+}
+
+if (muteChat) {
+  muteChat.addEventListener("click", function(e) {
+    e.preventDefault();
+    toggleMuteChat();
+  });
+}
+
+if (blockUser) {
+  blockUser.addEventListener("click", function(e) {
+    e.preventDefault();
+    toggleBlockUser();
+  });
+}
+
+if (leaveGroup) {
+  leaveGroup.addEventListener("click", function(e) {
+    e.preventDefault();
+    leaveGroupAction();
+  });
+}
+
+if (deleteChat) {
+  deleteChat.addEventListener("click", function(e) {
+    e.preventDefault();
+    deleteChatAction();
+  });
+}
+
+// Chat Action Functions
+async function shareChatLinkAction() {
+  try {
+    if (!selectedChatId || selectedChatId === 0) {
+      AppState.showNotification("No chat selected", "error");
+      return;
+    }
+    
+    const shareUrl = `/chat/join/${selectedChatId}/${selectedRoomUUID}`;
+    
+    // Try to copy to clipboard
+    if (navigator.clipboard) {
+      await navigator.clipboard.writeText(shareUrl);
+      AppState.showNotification("Chat link copied to clipboard!", "success");
+    } else {
+      // Fallback for older browsers
+      const textArea = document.createElement("textarea");
+      textArea.value = shareUrl;
+      document.body.appendChild(textArea);
+      textArea.select();
+      document.execCommand("copy");
+      document.body.removeChild(textArea);
+      AppState.showNotification("Chat link copied to clipboard!", "success");
+    }
+    
+    hideChatInfoDropdown();
+  } catch (error) {
+    console.error("Error sharing chat link:", error);
+    AppState.showNotification("Failed to copy chat link", "error");
+  }
+}
+
+async function toggleMuteChat() {
+  try {
+    if (!selectedChatId || selectedChatId === 0) {
+      AppState.showNotification("No chat selected", "error");
+      return;
+    }
+    
+    // For now, just toggle the local state since API endpoint might not exist
+    isChatMuted = !isChatMuted;
+    updateDropdownOptions();
+    
+    // Try to call the API if it exists
+    try {
+      const response = await fetch(`/api/chats/${selectedChatId}/mute`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          muted: isChatMuted
+        })
+      });
+      
+      if (response.ok) {
+        AppState.showNotification(
+          isChatMuted ? "Chat muted" : "Chat unmuted", 
+          "success"
+        );
+      } else {
+        // API endpoint doesn't exist or failed, but we've already updated UI
+        AppState.showNotification(
+          isChatMuted ? "Chat muted (local)" : "Chat unmuted (local)", 
+          "info"
+        );
+      }
+    } catch (apiError) {
+      // API endpoint doesn't exist, but we've already updated UI
+      AppState.showNotification(
+        isChatMuted ? "Chat muted (local)" : "Chat unmuted (local)", 
+        "info"
+      );
+    }
+    
+  } catch (error) {
+    AppState.showNotification("Failed to update mute status", "error");
+  }
+}
+
+async function toggleBlockUser() {
+  try {
+    if (!selectedChatId || selectedChatId === 0) {
+      AppState.showNotification("No chat selected", "error");
+      return;
+    }
+    
+    // Update modal content based on current block state
+    if (blockUserAction) {
+      blockUserAction.textContent = isUserBlocked ? "unblock" : "block";
+    }
+    
+    if (confirmBlockUserText) {
+      confirmBlockUserText.textContent = isUserBlocked ? "Unblock User" : "Block User";
+    }
+    
+    // Show confirmation modal instead of using confirm dialog
+    showModal(blockUserModal);
+    hideChatInfoDropdown();
+    
+  } catch (error) {
+    AppState.showNotification("Failed to show block user dialog", "error");
+  }
+}
+
+// Actual action function that performs the block/unblock operation
+async function performBlockUserAction() {
+  try {
+    const action = isUserBlocked ? "unblock" : "block";
+    
+    // For now, just toggle the local state since API endpoint might not exist
+    isUserBlocked = !isUserBlocked;
+    updateDropdownOptions();
+    
+    // Try to call the API if it exists
+    try {
+      const response = await fetch(`/api/chats/${action}/${selectedChatId}`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        }
+      });
+      
+      if (response.ok) {
+        AppState.showNotification(
+          isUserBlocked ? "User blocked" : "User unblocked", 
+          "success"
+        );
+        
+        if (isUserBlocked) {
+          // Refresh chat list to reflect blocked status
+          location.reload();
+        }
+      } else {
+        // API endpoint doesn't exist or failed, but we've already updated UI
+        AppState.showNotification(
+          isUserBlocked ? "User blocked (local)" : "User unblocked (local)", 
+          "info"
+        );
+      }
+    } catch (apiError) {
+      // API endpoint doesn't exist, but we've already updated UI
+      AppState.showNotification(
+        isUserBlocked ? "User blocked (local)" : "User unblocked (local)", 
+        "info"
+      );
+    }
+    
+  } catch (error) {
+    console.error(`Error ${isUserBlocked ? 'unblocking' : 'blocking'} user:`, error);
+    AppState.showNotification(`Failed to ${isUserBlocked ? 'unblock' : 'block'} user`, "error");
+  }
+}
+
+async function leaveGroupAction() {
+  try {
+    if (!selectedChatId || selectedChatId === 0) {
+      AppState.showNotification("No group selected", "error");
+      return;
+    }
+    
+    // Show confirmation modal instead of using confirm dialog
+    showModal(leaveGroupModal);
+    hideChatInfoDropdown();
+    
+  } catch (error) {
+    AppState.showNotification("Failed to show leave group dialog", "error");
+  }
+}
+
+async function deleteChatAction() {
+  try {
+    if (!selectedChatId || selectedChatId === 0) {
+      AppState.showNotification("No chat selected", "error");
+      return;
+    }
+    
+    // Update modal content based on chat type
+    if (deleteChatType) {
+      deleteChatType.textContent = selectedChatType === 'group' ? 'group' : 'chat';
+    }
+    
+    // Show confirmation modal instead of using confirm dialog
+    showModal(deleteChatModal);
+    hideChatInfoDropdown();
+    
+  } catch (error) {
+    AppState.showNotification("Failed to show delete chat dialog", "error");
+  }
+}
+
+// Actual action functions that perform the operations
+async function performLeaveGroupAction() {
+  try {
+    // Try to call the API if it exists
+    try {
+      const response = await fetch(`/api/chats/leave/${selectedChatId}`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        }
+      });
+      
+      if (response.ok) {
+        AppState.showNotification("Left group successfully", "success");
+        
+        // Return to chat list
+        showChatList();
+        welcomeMessage.classList.remove("hidden");
+        messagesContainer.classList.add("hidden");
+        messageInputArea.classList.add("hidden");
+        $(`button[id="chatInfoBtn"]`).addClass('hidden');
+      } else {
+        throw new Error("Failed to leave group");
+      }
+    } catch (apiError) {
+      AppState.showNotification("Failed to leave group", "error");
+    }
+    
+  } catch (error) {
+    AppState.showNotification("Failed to leave group", "error");
+  }
+}
+
+async function performDeleteChatAction() {
+  try {
+    const action = selectedChatType === 'group' ? 'delete group' : 'delete chat';
+    
+    // Try to call the API if it exists
+    try {
+      const response = await fetch(`/api/chats/${selectedChatId}`, {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          token: AppState.getToken(),
+          roomId: selectedChatId,
+          type: selectedChatType
+        })
+      });
+      
+      if (response.ok) {
+        AppState.showNotification(`Chat deleted successfully`, "success");
+        showChatList();
+        welcomeMessage.classList.remove("hidden");
+        messagesContainer.classList.add("hidden");
+        messageInputArea.classList.add("hidden");
+        // $(`div[data-room-id="${selectedChatId}"]`).remove();
+        $(`button[id="chatInfoBtn"]`).addClass('hidden');
+      } else {
+        throw new Error(`Failed to ${action}`);
+      }
+    } catch (apiError) {
+      AppState.showNotification("Failed to delete chat", "error");
+    }
+    
+  } catch (error) {
+    AppState.showNotification(`Failed to delete ${selectedChatType}`, "error");
+  }
+}
+
 function scrollToBottom(smooth = true, duration = 1000) {
     const chatDiv = document.getElementById('messagesArea');
     if (chatDiv) {
@@ -207,6 +643,17 @@ groupCreationForm.addEventListener("submit", function (e) {
 
   if (!groupName.trim()) {
     AppState.showNotification("Please enter a group name", "error");
+    return;
+  }
+
+  // check if the group name is too long
+  if(groupName.length > 60) {
+    AppState.showNotification('Group name must be less than 60 characters', 'error');
+    return;
+  }
+
+  if(groupDescription.length && groupDescription.length > 100) {
+    AppState.showNotification('Group description must be less than 100 characters', 'error');
     return;
   }
 
@@ -358,9 +805,14 @@ function handleMessageSubmit() {
       msgPayload.direction = 'sent';
       msgPayload.msgid = mostRecentMessageId;
       msgPayload.media = false;
+      msgPayload.msgtype = selectedChatType;
 
       // send the receiver id as an array
       msgPayload.receiver = [loggedInUserId, selectedUserId];
+
+      if(selectedChatType == 'group') {
+        msgPayload.receiver = footerArray[selectedChatId].room.participants;
+      }
 
       AppState.socketConnect.send({
           type: 'chat',
@@ -401,10 +853,11 @@ function selectUser(userId) {
   showChatArea();
 }
 
-function beginChat(roomId, type) {
+function beginChat(roomId, type, roomUUID) {
   selectedChatId = roomId;
   selectedChatType = type;
   let roomInfo = footerArray[roomId];
+  selectedRoomUUID = roomUUID;
 
   if(selectedUserId == roomInfo?.user_id && !isMobileView) {
     return;
@@ -428,7 +881,7 @@ function beginChat(roomId, type) {
   $(`h3[id="chatTitle"]`).html(`${title}`);
   $(`p[id="chatStatus"]`).html(`${roomInfo?.state ?? 'Offline'} ${type == 'group' ? '|' : ''} ${roomInfo?.particiants ?? ''}`);
   $(`div[id="chatAvatar"]`).html(roomInfo?.username?.charAt(0)?.toUpperCase() ?? '');
-
+  
   if(!isMobileView) {
     $(`textarea[id="messageInput"]`).focus();
   }
@@ -496,6 +949,12 @@ function loadingMessages(roomId, receiverId = 0) {
             <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
         </div>`;
 
+  $(`button[id="chatInfoBtn"]`).removeClass('hidden');
+  if(selectedChatType == 'group') {
+    $(`button[id="shareChatLink"]`).removeClass('hidden');
+  } else {
+    $(`button[id="shareChatLink"]`).addClass('hidden');
+  }
   $.post(`${baseUrl}/api/chats/messages`, {
     newGroupInfo, roomId, receiverId, room: selectedChatType, token: AppState.getToken(), userUUID: userUUID
   }).then(response => {
@@ -1092,8 +1551,13 @@ function handleFileUpload() {
           media: true,
           uuid: messageUUID,
           userUUID: userUUID,
+          msgtype: selectedChatType,
           files: response.record.media || []
         };
+
+        if(selectedChatType == 'group') {
+          msgPayload.receiver = footerArray[selectedChatId].room.participants;
+        }
 
         appendMediaToUI(response.record.media || [], messageUUID);
 
@@ -1169,3 +1633,7 @@ function addMessageWithMediaToUI(message, type, files = null) {
 document.addEventListener('DOMContentLoaded', function() {
   initializeSelfDestructMessage();
 });
+
+// Chat state variables
+let isChatMuted = false;
+let isUserBlocked = false;
