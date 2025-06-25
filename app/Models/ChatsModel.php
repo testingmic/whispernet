@@ -220,14 +220,20 @@ class ChatsModel extends Model {
             $participants = array_values(array_diff($participants, [$userId]));
 
             // get the users for the participants
-            $users = $this->db->table('users')
-                            ->select('user_id, full_name, username, profile_image, last_login')
-                            ->whereIn('user_id', $participants)
-                            ->where('is_active', 1)
-                            ->get()
-                            ->getResultArray();
+            $users = [];
+
+            // get the users for the participants
+            if(!empty($participants) && is_array($participants)) {
+                $users = $this->db->table('users')
+                                ->select('user_id, full_name, username, profile_image, last_login')
+                                ->whereIn('user_id', $participants)
+                                ->where('is_active', 1)
+                                ->get()
+                                ->getResultArray();
+            }
 
             $roomsList = [];
+            // add the users to the rooms list
             foreach($users as $user) {
                 $theRoom = array_filter($userIdsByRoomId, function($room) use ($user) {
                     return in_array($user['user_id'], $room['participants']);

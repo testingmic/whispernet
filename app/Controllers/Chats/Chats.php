@@ -179,7 +179,7 @@ class Chats extends LoadController {
             }
 
             // create the chat room
-            $roomId = $this->chatsModel->createChatRoom($senderId, 0, 'group', [$senderId], $roomUUID, $this->payload['newGroupInfo']);
+            $roomId = $this->chatsModel->createChatRoom($senderId, 0, 'group', [(int)$senderId], (int)$roomUUID, $this->payload['newGroupInfo']);
 
             // return the room id and room uuid
             return Routing::created(['data' => [], 'record' => [

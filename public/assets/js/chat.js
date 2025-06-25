@@ -130,6 +130,13 @@ if (startIndividualChat) {
   });
 }
 
+if(isMobileView) {
+  $(`button[id="refreshChats"]`).removeClass('hidden');
+  $(`button[id="refreshChats"]`).on('click', function() {
+    location.reload();
+  });
+}
+
 if (startGroupChat) {
   startGroupChat.addEventListener("click", () => {
     showModal(groupCreationModal);
