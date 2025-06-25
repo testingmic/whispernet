@@ -198,6 +198,19 @@ $databases = [
     CREATE INDEX IF NOT EXISTS receiver_deleted ON chat_rooms (receiver_deleted);
     CREATE INDEX IF NOT EXISTS sender_deleted ON chat_rooms (sender_deleted);",
 
+    "CREATE TABLE IF NOT EXISTS contacts (
+        contact_id INTEGER PRIMARY KEY AUTOINCREMENT,
+        name TEXT NOT NULL,
+        email TEXT NOT NULL,
+        message TEXT NOT NULL,
+        subject TEXT NOT NULL,
+        user_id INTEGER NOT NULL,
+        token TEXT NOT NULL,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    );
+    CREATE INDEX IF NOT EXISTS user_id ON contacts (user_id);
+    CREATE INDEX IF NOT EXISTS token ON contacts (token);",
+
     "CREATE TABLE IF NOT EXISTS chat_messages (
         message_id INTEGER PRIMARY KEY,
         room_id INTEGER NOT NULL,

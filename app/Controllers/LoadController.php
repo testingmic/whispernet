@@ -12,6 +12,7 @@ use App\Models\AnalyticsModel;
 use App\Models\TagsModel;
 use App\Models\ChatsModel;
 use App\Models\UsersModel;
+use App\Models\ContactsModel;
 
 class LoadController extends BaseController
 {
@@ -26,6 +27,7 @@ class LoadController extends BaseController
     protected $analyticsModel;
     protected $tagsModel;
     protected $chatsModel;
+    protected $contactsModel;
 
     public function __construct($payload = [])
     {
@@ -79,6 +81,7 @@ class LoadController extends BaseController
             'analytics' => AnalyticsModel::class,
             'tags' => TagsModel::class,
             'chats' => ChatsModel::class,
+            'contacts' => ContactsModel::class,
         ];
         
         // Loop through the requested models and initialize them

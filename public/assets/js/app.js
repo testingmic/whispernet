@@ -52,6 +52,7 @@ const AppState = {
         this.loadTheme();
         this.setupEventListeners();
         this.menuButtonControl();
+        this.handleContactForm();
     },
     logout() {
         let token = localStorage.getItem('token');
@@ -70,6 +71,32 @@ const AppState = {
             }, 500);
         });
         return true;
+    },
+    handleContactForm() {
+        const contactForm = document.getElementById('contactForm');
+        if(!contactForm) {
+            return;
+        }
+        contactForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            let formData = new FormData(contactForm);
+            let data = {};
+            formData.forEach((value, key) => {
+                data[key] = value;
+            });
+            data.user_id = loggedInUserId;
+            data.token = AppState.getToken();
+            $.post(`${baseUrl}/api/contacts/send`, data).then((response) => {
+                if(response.status === 'success') {
+                    AppState.showNotification('Message sent successfully', 'success');
+                    contactForm.reset();
+                } else {
+                    AppState.showNotification(response.message || response.data, 'error');
+                }
+            }).catch((error) => {
+                AppState.showNotification(error.responseJSON.message || 'Error sending message', 'error');
+            });
+        });
     },
     loadUser() {
         // Load user data from localStorage or API
