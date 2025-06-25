@@ -74,7 +74,7 @@ class Landing extends WebAppController
 
         // if the user is not logged in, return the login page
         if(!$this->user_loggedin()) {
-            return $this->templateObject->loadPage('setup/login', ['pageTitle' => 'Login', 'footerHidden' => true, 'userLoggedIn' => false]);
+            return $this->templateObject->loadPage('setup/login', ['pageTitle' => 'Dashboard', 'footerHidden' => true, 'userLoggedIn' => false]);
         }
 
         // confirm if the class actually exists
