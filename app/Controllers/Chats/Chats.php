@@ -159,26 +159,46 @@ class Chats extends LoadController {
      * @return array
      */
     public function messages() {
+
+        // delete all group chats
+        $senderId = $this->currentUser['user_id'] ?? 0;
+        $receiverId = $this->payload['receiverId'] ?? 0;
         
+        // create a new group chat
+        if(!empty($this->payload['newGroupInfo']) && $this->payload['room'] == 'group') {
+            $roomUUID = random_string('alnum', 32);
+
+            // check if the group name is set
+            if(empty($this->payload['newGroupInfo']['name'])) {
+                return Routing::error('Group name is required');
+            }
+
+            // create the chat room
+            $roomId = $this->chatsModel->createChatRoom($senderId, 0, 'group', [$senderId], $roomUUID, $this->payload['newGroupInfo']);
+
+            // return the room id and room uuid
+            return Routing::created(['data' => [], 'record' => [
+                'roomId' => $roomId,
+                'roomUUID' => $roomUUID,
+            ]]);
+        }
+
         // check if the room id or receiver id is set
         if(empty($this->payload['roomId']) && empty($this->payload['receiverId'])) {
             return Routing::error('Room ID or receiver ID is required');
         }
-
-        $senderId = $this->currentUser['user_id'];
-        $receiverId = $this->payload['receiverId'];
         
         if(!empty($this->payload['roomId'])) {
             $room  = $this->chatsModel->getChatRoom($this->payload['roomId']);
             if(empty($room)) {
-                return Routing::error('Chat room not found');
+                return Routing::success(['data' => [], 'record' => 'Chat room not found']);
             }
         }
 
         else {
             $room = $this->chatsModel->getIndividualChatRoomId($senderId, $receiverId);
             if(empty($room)) {
-                return Routing::error('Chat room not found');
+                return Routing::success(['data' => [], 'record' => 'Chat room not found']);
             }
         }
 
@@ -229,9 +249,7 @@ class Chats extends LoadController {
             }
         }
 
-
         return Routing::success(array_reverse($allowedMessages));
-
 
     }
 

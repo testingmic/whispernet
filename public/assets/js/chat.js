@@ -37,7 +37,9 @@ const startGroupChat = document.getElementById("startGroupChat");
 
 // Mobile view management
 let isMobileView = window.innerWidth < 1024;
-let currentView = "chat-list"; // 'chat-list' or 'chat-area'
+let currentView = "chat-list";
+let newGroupInfo = {};
+let selectedRoomUUID = '';
 
 // Check for mobile view on resize
 window.addEventListener("resize", function () {
@@ -260,26 +262,6 @@ if (messageInput) {
     }
   });
 
-  // messageInput.addEventListener("keypress", function (e) {
-  //   if (e.key === "Enter" && !e.shiftKey) {
-  //     e.preventDefault();
-  //     e.stopPropagation();
-  //     e.stopImmediatePropagation();
-  //     handleMessageSubmit();
-  //     return false;
-  //   }
-  // });
-
-  // messageInput.addEventListener("keyup", function (e) {
-  //   if (e.key === "Enter" && !e.shiftKey) {
-  //     e.preventDefault();
-  //     e.stopPropagation();
-  //     e.stopImmediatePropagation();
-  //     handleMessageSubmit();
-  //     return false;
-  //   }
-  // });
-
   // Additional safety: handle input events
   messageInput.addEventListener("input", function (e) {
     // Prevent any form submission from input events
@@ -441,8 +423,10 @@ function beginChat(roomId, type) {
   hideModal(userSearchModal);
   selectedUserId = roomInfo?.user_id ?? 0;
 
-  $(`h3[id="chatTitle"]`).text(roomInfo?.username ?? roomInfo?.full_name);
-  $(`p[id="chatStatus"]`).text(roomInfo?.state ?? 'Offline');
+  let title = roomInfo?.username ?? roomInfo?.name;
+
+  $(`h3[id="chatTitle"]`).html(`${title}`);
+  $(`p[id="chatStatus"]`).html(`${roomInfo?.state ?? 'Offline'} ${type == 'group' ? '|' : ''} ${roomInfo?.particiants ?? ''}`);
   $(`div[id="chatAvatar"]`).html(roomInfo?.username?.charAt(0)?.toUpperCase() ?? '');
 
   if(!isMobileView) {
@@ -512,15 +496,26 @@ function loadingMessages(roomId, receiverId = 0) {
             <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
         </div>`;
 
-  $.get(`${baseUrl}/api/chats/messages?roomId=${roomId}&receiverId=${receiverId}&room=${selectedChatType}&token=${AppState.getToken()}&userUUID=${userUUID}`, function (response) {
+  $.post(`${baseUrl}/api/chats/messages`, {
+    newGroupInfo, roomId, receiverId, room: selectedChatType, token: AppState.getToken(), userUUID: userUUID
+  }).then(response => {
     if (response.status === "success") {
+
       messagesContainer.innerHTML = '';
+      
       response.data.forEach((message) => {
           if(message.msgid > mostRecentMessageId) {
               mostRecentMessageId = message.msgid;
           }
           addMessageToUI(message.message, message.type, message.time, message.uuid, message.has_media, message.media);
       });
+
+      newGroupInfo = {};
+      if((typeof response.record !== 'undefined') && selectedChatType == 'group') {
+        selectedChatId = response.record.roomId;
+        selectedRoomUUID = response.record.roomUUID;
+        $(`p[id="chatStatus"]`).text('1 participant');
+      }
 
       if(!response.data.length) {
         messagesContainer.innerHTML = `
@@ -530,12 +525,15 @@ function loadingMessages(roomId, receiverId = 0) {
         `;
       }
     }
+  }).catch(error => {
+    console.error(error);
   }).catch((error) => {
-      messagesContainer.innerHTML = `
-      <div class="text-center py-8" id="no-message-notification">
-          <p class="text-gray-500 dark:text-gray-400">No messages yet. Start the conversation!</p>
-      </div>`;
+    messagesContainer.innerHTML = `
+    <div class="text-center py-8" id="no-message-notification">
+        <p class="text-gray-500 dark:text-gray-400">No messages yet. Start the conversation!</p>
+    </div>`;
   });
+
   if(!localStorage.getItem(`d${selectedUserId}`)) {
     setTimeout(() => {
       const selfDestructElement = document.getElementById('selfDestructMessage');
@@ -553,6 +551,7 @@ function loadingMessages(roomId, receiverId = 0) {
       }
     }, 10);
   }
+
   setTimeout(() => {
     new MediaDisplay();
     scrollToBottom();
@@ -669,6 +668,12 @@ function filterChats(query) {
 }
 
 function createGroup(name, description, members) {
+  newGroupInfo = {
+    name: name,
+    description: description,
+    members: members
+  };
+
   // Simulate group creation
   AppState.showNotification(`Group "${name}" created successfully!`, "success");
 

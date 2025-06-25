@@ -292,7 +292,7 @@ $databases = [
 
 // alter tables
 $alterTables = [
-    "ALTER TABLE chat_rooms ADD COLUMN room_uuid TEXT",
+    // "ALTER TABLE chat_rooms ADD COLUMN room_uuid TEXT",
 ];
 
 $votesTables = [

@@ -16,7 +16,7 @@ class ChatsValidation {
             ]
         ],
         'messages' => [
-            'method' => 'GET',
+            'method' => 'POST',
             'authenticate' => true,
             'payload' => [
                 'roomId' => 'permit_empty|integer',

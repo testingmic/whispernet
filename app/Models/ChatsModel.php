@@ -50,25 +50,37 @@ class ChatsModel extends Model {
      * @param int $sender
      * @param int $receiver
      * @param string $type
+     * @param array $receipientsList
+     * @param string $roomUUID
      * @return array
      */
-    public function createChatRoom($sender, $receiver, $type, $receipientsList = null) {
+    public function createChatRoom($sender, $receiver, $type, $receipientsList = null, $roomUUID = null, $groupInfo = null) {
 
         try {
             $this->db->table('chat_rooms')->insert([
                 'sender_id' => $sender,
                 'receiver_id' => $receiver,
                 'type' => $type,
+                'room_uuid' => $roomUUID,
                 'created_at' => date('Y-m-d H:i:s'),
                 'receipients_list' => json_encode($receipientsList)
             ]);
             $roomId = $this->db->insertID();
+
+            // update the group info if it exists
+            if(!empty($groupInfo)) {
+                $this->db->table('chat_rooms')->update([
+                    'name' => $groupInfo['name'] ?? '',
+                    'description' => $groupInfo['description'] ?? ''
+                ], ['room_id' => $roomId]);
+            }
 
             // connect to the chats database
             $this->connectToDb('chats');
 
             // create the room for the sender and receiver
             foreach([$sender, $receiver] as $userId) {
+                if(empty($userId)) continue;
                 $this->chatsDb->table('user_chat_rooms')->insert([
                     'room_id' => (int)$roomId,
                     'user_id' => (int)$userId,
@@ -146,16 +158,26 @@ class ChatsModel extends Model {
                 return [];
             }
 
+            $groupsList = [];
             $groupedType = [];
             $userIdsByRoomId = [];
             foreach($participants as $key => $par) {
                 $groupedType[$par['room_id']] = $par['type'];
-                $userIdsByRoomId[$par['room_id']] = [
+
+                $data = [
                     'type' => $par['type'],
                     'participants' => json_decode($par['receipients_list'], true),
                     'name' => $par['name'],
-                    'description' => $par['room_description'],
+                    'description' => $par['description'],
                 ];
+
+                $userIdsByRoomId[$par['room_id']] = $data;
+                if($par['type'] == 'group') {
+                    $data['room_id'] = $par['room_id'];
+                    $data['last_login'] = $par['last_message_at'];
+                    $data['room_uuid'] = $par['room_uuid'];
+                    $groupsList[] = $data;
+                }
             }
 
             $participants = array_column($participants, 'receipients_list');
@@ -187,6 +209,28 @@ class ChatsModel extends Model {
                 $user['room_id'] = array_keys($theRoom)[0] ?? 0;
                 $user['room'] = array_values($theRoom)[0] ?? [];
                 $roomsList[] = $user;
+            }
+
+            if(!empty($groupsList)) {
+                foreach($groupsList as $group) {
+                    $group['full_name'] = $group['name'];
+                    $group['username'] = $group['name'];
+                    $group['user_id'] = $group['room_id'];
+
+                    $count = count($group['participants']);
+
+                    $group['particiants'] = $count == 1 ? '1 participant' : $count . ' participants';
+                    $group['room'] = [
+                        'type' => 'group',
+                        'participants' => $group['participants'],
+                        'name' => $group['name'],
+                        'description' => $group['description'],
+                    ];
+                    unset($group['participants']);
+                    unset($group['description']);
+                    unset($group['name']);
+                    $roomsList[] = $group;
+                }
             }
 
             return $roomsList;
