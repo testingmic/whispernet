@@ -56,7 +56,7 @@ document.addEventListener('DOMContentLoaded', function() {
             
         } catch (error) {
             console.error('Error loading reports:', error);
-            showNotification('Failed to load reports', 'error');
+            AppState.showNotification('Failed to load reports', 'error');
         }
     }
     
@@ -177,19 +177,19 @@ document.addEventListener('DOMContentLoaded', function() {
                         throw new Error('Failed to update status');
                     }
                     
-                    showNotification('Status updated successfully', 'success');
+                    AppState.showNotification('Status updated successfully', 'success');
                     loadReports();
                     modal.classList.add('hidden');
                     
                 } catch (error) {
                     console.error('Error updating status:', error);
-                    showNotification('Failed to update status', 'error');
+                    AppState.showNotification('Failed to update status', 'error');
                 }
             });
             
         } catch (error) {
             console.error('Error loading report details:', error);
-            showNotification('Failed to load report details', 'error');
+            AppState.showNotification('Failed to load report details', 'error');
         }
     };
     
@@ -200,19 +200,3 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 });
-
-function showNotification(message, type = 'info') {
-    const notification = document.createElement('div');
-    notification.className = `fixed top-4 right-4 p-4 rounded-lg shadow-lg ${
-        type === 'success' ? 'bg-green-500' : 
-        type === 'error' ? 'bg-red-500' : 
-        'bg-blue-500'
-    } text-white`;
-    notification.textContent = message;
-    
-    document.body.appendChild(notification);
-    
-    setTimeout(() => {
-        notification.remove();
-    }, 3000);
-} 

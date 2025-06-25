@@ -184,6 +184,7 @@ $databases = [
         receiver_id INTEGER NOT NULL,
         type TEXT,
         name TEXT,
+        room_uuid TEXT,
         room_description TEXT,
         receiver_deleted BOOLEAN DEFAULT 0,
         sender_deleted BOOLEAN DEFAULT 0,
@@ -291,7 +292,7 @@ $databases = [
 
 // alter tables
 $alterTables = [
-    // "ALTER TABLE posts ADD COLUMN pageviews INTEGER DEFAULT 0",
+    "ALTER TABLE chat_rooms ADD COLUMN room_uuid TEXT",
 ];
 
 $votesTables = [

@@ -35,7 +35,7 @@ document.addEventListener('DOMContentLoaded', function() {
             
         } catch (error) {
             console.error('Error loading pending content:', error);
-            showNotification('Failed to load pending content', 'error');
+            AppState.showNotification('Failed to load pending content', 'error');
         }
     }
     
@@ -53,7 +53,7 @@ document.addEventListener('DOMContentLoaded', function() {
             
         } catch (error) {
             console.error('Error loading flagged users:', error);
-            showNotification('Failed to load flagged users', 'error');
+            AppState.showNotification('Failed to load flagged users', 'error');
         }
     }
     
@@ -240,14 +240,14 @@ document.addEventListener('DOMContentLoaded', function() {
                     throw new Error('Failed to perform moderation action');
                 }
                 
-                showNotification('Action performed successfully', 'success');
+                AppState.showNotification('Action performed successfully', 'success');
                 modal.classList.add('hidden');
                 loadPendingContent();
                 loadFlaggedUsers();
                 
             } catch (error) {
                 console.error('Error performing moderation action:', error);
-                showNotification('Failed to perform action', 'error');
+                AppState.showNotification('Failed to perform action', 'error');
             }
         };
     };
@@ -259,19 +259,3 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 });
-
-function showNotification(message, type = 'info') {
-    const notification = document.createElement('div');
-    notification.className = `fixed top-4 right-4 p-4 rounded-lg shadow-lg ${
-        type === 'success' ? 'bg-green-500' : 
-        type === 'error' ? 'bg-red-500' : 
-        'bg-blue-500'
-    } text-white`;
-    notification.textContent = message;
-    
-    document.body.appendChild(notification);
-    
-    setTimeout(() => {
-        notification.remove();
-    }, 3000);
-} 

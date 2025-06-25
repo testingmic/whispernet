@@ -32,7 +32,8 @@ $favicon_color = $favicon_color ?? 'dashboard';
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <script>
     localStorage.setItem('baseUrl', '<?= $baseUrl ?>');
-    const baseUrl = '<?= $baseUrl ?>',
+    const baseUrl = '<?= $baseUrl ?>', 
+      defaultSearchQuery = '<?= $searchQuery ?? '' ?>',
       loggedInUserId = <?= $userId ?? 0 ?>,
       footerArray = <?= json_encode($footerArray ?? []) ?>,
       userLoggedIn = <?= !empty($userLoggedIn) ? 'true' : 'false' ?>,

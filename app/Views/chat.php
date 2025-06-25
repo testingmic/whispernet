@@ -87,7 +87,7 @@ $messages = $messages ?? [];
                             <div class="space-y-2 mt-4">
                                 <h3 class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider px-3 py-2">Group Chats</h3>
                                 <?php if (empty($groupChats)) { ?>
-                                    <div class="group-chat-item p-3 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-700 cursor-pointer transition-all duration-200" data-chat-type="group">
+                                    <div id="mainGroupChatBtn" class="group-chat-item p-3 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-700 cursor-pointer transition-all duration-200" data-chat-type="group">
                                         <div class="flex items-center space-x-3">
                                             <div class="w-10 h-10 rounded-full bg-gradient-to-br from-green-500 to-green-600 flex items-center justify-center text-white font-semibold">
                                                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -371,50 +371,24 @@ $messages = $messages ?? [];
                     </svg>
                 </button>
             </div>
-
-            <div id="unreadPostsCountContainer" class=" mb-6">
-                <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-xl border border-gray-200 dark:border-gray-700 p-8 text-center">
-                    <div class="w-16 h-16 bg-gray-100 dark:bg-gray-700 rounded-full flex items-center justify-center mx-auto mb-4">
-                        <svg class="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
-                        </svg>
-                    </div>
-                    <h3 class="text-xl font-semibold text-gray-900 dark:text-white mb-2">Coming soon</h3>
-                    <p class="text-gray-600 dark:text-gray-400 mb-6">We are working on this feature. Please check back later.</p>
-                    <button onclick="return closeModal();" class="inline-flex items-center px-6 py-3 bg-gradient-to-r from-blue-500 to-purple-600 text-white font-semibold rounded-xl hover:from-blue-600 hover:to-purple-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transform transition-all duration-200 hover:scale-105">
-                        Close
-                    </button>
-                </div>
-            </div>
             <!-- Group Creation Form -->
-            <form id="groupCreationForm" class="space-y-6 hidden">
-                <div>
+            <form id="groupCreationForm" class="space-y-3">
+                <div class="mb-4">
                     <label for="groupName" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Group Name</label>
                     <input type="text" id="groupName" name="groupName" required
                         class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
                         placeholder="Enter group name">
                 </div>
 
-                <div>
+                <div class="mb-2">
                     <label for="groupDescription" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Description (Optional)</label>
                     <textarea id="groupDescription" name="groupDescription" rows="3"
                         class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white resize-none"
                         placeholder="Describe the purpose of this group"></textarea>
                 </div>
 
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Select Members</label>
-                    <div class="space-y-2 max-h-48 overflow-y-auto border border-gray-300 dark:border-gray-600 rounded-xl p-3">
-                        <?php foreach ($users as $user): ?>
-                            <label class="flex items-center space-x-3 p-2 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 cursor-pointer">
-                                <input type="checkbox" name="members[]" value="<?= $user['id'] ?>" class="rounded border-gray-300 text-blue-600 focus:ring-blue-500">
-                                <div class="w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white text-sm font-semibold">
-                                    <?= strtoupper(substr($user['name'] ?? 'U', 0, 1)) ?>
-                                </div>
-                                <span class="text-sm font-medium text-gray-900 dark:text-white truncate"><?= htmlspecialchars($user['name'] ?? 'Unknown') ?></span>
-                            </label>
-                        <?php endforeach; ?>
-                    </div>
+                <div class="text-center">
+                    <span class="text-sm text-gray-500 dark:text-gray-400">You can only send invitations to users who have already joined the app.</span>
                 </div>
 
                 <div class="flex flex-col sm:flex-row justify-end space-y-3 sm:space-y-0 sm:space-x-4 pt-4">

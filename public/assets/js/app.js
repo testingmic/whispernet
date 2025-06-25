@@ -190,7 +190,42 @@ const AppState = {
             latitude = this.location.latitude;
         }
     },
-    showNotification(message, type = 'info', timer = 3000) {
+    // Notification function
+    showNotification(message, type = "info", timer = 3000) {
+        const notification = document.createElement("div");
+        notification.className = `fixed top-4 right-4 z-50 p-4 rounded-xl shadow-lg max-w-sm transform transition-all duration-300 translate-x-full`;
+    
+        const bgColor =
+        type === "success"
+            ? "bg-green-500"
+            : type === "error"
+            ? "bg-red-500"
+            : "bg-blue-500";
+        notification.classList.add(bgColor, "text-white");
+    
+        notification.innerHTML = `
+            <div class="flex items-center">
+                <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                </svg>
+                <span>${message}</span>
+            </div>
+        `;
+    
+        document.body.appendChild(notification);
+    
+        setTimeout(() => {
+            notification.classList.remove("translate-x-full");
+        }, 100);
+    
+        setTimeout(() => {
+            notification.classList.add("translate-x-full");
+            setTimeout(() => {
+                notification.remove();
+            }, 300);
+        }, timer);
+    },
+    _showNotification(message, type = 'info', timer = 3000) {
         const notification = {
             id: Date.now(),
             message,
@@ -232,14 +267,9 @@ const AppState = {
     async refreshLocation() {
         // Clear stored location to force fresh request
         localStorage.removeItem('userLocation');
-        
-        // Show loading state
-        this.showNotification('Updating location...', 'info', 2000);
-        
         // Get fresh location
         await this.getCurrentLocation();
-        
-        this.showNotification('Location updated successfully!', 'success', 2000);
+        // AppState.showNotification('Location updated successfully!', 'success', 2000);
     },
     logPageView() {
         navigator.sendBeacon(`${baseUrl}/api/analytics/pageview`, JSON.stringify({
@@ -1211,26 +1241,26 @@ const ImprovedPostCreationForm = {
             
             // Check if adding these files would exceed the limit
             if (ImprovedPostCreationForm.uploadedFiles?.length + files?.length > 4) {
-                ImprovedPostCreationForm.showNotification('You can only upload up to 4 files. Please remove some files first.', 'error');
+                AppState.showNotification('You can only upload up to 4 files. Please remove some files first.', 'error');
                 return;
             }
 
             files.forEach((file, index) => {
                 // Check file type
                 if (!file.type.startsWith('image/') && !file.type.startsWith('video/')) {
-                    ImprovedPostCreationForm.showNotification(`File "${file.name}" is not a valid image or video file.`, 'error');
+                    AppState.showNotification(`File "${file.name}" is not a valid image or video file.`, 'error');
                     return;
                 }
 
                 // Check file size based on type
                 if (file.type.startsWith('image/') && file.size > ImprovedPostCreationForm.MAX_IMAGE_SIZE) {
-                    ImprovedPostCreationForm.showNotification(`Image "${file.name}" is too large. Maximum size is 5MB.`, 'error');
+                    AppState.showNotification(`Image "${file.name}" is too large. Maximum size is 5MB.`, 'error');
                     return;
                 }
 
                 // Check file size for videos (10MB limit)
                 if (file.type.startsWith('video/') && file.size > 20 * 1024 * 1024) {
-                    ImprovedPostCreationForm.showNotification(`Video "${file.name}" is too large. Maximum size is 20MB.`, 'error');
+                    AppState.showNotification(`Video "${file.name}" is too large. Maximum size is 20MB.`, 'error');
                     return;
                 }
 
@@ -1305,7 +1335,7 @@ const ImprovedPostCreationForm = {
             
             // Validate content
             if (!ImprovedPostCreationForm.textarea.value.trim() && ImprovedPostCreationForm.uploadedFiles.length === 0) {
-                ImprovedPostCreationForm.showNotification('Please add some content or upload media before posting.', 'error');
+                AppState.showNotification('Please add some content or upload media before posting.', 'error');
                 return false;
             }
             
@@ -1465,7 +1495,7 @@ const ImprovedPostCreationForm = {
         };
         
         video.onerror = () => {
-            this.showNotification(`Failed to generate thumbnail for video "${videoFile.name}"`, 'error');
+            AppState.showNotification(`Failed to generate thumbnail for video "${videoFile.name}"`, 'error');
         };
         
         // Load video file
@@ -1518,7 +1548,7 @@ const ImprovedPostCreationForm = {
             this.recordingTimer = setInterval(() => this.updateTimer(), 1000);
         } catch (error) {
             console.error('Error accessing microphone:', error);
-            this.showNotification('Unable to access microphone. Please check permissions.', 'error');
+            AppState.showNotification('Unable to access microphone. Please check permissions.', 'error');
         }
     },
 
@@ -1600,7 +1630,7 @@ const ImprovedPostCreationForm = {
         
         // Check if recording time limit reached
         if (totalTime >= this.MAX_RECORDING_TIME) {
-            this.showNotification('Recording stopped automatically (30 second limit reached).', 'info');
+            AppState.showNotification('Recording stopped automatically (30 second limit reached).', 'info');
             this.stopRecording();
         }
     },
@@ -1661,7 +1691,7 @@ const ImprovedPostCreationForm = {
         })
         .then(response => {
             if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
+                // AppState.showNotification('Failed to create post. Please try again.', 'error');
             }
             return response.json();
         })
@@ -1687,7 +1717,7 @@ const ImprovedPostCreationForm = {
                 }
             } else {
                 // Show error message
-                showNotification(data.message || 'Failed to create post. Please try again.', 'error');
+                AppState.showNotification(data.message || 'Failed to create post. Please try again.', 'error');
                 ImprovedPostCreationForm.submitBtn.disabled = false;
             }
             ImprovedPostCreationForm.submitBtn.innerHTML = `
@@ -1700,7 +1730,7 @@ const ImprovedPostCreationForm = {
                 `;
         })
         .catch(error => {;
-            showNotification('An error occurred while creating the post. Please try again.', 'error');
+            AppState.showNotification('An error occurred while creating the post. Please try again.', 'error');
             ImprovedPostCreationForm.submitBtn.disabled = false;
             ImprovedPostCreationForm.submitBtn.innerHTML = `
                 <span class="flex items-center space-x-1.5 sm:space-x-2 text-sm sm:text-base font-medium">
@@ -1711,50 +1741,6 @@ const ImprovedPostCreationForm = {
                 </span>
             `;
         });
-    },
-
-    showNotification(message, type = 'info') {
-        // Create notification element
-        const notification = document.createElement('div');
-        notification.className = `fixed top-4 right-4 z-50 p-4 rounded-lg shadow-lg max-w-sm transform transition-all duration-300 translate-x-full`;
-        
-        // Set background color based on type
-        if (type === 'success') {
-            notification.classList.add('bg-green-500', 'text-white');
-        } else if (type === 'error') {
-            notification.classList.add('bg-red-500', 'text-white');
-        } else {
-            notification.classList.add('bg-blue-500', 'text-white');
-        }
-        
-        notification.innerHTML = `
-            <div class="flex items-center justify-between">
-                <span>${message}</span>
-                <button type="button" class="ml-4 text-white hover:text-gray-200" onclick="this.parentElement.parentElement.remove()">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-                    </svg>
-                </button>
-            </div>
-        `;
-        
-        // Add to page
-        document.body.appendChild(notification);
-        
-        // Animate in
-        setTimeout(() => {
-            notification.classList.remove('translate-x-full');
-        }, 100);
-        
-        // Auto remove after 5 seconds
-        setTimeout(() => {
-            notification.classList.add('translate-x-full');
-            setTimeout(() => {
-                if (notification.parentElement) {
-                    notification.remove();
-                }
-            }, 300);
-        }, 5000);
     },
 
     resetForm() {
@@ -2231,66 +2217,7 @@ const NotificationManager = {
     },
 
     show(message, type = 'info', duration = 3000) {
-        // Create notification element
-        const notification = document.createElement('div');
-        notification.className = `fixed top-4 right-4 z-50 transform transition-all duration-300 translate-x-full opacity-0`;
-        
-        // Set notification content based on type
-        const icons = {
-            success: `<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-                    </svg>`,
-            error: `<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-                    </svg>`,
-            warning: `<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
-                    </svg>`,
-            info: `<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                    </svg>`
-        };
-
-        // Set background color based on type
-        const bgColors = {
-            success: 'bg-green-500',
-            error: 'bg-red-500',
-            warning: 'bg-yellow-500',
-            info: 'bg-blue-500'
-        };
-
-        notification.innerHTML = `
-            <div class="flex items-center p-4 mb-4 text-white rounded-lg shadow-lg ${bgColors[type]}">
-                <div class="inline-flex items-center justify-center flex-shrink-0 w-8 h-8 rounded-lg">
-                    ${icons[type]}
-                </div>
-                <div class="ml-3 text-sm font-normal">${message}</div>
-                <button type="button" class="ml-auto -mx-1.5 -my-1.5 text-white hover:text-gray-200 rounded-lg focus:ring-2 focus:ring-gray-300 p-1.5 hover:bg-white/10 inline-flex h-8 w-8 items-center justify-center">
-                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-                    </svg>
-                </button>
-            </div>
-        `;
-
-        // Add to document
-        document.body.appendChild(notification);
-
-        // Add close button functionality
-        const closeButton = notification.querySelector('button');
-        closeButton.addEventListener('click', () => {
-            this.hideNotification(notification);
-        });
-
-        // Show notification with animation
-        requestAnimationFrame(() => {
-            notification.classList.remove('translate-x-full', 'opacity-0');
-        });
-
-        // Auto hide after duration
-        setTimeout(() => {
-            this.hideNotification(notification);
-        }, duration);
+        return AppState.showNotification(message, type, duration);
     },
 
     hideNotification(notification) {
@@ -2380,14 +2307,14 @@ const PostCommentManager = {
                     </div>`;
 
                 // Show success notification
-                NotificationManager.show('Comment posted successfully', 'success');
+                AppState.showNotification('Comment posted successfully', 'success');
 
                 $.post(`${baseUrl}/api/posts/notify`, { token: AppState.getToken(), postId: postId });
                 this.sendingComment = false;
             } catch (error) {
                 submitButton.disabled = false;
                 submitButton.innerHTML = 'Post';
-                NotificationManager.show('Failed to post comment. Please try again.', 'error');
+                AppState.showNotification('Failed to post comment. Please try again.', 'error');
             }
         });
 
@@ -2425,6 +2352,241 @@ const PostCommentManager = {
         }, 5000);
     }
 };
+
+const TagsManager = {
+    searchInput: null,
+    searchBtn: null,
+    postsList: null,
+    searchQuery: defaultSearchQuery,
+    init() {
+        // Search functionality
+        this.searchInput = document.getElementById('tagSearchInput');
+        this.searchBtn = document.getElementById('searchTagsBtn');
+
+        if(!this.searchInput || !this.searchBtn) {
+            return;
+        }
+
+        this.searchBtn.addEventListener('click', () => this.performSearch());
+        this.searchInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                this.performSearch();
+            }
+        });
+
+        // Add tag functionality
+        document.querySelectorAll('.add-tag-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const tagId = this.dataset.tagId;
+                const tagName = this.dataset.tagName;
+
+                // Add tag to user's selected tags
+                fetch(`${baseUrl}/api/tags/add-user-tag`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-Requested-With': 'XMLHttpRequest'
+                        },
+                        body: JSON.stringify({
+                            tag_id: tagId,
+                            userUUID,
+                            tag_name: tagName,
+                            token: AppState.getToken()
+                        })
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.status === 'success') {
+                            // Show success notification
+                            AppState.showNotification('Tag added successfully!', 'success');
+                        } else {
+                            AppState.showNotification(data.message || 'Failed to add tag', 'error');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        AppState.showNotification('An error occurred', 'error');
+                    });
+            });
+        });
+
+        // Remove tag functionality
+        document.querySelectorAll('.remove-tag-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const tagId = this.dataset.tagId;
+
+                // Remove tag from user's selected tags
+                fetch(`${baseUrl}/api/tags/remove-user-tag`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-Requested-With': 'XMLHttpRequest'
+                        },
+                        body: JSON.stringify({
+                            tag_id: tagId,
+                            userUUID,
+                            token: AppState.getToken()
+                        })
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.status === 'success') {
+                            // Show success notification
+                            AppState.showNotification('Tag removed successfully!', 'success');
+                        } else {
+                            AppState.showNotification(data.message || 'Failed to remove tag', 'error');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        AppState.showNotification('An error occurred', 'error');
+                    });
+            });
+        });
+
+        this.loadPostsList();
+
+    },
+    performSearch() {
+        const query = this.searchInput.value.trim();
+        if (query) {
+            window.location.href = `${baseUrl}/posts/tags/${encodeURIComponent(query)}`;
+        }
+    },
+
+    showTagPosts(tagName, tagId) {
+        // Update the tag display
+        document.getElementById('selectedTagDisplay').textContent = ` #${tagName}`;
+
+        // Update the URL
+        history.pushState({ page: 1 }, `#${tagName} - Tags - TalkLowKey`, `${baseUrl}/posts/tags/${encodeURIComponent(tagName)}`);
+
+        // Show the posts section
+        const postsSection = document.getElementById('tagPostsSection');
+        postsSection.classList.remove('hidden');
+
+        // Scroll to the posts section
+        postsSection.scrollIntoView({
+            behavior: 'smooth',
+            block: 'start'
+        });
+
+        $.get(`${baseUrl}/api/tags/postsbyid/${tagId}`, {
+            tag_id: tagId,
+            userUUID,
+            token: AppState.getToken()
+        }).then(response => {
+            if(response.status === 'success') {
+                this.renderTagPosts(response.data, tagName);
+            } else {
+                AppState.showNotification(response.message || 'Failed to load posts', 'error');
+            }
+        });
+    },
+
+    hideTagPosts() {
+        const postsSection = document.getElementById('tagPostsSection');
+        postsSection.classList.add('hidden');
+    },
+
+    loadPostsList() {
+        if(postsList.length > 0) {
+            this.renderTagPosts(postsList, this.searchQuery);
+        }
+    },
+
+    // Function to fetch posts for a specific tag
+    renderTagPosts(postsList, tagName) {
+        // Show loading state
+        const postsContainer = document.getElementById('tagPostsList');
+        postsContainer.innerHTML = `
+        <div class="flex items-center justify-center py-12">
+            <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-500"></div>
+            <span class="ml-3 text-gray-600 dark:text-gray-400">Loading posts for #${tagName}...</span>
+        </div>`;
+
+        setTimeout(() => {
+            // Update posts count
+            document.getElementById('postsCount').textContent = '5 posts';
+            let postsData = ``;
+
+            $.each(postsList, function(index, post) {
+                let hashtags = post.hashtags;
+                let hashtagsData = ``;
+                $.each(hashtags, function(index, hashtag) {
+                    hashtagsData += `<span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-200">
+                        #${hashtag}
+                    </span>`;
+                });
+                postsData += `
+                <div class="bg-gradient-to-r from-purple-50 to-purple-100 dark:from-purple-900/20 dark:to-purple-800/20 rounded-xl p-6 hover:from-purple-100 hover:to-purple-200 dark:hover:from-purple-800/30 dark:hover:to-purple-700/30 transition-all duration-200">
+                    <div class="flex items-start space-x-4">
+                        <div class="flex-shrink-0">
+                            <div class="w-12 h-12 bg-gradient-to-br from-purple-500 to-purple-600 rounded-full flex items-center justify-center shadow-lg">
+                                <span class="text-lg font-bold text-white">
+                                    ${post.username.charAt(0).toUpperCase()}${post.username.charAt(1).toUpperCase()}
+                                </span>
+                            </div>
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <p class="text-gray-600 dark:text-gray-400 mb-3">
+                                ${post.content}
+                            </p>
+                            <div class="flex flex-wrap gap-2 mb-3">
+                                ${hashtagsData}
+                            </div>
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center space-x-4 text-sm text-gray-500 dark:text-gray-400">
+                                    <span class="flex items-center">
+                                        <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                        </svg>
+                                        ${post.ago}
+                                    </span>
+                                </div>
+                                <div class="flex items-center space-x-4">
+                                    <span class="flex items-center text-sm text-gray-500 dark:text-gray-400">
+                                        <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 10h4.764a2 2 0 011.789 2.894l-3.5 7A2 2 0 0115.263 21h-4.017c-.163 0-.326-.02-.485-.06L7 20m7-10V5a2 2 0 00-2-2h-.095c-.5 0-.905.405-.905.905 0 .714-.211 1.412-.608 2.006L7 11v9m7-10h-2M7 20H5a2 2 0 01-2-2v-6a2 2 0 012-2h2.5"></path>
+                                        </svg>
+                                        ${post.upvotes}
+                                    </span>
+                                    <span class="flex items-center text-sm text-gray-500 dark:text-gray-400">
+                                        <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path>
+                                        </svg>
+                                        ${post.comments_count}
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="flex-shrink-0 flex flex-col space-y-2">
+                            <button onclick="return PostManager.changeDirection(${post.post_id})" class="p-2 text-gray-400 hover:text-blue-500 dark:hover:text-blue-400 rounded-lg hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-all duration-200" title="View post">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                                </svg>
+                            </button>
+                            <button onclick="return PostManager.handleVote('posts', ${post.post_id}, 'up', ${post.user_id})" class="p-2 text-gray-400 hover:text-green-500 dark:hover:text-green-400 rounded-lg hover:bg-green-50 dark:hover:bg-green-900/20 transition-all duration-200" title="Like post">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 10h4.764a2 2 0 011.789 2.894l-3.5 7A2 2 0 0115.263 21h-4.017c-.163 0-.326-.02-.485-.06L7 20m7-10V5a2 2 0 00-2-2h-.095c-.5 0-.905.405-.905.905 0 .714-.211 1.412-.608 2.006L7 11v9m7-10h-2M7 20H5a2 2 0 01-2-2v-6a2 2 0 012-2h2.5"></path>
+                                </svg>
+                            </button>
+                            <button class="p-2 hidden text-gray-400 hover:text-purple-500 dark:hover:text-purple-400 rounded-lg hover:bg-purple-50 dark:hover:bg-purple-900/20 transition-all duration-200" title="Share post">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.367 2.684 3 3 0 00-5.367-2.684z"></path>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>`;
+            });
+
+            postsContainer.innerHTML = postsData;
+        }, 1000);
+    },
+
+}
 
 // Profile Manager
 const ProfileManager = {
@@ -2465,12 +2627,12 @@ const ProfileManager = {
                 const data = await response.json();
                 
                 if (data.status == 'success') {
-                    NotificationManager.show('Profile updated successfully', 'success');
+                    AppState.showNotification('Profile updated successfully', 'success');
                 } else {
                     throw new Error(data.message || 'Failed to update profile');
                 }
             } catch (error) {
-                NotificationManager.show(error.message || 'Failed to update profile', 'error');
+                AppState.showNotification(error.message || 'Failed to update profile', 'error');
             } finally {
                 submitButton.disabled = false;
                 submitButton.innerHTML = originalText;
@@ -2529,7 +2691,7 @@ const ProfileManager = {
                             AppState.setTheme(newValue === '1' ? 'dark' : 'light');
                         }
                         
-                        NotificationManager.show('Setting updated successfully', 'success');
+                        AppState.showNotification('Setting updated successfully', 'success');
                     } else {
                         throw new Error(data.message || 'Failed to update setting');
                     }
@@ -2548,7 +2710,7 @@ const ProfileManager = {
                     iconSpan.classList.toggle('opacity-0');
                     iconSpan.classList.toggle('opacity-100');
 
-                    NotificationManager.show(error.message, 'error');
+                    AppState.showNotification(error.message, 'error');
                 }
             });
         });
@@ -2570,13 +2732,13 @@ const ProfileManager = {
 
             // Validate file type
             if (!file.type.startsWith('image/')) {
-                NotificationManager.show('Please select a valid image file', 'error');
+                AppState.showNotification('Please select a valid image file', 'error');
                 return;
             }
 
             // Validate file size (2MB limit)
             if (file.size > 2 * 1024 * 1024) {
-                NotificationManager.show('File size must be less than 2MB', 'error');
+                AppState.showNotification('File size must be less than 2MB', 'error');
                 return;
             }
 
@@ -2623,12 +2785,12 @@ const ProfileManager = {
                     };
                     reader.readAsDataURL(file);
                     
-                    NotificationManager.show('Profile picture updated successfully', 'success');
+                    AppState.showNotification('Profile picture updated successfully', 'success');
                 } else {
                     throw new Error(data.message || 'Failed to update profile picture');
                 }
             } catch (error) {
-                NotificationManager.show(error.message || 'Failed to update profile picture', 'error');
+                AppState.showNotification(error.message || 'Failed to update profile picture', 'error');
             } finally {
                 // Reset button state
                 uploadButton.disabled = false;
@@ -2840,7 +3002,7 @@ const AudioVideoManager = {
             })
             .catch(error => {
                 console.error('Error accessing microphone:', error);
-                NotificationManager.show('Microphone access is required for recording', 'error');
+                AppState.showNotification('Microphone access is required for recording', 'error');
             });
     },
 
@@ -2900,10 +3062,10 @@ const AudioVideoManager = {
                 // Optionally replay the uploaded audio
                 this.replayAudio(data.audioUrl);
             } else {
-                NotificationManager.show('Upload failed', 'error');
+                AppState.showNotification('Upload failed', 'error');
             }
         })
-        .catch(() => NotificationManager.show('Upload error', 'error'));
+        .catch(() => AppState.showNotification('Upload error', 'error'));
     },
 
     replayAudio(audioUrl) {
@@ -2924,6 +3086,7 @@ document.addEventListener('DOMContentLoaded', () => {
     PostCommentManager.init();
     ProfileManager.init();
     MediaManager.init();
+    TagsManager.init();
     NotificationManager.init(); 
     ImprovedPostCreationForm.init();
     AppState.logPageView();

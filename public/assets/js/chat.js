@@ -63,13 +63,13 @@ function updateMobileView() {
   }
 }
 
-function showChatArea() {
+function showChatArea(type = 'individual') {
   if (isMobileView) {
     currentView = "chat-area";
     updateMobileView();
   }
   // Load messages for this user
-  loadMessages(selectedUserId, selectedChatType);
+  loadMessages(selectedUserId, type);
 }
 
 function showChatList() {
@@ -202,21 +202,14 @@ groupCreationForm.addEventListener("submit", function (e) {
   const formData = new FormData(this);
   const groupName = formData.get("groupName");
   const groupDescription = formData.get("groupDescription");
-  const members = formData.getAll("members[]");
 
   if (!groupName.trim()) {
-    showNotification("Please enter a group name", "error");
-    return;
-  }
-
-  if (members.length === 0) {
-    showNotification("Please select at least one member", "error");
+    AppState.showNotification("Please enter a group name", "error");
     return;
   }
 
   // Update chat header
   chatTitle.textContent = groupName;
-  chatStatus.textContent = `${members.length + 1} members`;
   chatAvatar.innerHTML = `
         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
@@ -228,18 +221,21 @@ groupCreationForm.addEventListener("submit", function (e) {
   messagesContainer.classList.remove("hidden");
   messageInputArea.classList.remove("hidden");
 
+  // remove the main group chat button
+  $(`div[id="mainGroupChatBtn"]`).remove();
+
   // Create group and load messages
-  createGroup(groupName, groupDescription, members);
+  createGroup(groupName, groupDescription, 0);
 
   hideModal(groupCreationModal);
   this.reset();
 
-  // Reset all checkboxes
-  document.querySelectorAll('input[name="members[]"]').forEach((checkbox) => {
-    checkbox.checked = false;
-  });
+  messagesContainer.innerHTML = `
+  <div class="text-center py-8" id="no-message-notification">
+      <p class="text-gray-500 dark:text-gray-400">No messages yet. Start the conversation!</p>
+  </div>`;
 
-  showChatArea();
+  showChatArea('group');
 });
 
 // Message Input Management
@@ -596,7 +592,7 @@ function loadMessages(userId, type) {
 
   $(`p[id="chatStatus"]`).text(selectedUserInfo?.online_status ?? "Offline");
 
-  loadingMessages(selectedChatId, selectedUserInfo?.user_id ?? 0);
+  loadingMessages(selectedChatId, selectedUserInfo?.user_id ?? 0, type);
 }
 
 function addMessageToUI(content, type, time = '', uuid = '', has_media = false, media = []) {
@@ -674,7 +670,7 @@ function filterChats(query) {
 
 function createGroup(name, description, members) {
   // Simulate group creation
-  showNotification(`Group "${name}" created successfully!`, "success");
+  AppState.showNotification(`Group "${name}" created successfully!`, "success");
 
   // Add the new group to the chat list
   const groupChatItem = document.createElement("div");
@@ -702,42 +698,6 @@ function createGroup(name, description, members) {
   if (groupChatsSection) {
     groupChatsSection.appendChild(groupChatItem);
   }
-}
-
-// Notification function
-function showNotification(message, type = "info") {
-  const notification = document.createElement("div");
-  notification.className = `fixed top-4 right-4 z-50 p-4 rounded-xl shadow-lg max-w-sm transform transition-all duration-300 translate-x-full`;
-
-  const bgColor =
-    type === "success"
-      ? "bg-green-500"
-      : type === "error"
-      ? "bg-red-500"
-      : "bg-blue-500";
-  notification.classList.add(bgColor, "text-white");
-
-  notification.innerHTML = `
-        <div class="flex items-center">
-            <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
-            </svg>
-            <span>${message}</span>
-        </div>
-    `;
-
-  document.body.appendChild(notification);
-
-  setTimeout(() => {
-    notification.classList.remove("translate-x-full");
-  }, 100);
-
-  setTimeout(() => {
-    notification.classList.add("translate-x-full");
-    setTimeout(() => {
-      notification.remove();
-    }, 300);
-  }, 5000);
 }
 
 // Add CSS animations and mobile optimizations

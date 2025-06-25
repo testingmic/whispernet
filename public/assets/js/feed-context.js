@@ -122,7 +122,7 @@ document.addEventListener('DOMContentLoaded', function() {
             
         } catch (error) {
             console.error('Error updating context menu:', error);
-            showNotification('Failed to load post options', 'error');
+            AppState.showNotification('Failed to load post options', 'error');
         }
     }
     
@@ -141,11 +141,11 @@ document.addEventListener('DOMContentLoaded', function() {
             
             // Copy share link to clipboard
             await navigator.clipboard.writeText(data.share_url);
-            showNotification('Share link copied to clipboard', 'success');
+            AppState.showNotification('Share link copied to clipboard', 'success');
             
         } catch (error) {
             console.error('Error sharing post:', error);
-            showNotification('Failed to share post', 'error');
+            AppState.showNotification('Failed to share post', 'error');
         }
     };
     
@@ -171,7 +171,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 throw new Error('Failed to delete post');
             }
             
-            showNotification('Post deleted successfully', 'success');
+            AppState.showNotification('Post deleted successfully', 'success');
             
             // Remove post from feed
             const post = document.querySelector(`[data-posts-id="${postId}"]`);
@@ -181,7 +181,7 @@ document.addEventListener('DOMContentLoaded', function() {
             
         } catch (error) {
             console.error('Error deleting post:', error);
-            showNotification('Failed to delete post', 'error');
+            AppState.showNotification('Failed to delete post', 'error');
         }
     };
     
@@ -195,11 +195,11 @@ document.addEventListener('DOMContentLoaded', function() {
                 throw new Error('Failed to pin post');
             }
             
-            showNotification('Post pinned successfully', 'success');
+            AppState.showNotification('Post pinned successfully', 'success');
             
         } catch (error) {
             console.error('Error pinning post:', error);
-            showNotification('Failed to pin post', 'error');
+            AppState.showNotification('Failed to pin post', 'error');
         }
     };
     
@@ -216,19 +216,3 @@ document.addEventListener('DOMContentLoaded', function() {
         return `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="${paths[icon]}"/>`;
     }
 });
-
-function showNotification(message, type = 'info') {
-    const notification = document.createElement('div');
-    notification.className = `fixed top-4 right-4 p-4 rounded-lg shadow-lg ${
-        type === 'success' ? 'bg-green-500' : 
-        type === 'error' ? 'bg-red-500' : 
-        'bg-blue-500'
-    } text-white`;
-    notification.textContent = message;
-    
-    document.body.appendChild(notification);
-    
-    setTimeout(() => {
-        notification.remove();
-    }, 3000);
-} 

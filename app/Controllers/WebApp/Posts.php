@@ -55,7 +55,7 @@ class Posts extends WebAppController {
         }
 
         return $this->templateObject->loadPage('tags', [
-            'pageTitle' => 'Tags', 
+            'pageTitle' => (!empty($searchQuery) ? "#{$searchQuery} - " : '') .  'Tags', 
             'postsList' => $postsList ?? [],
             'popularTags' => $popularTags,
             'searchQuery' => $searchQuery,
