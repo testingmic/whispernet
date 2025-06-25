@@ -3,7 +3,7 @@
     <!-- Login Section -->
     <div id="login-section" class="w-full min-h-[80vh] flex items-center justify-center py-4">
         <div class="w-full max-w-6xl mx-auto px-4 sm:px-6">
-            <div class="grid lg:grid-cols-2 gap-4 items-center min-h-[60vh]">
+            <div class="grid lg:grid-cols-2 gap-12 items-center min-h-[60vh]">
                 <!-- Left Side - Description -->
                 <div class="relative overflow-hidden lg:text-left">
                     <div class="absolute inset-0 bg-gradient-to-r from-blue-600/10 to-purple-600/10"></div>
