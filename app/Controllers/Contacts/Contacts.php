@@ -13,8 +13,20 @@ class Contacts extends LoadController {
      * @return void
      */
     public function send() {
+
+        // If token is not provided, use fingerprint
+        $this->payload['token'] = empty($this->payload['token']) ? $this->payload['fingerprint'] : $this->payload['token'];
+
+        // get the list of contacts sent out by the user
+        $contacts = $this->contactsModel->getContactByToken($this->payload['token']);
+        if(count($contacts) > 10) {
+            return Routing::error('You have reached the maximum number of contacts you can send');
+        }
+
+        // Create contact record
         $this->contactsModel->create($this->payload);
         
+        // Return success response
         return Routing::success('Message sent successfully');
     }
 

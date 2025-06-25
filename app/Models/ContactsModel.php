@@ -56,6 +56,21 @@ class ContactsModel extends Model {
     }
 
     /**
+     * Get a contact by token
+     * 
+     * @param string $token
+     * 
+     * @return array
+     */
+    public function getContactByToken($token) {
+        try {
+            return $this->where('token', $token)->findAll();
+        } catch (DatabaseException $e) {
+            return null;
+        }
+    }
+
+    /**
      * Get contacts by email
      * 
      * @param string $email
