@@ -52,7 +52,7 @@ $messages = $messages ?? [];
                             <div class="space-y-2">
                                 <h3 class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider px-3 py-2">Individual Chats</h3>
 
-                                <?php if (empty($chatRooms)) { ?>
+                                <?php if (empty($individualChats)) { ?>
                                     <div id="individualChats">
                                         <div class=" p-3 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-700 cursor-pointer transition-all duration-200" data-chat-id="0">
                                             <div class="flex items-center space-x-3">
@@ -69,7 +69,7 @@ $messages = $messages ?? [];
                                         </div>
                                     </div>
                                 <?php } ?>
-                                <?php foreach (($chatRooms ?? []) as $chat) { ?>
+                                <?php foreach (($individualChats ?? []) as $chat) { ?>
                                     <?php if ($chat['room']['type'] !== 'individual') continue; ?>
                                     <div data-room-id="<?= $chat['room_id']; ?>" data-room-type="<?= $chat['room']['type']; ?>" onclick="return beginChat(<?= $chat['room_id']; ?>, '<?= $chat['room']['type']; ?>')" class="cursor-pointer p-3 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-700 cursor-pointer transition-all duration-200">
                                         <div class="flex items-center space-x-3">

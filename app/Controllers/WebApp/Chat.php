@@ -19,6 +19,7 @@ class Chat extends WebAppController {
 
         // group the chats by room id
         $groupChats = [];
+        $individualChats = [];
         $footerArray = [];
         foreach($chatRooms as $key => $chat) {
             $chat['state'] = userState($chat['last_login']);
@@ -28,13 +29,16 @@ class Chat extends WebAppController {
             $footerArray[$chat['room_id']] = $chat;
             if($chat['room']['type'] === 'group') {
                 $groupChats[] = $chat;
+            } else if($chat['room']['type'] === 'individual') {
+                $individualChats[] = $chat;
             }
         }
 
         return [
             'chatRooms' => $chatRooms, 
             'groupChats' => $groupChats, 
-            'footerArray' => $footerArray
+            'footerArray' => $footerArray,
+            'individualChats' => $individualChats
         ];
     }
     /**
@@ -56,6 +60,7 @@ class Chat extends WebAppController {
             'chatRooms' => $chatData['chatRooms'], 
             'groupChats' => $chatData['groupChats'], 
             'favicon_color' => 'chat', 
+            'individualChats' => $chatData['individualChats'],
             'footerArray' => $chatData['footerArray'],
             'footerHidden' => true,
             'chatSection' => true
@@ -111,6 +116,7 @@ class Chat extends WebAppController {
         return $this->templateObject->loadPage('chat', [
             'pageTitle' => 'Chat Join', 
             'favicon_color' => 'chat', 
+            'individualChats' => $chatData['individualChats'],
             'chatRooms' => $chatData['chatRooms'], 
             'groupChats' => $chatData['groupChats'], 
             'footerArray' => $chatData['footerArray'],
