@@ -309,7 +309,7 @@ const AppState = {
     },
     // Function to clear location data and reset to default
     clearLocationData() {
-        localStorage.removeItem('userLocation');
+        // localStorage.removeItem('userLocation');
         localStorage.removeItem('user');
         localStorage.removeItem('token');
         localStorage.removeItem('substate');
