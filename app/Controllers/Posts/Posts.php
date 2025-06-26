@@ -389,6 +389,50 @@ class Posts extends LoadController {
     }
 
     /**
+     * Mark posts as seen
+     * 
+     * @return array
+     */
+    public function mark_as_seen() {
+        // set the payload to the posts model
+        $this->postsModel->payload = $this->payload;
+
+        // connect to the votes database
+        $this->postsModel->connectToDb('views');
+
+        // get the post ids
+        $postIds = explode(',', $this->payload['posts']);
+        $ids = [];
+        foreach($postIds as $postId) {
+            $ids[] = (int)$postId;
+        }
+
+        // if there are no post ids, return success
+        if(empty($ids)) {
+            return Routing::success('No posts to mark as seen');
+        }
+
+        // check if the user has already viewed the post
+        $view = $this->postsModel->checkBulkViews($ids, $this->payload['userId'], 'posts');
+
+        // get the post ids that the user has not viewed
+        $postIds = array_diff($ids, array_column($view, 'record_id'));
+
+        if(!empty($postIds)) {
+            // record the views
+            foreach($postIds as $postId) {
+                // record the view
+                $this->postsModel->recordView($postId, $this->payload['userId'], 'posts');
+            }
+            // update the raw post views
+            $this->postsModel->updateBulkPostViews($postIds);
+        }
+        
+        // make the call to the posts model
+        return Routing::success('Posts marked as seen');
+    }
+
+    /**
      * Update a post
      * 
      * @return array

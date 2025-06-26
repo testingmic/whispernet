@@ -12,6 +12,13 @@ class PostsValidation {
                 'location' => 'permit_empty|max_length[32]'
             ]
         ],
+        'mark_as_seen' => [
+            'method' => 'POST',
+            'authenticate' => true,
+            'payload' => [
+                'posts' => 'required|string|max_length[1000]',
+            ]
+        ],
         'delete:postId' => [
             'method' => 'DELETE',
             'authenticate' => true,

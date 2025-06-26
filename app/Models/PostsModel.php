@@ -318,6 +318,21 @@ class PostsModel extends Model {
     }
 
     /**
+     * Update the raw pageviews of the post
+     * 
+     * @param array $postIds
+     * 
+     * @return bool
+     */
+    public function updateBulkPostViews($postIds) {
+        try {
+            return $this->db->query("UPDATE posts SET pageviews = pageviews + 1 WHERE post_id IN (" . implode(',', $postIds) . ")");
+        } catch (DatabaseException $e) {
+            return false;
+        }
+    }
+
+    /**
      * Delete a post
      * 
      * @return array
@@ -652,6 +667,28 @@ class PostsModel extends Model {
             $vote = $this->votesDb->query($sql, [$recordId, $userId, $section])->getRowArray();
             
             return $vote;
+        } catch (DatabaseException $e) {
+            return [];
+        }
+    }
+
+    /**
+     * Check bulk views
+     * 
+     * @param array $postIds
+     * @param string $userId
+     * 
+     * @return array
+     */
+    public function checkBulkViews($postIds, $userId, $section) {
+        try {
+            $views = $this->viewsDb->table('views')
+                ->whereIn('record_id', $postIds)
+                ->where('user_id', $userId)
+                ->where('section', $section)
+                ->get()
+                ->getResultArray();
+            return $views;
         } catch (DatabaseException $e) {
             return [];
         }

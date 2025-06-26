@@ -631,6 +631,7 @@ const PostManager = {
     unreadPostsCount: 0,
     unreadPosts: [],
     userLocation: [],
+    batchPostIds: [],
     init() {
         this.loadInitialFeed();
         this.setupPostInteractions();
@@ -886,10 +887,13 @@ const PostManager = {
         if (!container) return;
         $('.loading-skeleton').remove();
 
+        this.batchPostIds = [];
+
         posts.forEach((post, key) => {
             if(this.loadedPostIds.includes(post.post_id)) {
                 return;
             }
+            this.batchPostIds.push(parseInt(post.post_id));
             if(!unreadCounter) {
                 this.loadedPostIds.push(post.post_id);
             }
@@ -930,6 +934,16 @@ const PostManager = {
             } else {
                 document.getElementById('unreadPostsCountContainer').classList.add('hidden');
             }
+        }
+        if(this.batchPostIds.length > 0) {
+            $.post(`${baseUrl}/api/posts/mark_as_seen`, {
+                token: AppState.getToken(),
+                noloc: true,
+                userUUID,
+                posts: this.batchPostIds.join(',')
+            }).then((response) => {
+                console.log(response);
+            });
         }
     },
     changeDirection(postId) {

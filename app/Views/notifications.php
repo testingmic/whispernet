@@ -3,7 +3,7 @@ $notifications = $notifications ?? [];
 $unreadCount = $unreadCount ?? 0;
 ?>
 
-<div class="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 pt-4 to-indigo-100 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
+<div class="min-h-[calc(100vh-105px)] bg-gradient-to-br from-slate-50 via-blue-50 pt-4 to-indigo-100 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
     <!-- Main Content -->
     <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 pb-16">
         <!-- Notifications Container -->
