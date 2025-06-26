@@ -2066,30 +2066,23 @@ const NotificationManager = {
                 }
             });
         });
-
-        // Handle delete buttons
-        document.querySelectorAll('[title="Delete notification"]').forEach(btn => {
-            btn.addEventListener('click', async (e) => {
-                e.preventDefault();
-                const notificationId = e.target.closest('[data-notification-id]')?.dataset.notificationId;
-                if (notificationId) {
-                    await this.deleteNotification(notificationId);
-                }
-            });
-        });
     },
 
     async markAsRead(notificationId) {
         try {
-            const response = await fetch(`${baseUrl}/api/notifications/mark-read/${notificationId}?userUUID=${userUUID}`, {
+            const response = await fetch(`${baseUrl}/api/notifications/read/${notificationId}`, {
                 method: 'POST',
                 headers: {
                     'X-Requested-With': 'XMLHttpRequest'
-                }
+                },
+                body: JSON.stringify({
+                    token: AppState.getToken(),
+                    userUUID
+                })
             });
 
             const data = await response.json();
-            if (data.success) {
+            if (data.status == 'success') {
                 // Update UI
                 const notification = document.querySelector(`[data-notification-id="${notificationId}"]`);
                 if (notification) {
@@ -2125,24 +2118,21 @@ const NotificationManager = {
         }
     },
 
-    async deleteNotification(notificationId) {
+    async delete(notificationId) {
         try {
-            const response = await fetch(`${baseUrl}/api/notifications/${notificationId}?userUUID=${userUUID}`, {
+            await fetch(`${baseUrl}/api/notifications/${notificationId}`, {
                 method: 'DELETE',
                 headers: {
                     'X-Requested-With': 'XMLHttpRequest'
-                }
+                },
+                body: JSON.stringify({
+                    token: AppState.getToken(),
+                    userUUID
+                })
             });
-
-            const data = await response.json();
-            if (data.success) {
-                // Remove notification from UI
-                const notification = document.querySelector(`[data-notification-id="${notificationId}"]`);
-                if (notification) {
-                    notification.remove();
-                }
-            }
+            $(`div[data-notification-id="${notificationId}"]`).remove();
         } catch (error) {
+            console.error('Error deleting notification:', error);
         }
     },
 
@@ -2336,7 +2326,7 @@ const PostCommentManager = {
                 // Show success notification
                 AppState.showNotification('Comment posted successfully', 'success');
 
-                $.post(`${baseUrl}/api/posts/notify`, { token: AppState.getToken(), postId: postId });
+                // $.post(`${baseUrl}/api/posts/notify`, { token: AppState.getToken(), postId: postId });
                 this.sendingComment = false;
             } catch (error) {
                 submitButton.disabled = false;

@@ -6,51 +6,6 @@ $unreadCount = $unreadCount ?? 0;
 <div class="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 pt-4 to-indigo-100 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
     <!-- Main Content -->
     <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 pb-16">
-        <!-- Stats Cards -->
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-            <!-- Total Notifications -->
-            <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-xl border border-gray-200 dark:border-gray-700 p-6 hover:shadow-2xl transition-all duration-300 hover:-translate-y-1">
-                <div class="flex items-center justify-between mb-4">
-                    <div class="w-12 h-12 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl flex items-center justify-center">
-                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path>
-                        </svg>
-                    </div>
-                    <span class="text-2xl font-bold text-gray-900 dark:text-white"><?= count($notifications) ?></span>
-                </div>
-                <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">Total Notifications</h3>
-                <p class="text-gray-600 dark:text-gray-400 text-sm">All your activity alerts</p>
-            </div>
-
-            <!-- Unread Notifications -->
-            <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-xl border border-gray-200 dark:border-gray-700 p-6 hover:shadow-2xl transition-all duration-300 hover:-translate-y-1">
-                <div class="flex items-center justify-between mb-4">
-                    <div class="w-12 h-12 bg-gradient-to-br from-red-500 to-red-600 rounded-xl flex items-center justify-center">
-                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                        </svg>
-                    </div>
-                    <span class="text-2xl font-bold text-gray-900 dark:text-white"><?= $unreadCount ?></span>
-                </div>
-                <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">Unread</h3>
-                <p class="text-gray-600 dark:text-gray-400 text-sm">New notifications waiting</p>
-            </div>
-
-            <!-- Today's Notifications -->
-            <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-xl border border-gray-200 dark:border-gray-700 p-6 hover:shadow-2xl transition-all duration-300 hover:-translate-y-1">
-                <div class="flex items-center justify-between mb-4">
-                    <div class="w-12 h-12 bg-gradient-to-br from-green-500 to-green-600 rounded-xl flex items-center justify-center">
-                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
-                        </svg>
-                    </div>
-                    <span class="text-2xl font-bold text-gray-900 dark:text-white"><?= count(array_filter($notifications, function($n) { return strpos($n['time_ago'] ?? '', 'today') !== false || strpos($n['time_ago'] ?? '', 'hour') !== false; })) ?></span>
-                </div>
-                <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">Today</h3>
-                <p class="text-gray-600 dark:text-gray-400 text-sm">Recent activity</p>
-            </div>
-        </div>
-
         <!-- Notifications Container -->
         <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-xl border border-gray-200 dark:border-gray-700 overflow-hidden">
             <!-- Header -->
@@ -89,11 +44,11 @@ $unreadCount = $unreadCount ?? 0;
                     </div>
                 <?php else: ?>
                     <?php foreach ($notifications as $notification): ?>
-                        <div class="notification-item p-6 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-all duration-200 <?= ($notification['read'] ?? false) ? '' : 'bg-blue-50 dark:bg-blue-900/10 border-l-4 border-blue-500' ?>" data-notification-id="<?= $notification['id'] ?? '' ?>">
+                        <div class="notification-item p-6 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-all duration-200 <?= ($notification['is_read'] ?? false) ? '' : 'bg-blue-50 dark:bg-blue-900/10 border-l-4 border-blue-500' ?>" data-notification-id="<?= $notification['notification_id'] ?? '' ?>">
                             <div class="flex items-start space-x-4">
                                 <!-- Notification Icon -->
-                                <div class="flex-shrink-0">
-                                    <?php if (($notification['type'] ?? '') === 'like'): ?>
+                                <div class="flex-shrink-0 hover:cursor-pointer" <?= $notification['section'] == 'posts' ? "onclick='return PostManager.changeDirection({$notification['reference_id']})'" : '' ?>>
+                                    <?php if (in_array($notification['type'] ?? '', ['like', 'vote'])): ?>
                                         <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-red-100 to-red-200 dark:from-red-900/20 dark:to-red-800/20 flex items-center justify-center">
                                             <svg class="w-6 h-6 text-red-600 dark:text-red-400" fill="currentColor" viewBox="0 0 20 20">
                                                 <path fill-rule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clip-rule="evenodd" />
@@ -127,11 +82,11 @@ $unreadCount = $unreadCount ?? 0;
                                 </div>
 
                                 <!-- Notification Content -->
-                                <div class="flex-1 min-w-0">
+                                <div class="flex-1 min-w-0 hover:cursor-pointer" <?= $notification['section'] == 'posts' ? "onclick='return PostManager.changeDirection({$notification['reference_id']})'" : '' ?>>
                                     <div class="flex items-start justify-between">
                                         <div class="flex-1">
                                             <p class="text-sm font-medium text-gray-900 dark:text-white leading-relaxed">
-                                                <?= htmlspecialchars($notification['message'] ?? 'Notification message') ?>
+                                                <?= htmlspecialchars($notification['content'] ?? 'Notification message') ?>
                                             </p>
                                             <div class="flex items-center mt-2 space-x-4">
                                                 <span class="text-xs text-gray-500 dark:text-gray-400 flex items-center">
@@ -152,14 +107,14 @@ $unreadCount = $unreadCount ?? 0;
 
                                 <!-- Action Buttons -->
                                 <div class="flex-shrink-0 flex items-center space-x-2">
-                                    <?php if (!($notification['read'] ?? false)): ?>
-                                        <button type="button" class="mark-read-btn p-2 text-gray-400 hover:text-blue-500 dark:hover:text-blue-400 rounded-lg hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-all duration-200" title="Mark as read" data-notification-id="<?= $notification['id'] ?? '' ?>">
+                                    <?php if (!($notification['is_read'] ?? false)): ?>
+                                        <button type="button" class="mark-read-btn p-2 text-gray-400 hover:text-blue-500 dark:hover:text-blue-400 rounded-lg hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-all duration-200" title="Mark as read" data-notification-id="<?= $notification['notification_id'] ?? '' ?>">
                                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
                                             </svg>
                                         </button>
                                     <?php endif; ?>
-                                    <button type="button" class="delete-notification-btn p-2 text-gray-400 hover:text-red-500 dark:hover:text-red-400 rounded-lg hover:bg-red-50 dark:hover:bg-red-900/20 transition-all duration-200" title="Delete notification" data-notification-id="<?= $notification['id'] ?? '' ?>">
+                                    <button onclick="return NotificationManager.delete(<?= $notification['notification_id'] ?? '' ?>)" type="button" class="delete-notification-btn p-2 text-gray-400 hover:text-red-500 dark:hover:text-red-400 rounded-lg hover:bg-red-50 dark:hover:bg-red-900/20 transition-all duration-200" title="Delete notification" data-notification-id="<?= $notification['notification_id'] ?? '' ?>">
                                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                                         </svg>

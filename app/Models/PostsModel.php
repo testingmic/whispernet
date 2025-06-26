@@ -164,6 +164,22 @@ class PostsModel extends Model {
     }
 
     /**
+     * Get the user ids of the comments on a post
+     * 
+     * @param int $postId
+     * 
+     * @return array
+     */
+    public function getCommentsUserIds($postId) {
+        try {
+            $userIds = $this->db->query("SELECT user_id FROM comments WHERE post_id = ?", [$postId])->getResultArray();
+            return array_column($userIds, 'user_id') ?? [];
+        } catch (DatabaseException $e) {
+            return [];
+        }
+    }
+
+    /**
      * View comments
      * 
      * @return array

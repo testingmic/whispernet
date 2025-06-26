@@ -4,6 +4,25 @@ namespace App\Libraries\Validation;
 class NotificationsValidation {
 
     public $routes = [
+        'list' => [
+            'method' => 'GET',
+            'authenticate' => true,
+            'payload' => []
+        ],
+        'delete:notification_id' => [
+            'method' => 'DELETE',
+            'authenticate' => true,
+            'payload' => [
+                'notification_id' => 'required|integer',
+            ]
+        ],
+        'read:notification_id' => [
+            'method' => 'POST',
+            'authenticate' => true,
+            'payload' => [
+                'notification_id' => 'required|integer',
+            ]
+        ],
         'recent' => [
             'method' => 'POST',
             'authenticate' => true,

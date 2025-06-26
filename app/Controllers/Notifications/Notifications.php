@@ -26,6 +26,61 @@ class Notifications extends LoadController {
     }
 
     /**
+     * Get the list of notifications for a user
+     * 
+     * @return array
+     */
+    public function list() {
+
+        // connect to the notification database
+        $this->notificationsModel->connectToDb('notification');
+        
+        // get the notifications
+        $notifications = $this->notificationsModel->getUserNotifications($this->currentUser['user_id']);
+
+        $theList = [];
+        foreach($notifications as $notification) {
+            $notification['time_ago'] = formatTimeAgo($notification['created_at']);
+            $theList[] = $notification;
+        }
+        
+        // format the notifications
+        return Routing::success($theList);
+    }
+
+    /**
+     * Delete a notification
+     * 
+     * @return array
+     */
+    public function delete() {
+        
+        // connect to the notification database
+        $this->notificationsModel->connectToDb('notification');
+        
+        // delete the notification
+        $this->notificationsModel->deleteRecord($this->payload['notification_id'], $this->currentUser['user_id']);
+        
+        return Routing::success('Notification successfully deleted.');
+    }
+
+    /**
+     * Read a notification
+     * 
+     * @return array
+     */
+    public function read() {
+        
+        // connect to the notification database
+        $this->notificationsModel->connectToDb('notification');
+        
+        // read the notification
+        $this->notificationsModel->readRecord($this->payload['notification_id'], $this->currentUser['user_id']);
+        
+        return Routing::success('Notification successfully read.');
+    }
+
+    /**
      * Send a push notification to a user
      * 
      * @param array $data

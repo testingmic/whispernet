@@ -3,6 +3,7 @@
 namespace App\Controllers\WebApp;
 
 use App\Controllers\WebAppController;
+use App\Models\NotificationsModel;
 
 class Notifications extends WebAppController
 {
@@ -12,23 +13,22 @@ class Notifications extends WebAppController
         $notifications = [];
 
         $types = ['like', 'comment', 'follow', 'message'];
-        
-        for($i = 0; $i < 10; $i++) {
-            $notifications[] = [
-                'id' => $i,
-                'type' => $types[array_rand($types)],
-                'message' => 'John Doe liked your post',
-                'time' => date('H:i:s', strtotime('-' . $i . ' minutes')),
-                'read' => false,
-                'time_ago' => '30min ago'
-            ];
-        }
 
-        $notifications = [];
+        $userId = $this->session->get('user_id');
+
+        $notifModel = new NotificationsModel();
+        $notifModel->connectToDb('notification');
+        $notifications = $notifModel->getUserNotifications($userId);
+
+        $theList = [];
+        foreach($notifications as $notification) {
+            $notification['time_ago'] = formatTimeAgo($notification['created_at']);
+            $theList[] = $notification;
+        }
 
         return $this->templateObject->loadPage('notifications', [
             'pageTitle' => 'Notifications',
-            'notifications' => $notifications,
+            'notifications' => $theList,
             'favicon_color' => 'notifications'
         ]);
     }

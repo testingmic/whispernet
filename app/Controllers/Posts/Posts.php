@@ -242,6 +242,31 @@ class Posts extends LoadController {
         // update the statistics
         $this->usersModel->db->table('users')->where('user_id', $this->payload['userId'])->update(['statistics' => json_encode($this->currentUser['statistics'])]);
 
+        // connect to the notification database
+        $this->postsModel->connectToDb('notification');
+
+        // if the owner is not the same as the user who commented
+        if($postCheck['user_id'] !== $this->payload['userId']) {
+            // notify the owner of the post
+            $this->postsModel->notify(
+                $this->payload['postId'], $postCheck['user_id'], 'comment',
+                'posts', "@{$this->currentUser['username']} left a comment on your post \"". substr($this->payload['content'], 0, 40) . '...\"'
+            );
+        }
+
+        // get the user ids of the comments on the post
+        $commentUserIds = $this->postsModel->getCommentsUserIds($this->payload['postId']);
+
+        // if there are comments on the post
+        if(!empty($commentUserIds)) {
+            // notify the users who have commented on the post
+            foreach($commentUserIds as $userId) {
+                if(!in_array($userId, [$this->payload['userId'], $postCheck['user_id']])) {
+                    $this->postsModel->notify($this->payload['postId'], $userId, 'comment', 'posts', "@{$this->currentUser['username']} left a comment on the post \"". substr($this->payload['content'], 0, 40) . '...\"');
+                }
+            }
+        }
+
         // return the comment id
         return Routing::created(['data' => 'Comment created successfully', 'record' => $this->viewSingleComment()['data']]);
 
@@ -472,11 +497,17 @@ class Posts extends LoadController {
         // get the post votes
         $votes = $this->postsModel->db->query("SELECT downvotes, upvotes FROM {$section} WHERE {$column} = ?", [$this->payload['recordId']])->getRowArray();
 
+        // if the user has voted for the first time and the owner is not the same as the user
         if($firstTime && ((int)$this->payload['ownerId'] !== (int)$this->payload['userId'])) {
+
+            // connect to the notification database
             $this->postsModel->connectToDb('notification');
+            $item = $section == 'posts' ? 'post' : 'comment';
+
+            // notify the owner of the post or comment
             $this->postsModel->notify(
                 $this->payload['recordId'], $this->payload['ownerId'], 'vote',
-                $section, "{$this->currentUser['username']} voted on your {$section}"
+                $section, "@{$this->currentUser['username']} liked your {$item}"
             );
 
             // increment the votes count
