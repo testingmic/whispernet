@@ -24,9 +24,9 @@ function formatUserSettings($settings, $alldata = false) {
     foreach($settings as $setting) {
         $iValue = in_array($setting['setting'], ['sub_notification']) ? json_decode($setting['value'], true) : $setting['value'];
         if(!$alldata) {
-            $formattedSettings[$setting['setting']] = $iValue;
+            $formattedSettings[$setting['setting']] = !is_array($iValue) ? (int)$iValue : $iValue;
         } else {
-            $setting['value'] = $iValue;
+            $setting['value'] = !is_array($iValue) ? (int)$iValue : $iValue;
             $formattedSettings[] = $setting;
         }
     }

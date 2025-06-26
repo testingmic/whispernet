@@ -11,7 +11,13 @@ class UsersValidation {
                 'name' => 'string|max_length[32]',
                 'gender' => 'string|in_list[Male,Female,Other]',
                 'setting' => 'string|max_length[100]',
+                'value' => 'string|max_length[100]',
             ]
+        ],
+        'profile' => [
+            'method' => 'GET',
+            'authenticate' => true,
+            'payload' => []
         ],
         'settings' => [
             'method' => 'GET',

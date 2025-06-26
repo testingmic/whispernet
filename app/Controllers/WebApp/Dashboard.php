@@ -42,7 +42,7 @@ class Dashboard extends WebAppController {
      * 
      * @return void
      */
-    public function contact() {
+    public function support() {
         return $this->templateObject->loadPage('contact', ['pageTitle' => 'Contact', 'noInstallation' => true, 'footerHidden' => true]);
     }
 

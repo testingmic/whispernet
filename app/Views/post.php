@@ -136,3 +136,8 @@
 <!-- Enhanced Full View Modal -->
 <?= full_view_modal() ?>
 <div class="h-20"></div>
+
+
+/api/users/update
+/api/users/settings
+/api/users/search

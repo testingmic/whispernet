@@ -12,8 +12,15 @@ class Users extends LoadController {
      * 
      * @return array
      */
-    public function getUserProfile() {
-        return $this->usersModel->getUserProfile($this->payload['userId']);
+    public function profile() {
+        $profile = $this->usersModel->getUserProfile($this->payload['userId']);
+        if(empty($profile)) {
+            return Routing::error('User not found');
+        }
+        $profile['statistics'] = json_decode($profile['statistics'], true);
+        unset($profile['password_hash']);
+        return Routing::success($profile);
+
     }
 
     /**
@@ -130,6 +137,10 @@ class Users extends LoadController {
                 // user settings
                 $settingsSet = array_column($userSettings, 'setting');
 
+                if(empty($this->payload['value'])) {
+                    return Routing::error("Value is required for setting:- {$setting}");
+                }
+
                 // loop through the settings and confirm if the setting is not already saved
                 $isetting = !is_array($this->payload['setting']) ? trim($this->payload['setting']) : $this->payload['setting'];
                 if(in_array($isetting, $settingsSet)) {
@@ -141,6 +152,8 @@ class Users extends LoadController {
 
             // get the updated settings
             $userSettings = $this->usersModel->getUserSettings($userId);
+
+            // return the updated settings
             return Routing::created(['data' => 'User settings successfully saved.', 'record' => formatUserSettings($userSettings)]);
         }
 

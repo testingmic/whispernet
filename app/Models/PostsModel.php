@@ -328,30 +328,6 @@ class PostsModel extends Model {
     }
 
     /**
-     * Load trending posts
-     * 
-     * @return array
-     */
-    public function loadTrending($offset, $hours) {
-        
-        $posts = $this->db->table('posts p')
-                    ->select("p.*, u.full_name, u.username as username, u.profile_image, (p.upvotes - p.downvotes) as score, m.media as post_media")
-                    ->join('users u', 'p.user_id = u.user_id')
-                    ->join('media m', 'p.post_id = m.record_id AND m.section = "posts"', 'left')
-                    ->where('p.created_at >=', date('Y-m-d H:i:s', strtotime("-{$hours} hours")))
-                    ->orderBy('score DESC, p.created_at DESC')
-                    ->limit($this->payload['limit'])
-                    ->offset($offset);
-
-        if(!empty($this->payload['location'])) {
-            $posts->like('p.city', $this->payload['location'], 'both');
-        }
-
-        return $posts->get()->getResultArray();
-
-    }
-
-    /**
      * Bookmark a post
      * 
      * @return array
@@ -392,6 +368,30 @@ class PostsModel extends Model {
         } catch (DatabaseException $e) {
             return $e->getMessage();
         }
+    }
+
+    /**
+     * Load trending posts
+     * 
+     * @return array
+     */
+    public function loadTrending($offset, $hours) {
+        
+        $posts = $this->db->table('posts p')
+                    ->select("p.*, u.full_name, u.username as username, u.profile_image, (p.upvotes - p.downvotes) as score, m.media as post_media")
+                    ->join('users u', 'p.user_id = u.user_id')
+                    ->join('media m', 'p.post_id = m.record_id AND m.section = "posts"', 'left')
+                    ->where('p.created_at >=', date('Y-m-d H:i:s', strtotime("-{$hours} hours")))
+                    ->orderBy('score DESC, p.created_at DESC')
+                    ->limit($this->payload['limit'])
+                    ->offset($offset);
+
+        if(!empty($this->payload['location'])) {
+            $posts->like('p.city', $this->payload['location'], 'both');
+        }
+
+        return $posts->get()->getResultArray();
+
     }
 
     /**

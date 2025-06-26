@@ -13,9 +13,12 @@ function manageUserLocation($payload, $cacheObject) {
     // set the final location to an empty array
     $payload['finalLocation'] = [];
 
-    if(empty($payload['userUUID'])) {
+    if(empty($payload['userUUID']) && empty($payload['fingerprint'])) {
         return $payload;
     }
+
+    // if the userUUID is not set, use the fingerprint
+    $payload['userUUID'] = empty($payload['userUUID']) ? $payload['fingerprint'] : $payload['userUUID'];
 
     if(!empty($payload['longitude']) && strlen($payload['longitude']) == 4) {
         $payload['longitude'] = '';
