@@ -19,8 +19,11 @@ const FeedContext = {
 
     shareModal(post) {
 
-        let shortText = post.content.substring(0, 100);
-        if(post.content.length > 100) {
+        // remove all # from the content
+        let shortText = post.content.replace(/#/g, '');
+        shortText = shortText.replace(/<a[^>]*>(.*?)<\/a>/g, '$1');
+        shortText = shortText.substring(0, 100);
+        if(shortText.length > 100) {
             shortText += '...';
         }
 
@@ -61,9 +64,9 @@ const FeedContext = {
                                         <span class="text-xs text-gray-500 dark:text-gray-400" id="sharePostTime">${post.ago}</span>
                                     </div>
                                     
-                                    <p class="text-sm text-gray-700 dark:text-gray-300 mb-3" id="sharePostContent">
+                                    <div class="text-sm text-gray-700 dark:text-gray-300 mb-3" id="sharePostContent">
                                         ${post.content}
-                                    </p>
+                                    </div>
                                     <div id="sharePostImage" class="hidden">
                                         <div class="w-full h-32 bg-gradient-to-br from-blue-100 to-purple-100 dark:from-blue-900/30 dark:to-purple-900/30 rounded-lg flex items-center justify-center">
                                             <svg class="w-8 h-8 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
