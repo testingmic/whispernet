@@ -25,6 +25,19 @@ class UsersModel extends Model {
     }
 
     /**
+     * Get all users
+     * 
+     * @return array
+     */
+    public function getAllUsers($columns = '*') {
+        try {
+            return $this->db->table($this->table)->select($columns)->get()->getResultArray();
+        } catch (DatabaseException $e) {
+            return [];
+        }
+    }
+
+    /**
      * Get user profile
      * 
      * @param string $userId

@@ -10,6 +10,7 @@ class WebAppController extends BaseController
  
     protected $templateObject;
     protected $session;
+    protected $loogedUserId;
 
     /**
      * Constructor
@@ -21,6 +22,9 @@ class WebAppController extends BaseController
     {
         $this->session = session();
         $this->templateObject = new Templates();
+
+        // set the logged in user id
+        $this->loogedUserId = $this->session->get('user_id');
     }
 
     /**
@@ -34,6 +38,9 @@ class WebAppController extends BaseController
         if(empty($this->session->get('user_id')) && empty($this->session->get('user_loggedin'))) {
             return false;
         }
+
+        // set the logged in user id
+        $this->loogedUserId = $this->session->get('user_id');
 
         return true;
     }

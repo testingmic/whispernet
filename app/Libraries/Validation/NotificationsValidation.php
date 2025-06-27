@@ -9,6 +9,13 @@ class NotificationsValidation {
             'authenticate' => true,
             'payload' => []
         ],
+        'notifyall' => [
+            'method' => 'POST',
+            'authenticate' => true,
+            'payload' => [
+                'item' => 'required|string',
+            ]
+        ],
         'delete:notification_id' => [
             'method' => 'DELETE',
             'authenticate' => true,

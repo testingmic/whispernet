@@ -52,9 +52,12 @@ class NotificationsModel extends Model {
      * @param int $userId
      * @return array
      */
-    public function getUserNotifications($userId) {
+    public function getUserNotifications($userId = null) {
 
         try {
+            if(empty($userId)) {
+                return [];
+            }
             // connect to the notification database
             return $this->notifDb->table($this->table)
                             ->where("user_id", $userId)
@@ -102,4 +105,25 @@ class NotificationsModel extends Model {
             return false;
         }
     }
+
+    /**
+     * Notify a user
+     * 
+     * @param int $recordId
+     * @param int $userId
+     * @param string $type
+     * @param string $section
+     * @param string $content
+     * 
+     * @return array
+     */
+    public function notify($recordId, $userId, $type, $section, $content) {
+        try {
+            $sql = "INSERT INTO notifications (user_id, type, section, reference_id, content) VALUES (?, ?, ?, ?, ?)";
+            $this->notifDb->query($sql, [$userId, $type, $section, $recordId, $content]);
+        } catch (DatabaseException $e) {
+            return [];
+        }
+    }
+
 }

@@ -353,7 +353,7 @@ $notificationTables = [
     "CREATE TABLE IF NOT EXISTS notifications (
         notification_id INTEGER PRIMARY KEY AUTOINCREMENT,
         user_id INTEGER NOT NULL,
-        type TEXT CHECK(type IN ('chat', 'comment', 'vote', 'system')) NOT NULL,
+        type TEXT CHECK(type IN ('chat', 'comment', 'vote', 'system', 'features', 'updates')) NOT NULL,
         section TEXT,
         reference_id INTEGER,
         content TEXT NOT NULL,

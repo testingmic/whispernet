@@ -631,6 +631,12 @@ class PostsModel extends Model {
     /**
      * Notify a user
      * 
+     * @param int $recordId
+     * @param int $userId
+     * @param string $type
+     * @param string $section
+     * @param string $content
+     * 
      * @return array
      */
     public function notify($recordId, $userId, $type, $section, $content) {
@@ -645,6 +651,8 @@ class PostsModel extends Model {
     /**
      * Delete votes
      * 
+     * @param int $voteId
+     * 
      * @return array
      */
     public function deleteVotes($voteId) {
@@ -658,6 +666,10 @@ class PostsModel extends Model {
 
     /**
      * Check votes
+     * 
+     * @param int $recordId
+     * @param int $userId
+     * @param string $section
      * 
      * @return array
      */
@@ -676,7 +688,8 @@ class PostsModel extends Model {
      * Check bulk views
      * 
      * @param array $postIds
-     * @param string $userId
+     * @param int $userId
+     * @param string $section
      * 
      * @return array
      */

@@ -294,7 +294,7 @@ CREATE TABLE IF NOT EXISTS views (
 CREATE TABLE IF NOT EXISTS notifications (
     notification_id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     user_id BIGINT UNSIGNED NOT NULL,
-    type ENUM('chat', 'comment', 'vote', 'system') NOT NULL,
+    type ENUM('chat', 'comment', 'vote', 'system', 'features', 'updates') NOT NULL,
     section VARCHAR(50),
     reference_id BIGINT UNSIGNED,
     content TEXT NOT NULL,

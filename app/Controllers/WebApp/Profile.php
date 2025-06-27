@@ -20,7 +20,7 @@ class Profile extends WebAppController
 
         // Get the current user's data
         $userModel = new \App\Models\UsersModel();
-        $userId = session()->get('user_id');
+        $userId = $this->loogedUserId;
         $user = $userModel->find($userId);
 
         // decode the statistics
@@ -56,18 +56,18 @@ class Profile extends WebAppController
      */
     public function edit() {
 
+        // verify if the user is logged in
+        $this->verifyLogin();
+        
         // get the user model
         $userModel = new \App\Models\UsersModel();
-        $userId = session()->get('user_id');
+        $userId = $this->loogedUserId;
 
         // get the user
         $user = $userModel->find($userId);
 
         // get the user settings
         $userSettings = $userModel->getUserSettings($userId);
-
-        // print_r($user);
-        // exit;
 
         return $this->templateObject->loadPage('edit_profile', [
             'pageTitle' => 'Edit Profile', 

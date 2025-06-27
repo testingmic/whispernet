@@ -268,6 +268,9 @@ const AppState = {
             this.notifications = this.notifications.filter(n => n.id !== notification.id);
         }, timer);
     },
+    goToPage(page) {
+        window.location.href = `${baseUrl}/${page}`;
+    },
     generateUUID() {
         const bytes = crypto.getRandomValues(new Uint8Array(16));
     

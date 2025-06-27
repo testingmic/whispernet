@@ -15,7 +15,7 @@ class Chat extends WebAppController {
         $this->chatsModel = !empty($this->chatsModel) ? $this->chatsModel : new ChatsModel();
         
         // get the user chat rooms
-        $chatRooms = $this->chatsModel->getUserChatRooms($this->session->get('user_id'));
+        $chatRooms = $this->chatsModel->getUserChatRooms($this->loogedUserId);
 
         // group the chats by room id
         $groupChats = [];
@@ -102,7 +102,7 @@ class Chat extends WebAppController {
         // receipients list
         $receipientsList = json_decode($chatRoom['receipients_list'], true);
 
-        $userId = $this->session->get('user_id');
+        $userId = $this->loogedUserId;
 
         if(!in_array($userId, $receipientsList)) {
             $receipientsList[] = $userId;

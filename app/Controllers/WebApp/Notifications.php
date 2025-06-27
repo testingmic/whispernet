@@ -10,11 +10,10 @@ class Notifications extends WebAppController
     
     public function index() {
 
-        $notifications = [];
+        // verify if the user is logged in
+        $this->verifyLogin();
 
-        $types = ['like', 'comment', 'follow', 'message'];
-
-        $userId = $this->session->get('user_id');
+        $userId = $this->loogedUserId;
 
         $notifModel = new NotificationsModel();
         $notifModel->connectToDb('notification');

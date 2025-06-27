@@ -139,5 +139,35 @@ class Notifications extends LoadController {
         return Routing::success('Notification sent');
 
     }
+
+    /**
+     * Send a notification to all users
+     * 
+     * @return array
+     */
+    public function notifyall() {
+
+        // get all users
+        $users = $this->usersModel->getAllUsers('user_id, username, email, full_name, profile_image');
+
+        // connect to the notification database
+        $this->notificationsModel->connectToDb('notification');
+
+        // check if the item is valid
+        if(!in_array($this->payload['item'], ['system', 'features', 'updates'])) {
+            return Routing::error('Invalid item submitted in the request.');
+        }
+
+        // send a notification to all users
+        foreach($users as $user) {
+            // notify the owner of the post or comment
+            $this->notificationsModel->notify(
+                $user['user_id'], $user['user_id'], $this->payload['item'], 'updates', 
+                "New features: We've added a new feature to share posts with your friends & create chat groups and have total control over your chats."
+            );
+        }
+
+        return Routing::success('Notifications sent to all users');
+    }
     
 }
