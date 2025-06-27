@@ -4,6 +4,7 @@ $favicon_color = $favicon_color ?? 'dashboard';
 $classPosition = "absolute -top-1 -right-1 w-3 h-3 bg-blue-500 rounded-full animate-pulse"
 ?>
 </main>
+<div id="globalHTMLContainer"></div>
 <?php if (empty($footerHidden)) { ?>
   <!-- Modern Professional Footer -->
   <nav id="footerBanner" data-footer-hidden="<?= !empty($footerHidden) ?>" <?= !empty($footerHidden) ? 'style="display: none;"' : '' ?> class="bg-white dark:bg-gray-800 shadow-2xl border-t border-gray-200 dark:border-gray-700 fixed bottom-0 left-0 right-0 z-50 backdrop-blur-lg bg-white/95 dark:bg-gray-800/95">

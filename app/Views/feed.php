@@ -131,7 +131,7 @@
                             </span>
                         </div>
                         <p class="text-sm text-gray-700 dark:text-gray-300 mb-3">
-                            We've added a new feature to create chat groups and have total control over your chats.
+                            We've added a new feature to share posts with your friends & create chat groups and have total control over your chats.
                         </p>
                         <div class="flex items-center space-x-3">
                             <a href="<?= $baseUrl ?>/updates" class="inline-flex items-center px-3 py-1.5 bg-green-600 text-white text-sm font-medium rounded-lg hover:bg-green-700 transition-colors">

@@ -148,7 +148,6 @@ const AppState = {
                 if(typeof locationData._lastUpdated !== 'undefined') {
                     let lastChecked = new Date().getTime() - locationData._lastUpdated;
                     let lastCheckedSeconds = Math.floor(lastChecked / 1000);
-                    console.log({lastCheckedSeconds});
                     if(lastCheckedSeconds < 3600) {
                         proceed = true;
                     }
@@ -205,9 +204,7 @@ const AppState = {
                 latitude = this.location.latitude;
                 this.updateLocationUI();
             }
-        } catch (error) {
-            console.log('Location access error:', error.message);
-        }
+        } catch (error) { }
     },
     updateLocationUI() {
         const locationElement = document.querySelector('.location-display');
@@ -632,6 +629,7 @@ const PostManager = {
     unreadPosts: [],
     userLocation: [],
     batchPostIds: [],
+    tinyPostContent: {},
     init() {
         this.loadInitialFeed();
         this.setupPostInteractions();
@@ -941,8 +939,6 @@ const PostManager = {
                 noloc: true,
                 userUUID,
                 posts: this.batchPostIds.join(',')
-            }).then((response) => {
-                console.log(response);
             });
         }
     },
@@ -953,7 +949,20 @@ const PostManager = {
         const div = document.createElement('div');
         div.className = `post-card bg-white border rounded-lg shadow-sm p-2 ${single ? '' : ' mb-2 hover:bg-gradient-to-r hover:from-blue-50 hover:to-indigo-50 rounded-lg hover:border-blue-400'} cursor-pointer hover:shadow-md transition-all duration-300 relative`;
         div.setAttribute('data-post-id', post.post_id);
-        
+
+        if(post.post_id) {
+            this.tinyPostContent[post.post_id] = {
+                username: post.username,
+                content: post.content,
+                ago: post.ago,
+                city: post.city,
+                views: post.views,
+                comments: post.comments_count,
+                created_at: post.created_at,
+                post_id: post.post_id,
+                media: post.media_types || [],
+            };
+        }
         div.innerHTML = `
             <div class="flex items-center grid grid-cols-2 grid-cols-[80%_20%] items-center mb-2">
                 <div class="flex items-center space-x-2 post-header-clickable">
@@ -993,6 +1002,12 @@ const PostManager = {
                             </svg>
                             <span>View Post</span>
                         </a>` : ''}
+                        <button onclick="return FeedContext.shareFeed(${post.post_id})" class="w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center space-x-2" onclick="event.stopPropagation(); FeedContext.shareFeed(${post})">
+                            <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.367 2.684 3 3 0 00-5.367-2.684z"></path>
+                            </svg>
+                            <span>Share Post</span>
+                        </button>
                         ${post?.user_id !== AppState?.user?.user_id ? `
                         <button class="w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center space-x-2" onclick="event.stopPropagation(); PostManager.handleBookmark(${post.post_id}, ${post.manage.save})">
                             <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
