@@ -39,6 +39,8 @@ $favicon_color = $favicon_color ?? 'dashboard';
       userLoggedIn = <?= !empty($userLoggedIn) ? 'true' : 'false' ?>,
       websocketUrl = '<?= $websocketUrl ?>',
       postRadius = <?= $postRadius ?>,
+      appName = '<?= $appName ?>',
+      appLogo = '<?= $baseUrl ?>/assets/icons/Icon.192.png',
       loadingSkeleton = `<?= function_exists('loadingSkeleton') ? loadingSkeleton() : '' ?>`;
     <?php if (!empty($userToken)) { ?>
       localStorage.setItem('token', '<?= $userToken ?>');

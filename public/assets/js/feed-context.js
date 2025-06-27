@@ -40,7 +40,7 @@ const FeedContext = {
                                     </svg>
                                 </div>
                                 <div class="ml-3">
-                                    <h3 class="text-lg font-bold text-gray-900 dark:text-white">Share Post</h3>
+                                    <h3 class="text-lg font-bold text-gray-900 dark:text-white">${appName}</h3>
                                     <p class="text-sm text-gray-600 dark:text-gray-400">Share this post with others</p>
                                 </div>
                             </div>
