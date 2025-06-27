@@ -48,17 +48,9 @@ const FeedContext = {
                         </div>
                     </div>
 
-                    <div class="p-6">
+                    <div class="p-3">
                         <div class="bg-gray-50 dark:bg-gray-700/50 rounded-xl p-4 mb-6 border border-gray-200 dark:border-gray-600">
                             <div class="flex items-start space-x-3">
-                                <div class="flex-shrink-0">
-                                    <div class="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center shadow-lg">
-                                        <span class="text-white font-semibold text-lg" id="shareUserInitial">
-                                            ${post.username[0].toUpperCase()}${post.username[1].toUpperCase()}
-                                        </span>
-                                    </div>
-                                </div>
-                                
                                 <div class="flex-1 min-w-0">
                                     <div class="flex items-center space-x-2 mb-2">
                                         <h4 class="text-sm font-semibold text-gray-900 dark:text-white" id="shareUserName">${post.username}</h4>
