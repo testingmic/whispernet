@@ -14,6 +14,7 @@ const FeedContext = {
         this.shareModal(postData);
         this.init();
         $('div[id="sharePostModal"]').removeClass('hidden');
+        $(`#backToTopBtn`).addClass('hidden');
     },
 
     shareModal(post) {
@@ -153,6 +154,7 @@ const FeedContext = {
     // Function to close share modal
     closeModal() {
         $('div[id="sharePostModal"]').addClass('hidden');
+        $(`#backToTopBtn`).removeClass('hidden');
         document.body.style.overflow = 'auto';
     }
 }
