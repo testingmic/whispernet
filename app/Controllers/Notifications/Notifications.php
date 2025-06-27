@@ -162,8 +162,7 @@ class Notifications extends LoadController {
         foreach($users as $user) {
             // notify the owner of the post or comment
             $this->notificationsModel->notify(
-                $user['user_id'], $user['user_id'], $this->payload['item'], 'updates', 
-                "New features: We've added a new feature to share posts with your friends & create chat groups and have total control over your chats."
+                $user['user_id'], $user['user_id'], $this->payload['item'], 'updates', $this->payload['message']
             );
         }
 

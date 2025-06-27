@@ -14,6 +14,7 @@ class NotificationsValidation {
             'authenticate' => true,
             'payload' => [
                 'item' => 'required|string',
+                'message' => 'required|string',
             ]
         ],
         'delete:notification_id' => [
