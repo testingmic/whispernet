@@ -1,5 +1,5 @@
-<div class="min-h-screen bg-gray-50 dark:bg-gray-900 pb-20 pt-2">
-    <div class="max-w-3xl mx-auto px-4 py-6 sm:px-6 lg:px-8">
+<div class="min-h-screen bg-gray-50 dark:bg-gray-900 pb-20 pt-2 p-6">
+    <div class="max-w-3xl mx-auto py-6 sm:px-6 lg:px-8">
         <!-- Header -->
         <div class="mb-6">
             <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Edit Profile</h1>
@@ -48,7 +48,8 @@
                     <div>
                         <label for="gender" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Gender</label>
                         <select name="gender" id="gender" class="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 placeholder-gray-500 dark:placeholder-gray-400 text-gray-900 dark:text-white rounded-t-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm dark:bg-gray-800">
-                            <?php foreach(['Male', 'Female', 'Other'] as $gender) { ?>
+                            <option value="">Select Gender</option>
+                            <?php foreach(['Male', 'Female', 'Other', 'Prefer not to say'] as $gender) { ?>
                                 <option <?= $user['gender'] == $gender ? 'selected' : '' ?> value="<?= $gender ?>"><?= $gender ?></option>
                             <?php } ?>
                         </select>

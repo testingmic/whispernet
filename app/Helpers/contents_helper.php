@@ -288,7 +288,7 @@ function full_view_modal() {
 
 function custom_button($title, $link, $description = '') {
     return '
-    <div class="bg-gradient-to-r from-green-50 to-blue-50 dark:from-green-900/20 dark:to-blue-900/20 rounded-lg p-4 border border-green-200 dark:border-green-700/30 shadow-sm">
+    <div class="bg-gradient-to-r from-green-50 mb-3 to-blue-50 dark:from-green-900/20 dark:to-blue-900/20 rounded-lg p-4 border border-green-200 dark:border-green-700/30 shadow-sm">
         <div class="text-center">
             <a href="'.$link.'" 
                 class="w-full inline-flex justify-center items-center px-4 py-3 border border-transparent text-sm font-semibold rounded-lg text-white bg-gradient-to-r from-green-600 to-blue-600 hover:from-green-700 hover:to-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transform transition-all duration-200 hover:scale-105 shadow-lg hover:shadow-xl">
