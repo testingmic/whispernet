@@ -1,5 +1,5 @@
 <div class="min-h-[calc(100vh-65px)] bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 flex items-center justify-center">
-    
+    <?php $appFeatures = app_features(); ?>
     <!-- Login Section -->
     <div id="login-section" class="w-full min-h-[80vh] flex items-center justify-center py-4">
         <div class="w-full max-w-6xl mx-auto px-4 sm:px-6">
@@ -21,8 +21,7 @@
                             </h1>
                             
                             <p class="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto leading-relaxed mb-8">
-                                Connect with your community through secure, private messaging. Share thoughts, ideas, and experiences 
-                                in a safe environment where your privacy is our priority.
+                                <?= $appFeatures['login']['caption']; ?>
                             </p>
 
                             <!-- Key Features -->
@@ -35,7 +34,7 @@
                                         </svg>
                                     </div>
                                     <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">Group & Individual</h3>
-                                    <p class="text-gray-600 dark:text-gray-400 text-sm">Chat one-on-one or create group conversations</p>
+                                    <p class="text-gray-600 dark:text-gray-400 text-sm"><?= $appFeatures['login']['features']['Group & Individual']; ?></p>
                                 </div>
                                 
                                 <div class="bg-white dark:bg-gray-800/50 backdrop-blur-sm rounded-xl p-3 border border-white/20 dark:border-gray-700/30 hover:scale-105 transition-all duration-300">
@@ -45,7 +44,7 @@
                                         </svg>
                                     </div>
                                     <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">Media Sharing</h3>
-                                    <p class="text-gray-600 dark:text-gray-400 text-sm">Share images and media with your conversations</p>
+                                    <p class="text-gray-600 dark:text-gray-400 text-sm"><?= $appFeatures['login']['features']['Media Sharing']; ?></p>
                                 </div>
                             </div>
 

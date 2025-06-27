@@ -26,7 +26,7 @@
                             </p>
 
                             <!-- Contact Methods -->
-                            <div class="grid md:grid-cols-3 gap-4 max-w-4xl mx-auto mb-12">
+                            <div class="grid md:grid-cols-3 gap-4 max-w-4xl mx-auto mb-8">
                                 <div class="bg-white dark:bg-gray-800/50 backdrop-blur-sm rounded-xl p-4 border border-white/20 dark:border-gray-700/30 hover:scale-105 transition-all duration-300">
                                     <div class="w-12 h-12 bg-blue-100 dark:bg-blue-900/30 rounded-lg flex items-center justify-center mb-4 mx-auto">
                                         <svg class="w-6 h-6 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -37,7 +37,7 @@
                                     <p class="text-gray-600 dark:text-gray-400 text-sm">hi@<?= strtolower(str_replace(' ', '', $appName)) ?>.com</p>
                                 </div>
                                 
-                                <div class="bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm rounded-xl p-4 border border-white/20 dark:border-gray-700/30 hover:scale-105 transition-all duration-300">
+                                <div class="bg-white dark:bg-gray-800/50 backdrop-blur-sm rounded-xl p-4 border border-white/20 dark:border-gray-700/30 hover:scale-105 transition-all duration-300">
                                     <div class="w-12 h-12 bg-green-100 dark:bg-green-900/30 rounded-lg flex items-center justify-center mb-4 mx-auto">
                                         <svg class="w-6 h-6 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
@@ -47,7 +47,7 @@
                                     <p class="text-gray-600 dark:text-gray-400 text-sm">We reply within 24 hours</p>
                                 </div>
                                 
-                                <div class="bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm rounded-xl p-4 border border-white/20 dark:border-gray-700/30 hover:scale-105 transition-all duration-300">
+                                <div class="bg-white dark:bg-gray-800/50 backdrop-blur-sm rounded-xl p-4 border border-white/20 dark:border-gray-700/30 hover:scale-105 transition-all duration-300">
                                     <div class="w-12 h-12 bg-purple-100 dark:bg-purple-900/30 rounded-lg flex items-center justify-center mb-4 mx-auto">
                                         <svg class="w-6 h-6 text-purple-600 dark:text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
@@ -59,7 +59,7 @@
                             </div>
 
                             <!-- FAQ Section -->
-                            <div class="bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm rounded-xl p-6 border border-white/20 dark:border-gray-700/30 max-w-2xl mx-auto">
+                            <div class="bg-white dark:bg-gray-800/50 backdrop-blur-sm rounded-xl p-6 border border-white/20 dark:border-gray-700/30 max-w-2xl mx-auto hover:scale-105 transition-all duration-300">
                                 <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Frequently Asked Questions</h3>
                                 <div class="space-y-3 text-left">
                                     <div class="flex items-start space-x-3">

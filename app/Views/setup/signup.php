@@ -1,5 +1,5 @@
 <div class="min-h-[calc(100vh-65px)] bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 flex items-center justify-center">
-    
+    <?php $appFeatures = app_features(); ?>
     <!-- Signup Section -->
     <div id="signup-section" class="w-full min-h-[80vh] flex items-center justify-center py-8">
         <div class="w-full max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -21,8 +21,7 @@
                             </h1>
                             
                             <p class="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto leading-relaxed mb-8">
-                                Start your journey with secure, private messaging. Connect with your community, share your thoughts, 
-                                and build meaningful conversations in a safe environment.
+                                <?= $appFeatures['signup']['caption']; ?>
                             </p>
 
                             <!-- Key Benefits -->
@@ -34,7 +33,7 @@
                                         </svg>
                                     </div>
                                     <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">Tags </h3>
-                                    <p class="text-gray-600 dark:text-gray-400 text-sm">Add tags to your posts to make them more discoverable</p>
+                                    <p class="text-gray-600 dark:text-gray-400 text-sm"><?= $appFeatures['signup']['features']['Tags']; ?></p>
                                 </div>
                                 
                                 <div class="bg-white dark:bg-gray-800/50 backdrop-blur-sm rounded-xl p-6 border border-white/20 dark:border-gray-700/30 hover:scale-105 transition-all duration-300">
@@ -44,7 +43,7 @@
                                         </svg>
                                     </div>
                                     <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">Instant Setup</h3>
-                                    <p class="text-gray-600 dark:text-gray-400 text-sm">Get started in under 30 seconds</p>
+                                    <p class="text-gray-600 dark:text-gray-400 text-sm"><?= $appFeatures['signup']['features']['Instant Setup']; ?></p>
                                 </div>
                             </div>
                         </div>

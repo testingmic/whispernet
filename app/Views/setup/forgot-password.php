@@ -1,5 +1,5 @@
 <div class="min-h-[calc(100vh-65px)] bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 flex items-center justify-center">
-    
+    <?php $appFeatures = app_features(); ?>
     <!-- Forgot Password Section -->
     <div id="forgot-password-section" class="w-full min-h-[80vh] flex items-center justify-center py-4">
         <div class="w-full max-w-6xl mx-auto px-4 sm:px-6">
@@ -17,16 +17,15 @@
                             </div>
                             
                             <h1 class="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mb-6">
-                                Reset Your Password
+                                <?= $appFeatures['forgotten']['title']; ?>
                             </h1>
                             
                             <p class="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto leading-relaxed mb-8">
-                                Don't worry! It happens to the best of us. Enter your email address and we'll send you a secure link 
-                                to reset your password and get back to connecting with your community.
+                                <?= $appFeatures['forgotten']['caption']; ?>
                             </p>
 
                             <!-- Security Features -->
-                            <div class="grid md:grid-cols-3 gap-3 max-w-4xl mx-auto mb-12">
+                            <div class="grid md:grid-cols-2 gap-3 max-w-4xl mx-auto mb-12">
                                 <div class="bg-white dark:bg-gray-800/50 backdrop-blur-sm rounded-xl p-3 border border-white/20 dark:border-gray-700/30 hover:scale-105 transition-all duration-300">
                                     <div class="w-12 h-12 bg-orange-100 dark:bg-orange-900/30 rounded-lg flex items-center justify-center mb-4 mx-auto">
                                         <svg class="w-6 h-6 text-orange-600 dark:text-orange-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -34,17 +33,7 @@
                                         </svg>
                                     </div>
                                     <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">Secure Reset</h3>
-                                    <p class="text-gray-600 dark:text-gray-400 text-sm">One-time secure link sent to your email</p>
-                                </div>
-                                
-                                <div class="bg-white dark:bg-gray-800/50 backdrop-blur-sm rounded-xl p-3 border border-white/20 dark:border-gray-700/30 hover:scale-105 transition-all duration-300">
-                                    <div class="w-12 h-12 bg-red-100 dark:bg-red-900/30 rounded-lg flex items-center justify-center mb-4 mx-auto">
-                                        <svg class="w-6 h-6 text-red-600 dark:text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                                        </svg>
-                                    </div>
-                                    <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">Quick Process</h3>
-                                    <p class="text-gray-600 dark:text-gray-400 text-sm">Reset your password in under 5 minutes</p>
+                                    <p class="text-gray-600 dark:text-gray-400 text-sm"><?= $appFeatures['forgotten']['features']['Secure Reset']; ?></p>
                                 </div>
                                 
                                 <div class="bg-white dark:bg-gray-800/50 backdrop-blur-sm rounded-xl p-3 border border-white/20 dark:border-gray-700/30 hover:scale-105 transition-all duration-300">
@@ -53,8 +42,8 @@
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                                         </svg>
                                     </div>
-                                    <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">Instant Access</h3>
-                                    <p class="text-gray-600 dark:text-gray-400 text-sm">Get back to your account immediately</p>
+                                    <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">Easy Recovery</h3>
+                                    <p class="text-gray-600 dark:text-gray-400 text-sm"><?= $appFeatures['forgotten']['features']['Easy Recovery']; ?></p>
                                 </div>
                             </div>
 
@@ -62,7 +51,7 @@
                             <div class="bg-white dark:bg-gray-800/50 backdrop-blur-sm rounded-xl p-6 border border-white/20 dark:border-gray-700/30 max-w-2xl mx-auto">
                                 <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-3">Need Help?</h3>
                                 <p class="text-gray-600 dark:text-gray-400 text-sm mb-4">
-                                    If you're still having trouble accessing your account, our support team is here to help.
+                                    <?= $appFeatures['forgotten']['help']; ?>
                                 </p>
                                 <a href="<?= $baseUrl; ?>/support" 
                                    class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-lg text-white bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all duration-200">

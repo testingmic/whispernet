@@ -23,6 +23,8 @@ class ContactsModel extends Model {
             $this->insert($payload);
             return true;
         } catch (DatabaseException $e) {
+            print_r($e->getMessage());
+            exit;
             return false;
         }
     }

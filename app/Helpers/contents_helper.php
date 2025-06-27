@@ -1,5 +1,40 @@
 <?php
 /**
+ * App features
+ * 
+ * @return array
+ */
+function app_features() {
+    return [
+        'login' => [
+            'title' => 'Welcome to TalkLowKey',
+            'caption' => 'Connect with your community through secure, private messaging. Share thoughts, ideas, and experiences in a safe environment where your privacy is our priority.',
+            'features' => [
+                'Group & Individual' => 'Chat one-on-one or create group conversations',
+                'Media Sharing' => 'Share images and media with your conversations',
+            ]
+        ],
+        'signup' => [
+            'title' => 'Join TalkLowKey',
+            'caption' => 'Start your journey with secure, private messaging. Connect with your community, share your thoughts, and build meaningful conversations in a safe environment.',
+            'features' => [
+                'Tags' => 'Add tags to your posts to make them more discoverable',
+                'Instant Setup' => 'No need to wait for approval, your account is ready to use immediately',
+            ]
+        ],
+        'forgotten' => [
+            'title' => 'Forgot Password?',
+            'caption' => 'Don\'t worry! It happens to the best of us. Enter your email address and we\'ll send you a secure link to reset your password and get back to connecting with your community.',
+            'help' => 'If you\'re still having trouble accessing your account, our support team is here to help.',
+            'features' => [
+                'Secure Reset' => 'One-time secure link sent to your email',
+                'Easy Recovery' => 'Get back to your account immediately',
+            ]
+        ]
+    ];
+}
+
+/**
  * Loading Skeleton
  * 
  * @return string
