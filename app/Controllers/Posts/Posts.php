@@ -483,6 +483,44 @@ class Posts extends LoadController {
     }
 
     /**
+     * Remove a vote
+     * 
+     * @return array
+     */
+    public function removevote() {
+        // set the payload to the posts model
+        $this->postsModel->payload = $this->payload;
+
+        // connect to the votes database
+        $this->postsModel->connectToDb('votes');
+
+        // get the user id
+        $userId = $this->currentUser['user_id'];
+        $section = $this->payload['section'];
+
+        // get the votes
+        $votes = $this->postsModel->getVotes($this->payload['recordId'], $userId, $section);
+
+        if(empty($votes)) {
+            // if the user has not voted, return an error
+            return Routing::error('You have not voted on this ' . substr($section, 0, -1));
+        }
+
+        // make the call to the posts model
+        $this->postsModel->removeVote($this->payload['recordId'], $userId, $section);
+
+        // get the column
+        $column = $section == "posts" ? "post_id" : "comment_id";
+        $direction = $votes['direction'] == 'up' ? 'upvotes' : 'downvotes';
+
+        // record the vote
+        $this->postsModel->reduceVotes($this->payload['recordId'], $section, $direction, $column);
+
+        // get the post votes
+        return Routing::success('Vote removed successfully on the ' . substr($section, 0, -1));
+    }
+
+    /**
      * Vote on a post
      * 
      * @return array
@@ -512,8 +550,17 @@ class Posts extends LoadController {
 
         $firstTime = true;
 
+        // get the user id
+        $userId = $this->currentUser['user_id'];
+
+        // get the record
+        $theRecord = $this->postsModel->db->query("SELECT * FROM {$section} WHERE {$column} = ?", [$this->payload['recordId']])->getRowArray();
+        if(empty($theRecord)) {
+            return Routing::notFound();
+        }
+
         // check if the user has already voted
-        $vote = $this->postsModel->checkVotes($this->payload['recordId'], $this->payload['userId'], $this->payload['section']);
+        $vote = $this->postsModel->checkVotes($this->payload['recordId'], $userId, $this->payload['section']);
         if(!empty($vote)) {
 
             $firstTime = false;
@@ -533,7 +580,7 @@ class Posts extends LoadController {
         $this->postsModel->payload = $this->payload;
 
         // update the votes count
-        $this->postsModel->recordVotes($this->payload['recordId'], $this->payload['userId'], $section, $this->payload['direction']);
+        $this->postsModel->recordVotes($this->payload['recordId'], $userId, $section, $this->payload['direction']);
 
         // make the call to the posts model
         $this->postsModel->vote($section, $column);
@@ -542,7 +589,7 @@ class Posts extends LoadController {
         $votes = $this->postsModel->db->query("SELECT downvotes, upvotes FROM {$section} WHERE {$column} = ?", [$this->payload['recordId']])->getRowArray();
 
         // if the user has voted for the first time and the owner is not the same as the user
-        if($firstTime && ((int)$this->payload['ownerId'] !== (int)$this->payload['userId'])) {
+        if($firstTime && ((int)$theRecord['user_id'] !== (int)$userId)) {
 
             // connect to the notification database
             $this->postsModel->connectToDb('notification');
@@ -550,7 +597,7 @@ class Posts extends LoadController {
 
             // notify the owner of the post or comment
             $this->postsModel->notify(
-                $this->payload['recordId'], $this->payload['ownerId'], 'vote',
+                $this->payload['recordId'], $theRecord['user_id'], 'vote',
                 $section, "@{$this->currentUser['username']} liked your {$item}"
             );
 
@@ -558,7 +605,7 @@ class Posts extends LoadController {
             $this->currentUser['statistics']['votes'] = ($this->currentUser['statistics']['votes'] ?? 0) + 1;
 
             // update the statistics
-            $this->usersModel->db->table('users')->where('user_id', $this->payload['userId'])->update(['statistics' => json_encode($this->currentUser['statistics'])]);
+            $this->usersModel->db->table('users')->where('user_id', $userId)->update(['statistics' => json_encode($this->currentUser['statistics'])]);
         }
 
         // return the votes

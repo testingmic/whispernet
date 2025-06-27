@@ -113,7 +113,14 @@ class PostsValidation {
                 'longitude' => 'permit_empty|max_length[32]',
             ]
         ],
-
+        'removevote:recordId' => [
+            'method' => 'POST',
+            'authenticate' => true,
+            'payload' => [
+                'recordId' => 'required|numeric|max_length[10]',
+                'section' => 'required|in_list[posts,comments]',
+            ]
+        ],
         'deletecomment:commentId' => [
             'method' => 'DELETE',
             'authenticate' => true,

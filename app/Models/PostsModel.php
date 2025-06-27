@@ -629,6 +629,43 @@ class PostsModel extends Model {
     }
 
     /**
+     * Get votes
+     * 
+     * @param string $recordId
+     * @param string $section
+     * @param string $userId
+     * 
+     * @return array
+     */
+    public function getVotes($recordId, $userId, $section) {
+        try {
+            $sql = "SELECT * FROM votes WHERE record_id = ? AND user_id = ? AND section = ?";
+            $votes = $this->votesDb->query($sql, [$recordId, $userId, $section])->getRowArray();
+            return $votes;
+        } catch (DatabaseException $e) {
+            return [];
+        }
+    }
+
+    /**
+     * Remove a vote
+     * 
+     * @param string $recordId
+     * @param string $userId
+     * @param string $section
+     * 
+     * @return array
+     */
+    public function removeVote($recordId, $userId, $section) {
+        try {
+            $sql = "DELETE FROM votes WHERE record_id = ? AND user_id = ? AND section = ?";
+            $this->votesDb->query($sql, [$recordId, $userId, $section]);
+        } catch (DatabaseException $e) {
+            return [];
+        }
+    }
+
+    /**
      * Notify a user
      * 
      * @param int $recordId
