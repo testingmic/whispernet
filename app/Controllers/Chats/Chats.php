@@ -28,6 +28,11 @@ class Chats extends LoadController {
         $this->encrypter = service('encrypter', $config);
     }
 
+    /**
+     * Get user chat rooms
+     * 
+     * @return array
+     */
     public function rooms() {
 
         // get the user chat rooms
@@ -169,6 +174,12 @@ class Chats extends LoadController {
                 return Routing::error('Group name must be less than 60 characters');
             }
 
+            // check if the group name is already taken
+            $room = $this->chatsModel->getChatRoomByRoomName($this->payload['newGroupInfo']['name'], $senderId);
+            if(!empty($room)) {
+                return Routing::error('You already have a group with this name');
+            }
+
             // create the chat room
             $roomId = $this->chatsModel->createChatRoom($senderId, 0, 'group', [(int)$senderId], $roomUUID, $this->payload['newGroupInfo']);
 
@@ -233,8 +244,13 @@ class Chats extends LoadController {
 
             if($append) {
                 
-                // decrypt the message
-                $imessage = !empty($message['content']) ? $this->encrypter->decrypt(base64_decode($message['content'])) : '';
+                if($message['content'] == 'notification::joined_chat') {
+                    $imessage = "A user joined the chat";
+                    $type = "joined";
+                } else {
+                    // decrypt the message
+                    $imessage = !empty($message['content']) ? $this->encrypter->decrypt(base64_decode($message['content'])) : '';
+                }
 
                 $allowedMessages[] = [
                     'roomId' => $message['room_id'],

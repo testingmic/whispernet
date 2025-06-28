@@ -5,6 +5,7 @@ namespace App\Models;
 use CodeIgniter\Model;
 use App\Models\DbTables;
 use CodeIgniter\Database\Exceptions\DatabaseException;
+use PhpParser\Node\Expr\FuncCall;
 
 class ChatsModel extends Model {
 
@@ -104,6 +105,20 @@ class ChatsModel extends Model {
     public function getChatRoom($roomId) {
         try {
             return $this->db->table('chat_rooms')->where('room_id', $roomId)->get()->getRowArray();
+        } catch (DatabaseException $e) {
+            return false;
+        }
+    }
+
+    /**
+     * Get chat room by room name
+     * 
+     * @param string $roomName
+     * @return array
+     */
+    public function getChatRoomByRoomName($roomName, $creatorId) {
+        try {
+            return $this->db->table('chat_rooms')->where('name', $roomName)->where('sender_id', $creatorId)->get()->getRowArray();
         } catch (DatabaseException $e) {
             return false;
         }

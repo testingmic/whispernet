@@ -113,6 +113,19 @@ class Chat extends WebAppController {
         if(!in_array($userId, $receipientsList)) {
             $receipientsList[] = $userId;
             $this->chatsModel->joinChatRoom($roomId, $userId, ['receipients_list' => json_encode($receipientsList)]);
+
+            // post a notification to the chat room
+            $payload = [
+                'room_id' => $roomId,
+                'is_encrypted' => 1,
+                'unique_id' => generateUUID(),
+                'user_id' => $userId,
+                'content' => 'notification::joined_chat',
+                'self_destruct_at' => date('Y-m-d H:i:s', strtotime("+24 hours"))
+            ];
+    
+            // post the message
+            $this->chatsModel->postMessage($payload);
         }
 
         // get the chat data

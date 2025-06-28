@@ -776,7 +776,7 @@ function handleMessageSubmit() {
   if (message.length === 0) return;
 
   // Add message to UI
-  addMessageToUI(message, "sent", '', messageUUID);
+  addMessageToUI(message, "sent", '', messageUUID, false, [], loggedInUserId);
 
   // Clear input
   messageInput.value = "";
@@ -973,7 +973,7 @@ function loadingMessages(roomId, receiverId = 0) {
           if(message.msgid > mostRecentMessageId) {
               mostRecentMessageId = message.msgid;
           }
-          addMessageToUI(message.message, message.type, message.time, message.uuid, message.has_media, message.media);
+          addMessageToUI(message.message, message.type, message.time, message.uuid, message.has_media, message.media, loggedInUserId);
       });
 
       newGroupInfo = {};
@@ -1060,7 +1060,7 @@ function loadMessages(userId, type) {
   loadingMessages(selectedChatId, selectedUserInfo?.user_id ?? 0, type);
 }
 
-function addMessageToUI(content, type, time = '', uuid = '', has_media = false, media = []) {
+function addMessageToUI(content, type, time = '', uuid = '', has_media = false, media = [], senderId = 0) {
   const messageDiv = document.createElement("div");
   messageDiv.className = `flex ${
     type === "sent" ? "justify-end" : "justify-start"
@@ -1072,18 +1072,20 @@ function addMessageToUI(content, type, time = '', uuid = '', has_media = false, 
   }
 
   messageDiv.innerHTML = `
-        <div class="flex items-end space-x-2 max-w-[85%] sm:max-w-[70%]" data-type="${type}" data-uuid="${uuid}">
+        <div class="${type === "joined" ? "w-full" : "flex items-end space-x-2 max-w-[85%] sm:max-w-[70%]"}" data-type="${type}" data-uuid="${uuid}">
             ${
               type === "received"
                 ? `
                 <div class="w-8 h-8 rounded-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center text-xs font-medium text-gray-600 dark:text-gray-300">
-                    U
+                  ${senderId}
                 </div>
             `
                 : ""
             }
             <div class="flex flex-col ${
-              type === "sent" ? "items-end" : "items-start"
+              type === "sent" ? "items-end" : (
+                type === "joined" ? "items-center" : "items-start"
+              )
             }">
                 ${content.length > 0 ? `
                   <div class="rounded-2xl px-4 py-2 ${
@@ -1094,12 +1096,14 @@ function addMessageToUI(content, type, time = '', uuid = '', has_media = false, 
                     ${content.length > 0 ? `<p class="text-sm break-words">${content}</p>` : ''}
                   </div>` : ''
                 }
-                <span class="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                    ${time ? time : new Date().toLocaleTimeString([], {
-                      hour: "2-digit",
-                      minute: "2-digit",
-                    })}
-                </span>
+                ${type === "joined" ? '' : 
+                    `<span class="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                        ${time ? time : new Date().toLocaleTimeString([], {
+                          hour: "2-digit",
+                          minute: "2-digit",
+                        })}
+                    </span>`
+                }
                 <div class="media-preview-container flex w-full" data-media-uuid="${uuid}">
                   ${mediaContent}
                 </div>
@@ -1523,7 +1527,7 @@ function handleFileUpload() {
   submitButton.disabled = true;
 
   // Add message to UI
-  addMessageToUI(messageInput.value.trim(), "sent", '', messageUUID);
+  addMessageToUI(messageInput.value.trim(), "sent", '', messageUUID, false, [], loggedInUserId);
   
   // Upload files
   $.ajax({

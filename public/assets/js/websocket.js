@@ -14,11 +14,11 @@ class WebSocketManager {
             
             if(typeof data.type == 'undefined') return;
             if((data.type == 'chat' && data.sender == parseInt(selectedUserId)) && (data.msgtype == 'individual')) {
-                addMessageToUI(data.message, data.direction, '', data.uuid, data.media, data.files);
+                addMessageToUI(data.message, data.direction, '', data.uuid, data.media, data.files, data.sender);
             }
 
             if((data.roomId == parseInt(selectedChatId)) && (data.msgtype == 'group')) {
-                addMessageToUI(data.message, data.direction, '', data.uuid, data.media, data.files);
+                addMessageToUI(data.message, data.direction, '', data.uuid, data.media, data.files, data.sender);
             }
 
             if(data.type == 'chat') {

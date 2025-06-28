@@ -114,7 +114,7 @@ function linkifyChatJoin($text) {
         '#(/chat/join/[^\s]+)#',
         function ($matches) {
             $url = htmlspecialchars($matches[1]);
-            return '<a class="text-white dark:text-white text-blue-500 hover:text-white hover:font-bold hover:underline" href="' . $url . '">' . $url . '</a>';
+            return '<a class="text-white hover:cursor-pointer dark:text-white text-blue-500 hover:text-white hover:underline" href="' . $url . '">' . $url . '</a>';
         },
         $text
     );
