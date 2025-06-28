@@ -22,6 +22,7 @@ if (!function_exists('configs')) {
 
             'sms_api_key' => getenv('MNOTIFY'),
             'sms_sender' => 'TalkLowKey',
+            'annon_name' => 'Nimbus',
 
             // get the firebase config
             'firebase_app_id' => getenv('FIREBASE_APP_ID'),

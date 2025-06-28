@@ -170,6 +170,7 @@ $databases = [
         downvotes INTEGER DEFAULT 0,
         is_hidden BOOLEAN DEFAULT 0,
         city TEXT,
+        reference_id INTEGER NOT NULL,
         country TEXT,
         views INTEGER DEFAULT 0,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -177,7 +178,8 @@ $databases = [
         FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE
     );
     CREATE INDEX IF NOT EXISTS post_id ON comments (post_id);
-    CREATE INDEX IF NOT EXISTS user_id ON comments (user_id);",
+    CREATE INDEX IF NOT EXISTS user_id ON comments (user_id);
+    CREATE INDEX IF NOT EXISTS reference_id ON comments (reference_id);",
 
     "CREATE TABLE IF NOT EXISTS chat_rooms (
         room_id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -306,7 +308,7 @@ $databases = [
 
 // alter tables
 $alterTables = [
-    // "ALTER TABLE users ADD COLUMN location TEXT",
+    // "ALTER TABLE comments ADD COLUMN reference_id INTEGER NOT NULL",
 ];
 
 $votesTables = [

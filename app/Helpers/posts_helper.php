@@ -25,6 +25,8 @@ function formatPosts($posts = [], $single = false, $userId = null) {
             continue;
         }
 
+        $username = strpos($post['username'], 'user') !== false ? configs('annon_name') : $post['username'];
+
         $formattedPosts[$key] = [
             'post_id' => $post['post_id'],
             'content' => linkifyContent($post['content']),
@@ -45,8 +47,8 @@ function formatPosts($posts = [], $single = false, $userId = null) {
             // 'latitude' => $post['latitude'],
             'pageviews' => $post['pageviews'] ?? 0,
             'views' => $post['views'] ?? 0,
-            'name' => empty($post['full_name']) ? $post['username'] : trim(explode(' ', $post['full_name'])[0]),
-            'username' => $post['username'],
+            'name' => empty($post['full_name']) ? $username : trim(explode(' ', $post['full_name'])[0]),
+            'username' => $username,
             'ago' => formatTimeAgo($post['created_at']),
             'comments_count' => $post['comments_count'] ?? 0,
             'profile_image' => $post['profile_image'],
