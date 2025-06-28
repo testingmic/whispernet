@@ -7,12 +7,12 @@ class TagsValidation {
     public $routes = [
         'popular' => [
             'method' => 'GET',
-            'authenticate' => false,
+            'authenticate' => true,
             'payload' => []
         ],
         'posts:hashtag' => [
             'method' => 'GET',
-            'authenticate' => false,
+            'authenticate' => true,
             'payload' => [
                 'hashtag' => 'required|string|max_length[12]'
                 
@@ -20,7 +20,7 @@ class TagsValidation {
         ],
         'postsbyid:tag_id' => [
             'method' => 'GET',
-            'authenticate' => false,
+            'authenticate' => true,
             'payload' => [
                 'tag_id' => 'required|integer|max_length[12]'
             ]

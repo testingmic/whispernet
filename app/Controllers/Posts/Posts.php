@@ -385,18 +385,11 @@ class Posts extends LoadController {
             }
         }
 
-        // connect to the votes database
-        $this->postsModel->connectToDb('votes');
+        // get the votes for the posts
+        $post = (new \App\Controllers\Votes\Votes())->getVotes([$post], $this->payload['userId'], 'posts');
 
-        // get the user votes on the posts
-        $votesList = $this->postsModel->getBulkVotes([$post['post_id']], $this->payload['userId'], 'posts');
-        
-        // update the posts with the votes direction
-        if(!empty($votesList)) {
-            $post['voted'] = $votesList[$post['post_id']]['voted'] ?? false;
-        }
-
-        return Routing::success(formatPosts([$post], true, $this->payload['userId']));
+        // return the posts
+        return Routing::success(formatPosts($post, true, $this->payload['userId']));
         
     }
 
@@ -489,20 +482,9 @@ class Posts extends LoadController {
         
         // make the call to the posts model
         $posts = $this->postsModel->nearby();
-        $postsIds = array_column($posts, 'post_id');
 
-        // connect to the votes database
-        $this->postsModel->connectToDb('votes');
-
-        // get the user votes on the posts
-        $votesList = $this->postsModel->getBulkVotes($postsIds, $this->payload['userId'], 'posts');
-        
-        // update the posts with the votes direction
-        if(!empty($votesList)) {
-            foreach($posts as $key => $post) {
-                $posts[$key]['voted'] = $votesList[$post['post_id']]['voted'] ?? false;
-            }
-        }
+        // get the votes for the posts
+        $posts = (new \App\Controllers\Votes\Votes())->getVotes($posts, $this->payload['userId'], 'posts');
 
         return Routing::success(formatPosts($posts, false, $this->payload['userId']));
 
@@ -650,6 +632,9 @@ class Posts extends LoadController {
         
         // make the call to the posts model
         $posts = $this->postsModel->trending();
+
+        // get the votes for the posts
+        $posts = (new \App\Controllers\Votes\Votes())->getVotes($posts, $this->payload['userId'], 'posts');
 
         return Routing::success(formatPosts($posts, false, $this->payload['userId']));
 

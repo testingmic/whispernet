@@ -29,6 +29,10 @@ class Tags extends LoadController {
             return Routing::error('Hashtag is required');
         }
         $posts = $this->tagsModel->getPostsListByHashtag($this->payload['hashtag']);
+
+        // get the votes for the posts
+        $posts = (new \App\Controllers\Votes\Votes())->getVotes($posts, $this->payload['userId'], 'posts');
+
         return Routing::success(formatPosts($posts));
     }
 
@@ -46,6 +50,10 @@ class Tags extends LoadController {
         }
 
         $posts = $this->tagsModel->getPostsListByHashtag($this->payload['tag_id'], 'id');
+
+        // get the votes for the posts
+        $posts = (new \App\Controllers\Votes\Votes())->getVotes($posts, $this->currentUser['user_id'], 'posts');
+
         return Routing::success(formatPosts($posts));
     }
 
