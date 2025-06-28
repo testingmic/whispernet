@@ -4,7 +4,7 @@ $users = $users ?? [];
 $currentChat = $currentChat ?? null;
 $messages = $messages ?? [];
 ?>
-
+<script>var selectedRoom = <?= $selectedRoom ?? 0; ?>, selectedRoomUUID = '<?= $selectedRoomUUID ?? ''; ?>';</script>
 <div class="dbg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 flex items-center justify-center p-2">
     <!-- Main Chat Interface -->
     <div class="w-full">

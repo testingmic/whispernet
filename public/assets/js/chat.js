@@ -64,7 +64,6 @@ const confirmBlockUserText = document.getElementById("confirmBlockUserText");
 let isMobileView = window.innerWidth < 1024;
 let currentView = "chat-list";
 let newGroupInfo = {};
-let selectedRoomUUID = '';
 
 // Check for mobile view on resize
 window.addEventListener("resize", function () {
@@ -894,6 +893,10 @@ function beginChat(roomId, type, roomUUID) {
   }
   // Load messages
   loadingMessages(roomId, selectedUserId);
+}
+
+if(selectedRoom) {
+  beginChat(selectedRoom, 'group', selectedRoomUUID);
 }
 
 function debounce(fn, delay) {

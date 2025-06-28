@@ -115,6 +115,8 @@ class Chat extends WebAppController {
         return $this->templateObject->loadPage('chat', [
             'pageTitle' => 'Chat Join', 
             'favicon_color' => 'chat', 
+            'selectedRoom' => $roomId,
+            'selectedRoomUUID' => $roomUUID,
             'individualChats' => $chatData['individualChats'],
             'chatRooms' => $chatData['chatRooms'], 
             'groupChats' => $chatData['groupChats'], 
