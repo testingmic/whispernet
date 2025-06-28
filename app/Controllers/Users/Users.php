@@ -173,7 +173,7 @@ class Users extends LoadController {
             $this->usersModel->updateProfile($userId, $payload);
         }
 
-        return Routing::success('Profile updated successfully', $this->profile()['data']);
+        return Routing::created(['data' => 'Profile updated successfully', 'record' => $this->profile()['data']]);
     }
 
     /**
