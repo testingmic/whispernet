@@ -157,14 +157,20 @@ class Users extends LoadController {
             return Routing::created(['data' => 'User settings successfully saved.', 'record' => formatUserSettings($userSettings)]);
         }
 
-        // update the user gender
-        if(!empty($this->payload['gender'])) {
-            $this->usersModel->updateProfile($userId, ['gender' => $this->payload['gender']]);
+        $payload = [];
+
+        // set the fullname
+        $this->payload['full_name'] = $this->payload['name'] ?? null;
+
+        foreach(['gender', 'full_name', 'location'] as $item) {
+            // update the user gender
+            if(!empty($this->payload[$item])) {
+                $payload[$item] = $this->payload[$item];
+            }
         }
 
-        // update the user name
-        if(!empty($this->payload['name'])) {
-            $this->usersModel->updateProfile($userId, ['full_name' => $this->payload['name']]);
+        if(!empty($payload)) {
+            $this->usersModel->updateProfile($userId, $payload);
         }
 
         return Routing::success('Profile updated successfully');

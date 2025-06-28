@@ -11,7 +11,10 @@ class UsersModel extends Model {
     public $payload = [];
     protected $table;
     protected $primaryKey = "user_id";
-    protected $allowedFields = ['username', 'email', 'password_hash', 'full_name', 'is_verified', 'is_active', 'last_login', 'bio', 'profile_image'];
+    protected $allowedFields = [
+        'username', 'email', 'password_hash', 'full_name', 'is_verified',
+        'is_active', 'last_login', 'bio', 'profile_image', 'location'
+    ];
 
     public function __construct() {
         parent::__construct();

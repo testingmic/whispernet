@@ -23,6 +23,7 @@ $databases = [
         bio TEXT,
         gender TEXT,
         statistics TEXT,
+        location TEXT DEFAULT NULL,
         two_factor_setup BOOLEAN DEFAULT 0,
         profile_image TEXT,
         is_verified BOOLEAN DEFAULT 0,
@@ -305,7 +306,7 @@ $databases = [
 
 // alter tables
 $alterTables = [
-    // "ALTER TABLE chat_rooms ADD COLUMN room_uuid TEXT",
+    // "ALTER TABLE users ADD COLUMN location TEXT",
 ];
 
 $votesTables = [
