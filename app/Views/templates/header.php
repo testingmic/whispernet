@@ -520,8 +520,8 @@ $favicon_color = $favicon_color ?? 'dashboard';
                   </div>
 
                   <!-- Help Center (Hidden) -->
-                  <div class="px-3 py-2 hidden">
-                    <a href="<?= $baseUrl ?>/help"
+                  <div class="px-3 py-2">
+                    <a href="<?= $baseUrl ?>/support"
                       class="group flex items-center px-3 py-2.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-indigo-50 dark:hover:bg-gray-700 rounded-lg transition-all duration-200 hover:translate-x-1">
                       <div class="w-8 h-8 bg-indigo-100 dark:bg-indigo-900/30 rounded-lg flex items-center justify-center mr-3 group-hover:bg-indigo-200 dark:group-hover:bg-indigo-800/50 transition-colors duration-200">
                         <svg class="w-4 h-4 text-indigo-600 dark:text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">

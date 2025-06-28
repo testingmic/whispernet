@@ -15,6 +15,7 @@ class ChatsValidation {
             'payload' => [
                 'roomId' => 'permit_empty|integer',
                 'receiver' => 'required|integer',
+                'uuid' => 'permit_empty|max_length[64]',
                 'type' => 'permit_empty|string|in_list[individual,group]',
                 'message' => 'permit_empty|string|max_length[255]',
                 'timestamp' => 'permit_empty|integer|max_length[16]'
