@@ -81,6 +81,22 @@ class Notifications extends LoadController {
     }
 
     /**
+     * Read all notifications
+     * 
+     * @return array
+     */
+    public function allread() {
+        
+        // connect to the notification database
+        $this->notificationsModel->connectToDb('notification');
+        
+        // read all notifications
+        $this->notificationsModel->readAllNotifications($this->currentUser['user_id']);
+        
+        return Routing::success('All notifications successfully read.');
+    }
+
+    /**
      * Send a push notification to a user
      * 
      * @param array $data

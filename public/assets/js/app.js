@@ -969,7 +969,7 @@ const PostManager = {
         div.innerHTML = `
             <div class="flex items-center grid grid-cols-2 grid-cols-[80%_20%] items-center mb-2">
                 <div class="flex items-center space-x-2 post-header-clickable">
-                    <div class="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center">
+                    <div class="w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center">
                         <span class="text-sm font-semibold text-white">${post.username[0].toUpperCase()}${post.username[1].toUpperCase()}</span>
                     </div>
                     <div>

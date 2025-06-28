@@ -107,6 +107,23 @@ class NotificationsModel extends Model {
     }
 
     /**
+     * Read all notifications
+     * 
+     * @param int $userId
+     * 
+     * @return bool
+     */
+    public function readAllNotifications($userId) {
+        try {
+            return $this->notifDb->table($this->table)
+                            ->where("user_id", $userId)
+                            ->update(['is_read' => 1]);
+        } catch (DatabaseException $e) {
+            return false;
+        }
+    }
+
+    /**
      * Notify a user
      * 
      * @param int $recordId

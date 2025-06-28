@@ -24,6 +24,11 @@ class NotificationsValidation {
                 'notification_id' => 'required|integer',
             ]
         ],
+        'allread' => [
+            'method' => 'POST',
+            'authenticate' => true,
+            'payload' => []
+        ],
         'read:notification_id' => [
             'method' => 'POST',
             'authenticate' => true,
