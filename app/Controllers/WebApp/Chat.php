@@ -4,6 +4,7 @@ namespace App\Controllers\WebApp;
 
 use App\Controllers\WebAppController;
 use App\Models\ChatsModel;
+use App\Controllers\Chats\Chats;
 
 class Chat extends WebAppController {
     
@@ -94,38 +95,17 @@ class Chat extends WebAppController {
             return $this->templateObject->load404Page();
         }
 
-        // get the chat room
-        $chatRoom = $this->chatsModel->getChatRoom($roomId);
-        if(empty($chatRoom)) {
+        // join the chat room
+        $join = (new Chats())->join([
+            'returnBoolean' => true,
+            'roomId' => $roomId,
+            'roomUUID' => $roomUUID,
+            'userId' => $this->loogedUserId,
+        ]);
+
+        // check if the join was successful
+        if(!$join) {
             return $this->templateObject->load404Page();
-        }
-
-        // check if the room uuid is valid
-        if($chatRoom['room_uuid'] !== $roomUUID && $chatRoom['type'] !== 'group') {
-            return $this->templateObject->load404Page();
-        }
-
-        // receipients list
-        $receipientsList = json_decode($chatRoom['receipients_list'], true);
-
-        $userId = $this->loogedUserId;
-
-        if(!in_array($userId, $receipientsList)) {
-            $receipientsList[] = $userId;
-            $this->chatsModel->joinChatRoom($roomId, $userId, ['receipients_list' => json_encode($receipientsList)]);
-
-            // post a notification to the chat room
-            $payload = [
-                'room_id' => $roomId,
-                'is_encrypted' => 1,
-                'unique_id' => generateUUID(),
-                'user_id' => $userId,
-                'content' => 'notification::joined_chat',
-                'self_destruct_at' => date('Y-m-d H:i:s', strtotime("+24 hours"))
-            ];
-    
-            // post the message
-            $this->chatsModel->postMessage($payload);
         }
 
         // get the chat data

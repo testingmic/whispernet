@@ -150,6 +150,59 @@ class Chats extends LoadController {
     }
 
     /**
+     * Join a chat room
+     * 
+     * @return array
+     */
+    public function join($payload = []) {
+
+        // get the room id
+        $roomId = $payload['roomId'] ?? $this->payload['roomId'];
+
+        // get the chat room
+        $chatRoom = $this->chatsModel->getChatRoom($roomId);
+        if(empty($chatRoom)) {
+            return false;
+        }
+
+        // get the room uuid
+        $roomUUID = $payload['roomUUID'] ?? $this->payload['roomUUID'];
+
+        // check if the room uuid is valid
+        if(($chatRoom['room_uuid'] !== $roomUUID) || ($chatRoom['type'] !== 'group')) {
+            return false;
+        }
+
+        // receipients list
+        $receipientsList = json_decode($chatRoom['receipients_list'], true);
+
+        // get the user id
+        $userId = $payload['userId'] ?? $this->currentUser['user_id'];
+
+        if(!in_array($userId, $receipientsList)) {
+            $receipientsList[] = $userId;
+            $this->chatsModel->joinChatRoom($roomId, $userId, ['receipients_list' => json_encode($receipientsList)]);
+
+            // post a notification to the chat room
+            $payload = [
+                'room_id' => $roomId,
+                'is_encrypted' => 1,
+                'unique_id' => generateUUID(),
+                'user_id' => $userId,
+                'content' => 'notification::joined_chat',
+                'self_destruct_at' => date('Y-m-d H:i:s', strtotime("+24 hours"))
+            ];
+    
+            // post the message
+            $this->chatsModel->postMessage($payload);
+        }
+
+        // return the room id
+        return $payload['returnBoolean'] ?? Routing::success(['data' => 'Joined the chat room', 'record' => $this->rooms()['data']]);
+
+    }
+
+    /**
      * Get messages
      * 
      * @return array
@@ -243,9 +296,17 @@ class Chats extends LoadController {
             }
 
             if($append) {
+
+                // default content
+                $defaultContent = [
+                    'notification::joined_chat' => "A user joined the conversation",
+                    'notification::left_chat' => "A user left the conversation",
+                    'notification::kicked_out' => "A user was kicked out of the conversation",
+                ];
                 
-                if($message['content'] == 'notification::joined_chat') {
-                    $imessage = "A user joined the chat";
+                // check if the message is a default content
+                if(isset($defaultContent[$message['content']])) {
+                    $imessage = $defaultContent[$message['content']];
                     $type = "joined";
                 } else {
                     // decrypt the message

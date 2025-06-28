@@ -9,6 +9,14 @@ class ChatsValidation {
             'authenticate' => true,
             'payload' => []
         ],
+        'join' => [
+            'method' => 'POST',
+            'authenticate' => true,
+            'payload' => [
+                'roomId' => 'required|integer',
+                'roomUUID' => 'required|string|max_length[64]',
+            ]
+        ],
         'send' => [
             'method' => 'POST,GET',
             'authenticate' => true,
