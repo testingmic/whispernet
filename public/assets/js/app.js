@@ -2131,15 +2131,20 @@ const NotificationManager = {
 
     async markAllAsRead() {
         try {
-            const response = await fetch(`${baseUrl}/api/notifications/mark-all-read?userUUID=${userUUID}`, {
+            const response = await fetch(`${baseUrl}/api/notifications/allread`, {
                 method: 'POST',
                 headers: {
                     'X-Requested-With': 'XMLHttpRequest'
-                }
+                },
+                body: JSON.stringify({
+                    token: AppState.getToken(),
+                    userUUID
+                })
             });
 
             const data = await response.json();
-            if (data.success) {
+            if (data.status == 'success') {
+                AppState.showNotification('All notifications marked as read', 'success');
                 // Update UI
                 document.querySelectorAll('.bg-blue-50, .dark\\:bg-blue-900\\/20').forEach(el => {
                     el.classList.remove('bg-blue-50', 'dark:bg-blue-900/20');

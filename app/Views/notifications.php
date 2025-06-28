@@ -18,7 +18,12 @@ $unreadCount = $unreadCount ?? 0;
                         Recent Activity
                     </h2>
                     <div class="flex items-center space-x-2">
-                        <span class="text-sm text-gray-500 dark:text-gray-400"><?= count($notifications) ?> notifications</span>
+                        <button onclick="return NotificationManager.markAllAsRead()" class="inline-flex items-center px-3 py-2 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-xl hover:from-blue-600 hover:to-purple-700 transition-all duration-200" onclick="return NotificationManager.allread()">
+                            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+                            </svg>
+                            Mark as read
+                        </button>
                     </div>
                 </div>
             </div>
@@ -101,14 +106,14 @@ $unreadCount = $unreadCount ?? 0;
                                     <div class="flex items-start justify-between">
                                         <div class="flex-1">
                                             <p class="text-sm font-medium text-gray-900 dark:text-white leading-relaxed">
-                                                <?= htmlspecialchars($notification['content'] ?? 'Notification message') ?>
+                                                <?= $notification['content'] ?? 'Notification message' ?>
                                             </p>
                                             <div class="flex items-center mt-2 space-x-4">
                                                 <span class="text-xs text-gray-500 dark:text-gray-400 flex items-center">
                                                     <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                                                     </svg>
-                                                    <?= htmlspecialchars($notification['time_ago'] ?? 'Just now') ?>
+                                                    <?= $notification['time_ago'] ?? 'Just now' ?>
                                                 </span>
                                                 <?php if (!($notification['read'] ?? false)): ?>
                                                     <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-200">

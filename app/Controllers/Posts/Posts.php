@@ -250,7 +250,7 @@ class Posts extends LoadController {
             // notify the owner of the post
             $this->postsModel->notify(
                 $this->payload['postId'], $postCheck['user_id'], 'comment',
-                'posts', "@{$this->currentUser['username']} left a comment on your post \"". substr($this->payload['content'], 0, 40) . '...\"'
+                'posts', "@{$this->currentUser['username']} left a comment on your post \"". substr(strip_tags($this->payload['content']), 0, 100) . '...\"'
             );
         }
 
@@ -262,7 +262,7 @@ class Posts extends LoadController {
             // notify the users who have commented on the post
             foreach($commentUserIds as $userId) {
                 if(!in_array($userId, [$this->payload['userId'], $postCheck['user_id']])) {
-                    $this->postsModel->notify($this->payload['postId'], $userId, 'comment', 'posts', "@{$this->currentUser['username']} left a comment on the post \"". substr($this->payload['content'], 0, 40) . '...\"');
+                    $this->postsModel->notify($this->payload['postId'], $userId, 'comment', 'posts', "@{$this->currentUser['username']} left a comment on the post \"". substr(strip_tags($this->payload['content']), 0, 100) . '...\"');
                 }
             }
         }
