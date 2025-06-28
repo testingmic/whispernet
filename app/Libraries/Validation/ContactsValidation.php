@@ -2,7 +2,7 @@
 
 namespace App\Libraries\Validation;
 
-class AuthValidation {
+class ContactsValidation {
 
     public $routes = [
         'send' => [

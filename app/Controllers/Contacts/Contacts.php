@@ -23,6 +23,13 @@ class Contacts extends LoadController {
             return Routing::error('You have reached the maximum number of contacts you can send');
         }
 
+        // set the user id
+        $this->payload['user_id'] = $this->payload['user_id'] ?? 0;
+
+        if(!in_array($this->payload['subject'], ['general', 'support', 'bug', 'feature', 'billing', 'security', 'other'])) {
+            return Routing::error('Sorry! An invalid subject was submitted in the request.');
+        }
+
         // Create contact record
         $this->contactsModel->create($this->payload);
         
