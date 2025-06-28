@@ -385,6 +385,17 @@ class Posts extends LoadController {
             }
         }
 
+        // connect to the votes database
+        $this->postsModel->connectToDb('votes');
+
+        // get the user votes on the posts
+        $votesList = $this->postsModel->getBulkVotes([$post['post_id']], $this->payload['userId'], 'posts');
+        
+        // update the posts with the votes direction
+        if(!empty($votesList)) {
+            $post['voted'] = $votesList[$post['post_id']]['voted'] ?? false;
+        }
+
         return Routing::success(formatPosts([$post], true, $this->payload['userId']));
         
     }
