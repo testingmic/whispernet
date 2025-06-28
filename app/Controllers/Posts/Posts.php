@@ -325,13 +325,14 @@ class Posts extends LoadController {
     public function bookmarked() {
 
         // set the payload to the posts model
+        $this->payload['offset'] = 0;
         $this->postsModel->payload = $this->payload;
         $this->postsModel->payload['request_data'] = 'my_bookmarks';
         
         // make the call to the posts model
-        $posts = $this->postsModel->list();
+        $posts = $this->postsModel->list()['posts'] ?? [];
 
-        return Routing::success(formatPosts($posts, false, $this->payload['userId']));
+        return Routing::success(formatPosts($posts, false, $this->currentUser['user_id']));
     }
 
     /**
