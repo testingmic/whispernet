@@ -91,7 +91,7 @@ $user = $user ?? null;
 
                             <!-- Post Content -->
                             <div class="mb-4" onclick="return PostManager.changeDirection(<?= $post['post_id'] ?>)">
-                                <p class="text-gray-800 dark:text-gray-200 text-sm leading-relaxed line-clamp-3"><?= htmlspecialchars($post['content'] ?? '') ?></p>
+                                <p class="text-gray-800 dark:text-gray-200 text-sm leading-relaxed line-clamp-3"><?= $post['content'] ?? '' ?></p>
                             </div>
 
                             <!-- Media Indicators -->
