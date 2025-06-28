@@ -203,6 +203,60 @@ class Chats extends LoadController {
     }
 
     /**
+     * Leave a chat room
+     * 
+     * @return array
+     */
+    public function leave() {
+
+        // check if the room id is set
+        if(empty($this->payload['roomId'])) {
+            return Routing::error('Room ID is required');
+        }
+        
+        // get the room ids
+        $roomId = $this->payload['roomId'];
+
+        // get the chat room
+        $chatRoom = $this->chatsModel->getChatRoom($roomId);
+        if(empty($chatRoom)) {
+            return Routing::error('Chat room not found');
+        }
+
+        // receipients list
+        $receipientsList = json_decode($chatRoom['receipients_list'], true);
+
+        // get the user id
+        $userId = $payload['removeUserId'] ?? $this->currentUser['user_id'];
+
+        if(!in_array($userId, $receipientsList)) {
+            // return Routing::error('You are not a participant of this chat');
+        }
+
+        // remove the user from the receipients list
+        $receipientsList = array_diff($receipientsList, [$userId]);
+
+        // update the receipients list
+        $this->chatsModel->leaveChatRoom($roomId, $userId, $receipientsList);
+
+        // post a notification to the chat room
+        $payload = [
+            'room_id' => $roomId,
+            'is_encrypted' => 1,
+            'unique_id' => generateUUID(),
+            'user_id' => $userId,
+            'content' => 'notification::left_chat',
+            'self_destruct_at' => date('Y-m-d H:i:s', strtotime("+24 hours"))
+        ];
+
+        // post the message
+        $this->chatsModel->postMessage($payload);
+        
+        // return the success message
+        return Routing::success(['data' => 'Left the chat room', 'record' => $this->rooms()['data']]);
+    }
+
+    /**
      * Get messages
      * 
      * @return array

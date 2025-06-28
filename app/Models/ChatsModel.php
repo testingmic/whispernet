@@ -151,6 +151,26 @@ class ChatsModel extends Model {
     }
 
     /**
+     * Leave chat room
+     * 
+     * @param int $roomId
+     * @param int $userId
+     * @param array $receipientsList
+     * 
+     * @return bool
+     */
+    public function leaveChatRoom($roomId, $userId, $receipientsList) {
+        try {
+            $this->connectToDb('chats');
+            $this->db->table('chat_rooms')->where('room_id', $roomId)->update(['receipients_list' => json_encode($receipientsList)]);
+            $this->chatsDb->table('user_chat_rooms')->where('room_id', $roomId)->where('user_id', $userId)->delete();
+            return true;
+        } catch (DatabaseException $e) {
+            return false;
+        }
+    }
+
+    /**
      * Get individual chat room id
      * 
      * @param int $sender

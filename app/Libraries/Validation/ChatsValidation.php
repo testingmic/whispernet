@@ -17,6 +17,13 @@ class ChatsValidation {
                 'roomUUID' => 'required|string|max_length[64]',
             ]
         ],
+        'leave:roomId' => [
+            'method' => 'POST',
+            'authenticate' => true,
+            'payload' => [
+                'roomId' => 'required|integer',
+            ]
+        ],
         'send' => [
             'method' => 'POST,GET',
             'authenticate' => true,

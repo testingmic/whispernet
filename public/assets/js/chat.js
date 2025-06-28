@@ -5,6 +5,7 @@ let selectedUserInfo = [];
 let searchedUsersList = [];
 let mostRecentMessageId = 0;
 let messageUUID = '';
+let selectedRecord = {};
 
 // Elements
 const newChatBtn = document.getElementById("newChatBtn");
@@ -524,12 +525,16 @@ async function performLeaveGroupAction() {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-        }
+        },
+        body: JSON.stringify({
+          token: AppState.getToken(),
+          userUUID
+        })
       });
       
       if (response.ok) {
         AppState.showNotification("Left group successfully", "success");
-        
+        $(`div[data-room-id="${selectedChatId}"]`).remove();
         // Return to chat list
         showChatList();
         welcomeMessage.classList.remove("hidden");
@@ -873,6 +878,10 @@ function beginChat(roomId, type, roomUUID) {
     currentView = "chat-area";
     updateMobileView();
   }
+
+  // set the selected record
+  selectedRecord = roomInfo;
+
   // Show chat area
   welcomeMessage.classList.add("hidden");
   messagesContainer.classList.remove("hidden");
@@ -891,6 +900,11 @@ function beginChat(roomId, type, roomUUID) {
   if(!isMobileView) {
     $(`textarea[id="messageInput"]`).focus();
   }
+
+  if(selectedRecord?.creator !== loggedInUserId) {
+    $(`button[id="shareChatLink"]`).addClass('hidden');
+  }
+
   // Load messages
   loadingMessages(roomId, selectedUserId);
 }
@@ -1019,6 +1033,10 @@ function loadingMessages(roomId, receiverId = 0) {
         }, 50);
       }
     }, 10);
+  }
+
+  if(selectedRecord?.creator !== loggedInUserId) {
+    $(`button[id="shareChatLink"]`).addClass('hidden');
   }
 
   setTimeout(() => {
