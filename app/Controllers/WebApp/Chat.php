@@ -111,6 +111,9 @@ class Chat extends WebAppController {
         // get the chat data
         $chatData = $this->chatData();
 
+        print_r($chatData);
+        exit;
+
         // get the chat room
         return $this->templateObject->loadPage('chat', [
             'pageTitle' => 'Chat Join', 

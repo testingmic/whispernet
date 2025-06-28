@@ -217,6 +217,7 @@ class ChatsModel extends Model {
                     $data['room_id'] = $par['room_id'];
                     $data['last_login'] = $par['last_message_at'];
                     $data['room_uuid'] = $par['room_uuid'];
+                    $data['creator'] = $par['sender_id'];
                     $groupsList[] = $data;
                 }
             }

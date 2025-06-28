@@ -160,7 +160,7 @@ class Users extends LoadController {
         $payload = [];
 
         // set the fullname
-        $this->payload['full_name'] = $this->payload['name'] ?? null;
+        $this->payload['full_name'] = $this->payload['name'] ?? ($this->payload['full_name'] ?? null);
 
         foreach(['gender', 'full_name', 'location'] as $item) {
             // update the user gender
