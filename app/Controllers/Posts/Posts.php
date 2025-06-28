@@ -478,6 +478,20 @@ class Posts extends LoadController {
         
         // make the call to the posts model
         $posts = $this->postsModel->nearby();
+        $postsIds = array_column($posts, 'post_id');
+
+        // connect to the votes database
+        $this->postsModel->connectToDb('votes');
+
+        // get the user votes on the posts
+        $votesList = $this->postsModel->getBulkVotes($postsIds, $this->payload['userId'], 'posts');
+        
+        // update the posts with the votes direction
+        if(!empty($votesList)) {
+            foreach($posts as $key => $post) {
+                $posts[$key]['voted'] = $votesList[$post['post_id']]['voted'] ?? false;
+            }
+        }
 
         return Routing::success(formatPosts($posts, false, $this->payload['userId']));
 

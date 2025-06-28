@@ -41,7 +41,7 @@ class PostsValidation {
             ]
         ],
         'nearby' => [
-            'method' => 'GET',
+            'method' => 'GET,POST',
             'authenticate' => true,
             'payload' => [
                 'location' => 'permit_empty|max_length[32]',

@@ -648,6 +648,30 @@ class PostsModel extends Model {
     }
 
     /**
+     * Get bulk votes
+     * 
+     * @param array $recordIds
+     * @param int $userId
+     * @param string $section
+     * 
+     * @return array
+     */
+    public function getBulkVotes($recordIds, $userId, $section) {
+        try {
+            $sql = "SELECT vote_id, record_id, direction FROM votes WHERE record_id IN (" . implode(',', $recordIds) . ") AND user_id = ? AND section = ?";
+            $votes = $this->votesDb->query($sql, [$userId, $section])->getResultArray();
+
+            foreach($votes as $key => $vote) {
+                $list[$vote['record_id']]['voted'] = $vote['direction'];
+            }
+
+            return $list ?? [];
+        } catch (DatabaseException $e) {
+            return [];
+        }
+    }
+
+    /**
      * Remove a vote
      * 
      * @param string $recordId
