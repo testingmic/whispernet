@@ -4,6 +4,11 @@ namespace App\Libraries\Validation;
 class ChatsValidation {
 
     public $routes = [
+        'rooms' => [
+            'method' => 'GET',
+            'authenticate' => true,
+            'payload' => []
+        ],
         'send' => [
             'method' => 'POST,GET',
             'authenticate' => true,

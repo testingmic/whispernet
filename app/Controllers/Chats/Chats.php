@@ -14,33 +14,6 @@ class Chats extends LoadController {
     public $encrypter;
 
     /**
-     * Create chat room
-     * 
-     * @return array
-     */
-    public function createChatRoom() {
-        return $this->chatsModel->createChatRoom($this->payload['userId']);
-    }
-
-    /**
-     * Add participant
-     * 
-     * @return array
-     */
-    public function addParticipant() {
-        return $this->chatsModel->addParticipant($this->payload['roomId'], $this->payload['userId'], $this->payload['addedByUserId']);
-    }
-
-    /**
-     * Remove participant
-     * 
-     * @return array
-     */
-    public function removeParticipant() {
-        return $this->chatsModel->removeParticipant($this->payload['roomId'], $this->payload['userId'], $this->payload['removedByUserId']);
-    }
-
-    /**
      * Get the encrypter object
      * 
      * @return void
@@ -53,6 +26,24 @@ class Chats extends LoadController {
         
         // get the encryption object
         $this->encrypter = service('encrypter', $config);
+    }
+
+    public function rooms() {
+
+        // get the user chat rooms
+        $chatRooms = $this->chatsModel->getUserChatRooms($this->currentUser['user_id']);
+
+        // group the list by groups and individuals
+        $newRooms = [
+            'individual' => [],
+            'group' => [],
+        ];
+        
+        foreach($chatRooms as $room) {
+            $newRooms[$room['room']['type']][] = $room;
+        }
+
+        return Routing::success($newRooms);
     }
 
     /**

@@ -9,6 +9,11 @@ class Chat extends WebAppController {
     
     private $chatsModel;
 
+    /**
+     * Load the chat data
+     * 
+     * @return array
+     */
     public function chatData() {
 
         // get the chats model
@@ -41,6 +46,7 @@ class Chat extends WebAppController {
             'individualChats' => $individualChats
         ];
     }
+
     /**
      * Index
      * 

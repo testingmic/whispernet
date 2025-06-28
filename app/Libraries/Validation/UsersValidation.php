@@ -29,6 +29,7 @@ class UsersValidation {
             'method' => 'GET',
             'authenticate' => true,
             'payload' => [
+                'query' => 'required|string|max_length[32]|min_length[2]'
             ]
         ]
     ];
