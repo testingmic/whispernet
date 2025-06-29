@@ -257,6 +257,22 @@ class Chats extends LoadController {
     }
 
     /**
+     * Create a new group
+     * 
+     * @return array
+     */
+    public function creategroup() {
+
+        // set the group name and description
+        $this->payload['newGroupInfo']['name'] = $this->payload['name'];
+        $this->payload['newGroupInfo']['description'] = $this->payload['description'];
+        $this->payload['room'] = 'group';
+
+        // get the messages
+        return $this->messages();
+    }
+
+    /**
      * Get messages
      * 
      * @return array

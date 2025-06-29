@@ -17,6 +17,14 @@ class ChatsValidation {
                 'roomUUID' => 'required|string|max_length[64]',
             ]
         ],
+        'creategroup' => [
+            'method' => 'POST',
+            'authenticate' => true,
+            'payload' => [
+                'name' => 'required|string|max_length[255]',
+                'description' => 'permit_empty|string|max_length[255]'
+            ]
+        ],
         'leave:roomId' => [
             'method' => 'POST',
             'authenticate' => true,
