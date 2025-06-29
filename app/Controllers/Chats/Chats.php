@@ -356,7 +356,7 @@ class Chats extends LoadController {
 
         $allowed = json_decode($room['receipients_list'], true);
         if(!in_array($senderId, $allowed)) {
-            return Routing::error('You are not a participant of this chat');
+            return Routing::success(['data' => [], 'record' => 'You are not a participant of this chat']);
         }
 
         // get the encrypter object
@@ -436,6 +436,12 @@ class Chats extends LoadController {
             return Routing::error('Chat Room ID is required');
         }
 
+        // get the chat room
+        $room = $this->chatsModel->getChatRoomByRoomId($this->payload['roomId'], $this->currentUser['user_id']);
+        if(empty($room)) {
+            return Routing::error('Chat room not found');
+        }
+
         $roomId = (int)$this->payload['roomId'];
         $room  = $this->chatsModel->getChatRoom($roomId);
         if(empty($room)) {
@@ -444,18 +450,33 @@ class Chats extends LoadController {
 
         // get the receipients list
         $receipientsList = json_decode($room['receipients_list'], true);
+
+        // get the user id
+        $userId = (int)$this->currentUser['user_id'];
         
         // check if the sender is a participant of the chat
-        if(!in_array((int)$this->currentUser['user_id'], $receipientsList)) {
+        if(!in_array($userId, $receipientsList)) {
             return Routing::error('You are not a participant of this chat');
         }
 
         // delete the chat
-        $this->chatsModel->deleteChat($roomId, $this->currentUser['user_id']);
+        $this->chatsModel->deleteChat($roomId, $userId);
 
         // remove the user from the receipients list
-        $receipientsList = array_diff($receipientsList, [$this->currentUser['user_id']]);
-        $this->chatsModel->leaveChatRoom($roomId, $this->currentUser['user_id'], $receipientsList);
+        $receipientsList = array_diff($receipientsList, [$userId]);
+
+        // update the sender deleted status
+        if($room['sender_id'] == $userId) {
+            $this->chatsModel->updateChatRoom($roomId, ['sender_deleted' => 1]);
+        }
+
+        // update the receiver deleted status
+        if($room['receiver_id'] == $userId) {
+            $this->chatsModel->updateChatRoom($roomId, ['receiver_deleted' => 1]);
+        }
+
+        // delete the user from the chat room
+        $this->chatsModel->chatsDb->table('user_chat_rooms')->where('room_id', $roomId)->where('user_id', $userId)->delete();
 
         // return the success message
         return Routing::success('Chat removed successfully');

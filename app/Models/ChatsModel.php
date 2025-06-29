@@ -180,7 +180,7 @@ class ChatsModel extends Model {
     public function getIndividualChatRoomId($sender, $receiver) {
         try {
             $roomId = $this->db->query("SELECT * FROM chat_rooms 
-                WHERE (sender_id = ? AND receiver_id = ?) OR (sender_id = ? AND receiver_id = ?)
+                WHERE ((sender_id = ? AND receiver_id = ?) OR (sender_id = ? AND receiver_id = ?)) AND type = 'individual'
                 LIMIT 1", [$sender, $receiver, $receiver, $sender])->getRowArray();
             return $roomId;
         } catch (DatabaseException $e) {
@@ -308,6 +308,25 @@ class ChatsModel extends Model {
     }
 
     /**
+     * Get chat room by room id
+     * 
+     * @param int $roomId
+     * @param int $userId
+     * @return array
+     */
+    public function getChatRoomByRoomId($roomId, $userId) {
+        try {
+            $this->connectToDb('chats');
+            return $this->chatsDb->table('user_chat_rooms')
+                        ->where('room_id', $roomId)
+                        ->where('user_id', $userId)
+                        ->get()->getRowArray();
+        } catch (DatabaseException $e) {
+            return false;
+        }
+    }
+
+    /**
      * Send message
      * 
      * @param int $roomId
@@ -402,70 +421,19 @@ class ChatsModel extends Model {
         }
     }
 
-    public function removeParticipant($roomId, $userId, $removedByUserId) {
+    /**
+     * Update chat room
+     * 
+     * @param int $roomId
+     * @param array $data
+     * @return bool
+     */
+    public function updateChatRoom($roomId, $data) {
         try {
-            $this->validateUser($removedByUserId);
-
-            // Check if remover is a participant
-            $participant = $this->db->table('chat_participants')->where('room_id', $roomId)->where('user_id', $removedByUserId)->get()->getRowArray();
-            if (!$participant) {
-                return ('Unauthorized to remove participants');
-            }
-
-            // Remove user as participant
-            $this->db->table('chat_participants')->where('room_id', $roomId)->where('user_id', $userId)->delete();
-
-            return [
-                'success' => true,
-                'message' => 'Participant removed successfully'
-            ];
+            $this->chatsDb->table('chat_rooms')->where('room_id', $roomId)->update($data);
+            return true;
         } catch (DatabaseException $e) {
-            return $e->getMessage();
-        }
-    }
-
-    public function getUserChats($userId, $page = 1, $limit = 20) {
-        try {
-
-            $offset = ($page - 1) * $limit;
-            $chats = $this->db->table('chat_rooms')
-                                ->where('user_id', $userId)
-                                ->orderBy('last_message_at', 'DESC')
-                                ->limit($limit)
-                                ->offset($offset)
-                                ->get()
-                                ->getResultArray();
-
-            return [
-                'success' => true,
-                'chats' => $chats
-            ];
-        } catch (DatabaseException $e) {
-            return $e->getMessage();
-        }
-    }
-
-    public function getChatParticipants($roomId, $userId) {
-        try {
-
-            // Check if user is a participant
-            $participant = $this->db->table('chat_participants')->where('room_id', $roomId)->where('user_id', $userId)->get()->getRowArray();
-            if (!$participant) {
-                return ('User is not a participant in this chat room');
-            }
-
-            $sql = "SELECT u.user_id, u.username, u.profile_image, p.joined_at, p.last_read_at 
-                    FROM chat_participants p 
-                    INNER JOIN users u ON p.user_id = u.user_id 
-                    WHERE p.room_id = ?";
-            $participants = $this->db->query($sql, [$roomId])->getResultArray();
-
-            return [
-                'success' => true,
-                'participants' => $participants
-            ];
-        } catch (DatabaseException $e) {
-            return $e->getMessage();
+            return false;
         }
     }
 
