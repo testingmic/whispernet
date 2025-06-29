@@ -15,6 +15,7 @@ if (!function_exists('configs')) {
             // get the ipinfo token
             'ipinfo' => getenv('IPINFO'),
             'opencage' => getenv('OPENCAGE'),
+            'geocode' => getenv('GEOCODE'),
 
             // get the vapid keys
             'vapid_private' => getenv('VAPID_PRIVATE'),

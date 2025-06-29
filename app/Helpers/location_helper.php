@@ -39,24 +39,46 @@ function manageUserLocation($payload, $cacheObject) {
 
         // get the data to use
         $dataToUse = !empty($locationInfo) ? $locationInfo : getLocationByIP($payload['longitude'], $payload['latitude']);
-        
-        $theCity = $dataToUse['results'][0]['components']['town'] ?? ($dataToUse['results'][0]['components']['city'] ?? (
-            $dataToUse['results'][0]['components']['suburb'] ?? null
-        ));
-       
-        // handle the user location data
-        if(!empty($theCity)) {
-            $usage = 'location';
-            $payload['city'] = $theCity;
-            $payload['country'] = $dataToUse['results'][0]['components']['country'] ?? null;
-            $payload['district'] = $dataToUse['results'][0]['components']['county'] ?? null;
 
-            // save the cache value
-            $cacheObject->save($cacheKey, $dataToUse, 'user.location', null, 60 * 60);
+        $locationLoop = [
+            'location' => [
+                'key' => 'results',
+                'data' => 'components'
+            ],
+            'geoapify' => [
+                'key' => 'features',
+                'data' => 'properties'
+            ]
+        ];
 
-            // set the location found to true
-            $locationFound = true;
+        // loop through the location loop
+        foreach($locationLoop as $key => $value) {
+
+            // check if the city is set
+            if(isset($dataToUse[$value['key']][0][$value['data']]['city'])) {
+
+                $ikey = $value['key'];
+                $ivalue = $value['data'];
+
+                // get the city
+                $theCity = $dataToUse[$ikey][0][$ivalue]['town'] ?? ($dataToUse[$ikey][0][$ivalue]['city'] ?? (
+                    $dataToUse[$ikey][0][$ivalue]['suburb'] ?? null
+                ));
+
+                if(!empty($theCity)) {
+                    $usage = $key;
+                    $payload['city'] = $dataToUse[$value['key']][0][$ivalue]['city'];
+                    $payload['country'] = $dataToUse[$value['key']][0][$ivalue]['country'] ?? null;
+                    $payload['district'] = $dataToUse[$value['key']][0][$ivalue]['county'] ?? $payload['city'];
+                    if(empty($locationInfo)) {
+                        $cacheObject->save($cacheKey, $dataToUse, 'user.location', null, 60 * 60);
+                    }
+                    $locationFound = true;
+                    break;
+                }
+            }
         }
+
     }
 
     if(empty($payload['longitude']) && empty($payload['latitude']) || !$locationFound) {
@@ -100,7 +122,7 @@ function manageUserLocation($payload, $cacheObject) {
  * 
  * @return array
  */
-function getLocationByIP($longitude = null, $latitude = null) {
+function getLocationByIP($longitude = null, $latitude = null, $useGeocode = false) {
 
     // get the user ip address
     $userIpaddress = $_SERVER['REMOTE_ADDR'] ?? '';
@@ -111,18 +133,32 @@ function getLocationByIP($longitude = null, $latitude = null) {
     // get the ipinfo and opencage keys
     $ipInfoKey = explode(';', configs('ipinfo'));
     $opencageKey = explode(';', configs('opencage'));
+    $geocodeKey = explode(';', configs('geocode'));
 
     // Fetch location data from ipapi.co
     $url = "https://ipinfo.io/{$userIpaddress}?token=" . trim($ipInfoKey[0]);
     $reverseUrl = "https://api.opencagedata.com/geocode/v1/json?q={$latitude},{$longitude}&pretty=1&key=" . trim($opencageKey[0]);
+    $geocodeUrl = "https://api.geoapify.com/v1/geocode/reverse?lat={$latitude}&lon={$longitude}&apiKey=" . trim($geocodeKey[0]);
+    $backupUrl = "https://nominatim.openstreetmap.org/reverse?format=json&lat={$latitude}&lon={$longitude}&addressdetails=1&zoom=10";
 
     // set the url path
     $urlPath = empty($longitude) && empty($latitude) ? $url : $reverseUrl;
+
+    if($useGeocode) {
+        $urlPath = $geocodeUrl;
+    }
 
     // use curl to get the data
     $ch = curl_init();
     curl_setopt($ch, CURLOPT_URL, $urlPath);
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    // set the user agent headers
+    curl_setopt($ch, CURLOPT_USERAGENT, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36');
+    // set the timeout
+    curl_setopt($ch, CURLOPT_TIMEOUT, 10);
+    // set the connect timeout
+    curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 5);
+    // execute the request
     $response = curl_exec($ch);
     curl_close($ch);
 

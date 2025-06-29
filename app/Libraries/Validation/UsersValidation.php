@@ -16,7 +16,7 @@ class UsersValidation {
             ]
         ],
         'goodbye' => [
-            'method' => 'POST,GET',
+            'method' => 'POST',
             'authenticate' => true,
             'payload' => []
         ],

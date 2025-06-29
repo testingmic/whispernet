@@ -236,32 +236,6 @@ $databases = [
     CREATE INDEX IF NOT EXISTS user_id ON chat_messages (user_id);
     CREATE INDEX IF NOT EXISTS media_type ON chat_messages (media_type);",
 
-    "CREATE TABLE IF NOT EXISTS chat_participants (
-        room_id INTEGER NOT NULL,
-        user_id INTEGER NOT NULL,
-        is_blocked BOOLEAN DEFAULT 0,
-        joined_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-        last_read_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-        PRIMARY KEY (room_id, user_id),
-        FOREIGN KEY (room_id) REFERENCES chat_rooms(room_id) ON DELETE CASCADE,
-        FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE
-    );
-    CREATE INDEX IF NOT EXISTS room_id ON chat_participants (room_id);
-    CREATE INDEX IF NOT EXISTS user_id ON chat_participants (user_id);",
-
-    "CREATE TABLE IF NOT EXISTS message_status (
-        message_id INTEGER NOT NULL,
-        user_id INTEGER NOT NULL,
-        status TEXT CHECK(status IN ('sent', 'delivered', 'read')) DEFAULT 'sent',
-        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-        PRIMARY KEY (message_id, user_id),
-        FOREIGN KEY (message_id) REFERENCES chat_messages(message_id) ON DELETE CASCADE,
-        FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE
-    );
-    CREATE INDEX IF NOT EXISTS message_id ON message_status (message_id);
-    CREATE INDEX IF NOT EXISTS user_id ON message_status (user_id);
-    CREATE INDEX IF NOT EXISTS status ON message_status (status);",
-
     "CREATE TABLE IF NOT EXISTS reports (
         report_id INTEGER PRIMARY KEY,
         reporter_id INTEGER NOT NULL,
