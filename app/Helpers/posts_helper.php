@@ -29,7 +29,7 @@ function formatPosts($posts = [], $single = false, $userId = null) {
 
         $formattedPosts[$key] = [
             'post_id' => $post['post_id'],
-            'content' => html_entity_decode(linkifyContent($post['content'])),
+            'content' => htmlspecialchars_decode(linkifyContent($post['content'])),
             'created_at' => $post['created_at'],
             'updated_at' => $post['updated_at'],
             'user_id' => $post['user_id'],
