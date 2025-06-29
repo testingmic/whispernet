@@ -29,7 +29,7 @@ function formatPosts($posts = [], $single = false, $userId = null) {
 
         $formattedPosts[$key] = [
             'post_id' => $post['post_id'],
-            'content' => linkifyContent($post['content']),
+            'content' => html_entity_decode(linkifyContent($post['content'])),
             'created_at' => $post['created_at'],
             'updated_at' => $post['updated_at'],
             'user_id' => $post['user_id'],
@@ -75,7 +75,7 @@ function formatPosts($posts = [], $single = false, $userId = null) {
  * Extract hashtags from content
  * 
  * @param string $comment
- * @return array
+ * @return string
  */
 function extractHashtags($comment = "", $itag = "#") {
     if(empty($comment)) return [];

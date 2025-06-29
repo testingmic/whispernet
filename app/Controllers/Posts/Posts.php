@@ -113,6 +113,7 @@ class Posts extends LoadController {
             $comments[$key]['manage'] = [
                 'delete' => (bool)($comment['user_id'] == $this->payload['userId']),
             ];
+            $comments[$key]['content'] = html_entity_decode($comments[$key]['content']);
             $comments[$key]['comment_id'] = (int)$comment['comment_id'];
             $comments[$key]['ago'] = formatTimeAgo($comment['created_at']);
             if(!empty($comment['reference_id'])) {
@@ -144,6 +145,7 @@ class Posts extends LoadController {
             if(!empty($comment['reference_id'])) {
                 $comments[$key]['username'] = "N{$comment['reference_id']}";
             }
+            $comments[$key]['content'] = html_entity_decode($comments[$key]['content']);
             unset($comments[$key]['reference_id']);
         }
 
@@ -179,6 +181,7 @@ class Posts extends LoadController {
             $comment['username'] = "N{$comment['reference_id']}";
         }
         unset($comment['reference_id']);
+        $comment['content'] = html_entity_decode($comment['content']);
 
         // linkify the comment content
         $comment['content'] = linkifyContent($comment['content']);
