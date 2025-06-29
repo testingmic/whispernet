@@ -216,26 +216,17 @@ class Users extends LoadController {
             // Move uploaded file
             $file->move($uploadPath, $filename);
 
-            // Create thumbnail
-            $thumbnailPath = $uploadPath . 'thumbnails/';
-            if (!file_exists($thumbnailPath)) {
-                mkdir($thumbnailPath, 0755, true);
-            }
-
-            $thumbnailFilename = 'thumb_' . $filename;
-            $thumbnailFilePath = $thumbnailPath . $thumbnailFilename;
-
-            // Resize image to create thumbnail
-            $image = \Config\Services::image()
-                ->withFile($filePath)
-                ->resize(150, 150, true, 'center')
-                ->save($thumbnailFilePath);
-
             // Update user profile with image path
             $imageUrl = '/assets/uploads/profiles/' . $filename;
             $this->usersModel->updateProfile($userId, ['profile_image' => $imageUrl]);
 
-            return ['success' => true, 'image_url' => $imageUrl];
+            // Resize image to create thumbnail
+            $image = \Config\Services::image()
+                ->withFile($filePath)
+                ->resize(350, 350, true, 'center')
+                ->save(rtrim(PUBLICPATH, '/') .$imageUrl);
+
+            return ['success' => true, 'image_url' => $imageUrl, 'thumbnail_url' => rtrim(PUBLICPATH, '/') . $imageUrl];
 
         } catch (\Exception $e) {
             return ['error' => 'Failed to upload image: ' . $e->getMessage()];
