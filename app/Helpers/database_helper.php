@@ -282,7 +282,7 @@ $databases = [
 
 // alter tables
 $alterTables = [
-    // "ALTER TABLE comments ADD COLUMN reference_id INTEGER NOT NULL",
+    // "ALTER TABLE comments ADD COLUMN reference_id INTEGER DEFAULT 0",
 ];
 
 $votesTables = [

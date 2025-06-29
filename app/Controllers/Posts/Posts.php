@@ -115,6 +115,10 @@ class Posts extends LoadController {
             ];
             $comments[$key]['comment_id'] = (int)$comment['comment_id'];
             $comments[$key]['ago'] = formatTimeAgo($comment['created_at']);
+            if(!empty($comment['reference_id'])) {
+                $comments[$key]['username'] = "N{$comment['reference_id']}";
+            }
+            unset($comments[$key]['reference_id']);
         }
 
         return Routing::success($comments);
@@ -137,6 +141,10 @@ class Posts extends LoadController {
                 'delete' => (bool)($comment['user_id'] == $this->payload['userId']),
             ];
             $comments[$key]['ago'] = formatTimeAgo($comment['created_at']);
+            if(!empty($comment['reference_id'])) {
+                $comments[$key]['username'] = "N{$comment['reference_id']}";
+            }
+            unset($comments[$key]['reference_id']);
         }
 
         return Routing::success($comments);
@@ -166,6 +174,11 @@ class Posts extends LoadController {
         $comment['manage'] = [
             'delete' => (bool)($comment['user_id'] == $this->payload['userId']),
         ];
+
+        if(!empty($comment['reference_id'])) {
+            $comment['username'] = "N{$comment['reference_id']}";
+        }
+        unset($comment['reference_id']);
 
         // linkify the comment content
         $comment['content'] = linkifyContent($comment['content']);
@@ -227,8 +240,26 @@ class Posts extends LoadController {
             return Routing::notFound();
         }
 
+        $userId = (int)$this->payload['userId'];
+
+        // check if the user has already commented on the post
+        $checkComment = $this->postsModel->getComments($this->payload['postId']);
+        if(empty($checkComment)) {
+            $referenceId = 1;
+        } else {
+            $highestReferenceId = 0;
+            $groupedByUserId = [];
+            foreach($checkComment as $comment) {
+                if($comment['reference_id'] > $highestReferenceId) {
+                    $highestReferenceId = $comment['reference_id'];
+                }
+                $groupedByUserId[$comment['user_id']] = $comment['reference_id'];
+            }
+            $referenceId = $groupedByUserId[$userId]  ?? ($highestReferenceId + 1);
+        }
+
         // make the call to the posts model
-        $commentId = $this->postsModel->comment();
+        $commentId = $this->postsModel->comment($referenceId);
 
         // return the comment id
         $this->payload['commentId'] = (int)$commentId;
@@ -240,17 +271,17 @@ class Posts extends LoadController {
         $this->currentUser['statistics']['comments'] = ($this->currentUser['statistics']['comments'] ?? 0) + 1;
 
         // update the statistics
-        $this->usersModel->db->table('users')->where('user_id', $this->payload['userId'])->update(['statistics' => json_encode($this->currentUser['statistics'])]);
+        $this->usersModel->db->table('users')->where('user_id', $userId)->update(['statistics' => json_encode($this->currentUser['statistics'])]);
 
         // connect to the notification database
         $this->postsModel->connectToDb('notification');
 
         // if the owner is not the same as the user who commented
-        if($postCheck['user_id'] !== $this->payload['userId']) {
+        if($postCheck['user_id'] !== $userId) {
             // notify the owner of the post
             $this->postsModel->notify(
                 $this->payload['postId'], $postCheck['user_id'], 'comment',
-                'posts', "@{$this->currentUser['username']} left a comment on your post \"". substr(strip_tags($this->payload['content']), 0, 100) . '...\"'
+                'posts', "@N{$referenceId} left a comment on your post \"". substr(strip_tags($this->payload['content']), 0, 100) . '...\"'
             );
         }
 
@@ -261,8 +292,8 @@ class Posts extends LoadController {
         if(!empty($commentUserIds)) {
             // notify the users who have commented on the post
             foreach($commentUserIds as $userId) {
-                if(!in_array($userId, [$this->payload['userId'], $postCheck['user_id']])) {
-                    $this->postsModel->notify($this->payload['postId'], $userId, 'comment', 'posts', "@{$this->currentUser['username']} left a comment on the post \"". substr(strip_tags($this->payload['content']), 0, 100) . '...\"');
+                if(!in_array($userId, [$userId, $postCheck['user_id']])) {
+                    $this->postsModel->notify($this->payload['postId'], $userId, 'comment', 'posts', "@N{$referenceId} left a comment on the post \"". substr(strip_tags($this->payload['content']), 0, 100) . '...\"');
                 }
             }
         }
@@ -362,6 +393,10 @@ class Posts extends LoadController {
                 ];
                 $post['comments'][$key]['comment_id'] = (int)$comment['comment_id'];
                 $post['comments'][$key]['ago'] = formatTimeAgo($comment['created_at']);
+                if(!empty($comment['reference_id'])) {
+                    $post['comments'][$key]['username'] = "N{$comment['reference_id']}";
+                }
+                unset($post['comments'][$key]['reference_id']);
             }
         }
 

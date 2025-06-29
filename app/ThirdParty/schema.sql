@@ -149,7 +149,7 @@ CREATE TABLE IF NOT EXISTS comments (
     downvotes INT UNSIGNED DEFAULT 0,
     is_hidden TINYINT(1) DEFAULT 0,
     city VARCHAR(100),
-    reference_id BIGINT UNSIGNED NOT NULL,
+    reference_id BIGINT DEFAULT 0,
     country VARCHAR(100),
     views INT UNSIGNED DEFAULT 0,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,

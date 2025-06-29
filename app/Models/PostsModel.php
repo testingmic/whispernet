@@ -192,11 +192,18 @@ class PostsModel extends Model {
      * 
      * @return array
      */
-    public function comment() {
+    public function comment($referenceId = 0) {
         try {
-            $sql = "INSERT INTO comments (post_id, user_id, content, city, country) VALUES (?, ?, ?, ?, ?)";
-            $this->db->query($sql, [$this->payload['postId'], $this->payload['userId'], $this->payload['content'], $this->payload['city'] ?? null, $this->payload['country'] ?? null]);
-
+            $sql = "INSERT INTO comments (post_id, user_id, content, city, country, reference_id) VALUES (?, ?, ?, ?, ?, ?)";
+            $this->db->query($sql, [
+                $this->payload['postId'], 
+                $this->payload['userId'], 
+                $this->payload['content'], 
+                $this->payload['city'] ?? 
+                null, 
+                $this->payload['country'] ?? null, 
+                $referenceId
+            ]);
             return $this->db->insertID();
         } catch (DatabaseException $e) {
             return $e->getMessage();
@@ -216,6 +223,22 @@ class PostsModel extends Model {
             return array_column($userIds, 'user_id') ?? [];
         } catch (DatabaseException $e) {
             return [];
+        }
+    }
+
+    /**
+     * Get comments
+     * 
+     * @param int $postId
+     * 
+     * @return array
+     */
+    public function getComments($postId) {
+        try {
+            $comments = $this->db->query("SELECT reference_id, user_id FROM comments WHERE post_id = ?", [$postId])->getResultArray();
+            return $comments;
+        } catch (DatabaseException $e) {
+            return $e->getMessage();
         }
     }
 

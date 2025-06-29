@@ -101,7 +101,7 @@ class PostsValidation {
                 'direction' => 'required|in_list[up,down]',
             ]
         ],
-        'comment' => [
+        'comment:postId' => [
             'method' => 'POST',
             'authenticate' => true,
             'payload' => [
