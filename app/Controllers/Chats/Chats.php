@@ -300,7 +300,12 @@ class Chats extends LoadController {
             // check if the group name is already taken
             $room = $this->chatsModel->getChatRoomByRoomName($this->payload['newGroupInfo']['name'], $senderId);
             if(!empty($room)) {
-                return Routing::error('You already have a group with this name');
+                $room['receipients_list'] = json_decode($room['receipients_list'], true);
+                return Routing::created(['data' => 'You already have a group with this name', 'record' => [
+                    'roomId' => $room['room_id'],
+                    'roomUUID' => $room['room_uuid'],
+                    'roomData' => $room
+                ]]);
             }
 
             // create the chat room
