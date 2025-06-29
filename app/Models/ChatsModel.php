@@ -378,14 +378,11 @@ class ChatsModel extends Model {
      * @param string $type
      * @param int $userId
      */
-    public function deleteChat($roomId, $type, $userId) {
+    public function deleteChat($roomId, $userId) {
         try {
 
             // get the chat room
             $this->connectToDb('chats');
-
-            // delete the user chat room
-            // $this->chatsDb->table('user_chat_rooms')->where('user_id', $userId)->where('room_id', $roomId)->delete();
 
             // delete the messages for the sender
             $this->db->table('chat_messages')->set('sender_deleted', 1)

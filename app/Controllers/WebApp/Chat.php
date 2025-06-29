@@ -34,6 +34,7 @@ class Chat extends WebAppController {
             }
             $footerArray[$chat['room_id']] = $chat;
             if($chat['room']['type'] === 'group') {
+                if(empty($chat['room_uuid'])) continue;
                 $groupChats[] = $chat;
             } else if($chat['room']['type'] === 'individual') {
                 $individualChats[] = $chat;

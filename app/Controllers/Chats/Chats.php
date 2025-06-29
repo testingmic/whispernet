@@ -45,6 +45,7 @@ class Chats extends LoadController {
         ];
         
         foreach($chatRooms as $room) {
+            if($room['room']['type'] == 'group' && empty($room['room_uuid'])) continue;
             $newRooms[$room['room']['type']][] = $room;
         }
 
@@ -211,7 +212,7 @@ class Chats extends LoadController {
 
         // check if the room id is set
         if(empty($this->payload['roomId'])) {
-            return Routing::error('Room ID is required');
+            return Routing::error('Chat Room ID is required');
         }
         
         // get the room ids
@@ -230,7 +231,7 @@ class Chats extends LoadController {
         $userId = $payload['removeUserId'] ?? $this->currentUser['user_id'];
 
         if(!in_array($userId, $receipientsList)) {
-            // return Routing::error('You are not a participant of this chat');
+            return Routing::success('You are not a participant of this chat');
         }
 
         // remove the user from the receipients list
@@ -426,13 +427,48 @@ class Chats extends LoadController {
     }
 
     /**
+     * Remove a chat from the list
+     * 
+     * @return array
+     */
+    public function remove() {
+        if(empty($this->payload['roomId'])) {
+            return Routing::error('Chat Room ID is required');
+        }
+
+        $roomId = (int)$this->payload['roomId'];
+        $room  = $this->chatsModel->getChatRoom($roomId);
+        if(empty($room)) {
+            return Routing::error('Chat room not found');
+        }
+
+        // get the receipients list
+        $receipientsList = json_decode($room['receipients_list'], true);
+        
+        // check if the sender is a participant of the chat
+        if(!in_array((int)$this->currentUser['user_id'], $receipientsList)) {
+            return Routing::error('You are not a participant of this chat');
+        }
+
+        // delete the chat
+        $this->chatsModel->deleteChat($roomId, $this->currentUser['user_id']);
+
+        // remove the user from the receipients list
+        $receipientsList = array_diff($receipientsList, [$this->currentUser['user_id']]);
+        $this->chatsModel->leaveChatRoom($roomId, $this->currentUser['user_id'], $receipientsList);
+
+        // return the success message
+        return Routing::success('Chat removed successfully');
+    }
+
+    /**
      * Delete chat
      * 
      * @return array
      */
     public function delete() {
         if(empty($this->payload['roomId'])) {
-            return Routing::error('Room ID is required');
+            return Routing::error('Chat Room ID is required');
         }
 
         if(empty($this->payload['type'])) {
@@ -440,7 +476,12 @@ class Chats extends LoadController {
         }
 
         // delete the chat
-        $this->chatsModel->deleteChat($this->payload['roomId'], $this->payload['type'], $this->currentUser['user_id']);
+        $this->chatsModel->deleteChat($this->payload['roomId'], $this->currentUser['user_id']);
+
+        // if the action is remove, return the rooms
+        if(!empty($this->payload['action']) && $this->payload['action'] == 'remove') {
+            $this->remove();
+        }
 
         // delete the chat room
         return Routing::success('Chat deleted successfully');

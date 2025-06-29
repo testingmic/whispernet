@@ -52,6 +52,13 @@ class ChatsValidation {
                 'receiverId' => 'permit_empty|integer',
             ]
         ],
+        'remove:roomId' => [
+            'method' => 'DELETE',
+            'authenticate' => true,
+            'payload' => [
+                'roomId' => 'required|integer',
+            ]
+        ],
         'delete:roomId' => [
             'method' => 'DELETE',
             'authenticate' => true,

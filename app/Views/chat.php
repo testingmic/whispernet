@@ -208,20 +208,27 @@ $messages = $messages ?? [];
                                                 </button>
 
                                             <?php } ?>
+                                                
+                                            <button id="deleteChat" class="w-full px-4 py-2 text-left text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 flex items-center transition-colors">
+                                                <svg class="w-4 h-4 mr-3 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                                                </svg>
+                                                Clear Chat
+                                            </button>
+
+                                            <button id="removeChat" class="w-full px-4 py-2 text-left text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 flex items-center transition-colors">
+                                                <svg class="w-4 h-4 mr-3 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                                                </svg>
+                                                Remove from List
+                                            </button>
+
                                             <!-- Leave Group (for group chats) -->
                                             <button id="leaveGroup" class="w-full px-4 py-2 text-left text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center transition-colors hidden">
                                                 <svg class="w-4 h-4 mr-3 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
                                                 </svg>
                                                 Leave Group
-                                            </button>
-                                                
-                                            <!-- Delete Chat -->
-                                            <button id="deleteChat" class="w-full px-4 py-2 text-left text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 flex items-center transition-colors">
-                                                <svg class="w-4 h-4 mr-3 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
-                                                </svg>
-                                                Delete Chat
                                             </button>
                                         </div>
                                     </div>
@@ -522,7 +529,6 @@ $messages = $messages ?? [];
     </div>
 </div>
 
-<!-- Delete Chat Confirmation Modal -->
 <div id="deleteChatModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 backdrop-blur-sm hidden" role="dialog" aria-modal="true">
     <div class="min-h-screen px-4 text-center flex items-center justify-center">
         <div class="inline-block w-full max-w-sm p-6 overflow-hidden text-left align-middle transition-all transform bg-white dark:bg-gray-800 shadow-2xl rounded-2xl">
@@ -544,7 +550,8 @@ $messages = $messages ?? [];
             <!-- Modal Content -->
             <div class="mb-6">
                 <p class="text-gray-700 dark:text-gray-300">
-                    Are you sure you want to delete this <span id="deleteChatType">chat</span>? All messages will be permanently removed.
+                    Are you sure you want to delete this <span id="deleteChatType">chat</span>? All messages will be permanently removed. 
+                    <span id="removeChatAction" class="hidden">Once you remove the chat, you will not be able to receive messages from this chat anymore.</span>
                 </p>
             </div>
 

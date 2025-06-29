@@ -6,6 +6,7 @@ let searchedUsersList = [];
 let mostRecentMessageId = 0;
 let messageUUID = '';
 let selectedRecord = {};
+window.deleteAction = 'delete';
 
 // Elements
 const newChatBtn = document.getElementById("newChatBtn");
@@ -44,6 +45,7 @@ const muteChat = document.getElementById("muteChat");
 const blockUser = document.getElementById("blockUser");
 const leaveGroup = document.getElementById("leaveGroup");
 const deleteChat = document.getElementById("deleteChat");
+const removeChat = document.getElementById("removeChat");
 const muteText = document.getElementById("muteText");
 const blockText = document.getElementById("blockText");
 
@@ -110,7 +112,7 @@ function showChatList() {
 updateMobileView();
 
 // Modal Management
-function showModal(modal) {
+function showModal(modal, action = 'delete') {
   modal.classList.remove("hidden");
   modal.querySelector(".inline-block").classList.add("animate-fadeIn");
 }
@@ -318,10 +320,14 @@ if (leaveGroup) {
   });
 }
 
-if (deleteChat) {
+if (deleteChat || removeChat) {
   deleteChat.addEventListener("click", function(e) {
     e.preventDefault();
-    deleteChatAction();
+    deleteChatAction('delete');
+  });
+  removeChat.addEventListener("click", function(e) {
+    e.preventDefault();
+    deleteChatAction('remove');
   });
 }
 
@@ -495,7 +501,7 @@ async function leaveGroupAction() {
   }
 }
 
-async function deleteChatAction() {
+async function deleteChatAction(action = 'delete') {
   try {
     if (!selectedChatId || selectedChatId === 0) {
       AppState.showNotification("No chat selected", "error");
@@ -506,9 +512,11 @@ async function deleteChatAction() {
     if (deleteChatType) {
       deleteChatType.textContent = selectedChatType === 'group' ? 'group' : 'chat';
     }
+
+    window.deleteAction = action;
     
     // Show confirmation modal instead of using confirm dialog
-    showModal(deleteChatModal);
+    showModal(deleteChatModal, action);
     hideChatInfoDropdown();
     
   } catch (error) {
@@ -556,7 +564,7 @@ async function performLeaveGroupAction() {
 async function performDeleteChatAction() {
   try {
     const action = selectedChatType === 'group' ? 'delete group' : 'delete chat';
-    
+
     // Try to call the API if it exists
     try {
       const response = await fetch(`/api/chats/${selectedChatId}`, {
@@ -567,7 +575,8 @@ async function performDeleteChatAction() {
         body: JSON.stringify({
           token: AppState.getToken(),
           roomId: selectedChatId,
-          type: selectedChatType
+          type: selectedChatType,
+          action: window.deleteAction
         })
       });
       
@@ -577,7 +586,9 @@ async function performDeleteChatAction() {
         welcomeMessage.classList.remove("hidden");
         messagesContainer.classList.add("hidden");
         messageInputArea.classList.add("hidden");
-        // $(`div[data-room-id="${selectedChatId}"]`).remove();
+        if(window.deleteAction == 'remove') {
+          $(`div[data-room-id="${selectedChatId}"]`).remove();
+        }
         $(`button[id="chatInfoBtn"]`).addClass('hidden');
       } else {
         throw new Error(`Failed to ${action}`);
@@ -980,8 +991,10 @@ function loadingMessages(roomId, receiverId = 0) {
   $(`button[id="chatInfoBtn"]`).removeClass('hidden');
   if(selectedChatType == 'group') {
     $(`button[id="shareChatLink"]`).removeClass('hidden');
+    $(`button[id="removeChat"]`).addClass('hidden');
   } else {
     $(`button[id="shareChatLink"]`).addClass('hidden');
+    $(`button[id="removeChat"]`).removeClass('hidden');
   }
   $.post(`${baseUrl}/api/chats/messages`, {
     newGroupInfo, roomId, receiverId, room: selectedChatType, token: AppState.getToken(), userUUID: userUUID
