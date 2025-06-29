@@ -8,20 +8,39 @@ class WebSocketManager {
         this.disconnectBeforeUnload();
     }
 
+    /**
+     * Converts /chat/join/{string} to clickable links in a text.
+     *
+     * @param {string} text - The input text.
+     * @returns {string} The text with /chat/join links converted to anchor tags.
+     */
+    linkifyChatJoin(text) {
+        return text.replace(/\/chat\/join\/[^\s]+/g, (url) => {
+            return `<a class="text-black hover:cursor-pointer dark:hover:text-white dark:text-white hover:text-black hover:underline" href="${url}">${url}</a>`;
+        });
+    }
+
     processMessage(message) {
         try {
+
             const data = JSON.parse(message);
             
             if(typeof data.type == 'undefined') return;
-            if((data.type == 'chat' && data.sender == parseInt(selectedUserId)) && (data.msgtype == 'individual')) {
-                addMessageToUI(data.message, data.direction, '', data.uuid, data.media, data.files, data.sender);
-            }
-
-            if((data.roomId == parseInt(selectedChatId)) && (data.msgtype == 'group')) {
-                addMessageToUI(data.message, data.direction, '', data.uuid, data.media, data.files, data.sender);
-            }
 
             if(data.type == 'chat') {
+                data.message = this.linkifyChatJoin(data.message);
+                if((data.sender == parseInt(selectedUserId)) && (data.msgtype == 'individual')) {
+                    addMessageToUI(data.message, data.direction, '', data.uuid, data.media, data.files, data.sender);
+                }
+                if((data.roomId == parseInt(selectedChatId)) && (data.msgtype == 'group')) {
+                    addMessageToUI(data.message, data.direction, '', data.uuid, data.media, data.files, data.sender);
+                }
+                if(data.roomId !== parseInt(selectedChatId)) {
+                    $(`div[data-room-count-id="${data.roomId}"]`).removeClass('hidden');
+                    let roomCount = parseInt($(`div[data-room-count-id="${data.roomId}"] span[class="room-count-${data.roomId}"]`).text());
+                    roomCount = isNaN(roomCount) ? 0 : roomCount;
+                    $(`div[data-room-count-id="${data.roomId}"] span[class="room-count-${data.roomId}"]`).text(roomCount + 1);
+                }
                 setTimeout(() => {
                     new MediaDisplay();
                     scrollToBottom();

@@ -294,6 +294,22 @@ class Chats extends LoadController {
             return Routing::created(['data' => [], 'record' => [
                 'roomId' => $roomId,
                 'roomUUID' => $roomUUID,
+                'roomData' => [
+                    'type' => 'group',
+                    'room_id' => $roomId,
+                    'room_uuid' => $roomUUID,
+                    'creator' => $senderId,
+                    'room' => [
+                        'participants' => [
+                            $senderId
+                        ]
+                    ],
+                    'full_name' => explode(' ', $this->payload['newGroupInfo']['name'])[0],
+                    'username' => $this->payload['newGroupInfo']['name'],
+                    'user_id' => $senderId,
+                    'name' => $this->payload['newGroupInfo']['name'],
+                    'participants' => '1 participant'
+                ]
             ]]);
         }
 
@@ -344,7 +360,8 @@ class Chats extends LoadController {
             elseif(($message['user_id'] == $receiverId) && (int)$message['receiver_deleted'] !== 1) {
                 $append = true;
                 $type = "received";
-            } else {
+            }
+            elseif($this->payload['room'] == 'group') {
                 $append = true;
                 $type = "received";
             }

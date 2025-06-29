@@ -83,12 +83,12 @@ $messages = $messages ?? [];
                                                 <p class="text-xs text-gray-500 dark:text-gray-400"><?= !empty($chat['room']['description']) ? $chat['room']['description'] : $chat['username']; ?></p>
                                             </div>
                                             <!-- Count Badge -->
-                                            <div class="flex-shrink-0 hidden" data-room-count-id="<?= $chat['room_id']; ?>">
+                                            <div class="flex-shrink-0 <?= !empty($chat['room_count']) ? '' : 'hidden' ?>" data-room-count-id="<?= $chat['room_id']; ?>">
                                                 <span class="inline-flex items-center justify-center px-2 py-1 text-xs font-medium leading-none text-gray-600 dark:text-gray-400 bg-gray-200 dark:bg-gray-600 rounded-full min-w-[20px] gap-1">
-                                                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path>
                                                     </svg>
-                                                    <?= 100; ?>
+                                                    <span class="room-count-<?= $chat['room_id']; ?>"><?= $chat['room_count'] ?? 0; ?></span>
                                                 </span>
                                             </div>
                                         </div>
@@ -126,15 +126,15 @@ $messages = $messages ?? [];
                                             </div>
                                             <div class="flex-1 min-w-0">
                                                 <p class="text-sm font-semibold text-gray-900 dark:text-white"><?= !empty($chat['room']['name']) ? $chat['room']['name'] : $chat['full_name']; ?></p>
-                                                <p class="text-xs text-gray-500 dark:text-gray-400"><?= $chat['particiants']; ?></p>
+                                                <p class="text-xs text-gray-500 dark:text-gray-400"><?= $chat['participants']; ?></p>
                                             </div>
                                             <!-- Count Badge -->
-                                            <div class="flex-shrink-0 hidden" data-room-count-id="<?= $chat['room_id']; ?>">
+                                            <div class="flex-shrink-0 <?= !empty($chat['room_count']) ? '' : 'hidden' ?>" data-room-count-id="<?= $chat['room_id']; ?>">
                                                 <span class="inline-flex items-center justify-center px-2 py-1 text-xs font-medium leading-none text-gray-600 dark:text-gray-400 bg-gray-200 dark:bg-gray-600 rounded-full min-w-[20px] gap-1">
-                                                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path>
                                                     </svg>
-                                                    <?= 100; ?>
+                                                    <span class="room-count-<?= $chat['room_id']; ?>"><?= $chat['room_count'] ?? 0; ?></span>
                                                 </span>
                                             </div>
                                         </div>

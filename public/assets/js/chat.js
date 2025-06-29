@@ -894,7 +894,7 @@ function beginChat(roomId, type, roomUUID) {
   let title = roomInfo?.username ?? roomInfo?.name;
 
   $(`h3[id="chatTitle"]`).html(`${title}`);
-  $(`p[id="chatStatus"]`).html(`${roomInfo?.state ?? 'Offline'} ${type == 'group' ? '|' : ''} ${roomInfo?.particiants ?? ''}`);
+  $(`p[id="chatStatus"]`).html(`${roomInfo?.state ?? 'Offline'} ${type == 'group' ? '|' : ''} ${roomInfo?.participants ?? ''}`);
   $(`div[id="chatAvatar"]`).html(roomInfo?.username?.charAt(0)?.toUpperCase() ?? '');
   
   if(!isMobileView) {
@@ -904,6 +904,10 @@ function beginChat(roomId, type, roomUUID) {
   if(selectedRecord?.creator !== loggedInUserId) {
     $(`button[id="shareChatLink"]`).addClass('hidden');
   }
+
+  // reset the room count
+  $(`div[data-room-count-id="${roomId}"]`).addClass('hidden');
+  $(`div[data-room-count-id="${roomId}"]`).find('span').text(0);
 
   // Load messages
   loadingMessages(roomId, selectedUserId);
@@ -985,7 +989,7 @@ function loadingMessages(roomId, receiverId = 0) {
     if (response.status === "success") {
 
       messagesContainer.innerHTML = '';
-      
+
       response.data.forEach((message) => {
           if(message.msgid > mostRecentMessageId) {
               mostRecentMessageId = message.msgid;
@@ -993,10 +997,15 @@ function loadingMessages(roomId, receiverId = 0) {
           addMessageToUI(message.message, message.type, message.time, message.uuid, message.has_media, message.media, loggedInUserId);
       });
 
+      if(typeof newGroupInfo.newGroupId !== 'undefined') {
+        $(`div[data-chat-id="group-${newGroupInfo.newGroupId}"]`).attr('onclick', `return beginChat(${response.record.roomId}, 'group', '${response.record.roomUUID}')`);
+      }
+
       newGroupInfo = {};
       if((typeof response.record !== 'undefined') && selectedChatType == 'group') {
-        selectedChatId = response.record.roomId;
+        selectedChatId = parseInt(response.record.roomId);
         selectedRoomUUID = response.record.roomUUID;
+        footerArray[selectedChatId] = response.record.roomData;
         $(`p[id="chatStatus"]`).text('1 participant');
       }
 
@@ -1168,11 +1177,13 @@ function createGroup(name, description, members) {
   // Simulate group creation
   AppState.showNotification(`Group "${name}" created successfully!`, "success");
 
+  newGroupInfo.newGroupId = Date.now();
+
   // Add the new group to the chat list
   const groupChatItem = document.createElement("div");
   groupChatItem.className =
     "chat-item p-3 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-700 cursor-pointer transition-all duration-200";
-  groupChatItem.setAttribute("data-chat-id", "group-" + Date.now());
+  groupChatItem.setAttribute("data-chat-id", "group-" + newGroupInfo.newGroupId);
   groupChatItem.setAttribute("data-chat-type", "group");
 
   groupChatItem.innerHTML = `
@@ -1548,24 +1559,14 @@ function handleFileUpload() {
   submitButton.disabled = true;
 
   // Add message to UI
-  addMessageToUI(messageInput.value.trim(), "sent", '', messageUUID, false, [], loggedInUserId);
+  addMessageToUI(AppState.socketConnect.linkifyChatJoin(messageInput.value.trim()), "sent", '', messageUUID, false, [], loggedInUserId);
   
   // Upload files
-  $.ajax({
-    url: `${baseUrl}/api/chats/send`,
-    type: 'POST',
-    data: formData,
-    processData: false,
-    contentType: false,
+  $.ajax({ url: `${baseUrl}/api/chats/send`, type: 'POST', data: formData, processData: false, contentType: false,
     success: function(response) {
       if (response.status === "success") {
-        // Add message to UI with media
-        // addMessageWithMediaToUI(messageInput.value.trim(), "sent", selectedFiles);
-        
-        // Clear input and preview
         clearAllMedia();
         
-        // Update chat data
         selectedChatId = response.record.roomId;
         mostRecentMessageId = response.record.messageId;
         

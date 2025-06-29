@@ -287,14 +287,13 @@ class ChatsModel extends Model {
 
                     $count = count($group['participants']);
 
-                    $group['particiants'] = $count == 1 ? '1 participant' : $count . ' participants';
                     $group['room'] = [
                         'type' => 'group',
                         'participants' => $group['participants'],
                         'name' => $group['name'],
                         'description' => $group['description'],
                     ];
-                    unset($group['participants']);
+                    $group['participants'] = $count == 1 ? '1 participant' : $count . ' participants';
                     unset($group['description']);
                     unset($group['name']);
                     $roomsList[] = $group;
