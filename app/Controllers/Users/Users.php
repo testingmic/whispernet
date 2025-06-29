@@ -24,6 +24,26 @@ class Users extends LoadController {
     }
 
     /**
+     * Delete user account
+     * 
+     * @return array
+     */
+    public function goodbye() {
+    
+        // delete the cache
+        $this->cacheObject->dbObject->query("DELETE FROM cache WHERE account_id = ?", [$this->currentUser['user_id']]);
+
+        // delete the user
+        $this->usersModel->deleteAccount($this->currentUser['user_id']);
+
+        // destroy the session
+        session()->destroy();
+
+        // return the success message
+        return Routing::success('Account deleted successfully');
+    }
+
+    /**
      * Update user profile
      * 
      * @return array

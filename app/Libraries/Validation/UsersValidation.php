@@ -15,6 +15,11 @@ class UsersValidation {
                 'value' => 'max_length[100]',
             ]
         ],
+        'goodbye' => [
+            'method' => 'POST,GET',
+            'authenticate' => true,
+            'payload' => []
+        ],
         'profile' => [
             'method' => 'GET',
             'authenticate' => true,

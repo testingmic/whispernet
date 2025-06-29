@@ -16,6 +16,11 @@ class UsersModel extends Model {
         'is_active', 'last_login', 'bio', 'profile_image', 'location', 'gender'
     ];
 
+    public $votesDb;
+    public $notifDb;
+    public $viewsDb;
+    public $chatsDb;
+
     public function __construct() {
         parent::__construct();
         
@@ -24,6 +29,47 @@ class UsersModel extends Model {
             if (property_exists($this, $key)) {
                 $this->{$key} = DbTables::${$key};
             }
+        }
+    }
+    
+    /**
+     * Connect to the default database
+     * 
+     * @param string $db
+     * 
+     * @return array
+     */
+    public function connectToDb($db = 'votes') {
+
+        // if the database group is default, use the default database
+        if(in_array(configs('db_group'), ['default'])) {
+            $this->votesDb = $this->db;
+            $this->notifDb = $this->db;
+            $this->viewsDb = $this->db;
+            return;
+        }
+
+        // connect to the votes and comments databases
+        if($db == 'votes') {
+            $this->votesDb = db_connect('votes');
+            setDatabaseSettings($this->votesDb);
+        }
+        
+        if($db == 'notification') {
+            $this->notifDb = db_connect('notification');
+            setDatabaseSettings($this->notifDb);
+        }
+
+        if($db == 'views') {
+            $this->viewsDb = db_connect('views');
+            setDatabaseSettings($this->viewsDb);
+        }
+
+        if($db == 'all') {
+            $this->chatsDb = db_connect('chats');
+            $this->votesDb = db_connect('votes');
+            $this->notifDb = db_connect('notification');
+            $this->viewsDb = db_connect('views');
         }
     }
 
@@ -142,6 +188,37 @@ class UsersModel extends Model {
     public function findByEmail($email, $column = 'email') {
         try {
             return $this->db->table($this->table)->where([$column => $email, 'is_active' => '1'])->get()->getRowArray();
+        } catch (DatabaseException $e) {
+            return $e->getMessage();
+        }
+    }
+
+    /**
+     * Delete account
+     * 
+     * @param string $userId
+     * @return array
+     */
+    public function deleteAccount($userId) {
+        try {
+            // connect to the default database
+            $this->connectToDb('all');
+
+            // delete the user from the database
+            $this->db->table('users')->where('user_id', $userId)->delete();
+            $this->db->table('posts')->where('user_id', $userId)->delete();
+            $this->db->table('comments')->where('user_id', $userId)->delete();
+            $this->db->table('settings')->where('user_id', $userId)->delete();
+
+            // delete the votes and views
+            $this->votesDb->table('votes')->where('user_id', $userId)->delete();
+            $this->viewsDb->table('views')->where('user_id', $userId)->delete();
+
+            // delete the notifications
+            $this->notifDb->table('notifications')->where('user_id', $userId)->delete();
+
+            // delete the user from the chat rooms
+            $this->chatsDb->table('user_chat_rooms')->where('user_id', $userId)->delete();
         } catch (DatabaseException $e) {
             return $e->getMessage();
         }

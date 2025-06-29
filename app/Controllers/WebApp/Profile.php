@@ -21,7 +21,12 @@ class Profile extends WebAppController
         // Get the current user's data
         $userModel = new \App\Models\UsersModel();
         $userId = $this->loogedUserId;
-        $user = $userModel->find($userId);
+        $user = !empty($userId) ? $userModel->find($userId) : null;
+
+        if(empty($user)) {
+            session()->destroy();
+            return $this->templateObject->load404Page();
+        }
 
         // decode the statistics
         $user['statistics'] = !empty($user['statistics']) ? json_decode($user['statistics'], true) : [];
@@ -64,7 +69,12 @@ class Profile extends WebAppController
         $userId = $this->loogedUserId;
 
         // get the user
-        $user = $userModel->find($userId);
+        $user = !empty($userId) ? $userModel->find($userId) : [];
+
+        if(empty($user)) {
+            session()->destroy();
+            return $this->templateObject->load404Page();
+        }
 
         // get the user settings
         $userSettings = $userModel->getUserSettings($userId);

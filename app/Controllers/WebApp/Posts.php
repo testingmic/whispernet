@@ -33,6 +33,9 @@ class Posts extends WebAppController {
      */
     public function tags($searchQuery = null) {
 
+        // verify if the user is logged in
+        $this->verifyLogin();
+        
         // initialize the tags model
         $tagsModel = new TagsModel();
 
@@ -70,6 +73,10 @@ class Posts extends WebAppController {
      * @return array
      */
     public function view($postId = null) {
+        // verify if the user is logged in
+        $this->verifyLogin();
+
+        // get the post
         return $this->templateObject->loadPage('post', ['pageTitle' => 'Feed', 'postId' => $postId, 'footerHidden' => true]);
     }
 

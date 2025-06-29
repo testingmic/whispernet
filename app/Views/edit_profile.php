@@ -7,7 +7,7 @@
         </div>
 
         <!-- Profile Form -->
-        <div class="mt-8 mb-6 bg-white dark:bg-gray-800 rounded-2xl shadow-xl border border-gray-200 dark:border-gray-700 p-6">
+        <div class="mt-8 mb-4 bg-white dark:bg-gray-800 rounded-2xl shadow-xl border border-gray-200 dark:border-gray-700 p-6">
             <form id="editProfileForm" class="space-y-6 p-4 sm:p-6">
                 <!-- Profile Picture -->
                 <div>
@@ -78,7 +78,6 @@
             </form>
         </div>
         
-        
         <!-- Settings Section -->
         <div class="bg-white dark:bg-gray-800 mb-4 rounded-2xl shadow-xl border border-gray-200 dark:border-gray-700 overflow-hidden">
             <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
@@ -131,7 +130,159 @@
             </div>
         </div>
 
+        <!-- Delete Account Section -->
+        <div class="bg-white dark:bg-gray-800 mb-4 rounded-2xl shadow-xl border border-gray-200 dark:border-gray-700 overflow-hidden">
+            <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
+                <h3 class="text-xl font-bold text-red-600 dark:text-red-400 flex items-center">
+                    <svg class="w-6 h-6 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                    </svg>
+                    Danger Zone
+                </h3>
+            </div>
+
+            <div class="p-6">
+                <div class="flex items-center justify-between p-4 bg-red-50 dark:bg-red-900/20 rounded-xl border border-red-200 dark:border-red-800">
+                    <div class="flex items-start">
+                        <div class="flex-shrink-0">
+                            <svg class="w-6 h-6 text-red-600 dark:text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"></path>
+                            </svg>
+                        </div>
+                        <div class="ml-3">
+                            <h4 class="text-lg font-semibold text-red-900 dark:text-red-100">Delete Account</h4>
+                            <p class="text-red-700 dark:text-red-300">Once you delete your account, there is no going back. Please be certain.</p>
+                        </div>
+                    </div>
+                    <button type="button" id="deleteAccountBtn" class="px-4 py-2 text-sm font-medium text-white bg-red-600 rounded-lg hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-colors duration-200">
+                        Delete Account
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Delete Account Confirmation Modal -->
+        <div id="deleteAccountModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50 hidden">
+            <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white dark:bg-gray-800">
+                <div class="mt-3 text-center">
+                    <div class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-red-100 dark:bg-red-900">
+                        <svg class="h-6 w-6 text-red-600 dark:text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"></path>
+                        </svg>
+                    </div>
+                    <h3 class="text-lg font-medium text-gray-900 dark:text-white mt-4">Delete Account</h3>
+                    <div class="mt-2 px-7 py-3">
+                        <p class="text-sm text-gray-500 dark:text-gray-400">
+                            Are you sure you want to delete your account? This action cannot be undone and will permanently remove all your data, including:
+                        </p>
+                        <ul class="text-sm text-gray-500 dark:text-gray-400 mt-3 text-left list-disc list-inside space-y-1">
+                            <li>Your profile and personal information</li>
+                            <li>All your posts and comments</li>
+                            <li>Your chat history and messages</li>
+                            <li>Your uploaded media and files</li>
+                        </ul>
+                        <div class="mt-4">
+                            <label for="confirmDelete" class="flex items-center">
+                                <input type="checkbox" id="confirmDelete" class="rounded border-gray-300 text-red-600 shadow-sm focus:border-red-300 focus:ring focus:ring-red-200 focus:ring-opacity-50">
+                                <span class="ml-2 text-sm text-gray-700 dark:text-gray-300">I understand that this action is irreversible</span>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="flex justify-center space-x-3 px-4 py-3">
+                        <button id="cancelDelete" class="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-700 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500">
+                            Cancel
+                        </button>
+                        <button id="confirmDeleteBtn" disabled class="px-4 py-2 text-sm font-medium text-white bg-red-600 rounded-lg hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 disabled:opacity-50 disabled:cursor-not-allowed">
+                            Delete Account
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <?= custom_button('Go to Profile', $baseUrl.'/profile') ?>
 
     </div>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const deleteAccountBtn = document.getElementById('deleteAccountBtn');
+    const deleteAccountModal = document.getElementById('deleteAccountModal');
+    const cancelDelete = document.getElementById('cancelDelete');
+    const confirmDelete = document.getElementById('confirmDelete');
+    const confirmDeleteBtn = document.getElementById('confirmDeleteBtn');
+
+    // Show modal
+    deleteAccountBtn.addEventListener('click', function() {
+        deleteAccountModal.classList.remove('hidden');
+        document.body.style.overflow = 'hidden';
+    });
+
+    // Hide modal
+    function hideModal() {
+        deleteAccountModal.classList.add('hidden');
+        document.body.style.overflow = 'auto';
+        confirmDelete.checked = false;
+        confirmDeleteBtn.disabled = true;
+    }
+
+    cancelDelete.addEventListener('click', hideModal);
+
+    // Close modal when clicking outside
+    deleteAccountModal.addEventListener('click', function(e) {
+        if (e.target === deleteAccountModal) {
+            hideModal();
+        }
+    });
+
+    // Enable/disable confirm button based on checkbox
+    confirmDelete.addEventListener('change', function() {
+        confirmDeleteBtn.disabled = !this.checked;
+    });
+
+    // Handle account deletion
+    confirmDeleteBtn.addEventListener('click', function() {
+        if (!confirmDelete.checked) return;
+
+        // Show loading state
+        confirmDeleteBtn.disabled = true;
+        confirmDeleteBtn.innerHTML = '<svg class="animate-spin -ml-1 mr-3 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>Deleting...';
+
+        // Make API call to delete account
+        fetch('<?= $baseUrl ?>/api/users/goodbye', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest'
+            },
+            credentials: 'same-origin',
+            body: JSON.stringify({
+                token: AppState.getToken()
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status == 'success') {
+                // Redirect to logout or home page
+                window.location.href = '<?= $baseUrl ?>/logout';
+            } else {
+                AppState.ShowNotification('Error deleting account: ' + (data.message || 'Unknown error'), 'error');
+                hideModal();
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            AppState.ShowNotification('Error deleting account. Please try again.', 'error');
+            hideModal();
+        });
+    });
+
+    // Close modal with Escape key
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape' && !deleteAccountModal.classList.contains('hidden')) {
+            hideModal();
+        }
+    });
+});
+</script>
