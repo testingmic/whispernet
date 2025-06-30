@@ -287,9 +287,10 @@ class ChatsModel extends Model {
 
                     $count = count($group['participants']);
 
+                    // int all participants
                     $group['room'] = [
                         'type' => 'group',
-                        'participants' => $group['participants'],
+                        'participants' => array_map('intval', $group['participants']),
                         'name' => $group['name'],
                         'description' => $group['description'],
                     ];

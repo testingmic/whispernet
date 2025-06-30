@@ -64,7 +64,7 @@ class Chats extends LoadController {
         $this->payload['timestamp'] = !empty($this->payload['timestamp']) ? $this->payload['timestamp'] : time();
 
         // check if the sender is the receiver
-        if($this->payload['sender'] == $this->payload['receiver']) {
+        if(($this->payload['sender'] == $this->payload['receiver']) && $this->payload['type'] == 'individual') {
             return Routing::error('You cannot send a message to yourself');
         }
 

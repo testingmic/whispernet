@@ -188,6 +188,7 @@ $databases = [
         type TEXT,
         name TEXT,
         room_uuid TEXT,
+        description TEXT,
         room_description TEXT,
         receiver_deleted BOOLEAN DEFAULT 0,
         sender_deleted BOOLEAN DEFAULT 0,
