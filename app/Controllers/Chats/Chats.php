@@ -370,7 +370,7 @@ class Chats extends LoadController {
         $roomId = 0;
         $roomUUID = '';
 
-        $roomId = $room['room_id'] ?? 0;
+        $roomId = (int)($room['room_id'] ?? 0);
         $roomUUID = $room['room_uuid'] ?? '';
 
         // remove unwanted messages from list
