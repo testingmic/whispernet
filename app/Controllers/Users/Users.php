@@ -161,10 +161,7 @@ class Users extends LoadController {
             } else {
                 // user settings
                 $settingsSet = array_column($userSettings, 'setting');
-
-                if(empty($this->payload['value'])) {
-                    return Routing::error("Value is required for setting:- {$setting}");
-                }
+                $this->payload['value'] = empty($this->payload['value']) ? 0 : $this->payload['value'];
 
                 // loop through the settings and confirm if the setting is not already saved
                 $isetting = !is_array($this->payload['setting']) ? trim($this->payload['setting']) : $this->payload['setting'];
