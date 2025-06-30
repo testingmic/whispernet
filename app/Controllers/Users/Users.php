@@ -19,6 +19,11 @@ class Users extends LoadController {
         }
         $profile['statistics'] = json_decode($profile['statistics'], true);
         unset($profile['password_hash']);
+
+        // get the user settings
+        $profile['settings'] = $this->settings()['data'];
+
+        // return the profile
         return Routing::success($profile);
 
     }
