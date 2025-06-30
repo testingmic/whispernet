@@ -370,6 +370,9 @@ class Chats extends LoadController {
         $roomId = 0;
         $roomUUID = '';
 
+        $roomId = $room['room_id'] ?? 0;
+        $roomUUID = $room['room_uuid'] ?? '';
+
         // remove unwanted messages from list
         foreach($messages as $key => $message) {
             // check if the message is self destructing
@@ -392,9 +395,6 @@ class Chats extends LoadController {
             }
 
             if($append) {
-
-                $roomId = $message['room_id'];
-                $roomUUID = $message['room_uuid'];
 
                 // default content
                 $defaultContent = [
