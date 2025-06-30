@@ -3023,6 +3023,7 @@ const PasswordToggle = {
 const AudioVideoManager = {
 
     init() {
+        this.initAudioInteraction();
         this.begin();
     },
     begin() {
@@ -3129,6 +3130,66 @@ const AudioVideoManager = {
         document.getElementById('audioReplayContainer').innerHTML = '';
         document.getElementById('audioReplayContainer').appendChild(audio);
         audio.play();
+    },
+
+    playSound(soundUrl) {
+        try {
+            if (!this.hasUserInteracted) {
+                this.queuedSounds = this.queuedSounds || [];
+                this.queuedSounds.push(soundUrl);
+                return;
+            }
+            const audio = document.createElement('audio');
+            audio.src = soundUrl;
+            audio.preload = 'auto';
+            
+            audio.volume = 0.5;
+            audio.addEventListener('canplaythrough', () => {
+                audio.play().catch(error => {
+                    this.queuedSounds = this.queuedSounds || [];
+                    this.queuedSounds.push(soundUrl);
+                });
+            });
+            audio.addEventListener('error', (error) => { });
+            audio.load();
+        } catch(e) { }
+    },
+
+    // Initialize user interaction tracking
+    initAudioInteraction() {
+        if (this.audioInteractionInitialized) return;
+        
+        this.audioInteractionInitialized = true;
+        this.hasUserInteracted = false;
+        this.queuedSounds = [];
+        
+        // Track user interactions
+        const interactionEvents = ['click', 'touchstart', 'keydown', 'scroll'];
+        
+        const markUserInteracted = () => {
+            if (!this.hasUserInteracted) {
+                this.hasUserInteracted = true;
+                if (this.queuedSounds.length > 0) {
+                    this.queuedSounds.forEach(soundUrl => {
+                        setTimeout(() => this.playSound(soundUrl), 100);
+                    });
+                    this.queuedSounds = [];
+                }
+                interactionEvents.forEach(event => {
+                    document.removeEventListener(event, markUserInteracted, true);
+                });
+            }
+        };
+        
+        // Add event listeners
+        interactionEvents.forEach(event => {
+            document.addEventListener(event, markUserInteracted, true);
+        });
+        setTimeout(() => {
+            if (document.hasFocus()) {
+                markUserInteracted();
+            }
+        }, 1000);
     }
 }
 

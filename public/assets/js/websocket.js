@@ -36,6 +36,7 @@ class WebSocketManager {
                     addMessageToUI(data.message, data.direction, '', data.uuid, data.media, data.files, data.sender);
                 }
                 if(data.roomId !== parseInt(selectedChatId)) {
+                    AudioVideoManager.playSound(`${baseUrl}/assets/media/notify.wav`);
                     $(`div[data-room-count-id="${data.roomId}"]`).removeClass('hidden');
                     let roomCount = parseInt($(`div[data-room-count-id="${data.roomId}"] span[class="room-count-${data.roomId}"]`).text());
                     roomCount = isNaN(roomCount) ? 0 : roomCount;
@@ -47,6 +48,7 @@ class WebSocketManager {
                 }, 500);
             }
         } catch(e) {
+            console.log(e);
         }
     }
 

@@ -74,6 +74,8 @@ window.addEventListener("resize", function () {
   updateMobileView();
 });
 
+AudioVideoManager.init();
+
 function updateMobileView() {
   const chatListContainer = document.querySelector(".w-full.lg\\:w-80");
   const chatAreaContainer = document.querySelector(".flex-1.flex.flex-col");
