@@ -17,7 +17,7 @@ $favicon_color = $favicon_color ?? 'dashboard';
   <link rel="apple-touch-icon" href="<?= $baseUrl ?>/assets/icons/Icon.192.png">
   <link rel="icon" type="image/png" href="<?= $baseUrl ?>/assets/icons/Icon.32.png">
   <meta name="google-site-verification" content="LvqtogwJfOW-lu5ScIs_fEdHOZcPHi-yPheUZEQUfSA" />
-
+  <meta name="google-adsense-account" content="ca-pub-1861204960763512">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black">
@@ -32,7 +32,7 @@ $favicon_color = $favicon_color ?? 'dashboard';
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <script>
     localStorage.setItem('baseUrl', '<?= $baseUrl ?>');
-    const baseUrl = '<?= $baseUrl ?>', 
+    const baseUrl = '<?= $baseUrl ?>',
       defaultSearchQuery = '<?= $searchQuery ?? '' ?>',
       loggedInUserId = <?= $userId ?? 0 ?>,
       footerArray = <?= json_encode($footerArray ?? []) ?>,
@@ -45,7 +45,7 @@ $favicon_color = $favicon_color ?? 'dashboard';
     <?php if (!empty($userToken)) { ?>
       localStorage.setItem('token', '<?= $userToken ?>');
     <?php } ?>
-    <?php if(isset($_GET['auth_token'])) { ?>
+    <?php if (isset($_GET['auth_token'])) { ?>
       localStorage.setItem('token', '<?= $_GET['auth_token'] ?>');
     <?php } ?>
   </script>
