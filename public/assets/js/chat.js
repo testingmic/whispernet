@@ -902,7 +902,7 @@ function beginChat(roomId, type, roomUUID) {
 
   // Hide modal
   hideModal(userSearchModal);
-  selectedUserId = roomInfo?.user_id ?? 0;
+  selectedUserId = parseInt(roomInfo?.user_id ?? 0);
 
   let title = roomInfo?.username ?? roomInfo?.name;
 
@@ -1584,6 +1584,8 @@ function handleFileUpload() {
         
         selectedChatId = response.record.roomId;
         mostRecentMessageId = response.record.messageId;
+
+        selectedUserId = parseInt(selectedUserId);
         
         // Send via WebSocket
         let msgPayload = {
