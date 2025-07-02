@@ -404,7 +404,7 @@ class AnalyticsModel extends Model {
                 LEFT JOIN users u ON p.user_id = u.user_id
                 WHERE p.created_at >= ?
                 GROUP BY p.post_id
-                ORDER BY (votes + comments + views) DESC
+                ORDER BY p.upvotes, p.comments_count DESC
                 LIMIT 10";
         
         $result = $this->db->query($sql, [$dateFilter])->getResultArray();
