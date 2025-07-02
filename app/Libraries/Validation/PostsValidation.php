@@ -128,6 +128,14 @@ class PostsValidation {
                 'section' => 'required|in_list[posts,comments]',
             ]
         ],
+        'report:postId' => [
+            'method' => 'POST',
+            'authenticate' => true,
+            'payload' => [
+                'postId' => 'required|numeric|max_length[10]',
+                'reason' => 'required|in_list[spam,harassment,inappropriate,misinformation,violence,other]',
+            ]
+        ],
         'deletecomment:commentId' => [
             'method' => 'DELETE',
             'authenticate' => true,

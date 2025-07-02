@@ -190,6 +190,44 @@
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
         </svg>
     </button>
+
+    <!-- Report Post Modal -->
+    <div id="reportPostModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 backdrop-blur-sm hidden" role="dialog" aria-modal="true">
+        <div class="min-h-screen px-4 text-center flex items-center justify-center">
+            <div class="inline-block w-full max-w-md p-6 sm:p-8 overflow-hidden text-left align-middle transition-all transform bg-white dark:bg-gray-800 shadow-2xl rounded-2xl">
+                <!-- Modal Header -->
+                <div class="flex items-center justify-between mb-6">
+                    <div>
+                        <h3 class="text-2xl font-bold text-gray-900 dark:text-white">Report Post</h3>
+                        <p class="text-gray-600 dark:text-gray-400 mt-1">Help us maintain a safe community</p>
+                    </div>
+                    <button onclick="PostManager.closeReportModal()" class="text-gray-400 hover:text-gray-500 dark:hover:text-gray-300 transition-colors">
+                        <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </button>
+                </div>
+
+                <form id="reportPostForm" class="space-y-6">
+                    <!-- Reason Selection -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">Reason for Report</label>
+                        <div class="space-y-3" id="reportReasonsList"></div>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="flex justify-end space-x-4 pt-4">
+                        <button type="button" onclick="PostManager.closeReportModal()" class="px-6 py-3 text-sm font-medium text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-700 rounded-xl hover:bg-gray-200 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-500 transition-all duration-200">
+                            Cancel
+                        </button>
+                        <button type="submit" class="px-8 py-3 bg-gradient-to-r from-red-500 to-red-600 text-white font-semibold rounded-xl hover:from-red-600 hover:to-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 transform transition-all duration-200 hover:scale-105">
+                            Submit Report
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
 </div>
 <div class="h-20"></div>
 <script>
@@ -288,6 +326,47 @@
     }
     .animate-fadeIn {
         animation: fadeIn 0.3s ease-out;
+    }
+    
+    /* Report Modal Animations */
+    @keyframes slideIn {
+        from { opacity: 0; transform: translateY(-20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+    
+    #reportPostModal .inline-block {
+        animation: slideIn 0.3s ease-out;
+    }
+    
+    /* Radio button animations */
+    .w-3.h-3 {
+        transition: all 0.2s ease-in-out;
+    }
+    
+    /* Form field focus animations */
+    #reportPostForm input:focus + div .w-3.h-3,
+    #reportPostForm label:hover .w-3.h-3 {
+        transform: scale(1.1);
+    }
+    
+    /* Selected radio button styling */
+    #reportPostForm input:checked + div {
+        border-color: #3b82f6;
+        background-color: #eff6ff;
+    }
+    
+    #reportPostForm input:checked + div .w-3.h-3 {
+        background-color: #3b82f6;
+    }
+    
+    /* Dark mode support */
+    .dark #reportPostForm input:checked + div {
+        border-color: #60a5fa;
+        background-color: #1e3a8a;
+    }
+    
+    .dark #reportPostForm input:checked + div .w-3.h-3 {
+        background-color: #60a5fa;
     }
 `;
     document.head.appendChild(style);

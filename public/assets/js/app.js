@@ -633,10 +633,14 @@ const PostManager = {
     userLocation: [],
     batchPostIds: [],
     tinyPostContent: {},
+    radioButtons: [],
+    descriptionDiv: null,
     init() {
+        // Handle radio button selection to show description
         this.loadInitialFeed();
         this.setupPostInteractions();
         this.loadPost();
+        this.setupReportModal();
     },
     closeCreateModal() {
         $(`#backToTopBtn`).removeClass('hidden');
@@ -1020,7 +1024,7 @@ const PostManager = {
                             <span class="save-post-${post.post_id}">${post.manage.bookmarked ? 'Remove Post' : 'Save Post'}</span>
                         </button>` : ''}
                         ${post?.manage?.report ? `
-                        <button class="hidden w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-green-100 dark:hover:bg-gray-700 flex items-center space-x-2" onclick="event.stopPropagation(); PostManager.handleReport(${post.post_id})">
+                        <button class="w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-red-50 dark:hover:bg-red-900/20 flex items-center space-x-2" onclick="event.stopPropagation(); PostManager.openReportModal(${post.post_id})">
                             <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 21v-4m0 0V5a2 2 0 012-2h6.5l1 1H21l-3 6 3 6h-8.5l-1-1H5a2 2 0 00-2 2zm9-13.5V9"/>
                             </svg>
@@ -1147,17 +1151,174 @@ const PostManager = {
         upvoteCount.innerHTML = data.record.upvotes;
         downvoteCount.innerHTML = data.record.downvotes;
     },
-    async handleReport(button, section) {
-        const postId = button.closest('.post-card').querySelector(`[data-${section}-id]`).dataset.postId;
-        try {
-            await fetch(`${baseUrl}/api/posts/report/${postId}`, {
-                method: 'POST',
-                body: JSON.stringify({ token: AppState.getToken(), longitude, latitude, userUUID })
-            });
-            AppState.showNotification('Post reported successfully', 'success');
-        } catch (error) {
-            AppState.showNotification('Error reporting post', 'error');
+
+    setupReportReasons() {
+        let reasons = {
+            "inappropriate": "Inappropriate Content",
+            "spam": "Unwanted commercial content",
+            "harassment": "Bullying or abusive behavior",
+            "misinformation": "False or misleading information",
+            "violence": "Threats or violent content",
         }
+
+        let reasonsList = document.getElementById('reportReasonsList');
+        reasonsList.innerHTML = '';
+        Object.keys(reasons).forEach((reason, index) => {
+            reasonsList.innerHTML += `
+            <label class="relative flex items-center p-4 border border-gray-200 dark:border-gray-600 rounded-lg cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
+                <input type="radio" name="reportReason" value="${reason}" class="sr-only" required>
+                <div class="flex items-center">
+                    <div class="w-5 h-5 border-2 border-gray-300 dark:border-gray-600 rounded-full flex items-center justify-center mr-3">
+                        <div class="w-3 h-3 rounded-full bg-blue-500 hidden"></div>
+                    </div>
+                    <div>
+                        <span class="block text-sm font-medium text-gray-900 dark:text-white">${reasons[reason]}</span>
+                        <span class="block text-xs text-gray-500 dark:text-gray-400">${reasons[reason]}</span>
+                    </div>
+                </div>
+            </label>`
+        });
+
+        const reportForm = document.getElementById('reportPostForm');
+        this.radioButtons = reportForm.querySelectorAll('input[name="reportReason"]');
+        this.descriptionDiv = document.getElementById('reportDescription');
+
+        // Handle radio button visual feedback
+        this.radioButtons.forEach(radio => {
+            const label = radio.closest('label');
+            const radioCircle = label.querySelector('.w-3.h-3');
+            
+            radio.addEventListener('change', function() {
+                // Reset all radio circles
+                reportForm.querySelectorAll('.w-3.h-3').forEach(circle => {
+                    circle.classList.add('hidden');
+                });
+                
+                // Show selected radio circle
+                if (this.checked && radioCircle) {
+                    radioCircle.classList.remove('hidden');
+                }
+            });
+        });
+    },
+
+    openReportModal(postId) {
+        // Store the post ID for the report
+        this.currentReportPostId = postId;
+        this.setupReportReasons();
+        
+        // Show the report modal
+        const reportModal = document.getElementById('reportPostModal');
+        if (reportModal) {
+            reportModal.classList.remove('hidden');
+            // Reset form
+            const reportForm = document.getElementById('reportPostForm');
+            if (reportForm) {
+                reportForm.reset();
+                // Hide description initially
+                const descriptionDiv = document.getElementById('reportDescription');
+                if (descriptionDiv) {
+                    descriptionDiv.classList.add('hidden');
+                }
+            }
+        }
+        
+        // Hide context menu
+        this.hideContextMenu();
+    },
+
+    async handleReport(postId, reason) {
+        try {
+            const response = await fetch(`${baseUrl}/api/posts/report/${postId}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest'
+                },
+                body: JSON.stringify({ 
+                    token: AppState.getToken(), 
+                    longitude, 
+                    latitude, 
+                    userUUID,
+                    reason: reason
+                })
+            });
+            
+            const data = await response.json();
+            
+            if (data.status === 'success') {
+                this.setupReportReasons();
+                AppState.showNotification(data.data || 'Post reported successfully', 'success');
+                // Close modal
+                const reportModal = document.getElementById('reportPostModal');
+                if (reportModal) {
+                    reportModal.classList.add('hidden');
+                }
+            } else {
+                throw new Error(data.message || 'Failed to report post');
+            }
+        } catch (error) {
+            console.error('Report error:', error);
+            AppState.showNotification(error.message || 'Error reporting post', 'error');
+        }
+    },
+
+    closeReportModal() {
+        const reportModal = document.getElementById('reportPostModal');
+        if (reportModal) {
+            reportModal.classList.add('hidden');
+        }
+    },
+
+    setupReportModal() {
+        const reportForm = document.getElementById('reportPostForm');
+        const reportModal = document.getElementById('reportPostModal');
+        
+        if (!reportForm || !reportModal) return;
+        
+        // Handle form submission
+        reportForm.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const reason = reportForm.querySelector('input[name="reportReason"]:checked')?.value;
+            
+            if (!reason) {
+                AppState.showNotification('Please select a reason for reporting', 'error');
+                return;
+            }
+            
+            // Show loading state
+            const submitBtn = reportForm.querySelector('button[type="submit"]');
+            const originalText = submitBtn.textContent;
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = `
+                <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                Submitting...
+            `;
+            
+            try {
+                await PostManager.handleReport(PostManager.currentReportPostId, reason);
+                // unselect the radio button
+                const radioButton = reportForm.querySelector('input[name="reportReason"]:checked');
+                if (radioButton) {
+                    radioButton.checked = false;
+                }
+            } finally {
+                // Reset button
+                submitBtn.disabled = false;
+                submitBtn.textContent = originalText;
+            }
+        });
+
+        // Click outside to close
+        reportModal.addEventListener('click', (e) => {
+            if (e.target === reportModal) {
+                PostManager.closeReportModal();
+            }
+        });
     },
     async handleBookmark(postId, isBookmarked) {
         try {

@@ -937,6 +937,34 @@ class PostsModel extends Model {
             return [];
         }
     }
+
+    /**
+     * Report a post
+     * 
+     * @param array $reportData
+     * 
+     * @return array
+     */
+    public function report($reportData) {
+        try {
+            // insert the report
+            $this->db->query(
+                "INSERT INTO reports (reporter_id, reported_type, reported_id, reason, status, created_at) 
+                VALUES (?, ?, ?, ?, ?, ?)",
+                [
+                    $reportData['reporter_id'],
+                    $reportData['reported_type'] ?? 'post',
+                    $reportData['reported_id'],
+                    $reportData['reason'],
+                    $reportData['status'],
+                    date('Y-m-d H:i:s')
+                ]
+            );
+            return $this->db->insertID();
+        } catch (DatabaseException $e) {
+            return [];
+        }
+    }
     
 }
 ?>

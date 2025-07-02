@@ -233,7 +233,7 @@ CREATE TABLE IF NOT EXISTS reports (
     reporter_id BIGINT UNSIGNED NOT NULL,
     reported_type ENUM('post', 'comment', 'message', 'user') NOT NULL,
     reported_id BIGINT UNSIGNED NOT NULL,
-    reason ENUM('spam', 'abuse', 'inappropriate', 'other') NOT NULL,
+    reason ENUM('spam', 'harassment', 'inappropriate', 'misinformation', 'violence', 'other') NOT NULL,
     description TEXT,
     status ENUM('pending', 'reviewed', 'resolved') DEFAULT 'pending',
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,

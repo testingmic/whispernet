@@ -696,5 +696,62 @@ class Posts extends LoadController {
         return Routing::success(formatPosts($posts, false, $this->payload['userId']));
 
     }
+
+    /**
+     * Report a post
+     * 
+     * @return array
+     */
+    public function report() {
+        // validate required fields
+        if (empty($this->payload['reason'])) {
+            return Routing::error('Reason is required');
+        }
+
+        // get the post ID from the URL
+        $postId = $this->uniqueId;
+        if (empty($postId)) {
+            return Routing::error('Post ID is required');
+        }
+
+        // check if post exists
+        $post = $this->postsModel->db->query("SELECT * FROM posts WHERE post_id = ?", [$postId])->getRowArray();
+        if (empty($post)) {
+            return Routing::notFound();
+        }
+
+        // check if user is reporting their own post
+        if ($post['user_id'] == $this->currentUser['user_id']) {
+            return Routing::error('You cannot report your own post');
+        }
+
+        // check if user has already reported this post
+        $existingReport = $this->postsModel->db->query(
+            "SELECT * FROM reports WHERE reporter_id = ? AND reported_id = ? AND reported_type = 'post'", 
+            [$this->currentUser['user_id'], $postId]
+        )->getRowArray();
+
+        if (!empty($existingReport)) {
+            return Routing::success('You have already reported this post');
+        }
+
+        // create the report
+        $reportData = [
+            'reporter_id' => $this->currentUser['user_id'],
+            'reported_type' => 'post',
+            'reported_id' => $postId,
+            'reason' => $this->payload['reason'],
+            'status' => 'pending'
+        ];
+
+        // create the report
+        $reportId = $this->postsModel->report($reportData);
+
+        if(empty($reportId)) {
+            return Routing::error('Failed to report post');
+        }
+
+        return Routing::success('Post reported successfully');
+    }
     
 } 
