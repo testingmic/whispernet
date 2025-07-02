@@ -289,9 +289,11 @@ class UsersModel extends Model {
             $offset = ($page - 1) * $limit;
             $searchTerm = "%$query%";
 
-            $sql = "SELECT user_id, username, full_name, profile_image, is_verified, last_login
+            $sql = "SELECT users.user_id, username, full_name, profile_image, is_verified, last_login, gender
                     FROM users 
-                    WHERE username LIKE ? OR full_name LIKE ? 
+                    INNER JOIN settings ON users.user_id = settings.user_id
+                    WHERE (username LIKE ? OR full_name LIKE ?) 
+                        AND (settings.setting = 'search_visibility' AND settings.value = '1')
                     ORDER BY username 
                     LIMIT ? OFFSET ?";
             $users = $this->db->query($sql, [$searchTerm, $searchTerm, $limit, $offset])->getResultArray();

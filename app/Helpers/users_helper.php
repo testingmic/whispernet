@@ -130,7 +130,7 @@ function mask_email_address($users, $first_part = false) {
             }
         }
         if(isset($value['email'])) {
-            $users[$key]['email'] = substr($value['email'], 0, 3) . '***@***.com';
+            $users[$key]['email'] = substr($value['email'], 0, 2) . '****@***.com';
         }
     }
     return $users;
