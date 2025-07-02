@@ -106,7 +106,8 @@ class Auth extends LoadController {
             'full_name' => $user['full_name'],
             'username' => $user['username'],
             'two_factor_setup' => false,
-            'email' => $user['email']
+            'email' => $user['email'],
+            'user_type' => $user['user_type']
         ];
 
         // update the user last login date
@@ -136,6 +137,7 @@ class Auth extends LoadController {
             $sessionObject->set('user_token', $response['token']);
             $sessionObject->set('user_id', $user['user_id']);
             $sessionObject->set('user_loggedin', true);
+            $sessionObject->set('user_type', $user['user_type']);
 
             // if the longitude and latitude are provided, set the session
             if(!empty($payload['longitude']) && !empty($payload['latitude'])) {
@@ -543,6 +545,9 @@ class Auth extends LoadController {
                 $getRecord['date_expired'] = date('Y-m-d H:i:s', strtotime("+1 day"));
             }
         }
+
+        $getRecord['isAdmin'] = $getRecord['user_type'] == 'admin';
+        $getRecord['isModerator'] = $getRecord['user_type'] == 'moderator';
 
         // decode the statistics
         $getRecord['statistics'] = !empty($getRecord['statistics']) ? json_decode($getRecord['statistics'], true) : [];

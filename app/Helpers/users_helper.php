@@ -354,8 +354,8 @@ function is_student($currentUser) {
  * 
  * @return bool
  */
-function is_instructor($currentUser) {
-    return (bool) !empty($currentUser['isInstructor']);
+function is_moderator($currentUser) {
+    return (bool) !empty($currentUser['isModerator']);
 }
 
 /**
@@ -365,8 +365,8 @@ function is_instructor($currentUser) {
  * 
  * @return bool
  */
-function is_admin_or_instructor($currentUser) {
-    return is_admin($currentUser) || is_instructor($currentUser);
+function is_admin_or_moderator($currentUser) {
+    return is_admin($currentUser) || is_moderator($currentUser);
 }
 
 /**

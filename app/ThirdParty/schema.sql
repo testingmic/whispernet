@@ -22,6 +22,7 @@ CREATE TABLE IF NOT EXISTS users (
     full_name VARCHAR(100),
     bio TEXT,
     statistics TEXT,
+    user_type VARCHAR(50) DEFAULT 'user',
     two_factor_setup TINYINT(1) DEFAULT 0,
     profile_image VARCHAR(255),
     is_verified TINYINT(1) DEFAULT 0,

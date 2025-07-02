@@ -143,6 +143,10 @@ class Templates extends BaseController
             ];
         }
 
+        $data['isAdmin'] = is_admin($data['userData'] ?? []);
+        $data['isModerator'] = is_moderator($data['userData'] ?? []);
+        $data['isAdminOrModerator'] = is_admin_or_moderator($data['userData'] ?? []);
+
         // print the files contents
         echo $this->loadHeader($data);
         echo view($page, $data);

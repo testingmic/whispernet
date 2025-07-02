@@ -8,6 +8,7 @@ class ReportsValidation {
         'list' => [
             'method' => 'POST,GET',
             'authenticate' => true,
+            'is_moderator' => true,
             'payload' => [
                 'status' => 'permit_empty|max_length[32]',
                 'reported_type' => 'permit_empty|max_length[32]',
@@ -20,10 +21,12 @@ class ReportsValidation {
         'stats' => [
             'method' => 'POST,GET',
             'authenticate' => true,
+            'is_moderator' => true,
         ],
         'view:reportId' => [
             'method' => 'POST,GET',
             'authenticate' => true,
+            'is_moderator' => true,
             'payload' => [
                 'reportId' => 'required|numeric|max_length[10]',
             ]
@@ -31,6 +34,7 @@ class ReportsValidation {
         'vote:reportId' => [
             'method' => 'POST',
             'authenticate' => true,
+            'is_moderator' => true,
             'payload' => [
                 'reportId' => 'required|numeric|max_length[10]',
             ]

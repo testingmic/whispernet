@@ -77,17 +77,14 @@ const ReportsManager = {
             });
 
             if (!response.ok) {
-                throw new Error('Failed to load reports');
+                return [];
             }
 
             const data = await response.json();
             this.renderReports(data.data.reports || []);
             this.updatePagination(data.data.total || 0);
             
-        } catch (error) {
-            console.error('Error loading reports:', error);
-            AppState.showNotification('Failed to load reports', 'error');
-        } finally {
+        } catch (error) { } finally {
             this.hideLoading();
         }
     },

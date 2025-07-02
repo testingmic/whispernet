@@ -31,6 +31,7 @@ $databases = [
         bio TEXT,
         gender TEXT,
         statistics TEXT,
+        user_type TEXT DEFAULT 'user',
         location TEXT DEFAULT NULL,
         two_factor_setup BOOLEAN DEFAULT 0,
         profile_image TEXT,
@@ -302,7 +303,7 @@ $databases = [
 
 // alter tables
 $alterTables = [
-    // "ALTER TABLE reports ADD COLUMN final_decision TEXT DEFAULT 'pending'",
+    // "ALTER TABLE users ADD COLUMN user_type TEXT DEFAULT 'user'",
 ];
 
 $votesTables = [
