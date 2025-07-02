@@ -29,6 +29,23 @@ class Users extends LoadController {
     }
 
     /**
+     * Get user location
+     * 
+     * @return array
+     */
+    public function location() {
+        // get the user location
+        $location = manageUserLocation($this->payload, $this->cacheObject);
+        
+        // set the result
+        $result = $location['finalLocation'];
+        $result['agent'] = $location['agent'];
+        $result['ipaddress'] = $location['ipaddress'];
+
+        return Routing::success($result);
+    }
+
+    /**
      * Delete user account
      * 
      * @return array

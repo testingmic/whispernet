@@ -4,6 +4,13 @@ namespace App\Libraries\Validation;
 class UsersValidation {
 
     public $routes = [
+        'location' => [
+            'method' => 'GET,POST',
+            'payload' => [
+                'longitude' => 'permit_empty|numeric',
+                'latitude' => 'permit_empty|numeric',
+            ]
+        ],
         'update:userId' => [
             'method' => 'POST,PUT',
             'authenticate' => true,
