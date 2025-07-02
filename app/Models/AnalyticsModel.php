@@ -466,22 +466,22 @@ class AnalyticsModel extends Model {
         $sql = "SELECT 
                     t.name,
                     COUNT(pt.post_id) as posts,
-                    COUNT(pt.post_id) as usage
+                    COUNT(pt.post_id) as ausage
                 FROM hashtags t
                 JOIN post_hashtags pt ON t.id = pt.hashtag_id
                 JOIN posts p ON pt.post_id = p.post_id
-                WHERE p.created_at >= ?
+                WHERE p.created_at >= {$dateFilter}
                 GROUP BY t.id
                 ORDER BY posts DESC
                 LIMIT 10";
         
-        $result = $this->db->query($sql, [$dateFilter])->getResultArray();
+        $result = $this->db->query($sql)->getResultArray();
         
         return array_map(function($row) {
             return [
                 'name' => $row['name'],
                 'posts' => (int)$row['posts'],
-                'usage' => (int)$row['usage']
+                'usage' => (int)$row['ausage']
             ];
         }, $result);
     }
