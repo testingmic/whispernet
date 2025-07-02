@@ -12,6 +12,13 @@ class PostsValidation {
                 'location' => 'permit_empty|max_length[32]'
             ]
         ],
+        'hide:postId' => [
+            'method' => 'POST',
+            'authenticate' => true,
+            'payload' => [
+                'postId' => 'required|numeric|max_length[10]',
+            ]
+        ],
         'mark_as_seen' => [
             'method' => 'POST',
             'authenticate' => true,

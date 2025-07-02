@@ -91,6 +91,25 @@ class Posts extends LoadController {
     }
 
     /**
+     * Hide a post
+     * 
+     * @return array
+     */
+    public function hide() {
+        // get the hidden posts
+        $post = $this->postsModel->hiddenPostById($this->currentUser['user_id'], $this->payload['postId']);
+        if(!empty($post)) {
+            return Routing::success('Post already hidden');
+        }
+
+        // make the call to the posts model
+        $this->postsModel->hide($this->currentUser['user_id'], $this->payload['postId']);
+
+        // return the success message
+        return Routing::success('Post hidden successfully');
+    }
+
+    /**
      * View comments
      * 
      * @return array

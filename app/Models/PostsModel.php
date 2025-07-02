@@ -108,6 +108,11 @@ class PostsModel extends Model {
                 $userPosts->where("p.post_id IN (SELECT post_id FROM comments WHERE user_id = {$this->payload['userId']})");
             }
 
+            $hiddenPosts = $this->hiddenPostByUserId($this->payload['userId']);
+            if(!empty($hiddenPosts)) {
+                $userPosts->where("p.post_id NOT IN (" . implode(',', $hiddenPosts) . ")");
+            }
+
             if($hasVoted) {
                 $this->connectToDb('votes');
                 $postIds = $this->votesDb->table('votes')
@@ -156,6 +161,87 @@ class PostsModel extends Model {
             return $e->getMessage();
         }
 
+    }
+
+    /**
+     * Hide a post
+     * 
+     * @param int $userId
+     * @param int $postId
+     * 
+     * @return array
+     */
+    public function hide($userId, $postId) {
+        try {
+            return $this->db->query("INSERT INTO hidden_posts (user_id, post_id) VALUES (?, ?)", [$userId, $postId]);
+        } catch (DatabaseException $e) {
+            return false;
+        }
+    }
+
+    /**
+     * Get hidden posts
+     * 
+     * @param int $userId
+     * 
+     * @return array
+     */
+    public function hiddenPosts($userId) {
+        try {
+            $posts = $this->db->query("SELECT * FROM hidden_posts WHERE user_id = ?", [$userId])->getResultArray();
+            return array_column($posts, 'post_id');
+        } catch (DatabaseException $e) {
+            return [];
+        }
+    }
+
+    /**
+     * Get a hidden post by id
+     * 
+     * @param int $userId
+     * @param int $postId
+     * 
+     * @return array
+     */
+    public function removeHiddenPost($userId, $postId) {
+        try {
+            return $this->db->query("DELETE FROM hidden_posts WHERE user_id = ? AND post_id = ?", [$userId, $postId]);
+        } catch (DatabaseException $e) {
+            return [];
+        }
+    }
+
+    /**
+     * Get a hidden post by id
+     * 
+     * @param int $userId
+     * @param int $postId
+     * 
+     * @return array
+     */
+    public function hiddenPostByUserId($userId) {
+        try {
+            $posts = $this->db->query("SELECT post_id FROM hidden_posts WHERE user_id = ?", [$userId])->getResultArray();
+            return array_column($posts, 'post_id');
+        } catch (DatabaseException $e) {
+            return [];
+        }
+    }
+
+    /**
+     * Get a hidden post by id
+     * 
+     * @param int $userId
+     * @param int $postId
+     * 
+     * @return array
+     */
+    public function hiddenPostById($userId, $postId) {
+        try {
+            return $this->db->query("SELECT * FROM hidden_posts WHERE user_id = ? AND post_id = ?", [$userId, $postId])->getRowArray();
+        } catch (DatabaseException $e) {
+            return false;
+        }
     }
 
     /**
@@ -476,9 +562,15 @@ class PostsModel extends Model {
                     ->join('users u', 'p.user_id = u.user_id')
                     ->join('media m', 'p.post_id = m.record_id AND m.section = "posts"', 'left')
                     ->where('p.created_at >=', date('Y-m-d H:i:s', strtotime("-{$hours} hours")))
-                    ->orderBy('score DESC, p.created_at DESC')
-                    ->limit($this->payload['limit'])
-                    ->offset($offset);
+                    ->orderBy('score DESC, p.created_at DESC');
+
+        $hiddenPosts = $this->hiddenPostByUserId($this->payload['userId']);
+        if(!empty($hiddenPosts)) {
+            $posts->where("p.post_id NOT IN (" . implode(',', $hiddenPosts) . ")");
+        }
+
+        // set the limit and offset
+        $posts->limit($this->payload['limit'])->offset($offset);
 
         if(!empty($this->payload['location'])) {
             $posts->like('p.city', $this->payload['location'], 'both');
@@ -579,6 +671,11 @@ class PostsModel extends Model {
                     return [];
                 }
                 $posts->where("p.post_id IN (" . implode(',', $postIds) . ")");
+            }
+
+            $hiddenPosts = $this->hiddenPostByUserId($this->payload['userId']);
+            if(!empty($hiddenPosts)) {
+                $posts->where("p.post_id NOT IN (" . implode(',', $hiddenPosts) . ")");
             }
 
             if(!empty($this->payload['location'])) {

@@ -75,7 +75,7 @@ function formatPosts($posts = [], $single = false, $userId = null) {
  * Extract hashtags from content
  * 
  * @param string $comment
- * @return string
+ * @return string|array
  */
 function extractHashtags($comment = "", $itag = "#") {
     if(empty($comment)) return [];

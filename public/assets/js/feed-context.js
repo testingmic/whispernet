@@ -9,6 +9,19 @@ const FeedContext = {
         this.doneShare = document.getElementById('doneShare');
     },
 
+    async hidePost(postId) {
+        try {
+            $(`div[data-post-id="${postId}"]`).remove();
+            AppState.showNotification('Post hidden successfully', 'success');
+            await fetch(`${baseUrl}/api/posts/hide/${postId}`, {
+                method: 'POST',
+                body: JSON.stringify({ token: AppState.getToken(), postId })
+            });
+        } catch (error) {
+            AppState.showNotification('Error hiding post', 'error');
+        }
+    },
+
     shareFeed(post_id) {
         let postData = PostManager.tinyPostContent[post_id];
         this.shareModal(postData);

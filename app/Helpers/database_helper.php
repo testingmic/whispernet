@@ -14,6 +14,14 @@ $databases = [
         updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     );
     CREATE UNIQUE INDEX IF NOT EXISTS user_id ON settings (user_id);",
+    "CREATE TABLE IF NOT EXISTS hidden_posts (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        user_id INTEGER NOT NULL,
+        post_id INTEGER NOT NULL,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    );
+    CREATE UNIQUE INDEX IF NOT EXISTS user_id ON hidden_posts (user_id);
+    CREATE UNIQUE INDEX IF NOT EXISTS post_id ON hidden_posts (post_id);",
     "CREATE TABLE IF NOT EXISTS users (
         user_id INTEGER PRIMARY KEY,
         username TEXT NOT NULL UNIQUE,
