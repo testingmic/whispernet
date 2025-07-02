@@ -178,7 +178,9 @@
                         <span class="text-sm text-gray-600 dark:text-gray-400">New Users</span>
                     </div>
                 </div>
-                <canvas id="userGrowthChart" height="300"></canvas>
+                <div class="relative overflow-hidden" style="height: 300px;">
+                    <canvas id="userGrowthChart"></canvas>
+                </div>
             </div>
 
             <!-- Posts Activity Chart -->
@@ -190,7 +192,9 @@
                         <span class="text-sm text-gray-600 dark:text-gray-400">Posts Created</span>
                     </div>
                 </div>
-                <canvas id="postsActivityChart" height="300"></canvas>
+                <div class="relative overflow-hidden" style="height: 300px;">
+                    <canvas id="postsActivityChart"></canvas>
+                </div>
             </div>
         </div>
 
@@ -199,13 +203,17 @@
             <!-- Engagement Metrics -->
             <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-200 dark:border-gray-700 p-6">
                 <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Engagement Metrics</h3>
-                <canvas id="engagementChart" height="250"></canvas>
+                <div class="relative overflow-hidden" style="height: 250px;">
+                    <canvas id="engagementChart"></canvas>
+                </div>
             </div>
 
             <!-- Posts by Gender -->
             <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-200 dark:border-gray-700 p-6">
                 <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Posts by Gender</h3>
-                <canvas id="genderChart" height="250"></canvas>
+                <div class="relative overflow-hidden" style="height: 250px;">
+                    <canvas id="genderChart"></canvas>
+                </div>
             </div>
         </div>
 
@@ -237,7 +245,9 @@
                     <span class="text-sm text-gray-600 dark:text-gray-400">Live</span>
                 </div>
             </div>
-            <canvas id="realtimeActivityChart" height="200"></canvas>
+            <div class="relative overflow-hidden" style="height: 200px;">
+                <canvas id="realtimeActivityChart"></canvas>
+            </div>
         </div>
 
         <!-- Top Performing Content -->

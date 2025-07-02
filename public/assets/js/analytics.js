@@ -8,6 +8,9 @@ const AnalyticsManager = {
         this.setupEventListeners();
         this.loadAnalytics();
         this.startRealTimeUpdates();
+        
+        // Handle window resize to prevent chart stretching
+        window.addEventListener('resize', this.handleResize.bind(this));
     },
 
     setupEventListeners() {
@@ -33,11 +36,11 @@ const AnalyticsManager = {
             }
 
             const data = await response.json();
-            this.updateMetrics(data.metrics);
-            this.updateCharts(data.charts);
-            this.updateTopContent(data.topContent);
-            this.updateLocations(data.locations);
-            this.updateTags(data.tags);
+            this.updateMetrics(data.data.metrics);
+            this.updateCharts(data.data.charts);
+            this.updateTopContent(data.data.topContent);
+            this.updateLocations(data.data.locations);
+            this.updateTags(data.data.tags);
             
         } catch (error) {
             console.error('Error loading analytics:', error);
@@ -132,6 +135,15 @@ const AnalyticsManager = {
                             color: '#6b7280'
                         }
                     }
+                },
+                interaction: {
+                    intersect: false,
+                    mode: 'index'
+                },
+                elements: {
+                    point: {
+                        hoverRadius: 8
+                    }
                 }
             }
         });
@@ -184,6 +196,10 @@ const AnalyticsManager = {
                             color: '#6b7280'
                         }
                     }
+                },
+                interaction: {
+                    intersect: false,
+                    mode: 'index'
                 }
             }
         });
@@ -221,8 +237,17 @@ const AnalyticsManager = {
                         labels: {
                             color: '#6b7280',
                             padding: 20,
-                            usePointStyle: true
+                            usePointStyle: true,
+                            font: {
+                                size: 12
+                            }
                         }
+                    }
+                },
+                layout: {
+                    padding: {
+                        top: 10,
+                        bottom: 10
                     }
                 }
             }
@@ -261,8 +286,17 @@ const AnalyticsManager = {
                         labels: {
                             color: '#6b7280',
                             padding: 20,
-                            usePointStyle: true
+                            usePointStyle: true,
+                            font: {
+                                size: 12
+                            }
                         }
+                    }
+                },
+                layout: {
+                    padding: {
+                        top: 10,
+                        bottom: 10
                     }
                 }
             }
@@ -319,6 +353,15 @@ const AnalyticsManager = {
                         ticks: {
                             color: '#6b7280'
                         }
+                    }
+                },
+                interaction: {
+                    intersect: false,
+                    mode: 'index'
+                },
+                elements: {
+                    point: {
+                        hoverRadius: 6
                     }
                 }
             }
@@ -450,9 +493,27 @@ const AnalyticsManager = {
 
     updateRealtimeChart(data) {
         if (this.charts.realtimeActivity) {
-            this.charts.realtimeActivity.data.labels = data.labels;
-            this.charts.realtimeActivity.data.datasets[0].data = data.values;
-            this.charts.realtimeActivity.update('none');
+            // Only update if data has actually changed
+            const currentData = this.charts.realtimeActivity.data.datasets[0].data;
+            const newData = data.values;
+            
+            let hasChanged = false;
+            if (currentData.length !== newData.length) {
+                hasChanged = true;
+            } else {
+                for (let i = 0; i < currentData.length; i++) {
+                    if (currentData[i] !== newData[i]) {
+                        hasChanged = true;
+                        break;
+                    }
+                }
+            }
+            
+            if (hasChanged) {
+                this.charts.realtimeActivity.data.labels = data.labels;
+                this.charts.realtimeActivity.data.datasets[0].data = data.values;
+                this.charts.realtimeActivity.update('none');
+            }
         }
     },
 
@@ -489,14 +550,40 @@ const AnalyticsManager = {
     destroy() {
         if (this.refreshInterval) {
             clearInterval(this.refreshInterval);
+            this.refreshInterval = null;
         }
         
-        // Destroy all charts
-        Object.values(this.charts).forEach(chart => {
-            if (chart) {
-                chart.destroy();
+        // Clear resize timeout
+        if (this.resizeTimeout) {
+            clearTimeout(this.resizeTimeout);
+            this.resizeTimeout = null;
+        }
+        
+        // Remove resize event listener
+        window.removeEventListener('resize', this.handleResize.bind(this));
+        
+        // Destroy all charts properly
+        Object.keys(this.charts).forEach(chartKey => {
+            if (this.charts[chartKey]) {
+                this.charts[chartKey].destroy();
+                this.charts[chartKey] = null;
             }
         });
+        
+        // Clear the charts object
+        this.charts = {};
+    },
+
+    handleResize() {
+        // Debounce resize events to prevent excessive chart updates
+        clearTimeout(this.resizeTimeout);
+        this.resizeTimeout = setTimeout(() => {
+            Object.values(this.charts).forEach(chart => {
+                if (chart) {
+                    chart.resize();
+                }
+            });
+        }, 250);
     }
 };
 
