@@ -271,6 +271,7 @@
         <span class="text-gray-900 dark:text-white">Loading analytics data...</span>
     </div>
 </div>
+<div class="h-20"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="<?= $baseUrl ?>/assets/js/analytics.js"></script>
