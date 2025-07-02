@@ -95,16 +95,16 @@ class AnalyticsModel extends Model {
         try {
             $oneHourAgo = date('Y-m-d H:i:s', strtotime('-1 HOUR'));
             $sql = "SELECT 
-                        (SELECT COUNT(*) FROM users WHERE created_at >= ?) as totalUsers,
-                        (SELECT COUNT(*) FROM posts WHERE created_at >= ?) as totalPosts,
-                        (SELECT COUNT(*) FROM comments WHERE created_at >= ?) as totalComments,
-                        (SELECT COUNT(*) FROM votes WHERE created_at >= ?) as totalVotes,
-                        (SELECT SUM(views) FROM posts WHERE created_at >= ?) as totalPageViews,
+                        (SELECT COUNT(*) FROM users WHERE created_at >= {$dateFilter}) as totalUsers,
+                        (SELECT COUNT(*) FROM posts WHERE created_at >= {$dateFilter}) as totalPosts,
+                        (SELECT COUNT(*) FROM comments WHERE created_at >= {$dateFilter}) as totalComments,
+                        (SELECT COUNT(*) FROM votes WHERE created_at >= {$dateFilter}) as totalVotes,
+                        (SELECT SUM(views) FROM posts WHERE created_at >= {$dateFilter}) as totalPageViews,
                         (SELECT COUNT(*) FROM users WHERE last_login >= '{$oneHourAgo}') as activeUsers,
                         (SELECT COUNT(*) FROM users WHERE user_type = 'moderator') as moderatorsCount,
                         (SELECT COUNT(*) FROM tags) as totalTags";
             
-            $result = $this->db->query($sql, array_fill(0, 8, $dateFilter))->getRowArray();
+            $result = $this->db->query($sql)->getRowArray();
             
             return [
                 'totalUsers' => (int)$result['totalUsers'],
@@ -133,12 +133,12 @@ class AnalyticsModel extends Model {
             $dateFilter = $this->getPreviousDateFilter($timeRange);
             
             $sql = "SELECT 
-                        (SELECT COUNT(*) FROM users WHERE created_at >= ?) as totalUsers,
-                        (SELECT COUNT(*) FROM posts WHERE created_at >= ?) as totalPosts,
-                        (SELECT COUNT(*) FROM comments WHERE created_at >= ?) as totalComments,
-                        (SELECT COUNT(*) FROM votes WHERE created_at >= ?) as totalVotes";
+                        (SELECT COUNT(*) FROM users WHERE created_at >= {$dateFilter}) as totalUsers,
+                        (SELECT COUNT(*) FROM posts WHERE created_at >= {$dateFilter}) as totalPosts,
+                        (SELECT COUNT(*) FROM comments WHERE created_at >= {$dateFilter}) as totalComments,
+                        (SELECT COUNT(*) FROM votes WHERE created_at >= {$dateFilter}) as totalVotes";
             
-            $result = $this->db->query($sql, array_fill(0, 4, $dateFilter))->getRowArray();
+            $result = $this->db->query($sql)->getRowArray();
             
             return [
                 'totalUsers' => (int)$result['totalUsers'],
