@@ -432,22 +432,23 @@ class AnalyticsModel extends Model {
         $dateFilter = $this->getDateFilter($timeRange);
         
         $sql = "SELECT 
-                    u.location,
-                    COUNT(p.post_id) as posts
+                    p.city AS location, p.country AS country,
+                    COUNT(p.post_id) AS posts
                 FROM posts p
-                JOIN users u ON p.user_id = u.user_id
-                WHERE p.created_at >= ? AND u.location IS NOT NULL AND u.location != ''
-                GROUP BY u.location
+                WHERE 
+                    p.created_at >= {$dateFilter}
+                    AND p.city IS NOT NULL
+                    AND p.city != ''
+                GROUP BY p.city, p.country
                 ORDER BY posts DESC
-                LIMIT 10";
+                LIMIT 10;";
         
-        $result = $this->db->query($sql, [$dateFilter])->getResultArray();
+        $result = $this->db->query($sql)->getResultArray();
         
         return array_map(function($row) {
-            $location = explode(',', $row['location']);
             return [
-                'city' => trim($location[0] ?? 'Unknown'),
-                'country' => trim($location[1] ?? ''),
+                'city' => trim($row['location'] ?? 'Unknown'),
+                'country' => trim($row['country'] ?? ''),
                 'posts' => (int)$row['posts']
             ];
         }, $result);
