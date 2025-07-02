@@ -402,12 +402,12 @@ class AnalyticsModel extends Model {
                     SUM(p.views) as views
                 FROM posts p
                 LEFT JOIN users u ON p.user_id = u.user_id
-                WHERE p.created_at >= ?
+                WHERE p.created_at >= {$dateFilter}
                 GROUP BY p.post_id
                 ORDER BY p.upvotes, p.comments_count DESC
                 LIMIT 10";
         
-        $result = $this->db->query($sql, [$dateFilter])->getResultArray();
+        $result = $this->db->query($sql)->getResultArray();
         
         return array_map(function($row) {
             return [
@@ -467,11 +467,11 @@ class AnalyticsModel extends Model {
                     t.name,
                     COUNT(pt.post_id) as posts,
                     COUNT(pt.post_id) as usage
-                FROM tags t
-                JOIN post_tags pt ON t.tag_id = pt.tag_id
+                FROM hashtags t
+                JOIN post_hashtags pt ON t.id = pt.hashtag_id
                 JOIN posts p ON pt.post_id = p.post_id
                 WHERE p.created_at >= ?
-                GROUP BY t.tag_id
+                GROUP BY t.id
                 ORDER BY posts DESC
                 LIMIT 10";
         
