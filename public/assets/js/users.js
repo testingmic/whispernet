@@ -74,7 +74,7 @@ const UserManager = {
             
         } catch (error) {
             console.error('Error loading users:', error);
-            this.showError('Failed to load users');
+            AppState.showNotification('Failed to load users', 'error');
         } finally {
             this.hideLoading();
         }
@@ -318,11 +318,11 @@ const UserManager = {
             this.updateBulkActions();
             this.loadUsers();
             this.loadStats();
-            this.showSuccess(`Successfully ${action}ed ${this.selectedUsers.size} users`);
+            AppState.showNotification(`Successfully ${action}ed ${this.selectedUsers.size} users`);
             
         } catch (error) {
             console.error('Error performing bulk action:', error);
-            this.showError('Failed to perform bulk action');
+            AppState.showNotification('Failed to perform bulk action');
         } finally {
             this.hideLoading();
         }
@@ -365,7 +365,7 @@ const UserManager = {
             
         } catch (error) {
             console.error('Error loading user:', error);
-            this.showError('Failed to load user data');
+            AppState.showNotification('Failed to load user data');
         } finally {
             this.hideLoading();
         }
@@ -401,11 +401,11 @@ const UserManager = {
             this.closeUserModal();
             this.loadUsers();
             this.loadStats();
-            this.showSuccess(userData.userId ? 'User updated successfully' : 'User created successfully');
+            AppState.showNotification(userData.userId ? 'User updated successfully' : 'User created successfully');
             
         } catch (error) {
             console.error('Error saving user:', error);
-            this.showError('Failed to save user');
+            AppState.showNotification('Failed to save user');
         } finally {
             this.hideLoading();
         }
@@ -435,11 +435,11 @@ const UserManager = {
 
             this.loadUsers();
             this.loadStats();
-            this.showSuccess(`User ${action}ed successfully`);
+            AppState.showNotification(`User ${action}ed successfully`);
             
         } catch (error) {
             console.error('Error updating user status:', error);
-            this.showError('Failed to update user status');
+            AppState.showNotification('Failed to update user status');
         } finally {
             this.hideLoading();
         }
@@ -475,11 +475,11 @@ const UserManager = {
             this.closeDeleteModal();
             this.loadUsers();
             this.loadStats();
-            this.showSuccess('User deleted successfully');
+            AppState.showNotification('User deleted successfully');
             
         } catch (error) {
             console.error('Error deleting user:', error);
-            this.showError('Failed to delete user');
+            AppState.showNotification('Failed to delete user');
         } finally {
             this.hideLoading();
         }
@@ -518,7 +518,7 @@ const UserManager = {
             
         } catch (error) {
             console.error('Error exporting users:', error);
-            this.showError('Failed to export users');
+            AppState.showNotification('Failed to export users');
         } finally {
             this.hideLoading();
         }
@@ -567,16 +567,6 @@ const UserManager = {
 
     hideLoading() {
         document.getElementById('loadingOverlay').classList.add('hidden');
-    },
-
-    showSuccess(message) {
-        // You can implement a toast notification system here
-        alert(message);
-    },
-
-    showError(message) {
-        // You can implement a toast notification system here
-        alert('Error: ' + message);
     },
 
     debounce(func, wait) {
