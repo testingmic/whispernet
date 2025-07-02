@@ -24,5 +24,14 @@ class Admin extends WebAppController {
         return $this->templateObject->loadPage('admin/moderation', ['pageTitle' => 'Moderation']);
     }
 
+    public function analytics() {
+
+        // verify if the user is logged in
+        $this->verifyLogin();
+
+        // get the analytics data
+        return $this->templateObject->loadPage('admin/analytics', ['pageTitle' => 'Analytics']);
+    }
+
 }
 ?>
