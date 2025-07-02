@@ -747,6 +747,9 @@ class Posts extends LoadController {
         // create the report
         $reportId = $this->postsModel->report($reportData);
 
+        // hide the post
+        $this->hide();
+
         if(empty($reportId)) {
             return Routing::error('Failed to report post');
         }

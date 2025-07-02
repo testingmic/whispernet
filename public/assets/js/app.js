@@ -1235,6 +1235,7 @@ const PostManager = {
             if (reportModal) {
                 reportModal.classList.add('hidden');
             }
+            $(`div[data-post-id="${postId}"]`).remove();
             await fetch(`${baseUrl}/api/posts/report/${postId}`, {
                 method: 'POST',
                 headers: {
