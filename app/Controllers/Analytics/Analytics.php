@@ -207,7 +207,7 @@ class Analytics extends LoadController {
     public function export()
     {
         $timeRange = $this->payload['timeRange'] ?? 'month';
-        $format = $this->request->getGet('format') ?? 'json';
+        $format = $this->payload['format'] ?? 'json';
         
         $data = $this->analyticsModel->exportData($timeRange, $format);
         
