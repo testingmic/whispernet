@@ -151,7 +151,7 @@
                         </div>
                         <div class="ml-3">
                             <h4 class="text-lg font-semibold text-red-900 dark:text-red-100">Delete Account</h4>
-                            <p class="text-red-700 dark:text-red-300">Once you delete your account, there is no going back. Please be certain.</p>
+                            <p class="text-red-700 dark:text-red-300">Once you delete your account, there is no going back.</p>
                         </div>
                     </div>
                     <button type="button" id="deleteAccountBtn" class="px-4 py-2 text-sm font-medium text-white bg-red-600 rounded-lg hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-colors duration-200">
