@@ -1,7 +1,7 @@
 // Reports Manager
 const ReportsManager = {
     currentPage: 1,
-    itemsPerPage: 20,
+    itemsPerPage: 10,
     currentFilters: {
         status: 'all',
         type: 'all',
@@ -37,6 +37,13 @@ const ReportsManager = {
             this.loadReports();
         });
 
+        // Search functionality
+        document.getElementById('searchInput').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                this.searchReports();
+            }
+        });
+
         // Pagination
         document.getElementById('prevPage').addEventListener('click', () => {
             if (this.currentPage > 1) {
@@ -53,14 +60,8 @@ const ReportsManager = {
 
     async loadReports() {
         try {
-
-            $(`div[id="reportsContainer"]`).html(`
-                <div id="loadingState" class="flex items-center justify-center py-12">
-                    <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
-                    <span class="ml-3 text-gray-600 dark:text-gray-400">Loading reports...</span>
-                </div>
-            `);
-
+            this.showLoading();
+            
             const queryParams = new URLSearchParams({
                 page: this.currentPage,
                 limit: this.itemsPerPage,
@@ -70,7 +71,7 @@ const ReportsManager = {
                 search: this.currentFilters.search
             });
 
-            const response = await fetch(`/api/reports?${queryParams}&token=${AppState.getToken()}`, {
+            const response = await fetch(`/api/reports?${queryParams}`, {
                 headers: {
                     'X-Requested-With': 'XMLHttpRequest'
                 }
@@ -81,12 +82,12 @@ const ReportsManager = {
             }
 
             const data = await response.json();
-            this.renderReports(data.data.reports || []);
-            this.updatePagination(data.data.total || 0);
+            this.renderReports(data.reports || []);
+            this.updatePagination(data.total || 0);
             
         } catch (error) {
             console.error('Error loading reports:', error);
-            AppState.showNotification('Failed to load reports', 'error');
+            this.showError('Failed to load reports');
         } finally {
             this.hideLoading();
         }
@@ -94,7 +95,7 @@ const ReportsManager = {
 
     async loadStats() {
         try {
-            const response = await fetch('/api/reports/stats?token=' + AppState.getToken(), {
+            const response = await fetch('/api/reports/stats', {
                 headers: {
                     'X-Requested-With': 'XMLHttpRequest'
                 }
@@ -102,7 +103,7 @@ const ReportsManager = {
 
             if (response.ok) {
                 const stats = await response.json();
-                this.updateStats(stats.data);
+                this.updateStats(stats);
             }
         } catch (error) {
             console.error('Error loading stats:', error);
@@ -113,18 +114,11 @@ const ReportsManager = {
         const container = document.getElementById('reportsContainer');
         
         if (reports.length === 0) {
-            container.innerHTML = `<!-- Empty State -->
-            <div id="emptyState" class=" text-center py-12">
-                <div class="w-16 h-16 bg-gray-100 dark:bg-gray-700 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <svg class="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
-                    </svg>
-                </div>
-                <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-2">No reports found</h3>
-                <p class="text-gray-600 dark:text-gray-400">There are no reports matching your current filters.</p>
-            </div>`;
+            this.showEmptyState();
             return;
         }
+
+        this.hideEmptyState();
         
         container.innerHTML = reports.map(report => this.createReportCard(report)).join('');
     },
@@ -214,7 +208,7 @@ const ReportsManager = {
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
                                 </svg>
-                                View
+                                View Details
                             </button>
                         </div>
                         
@@ -250,7 +244,7 @@ const ReportsManager = {
 
     async viewReportDetail(reportId) {
         try {
-            const response = await fetch(`/api/reports/view?reportId=${reportId}&token=${AppState.getToken()}`, {
+            const response = await fetch(`/api/reports/${reportId}`, {
                 headers: {
                     'X-Requested-With': 'XMLHttpRequest'
                 }
@@ -261,10 +255,10 @@ const ReportsManager = {
             }
 
             const report = await response.json();
-            this.showReportDetail(report.data);
+            this.showReportDetail(report);
         } catch (error) {
             console.error('Error loading report details:', error);
-            AppState.showNotification('Failed to load report details');
+            this.showError('Failed to load report details');
         }
     },
 
@@ -362,19 +356,40 @@ const ReportsManager = {
         if (!this.currentReport || !this.currentVote) return;
         
         try {
-            $.post(`${baseUrl}/api/reports/vote/${this.currentReport}`, {
-                    vote: this.currentVote,
-                    token: AppState.getToken()
-            }).then((response) => {
-                this.closeVoteModal();
-                this.loadReports();
-                AppState.showNotification('Vote submitted successfully', 'success');
-            }).catch((error) => {
-                AppState.showNotification(error.responseJSON.data || 'Failed to submit vote', 'error');
+            const response = await fetch(`/api/reports/${this.currentReport}/vote`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest'
+                },
+                body: JSON.stringify({
+                    vote: this.currentVote
+                })
             });
+
+            if (!response.ok) {
+                throw new Error('Failed to submit vote');
+            }
+
+            const result = await response.json();
+            
+            if (result.status === 'success') {
+                this.showSuccess(`Vote submitted successfully`);
+                this.closeVoteModal();
+                this.loadReports(); // Refresh the list
+            } else {
+                throw new Error(result.message || 'Failed to submit vote');
+            }
         } catch (error) {
-            AppState.showNotification(error.message || 'Failed to submit vote', 'error');
+            console.error('Error submitting vote:', error);
+            this.showError(error.message || 'Failed to submit vote');
         }
+    },
+
+    searchReports() {
+        this.currentFilters.search = document.getElementById('searchInput').value;
+        this.currentPage = 1;
+        this.loadReports();
     },
 
     refreshReports() {
@@ -414,12 +429,30 @@ const ReportsManager = {
     },
 
     showLoading() {
-        $('#loadingState').removeClass('hidden');
-        $('#emptyState').addClass('hidden');
+        document.getElementById('loadingState').classList.remove('hidden');
+        document.getElementById('emptyState').classList.add('hidden');
     },
 
     hideLoading() {
-        $('#loadingState').addClass('hidden');
+        document.getElementById('loadingState').classList.add('hidden');
+    },
+
+    showEmptyState() {
+        document.getElementById('emptyState').classList.remove('hidden');
+    },
+
+    hideEmptyState() {
+        document.getElementById('emptyState').classList.add('hidden');
+    },
+
+    showSuccess(message) {
+        // You can implement a toast notification system here
+        console.log('Success:', message);
+    },
+
+    showError(message) {
+        // You can implement a toast notification system here
+        console.error('Error:', message);
     },
 
     formatTimeAgo(dateString) {
@@ -455,4 +488,4 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('confirmVoteBtn').addEventListener('click', () => {
         ReportsManager.confirmVote();
     });
-});
+}); 

@@ -250,6 +250,7 @@ $databases = [
         reporter_id INTEGER NOT NULL,
         reported_type TEXT CHECK(reported_type IN ('post', 'comment', 'message', 'user')) NOT NULL,
         reported_id INTEGER NOT NULL,
+        final_decision TEXT DEFAULT 'pending',
         reason TEXT CHECK(reason IN ('spam', 'harassment', 'inappropriate', 'misinformation', 'violence', 'other')) NOT NULL,
         status TEXT CHECK(status IN ('pending', 'reviewed', 'resolved')) DEFAULT 'pending',
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -261,6 +262,17 @@ $databases = [
     CREATE INDEX IF NOT EXISTS reported_type ON reports (reported_type);
     CREATE INDEX IF NOT EXISTS reported_id ON reports (reported_id);
     CREATE INDEX IF NOT EXISTS status ON reports (status);",
+
+    "CREATE TABLE IF NOT EXISTS report_votes (
+        vote_id INTEGER PRIMARY KEY AUTOINCREMENT,
+        report_id INTEGER NOT NULL,
+        moderator_id INTEGER NOT NULL,
+        vote_type VARCHAR(10) NOT NULL,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    );
+    CREATE INDEX IF NOT EXISTS report_id ON report_votes (report_id);
+    CREATE INDEX IF NOT EXISTS moderator_id ON report_votes (moderator_id);
+    CREATE INDEX IF NOT EXISTS vote_type ON report_votes (vote_type);",
 
     "CREATE TABLE IF NOT EXISTS analytics (
         id INTEGER PRIMARY KEY,
@@ -290,7 +302,7 @@ $databases = [
 
 // alter tables
 $alterTables = [
-    // "ALTER TABLE comments ADD COLUMN reference_id INTEGER DEFAULT 0",
+    // "ALTER TABLE reports ADD COLUMN final_decision TEXT DEFAULT 'pending'",
 ];
 
 $votesTables = [

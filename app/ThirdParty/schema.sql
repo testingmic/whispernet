@@ -235,12 +235,26 @@ CREATE TABLE IF NOT EXISTS reports (
     reported_id BIGINT UNSIGNED NOT NULL,
     reason ENUM('spam', 'harassment', 'inappropriate', 'misinformation', 'violence', 'other') NOT NULL,
     description TEXT,
+    upvotes INTEGER DEFAULT 0,
+    downvotes INTEGER DEFAULT 0,
+    final_decision ENUM('approved', 'removed') DEFAULT 'pending',
     status ENUM('pending', 'reviewed', 'resolved') DEFAULT 'pending',
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     INDEX idx_reporter_id (reporter_id),
     INDEX idx_status (status),
     INDEX idx_reported_type (reported_type)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS report_votes (
+    vote_id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    report_id BIGINT UNSIGNED NOT NULL,
+    moderator_id BIGINT UNSIGNED NOT NULL,
+    vote_type VARCHAR(10) NOT NULL,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    INDEX idx_report_id (report_id),
+    INDEX idx_moderator_id (moderator_id),
+    INDEX idx_vote_type (vote_type)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE IF NOT EXISTS analytics (

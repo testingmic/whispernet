@@ -14,6 +14,7 @@ use App\Models\ChatsModel;
 use App\Models\UsersModel;
 use App\Models\ContactsModel;
 use App\Models\NotificationsModel;
+use App\Models\ReportsModel;
 
 class LoadController extends BaseController
 {
@@ -30,6 +31,7 @@ class LoadController extends BaseController
     protected $chatsModel;
     protected $contactsModel;
     protected $notificationsModel;
+    protected $reportsModel;
 
     public function __construct($payload = [])
     {
@@ -85,6 +87,7 @@ class LoadController extends BaseController
             'chats' => ChatsModel::class,
             'contacts' => ContactsModel::class,
             'notifications' => NotificationsModel::class,
+            'reports' => ReportsModel::class,
         ];
         
         // Loop through the requested models and initialize them

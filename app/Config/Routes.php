@@ -23,6 +23,10 @@ foreach(['report', 'privacy', 'terms', 'updates', 'install', 'support'] as $rout
     $routes->get("/{$route}", "WebApp\Dashboard::{$route}");
 }
 
+foreach(['reports', 'moderation'] as $route) {
+    $routes->get("/admin/{$route}", "WebApp\Admin::{$route}");
+}
+
 $routes->get("/posts/view/(:segment)", "WebApp\Posts::view/$1");
 $routes->get("/posts/tags/(:segment)", "WebApp\Posts::tags/$1");
 $routes->get("/posts/tags", "WebApp\Posts::tags");
