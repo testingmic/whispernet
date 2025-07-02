@@ -1229,36 +1229,22 @@ const PostManager = {
 
     async handleReport(postId, reason) {
         try {
-            const response = await fetch(`${baseUrl}/api/posts/report/${postId}`, {
+            this.setupReportReasons();
+            AppState.showNotification('Post reported successfully', 'success');
+            const reportModal = document.getElementById('reportPostModal');
+            if (reportModal) {
+                reportModal.classList.add('hidden');
+            }
+            await fetch(`${baseUrl}/api/posts/report/${postId}`, {
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/json',
-                    'X-Requested-With': 'XMLHttpRequest'
+                    'Content-Type': 'application/json', 'X-Requested-With': 'XMLHttpRequest'
                 },
                 body: JSON.stringify({ 
-                    token: AppState.getToken(), 
-                    longitude, 
-                    latitude, 
-                    userUUID,
-                    reason: reason
+                    token: AppState.getToken(), userUUID, postId, reason: reason
                 })
             });
-            
-            const data = await response.json();
-            
-            if (data.status === 'success') {
-                this.setupReportReasons();
-                AppState.showNotification(data.data || 'Post reported successfully', 'success');
-                // Close modal
-                const reportModal = document.getElementById('reportPostModal');
-                if (reportModal) {
-                    reportModal.classList.add('hidden');
-                }
-            } else {
-                throw new Error(data.message || 'Failed to report post');
-            }
         } catch (error) {
-            console.error('Report error:', error);
             AppState.showNotification(error.message || 'Error reporting post', 'error');
         }
     },
