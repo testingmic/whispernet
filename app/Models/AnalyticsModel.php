@@ -92,29 +92,33 @@ class AnalyticsModel extends Model {
      */
     private function getCurrentPeriodMetrics($dateFilter)
     {
-        $oneHourAgo = date('Y-m-d H:i:s', strtotime('-1 HOUR'));
-        $sql = "SELECT 
-                    (SELECT COUNT(*) FROM users WHERE created_at >= ?) as totalUsers,
-                    (SELECT COUNT(*) FROM posts WHERE created_at >= ?) as totalPosts,
-                    (SELECT COUNT(*) FROM comments WHERE created_at >= ?) as totalComments,
-                    (SELECT COUNT(*) FROM votes WHERE created_at >= ?) as totalVotes,
-                    (SELECT SUM(views) FROM posts WHERE created_at >= ?) as totalPageViews,
-                    (SELECT COUNT(*) FROM users WHERE last_login >= '{$oneHourAgo}') as activeUsers,
-                    (SELECT COUNT(*) FROM users WHERE user_type = 'moderator') as moderatorsCount,
-                    (SELECT COUNT(*) FROM tags) as totalTags";
-        
-        $result = $this->db->query($sql, array_fill(0, 8, $dateFilter))->getRowArray();
-        
-        return [
-            'totalUsers' => (int)$result['totalUsers'],
-            'totalPosts' => (int)$result['totalPosts'],
-            'totalComments' => (int)$result['totalComments'],
-            'totalVotes' => (int)$result['totalVotes'],
-            'totalPageViews' => (int)$result['totalPageViews'],
-            'activeUsers' => (int)$result['activeUsers'],
-            'moderatorsCount' => (int)$result['moderatorsCount'],
-            'totalTags' => (int)$result['totalTags']
-        ];
+        try {
+            $oneHourAgo = date('Y-m-d H:i:s', strtotime('-1 HOUR'));
+            $sql = "SELECT 
+                        (SELECT COUNT(*) FROM users WHERE created_at >= ?) as totalUsers,
+                        (SELECT COUNT(*) FROM posts WHERE created_at >= ?) as totalPosts,
+                        (SELECT COUNT(*) FROM comments WHERE created_at >= ?) as totalComments,
+                        (SELECT COUNT(*) FROM votes WHERE created_at >= ?) as totalVotes,
+                        (SELECT SUM(views) FROM posts WHERE created_at >= ?) as totalPageViews,
+                        (SELECT COUNT(*) FROM users WHERE last_login >= '{$oneHourAgo}') as activeUsers,
+                        (SELECT COUNT(*) FROM users WHERE user_type = 'moderator') as moderatorsCount,
+                        (SELECT COUNT(*) FROM tags) as totalTags";
+            
+            $result = $this->db->query($sql, array_fill(0, 8, $dateFilter))->getRowArray();
+            
+            return [
+                'totalUsers' => (int)$result['totalUsers'],
+                'totalPosts' => (int)$result['totalPosts'],
+                'totalComments' => (int)$result['totalComments'],
+                'totalVotes' => (int)$result['totalVotes'],
+                'totalPageViews' => (int)$result['totalPageViews'],
+                'activeUsers' => (int)$result['activeUsers'],
+                'moderatorsCount' => (int)$result['moderatorsCount'],
+                'totalTags' => (int)$result['totalTags']
+            ];
+        } catch(DatabaseException $e) {
+            return [];
+        }
     }
 
     /**
@@ -125,22 +129,26 @@ class AnalyticsModel extends Model {
      */
     private function getPreviousPeriodMetrics($timeRange)
     {
-        $dateFilter = $this->getPreviousDateFilter($timeRange);
-        
-        $sql = "SELECT 
-                    (SELECT COUNT(*) FROM users WHERE created_at >= ?) as totalUsers,
-                    (SELECT COUNT(*) FROM posts WHERE created_at >= ?) as totalPosts,
-                    (SELECT COUNT(*) FROM comments WHERE created_at >= ?) as totalComments,
-                    (SELECT COUNT(*) FROM votes WHERE created_at >= ?) as totalVotes";
-        
-        $result = $this->db->query($sql, array_fill(0, 4, $dateFilter))->getRowArray();
-        
-        return [
-            'totalUsers' => (int)$result['totalUsers'],
-            'totalPosts' => (int)$result['totalPosts'],
-            'totalComments' => (int)$result['totalComments'],
-            'totalVotes' => (int)$result['totalVotes']
-        ];
+        try {
+            $dateFilter = $this->getPreviousDateFilter($timeRange);
+            
+            $sql = "SELECT 
+                        (SELECT COUNT(*) FROM users WHERE created_at >= ?) as totalUsers,
+                        (SELECT COUNT(*) FROM posts WHERE created_at >= ?) as totalPosts,
+                        (SELECT COUNT(*) FROM comments WHERE created_at >= ?) as totalComments,
+                        (SELECT COUNT(*) FROM votes WHERE created_at >= ?) as totalVotes";
+            
+            $result = $this->db->query($sql, array_fill(0, 4, $dateFilter))->getRowArray();
+            
+            return [
+                'totalUsers' => (int)$result['totalUsers'],
+                'totalPosts' => (int)$result['totalPosts'],
+                'totalComments' => (int)$result['totalComments'],
+                'totalVotes' => (int)$result['totalVotes']
+            ];
+        } catch(DatabaseException $e) {
+            return [];
+        }
     }
 
     /**
@@ -648,15 +656,15 @@ class AnalyticsModel extends Model {
     {
         switch ($timeRange) {
             case 'today':
-                return 'DATE_SUB(NOW(), INTERVAL 1 DAY)';
+                return "'".date('Y-m-d')."'";
             case 'week':
-                return 'DATE_SUB(NOW(), INTERVAL 14 DAY)';
+                return "'".date('Y-m-d', strtotime('-4 DAY'))."'";
             case 'month':
-                return 'DATE_SUB(NOW(), INTERVAL 60 DAY)';
+                return "'".date('Y-m-d', strtotime('-60 DAY'))."'";
             case 'year':
-                return 'DATE_SUB(NOW(), INTERVAL 2 YEAR)';
+                return "'".date('Y-m-d', strtotime('-2 YEAR'))."'";
             default:
-                return 'DATE_SUB(NOW(), INTERVAL 60 DAY)';
+                return "'".date('Y-m-d', strtotime('-60 DAY'))."'";
         }
     }
 
