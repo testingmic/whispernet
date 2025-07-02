@@ -50,15 +50,15 @@ class AnalyticsModel extends Model {
     private function getTimeframeCondition($timeframe) {
         switch ($timeframe) {
             case '1h':
-                return "created_at >= ".date('Y-m-d H:i:s', strtotime('-1 HOUR'));
+                return "created_at >= '".date('Y-m-d H:i:s', strtotime('-1 HOUR'))."'";
             case '24h':
-                return "created_at >= ".date('Y-m-d H:i:s', strtotime('-24 HOUR'));
+                return "created_at >= '".date('Y-m-d H:i:s', strtotime('-24 HOUR'))."'";
             case '7d':
-                return "created_at >= ".date('Y-m-d H:i:s', strtotime('-7 DAY'));
+                return "created_at >= '".date('Y-m-d H:i:s', strtotime('-7 DAY'))."'";
             case '30d':
-                return "created_at >= ".date('Y-m-d H:i:s', strtotime('-30 DAY'));
+                return "created_at >= '".date('Y-m-d H:i:s', strtotime('-30 DAY'))."'";
             default:
-                return "created_at >= ".date('Y-m-d H:i:s', strtotime('-24 HOUR'));
+                return "created_at >= '".date('Y-m-d H:i:s', strtotime('-24 HOUR'))."'";
         }
     }
 
@@ -626,15 +626,15 @@ class AnalyticsModel extends Model {
     {
         switch ($timeRange) {
             case 'today':
-                return 'DATE(NOW())';
+                return "'".date('Y-m-d')."'";
             case 'week':
-                return 'DATE_SUB(NOW(), INTERVAL 7 DAY)';
+                return "'".date('Y-m-d', strtotime('-7 DAY'))."'";
             case 'month':
-                return 'DATE_SUB(NOW(), INTERVAL 30 DAY)';
+                return "'".date('Y-m-d', strtotime('-30 DAY'))."'";
             case 'year':
-                return 'DATE_SUB(NOW(), INTERVAL 1 YEAR)';
+                return "'".date('Y-m-d', strtotime('-1 YEAR'))."'";
             default:
-                return 'DATE_SUB(NOW(), INTERVAL 30 DAY)';
+                return "'".date('Y-m-d', strtotime('-30 DAY'))."'";
         }
     }
 
