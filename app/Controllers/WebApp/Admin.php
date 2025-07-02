@@ -15,13 +15,13 @@ class Admin extends WebAppController {
         return $this->templateObject->loadPage('admin/reports', ['pageTitle' => 'Reports']);
     }
 
-    public function moderation() {
+    public function users() {
 
         // verify if the user is logged in
         $this->verifyLogin();
 
-        // get the moderation data
-        return $this->templateObject->loadPage('admin/moderation', ['pageTitle' => 'Moderation']);
+        // get the users data
+        return $this->templateObject->loadPage('admin/users', ['pageTitle' => 'Users']);
     }
 
     public function analytics() {

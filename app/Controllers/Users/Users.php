@@ -3,9 +3,335 @@
 namespace App\Controllers\Users;
 
 use App\Controllers\LoadController;
+use App\Models\UsersModel;
 use App\Libraries\Routing;
 
 class Users extends LoadController {
+
+    protected $usersModel;
+
+    public function __construct()
+    {
+        parent::__construct();
+        $this->usersModel = new UsersModel();
+    }
+
+    /**
+     * Get users list with pagination and filters
+     * 
+     * @return array
+     */
+    public function index()
+    {
+        $page = (int)($this->request->getGet('page') ?? 1);
+        $limit = (int)($this->request->getGet('limit') ?? 10);
+        $search = $this->request->getGet('search') ?? '';
+        $status = $this->request->getGet('status') ?? 'all';
+        $role = $this->request->getGet('role') ?? 'all';
+
+        // Build filters
+        $filters = [];
+        if (!empty($search)) {
+            $filters['search'] = $search;
+        }
+        if ($status !== 'all') {
+            $filters['status'] = $status;
+        }
+        if ($role !== 'all') {
+            $filters['role'] = $role;
+        }
+
+        // Get users with pagination
+        $users = $this->usersModel->getUsers($filters, $page, $limit);
+        $total = $this->usersModel->getUsersCount($filters);
+
+        return Routing::success([
+            'users' => $users,
+            'pagination' => [
+                'page' => $page,
+                'limit' => $limit,
+                'total' => $total,
+                'pages' => ceil($total / $limit)
+            ]
+        ]);
+    }
+
+    /**
+     * Get user statistics
+     * 
+     * @return array
+     */
+    public function stats()
+    {
+        $stats = $this->usersModel->getStats();
+        return Routing::success($stats);
+    }
+
+    /**
+     * Get single user by ID
+     * 
+     * @param int $userId
+     * @return array
+     */
+    public function show($userId)
+    {
+        $user = $this->usersModel->getUserById($userId);
+        
+        if (!$user) {
+            return Routing::error('User not found', 404);
+        }
+
+        return Routing::success($user);
+    }
+
+    /**
+     * Create new user
+     * 
+     * @return array
+     */
+    public function create()
+    {
+        $data = [
+            'full_name' => $this->payload['fullName'] ?? '',
+            'username' => $this->payload['username'] ?? '',
+            'email' => $this->payload['email'] ?? '',
+            'password' => $this->payload['password'] ?? '',
+            'role' => $this->payload['role'] ?? 'user',
+            'status' => $this->payload['status'] ?? 'active'
+        ];
+
+        // Validate required fields
+        if (empty($data['full_name']) || empty($data['username']) || empty($data['email']) || empty($data['password'])) {
+            return Routing::error('All fields are required');
+        }
+
+        // Check if username or email already exists
+        if ($this->usersModel->userExists($data['username'], $data['email'])) {
+            return Routing::error('Username or email already exists');
+        }
+
+        $userId = $this->usersModel->createUser($data);
+        
+        if ($userId) {
+            return Routing::success(['user_id' => $userId], 'User created successfully');
+        } else {
+            return Routing::error('Failed to create user');
+        }
+    }
+
+    /**
+     * Update user (Admin)
+     * 
+     * @param int $userId
+     * @return array
+     */
+    public function updateUser($userId)
+    {
+        $user = $this->usersModel->getUserById($userId);
+        
+        if (!$user) {
+            return Routing::error('User not found', 404);
+        }
+
+        $data = [
+            'full_name' => $this->payload['fullName'] ?? $user['full_name'],
+            'username' => $this->payload['username'] ?? $user['username'],
+            'email' => $this->payload['email'] ?? $user['email'],
+            'role' => $this->payload['role'] ?? $user['role'],
+            'status' => $this->payload['status'] ?? $user['status']
+        ];
+
+        // Check if password is provided
+        if (!empty($this->payload['password'])) {
+            $data['password'] = $this->payload['password'];
+        }
+
+        // Check if username or email already exists (excluding current user)
+        if ($this->usersModel->userExists($data['username'], $data['email'], $userId)) {
+            return Routing::error('Username or email already exists');
+        }
+
+        $success = $this->usersModel->updateUser($userId, $data);
+        
+        if ($success) {
+            return Routing::success([], 'User updated successfully');
+        } else {
+            return Routing::error('Failed to update user');
+        }
+    }
+
+    /**
+     * Delete user
+     * 
+     * @param int $userId
+     * @return array
+     */
+    public function delete($userId)
+    {
+        $user = $this->usersModel->getUserById($userId);
+        
+        if (!$user) {
+            return Routing::error('User not found', 404);
+        }
+
+        // Prevent deleting admin users
+        if ($user['role'] === 'admin') {
+            return Routing::error('Cannot delete admin users');
+        }
+
+        $success = $this->usersModel->deleteUser($userId);
+        
+        if ($success) {
+            return Routing::success([], 'User deleted successfully');
+        } else {
+            return Routing::error('Failed to delete user');
+        }
+    }
+
+    /**
+     * Update user status
+     * 
+     * @param int $userId
+     * @return array
+     */
+    public function updateStatus($userId)
+    {
+        $user = $this->usersModel->getUserById($userId);
+        
+        if (!$user) {
+            return Routing::error('User not found', 404);
+        }
+
+        $status = $this->payload['status'] ?? '';
+        
+        if (!in_array($status, ['active', 'blocked', 'pending'])) {
+            return Routing::error('Invalid status');
+        }
+
+        $success = $this->usersModel->updateUserStatus($userId, $status);
+        
+        if ($success) {
+            return Routing::success([], 'User status updated successfully');
+        } else {
+            return Routing::error('Failed to update user status');
+        }
+    }
+
+    /**
+     * Bulk actions on users
+     * 
+     * @return array
+     */
+    public function bulkAction()
+    {
+        $action = $this->payload['action'] ?? '';
+        $userIds = $this->payload['userIds'] ?? [];
+
+        if (empty($userIds) || !is_array($userIds)) {
+            return Routing::error('No users selected');
+        }
+
+        switch ($action) {
+            case 'block':
+                $success = $this->usersModel->bulkUpdateStatus($userIds, 'blocked');
+                break;
+            case 'unblock':
+                $success = $this->usersModel->bulkUpdateStatus($userIds, 'active');
+                break;
+            case 'delete':
+                $success = $this->usersModel->bulkDelete($userIds);
+                break;
+            default:
+                return Routing::error('Invalid action');
+        }
+
+        if ($success) {
+            return Routing::success([], 'Bulk action completed successfully');
+        } else {
+            return Routing::error('Failed to perform bulk action');
+        }
+    }
+
+    /**
+     * Export users
+     * 
+     * @return array
+     */
+    public function export()
+    {
+        $search = $this->request->getGet('search') ?? '';
+        $status = $this->request->getGet('status') ?? 'all';
+        $role = $this->request->getGet('role') ?? 'all';
+        $format = $this->request->getGet('format') ?? 'json';
+
+        // Build filters
+        $filters = [];
+        if (!empty($search)) {
+            $filters['search'] = $search;
+        }
+        if ($status !== 'all') {
+            $filters['status'] = $status;
+        }
+        if ($role !== 'all') {
+            $filters['role'] = $role;
+        }
+
+        $users = $this->usersModel->getUsersForExport($filters);
+
+        if ($format === 'csv') {
+            return $this->exportToCsv($users);
+        }
+
+        return Routing::success($users);
+    }
+
+    /**
+     * Export users to CSV
+     * 
+     * @param array $users
+     * @return array
+     */
+    private function exportToCsv($users)
+    {
+        $filename = 'users-export-' . date('Y-m-d') . '.csv';
+        
+        // Set headers for CSV download
+        header('Content-Type: text/csv');
+        header('Content-Disposition: attachment; filename="' . $filename . '"');
+        header('Pragma: no-cache');
+        header('Expires: 0');
+
+        $output = fopen('php://output', 'w');
+        
+        // CSV headers
+        fputcsv($output, [
+            'User ID',
+            'Full Name',
+            'Username',
+            'Email',
+            'Role',
+            'Status',
+            'Created At',
+            'Last Activity'
+        ]);
+
+        // CSV data
+        foreach ($users as $user) {
+            fputcsv($output, [
+                $user['user_id'],
+                $user['full_name'],
+                $user['username'],
+                $user['email'],
+                $user['role'],
+                $user['status'],
+                $user['created_at'],
+                $user['last_activity'] ?? 'Never'
+            ]);
+        }
+
+        fclose($output);
+        exit;
+    }
 
     /**
      * Get user profile
