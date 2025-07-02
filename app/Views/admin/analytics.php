@@ -1,4 +1,4 @@
-<div class="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
+<div class="min-h-[calc(100vh-100px)] bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
     <!-- Header -->
     <div class="bg-white dark:bg-gray-800 shadow-sm border-b border-gray-200 dark:border-gray-700">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -14,6 +14,7 @@
                         <p class="text-sm text-gray-600 dark:text-gray-400">Comprehensive insights into platform performance</p>
                     </div>
                 </div>
+                <?php if($isAdminOrModerator) { ?>
                 <div class="flex items-center space-x-4">
                     <div class="flex items-center space-x-2">
                         <select id="timeRange" class="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white text-sm">
@@ -30,6 +31,7 @@
                         Refresh
                     </button>
                 </div>
+                <?php } ?>
             </div>
         </div>
     </div>
@@ -167,6 +169,19 @@
             </div>
         </div>
 
+        <?php if(!$isAdminOrModerator) { ?>
+            <div id="emptyState" class=" text-center py-12">
+                <div class="w-16 h-16 bg-gray-100 dark:bg-gray-700 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <svg class="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                    </svg>
+                </div>
+                <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-2">Denied Access</h3>
+                <p class="text-gray-600 dark:text-gray-400">You do not have permission to access this page.</p>
+            </div>
+        <?php } ?>
+
+        <?php if($isAdminOrModerator) { ?>
         <!-- Charts Section -->
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
             <!-- User Growth Chart -->
@@ -261,17 +276,19 @@
                 </div>
             </div>
         </div>
+        <?php } ?>
     </div>
 </div>
 
-<!-- Loading Overlay -->
-<div id="loadingOverlay" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
-    <div class="bg-white dark:bg-gray-800 rounded-2xl p-6 flex items-center space-x-4">
-        <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
-        <span class="text-gray-900 dark:text-white">Loading analytics data...</span>
+<?php if($isAdminOrModerator) { ?>
+    <!-- Loading Overlay -->
+    <div id="loadingOverlay" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+        <div class="bg-white dark:bg-gray-800 rounded-2xl p-6 flex items-center space-x-4">
+            <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
+            <span class="text-gray-900 dark:text-white">Loading analytics data...</span>
+        </div>
     </div>
-</div>
-<div class="h-20"></div>
-
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script src="<?= $baseUrl ?>/assets/js/analytics.js"></script>
+    <div class="h-20"></div>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="<?= $baseUrl ?>/assets/js/analytics.js"></script>
+<?php } ?>
