@@ -40,6 +40,7 @@ function manageUserLocation($payload, $cacheObject) {
         // get the data to use
         $dataToUse = !empty($locationInfo) ? $locationInfo : getLocationByIP($payload['longitude'], $payload['latitude']);
 
+        // set the location loop
         $locationLoop = [
             'location' => [
                 'key' => 'results',
@@ -54,25 +55,22 @@ function manageUserLocation($payload, $cacheObject) {
         // loop through the location loop
         foreach($locationLoop as $key => $value) {
 
+            // get the city
+            $theCity = $dataToUse[$value['key']][0][$value['data']]['city'] ?? (
+                $dataToUse[$value['key']][0][$value['data']]['town'] ?? null
+            );
+
             // check if the city is set
-            if(isset($dataToUse[$value['key']][0][$value['data']]['city'])) {
+            if(!empty($theCity)) {
 
-                $ikey = $value['key'];
                 $ivalue = $value['data'];
-
-                // get the city
-                $theCity = $dataToUse[$ikey][0][$ivalue]['town'] ?? ($dataToUse[$ikey][0][$ivalue]['city'] ?? (
-                    $dataToUse[$ikey][0][$ivalue]['suburb'] ?? null
-                ));
 
                 if(!empty($theCity)) {
                     $usage = $key;
-                    $payload['city'] = $dataToUse[$value['key']][0][$ivalue]['city'];
+                    $payload['city'] = $theCity;
                     $payload['country'] = $dataToUse[$value['key']][0][$ivalue]['country'] ?? null;
                     $payload['district'] = $dataToUse[$value['key']][0][$ivalue]['county'] ?? $payload['city'];
-                    if(empty($locationInfo)) {
-                        $cacheObject->save($cacheKey, $dataToUse, 'user.location', null, 60 * 60);
-                    }
+                    $cacheObject->save($cacheKey, $dataToUse, 'user.location', null, 60 * 60);
                     $locationFound = true;
                     break;
                 }
