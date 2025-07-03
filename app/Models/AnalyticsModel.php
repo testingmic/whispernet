@@ -305,13 +305,13 @@ class AnalyticsModel extends Model {
         
         foreach ($result as $row) {
             switch ($row['gender']) {
-                case 'male':
+                case 'Male':
                     $data['male'] = (int)$row['count'];
                     break;
-                case 'female':
+                case 'Female':
                     $data['female'] = (int)$row['count'];
                     break;
-                case 'other':
+                case 'Other':
                     $data['other'] = (int)$row['count'];
                     break;
                 default:
