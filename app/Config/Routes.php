@@ -19,7 +19,7 @@ $routes->set404Override(function() {
 $routes->get("/dashboard/install", "WebApp\Dashboard::install");
 
 // Dashboard routes
-foreach(['report', 'privacy', 'terms', 'updates', 'install', 'support'] as $route) {
+foreach(['dashboard', 'report', 'privacy', 'terms', 'updates', 'install', 'support'] as $route) {
     $routes->get("/{$route}", "WebApp\Dashboard::{$route}");
 }
 
