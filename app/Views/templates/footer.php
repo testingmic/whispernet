@@ -103,13 +103,14 @@ $classPosition = "absolute -top-1 -right-1 w-3 h-3 bg-blue-500 rounded-full anim
 <!-- Enhanced Scripts -->
 <script src="<?= $baseUrl ?>/assets/js/app.js?v=<?= $version ?>" defer></script>
 <?php if (!empty($userLoggedIn)) { ?>
-  <script src="<?= $baseUrl ?>/assets/js/websocket.js?v=<?= $version ?>" defer></script>
-  <script src="<?= $baseUrl ?>/assets/js/feed-context.js?v=<?= $version ?>" defer></script>
-  <script src="<?= $baseUrl ?>/assets/js/groups.js?v=<?= $version ?>"></script>
-  <script src="<?= $baseUrl ?>/assets/js/search.js?v=<?= $version ?>"></script>
+  <?php if(!empty($loadFeed)) { ?>
+    <script src="<?= $baseUrl ?>/assets/js/feed-context.js?v=<?= $version ?>" defer></script>
+  <?php } ?>
 <?php } ?>
 <?php if (!empty($chatSection) && !empty($userLoggedIn)) { ?>
+  <script src="<?= $baseUrl ?>/assets/js/websocket.js?v=<?= $version ?>" defer></script>
   <script src="<?= $baseUrl ?>/assets/js/chat.js?v=<?= $version ?>" defer></script>
+  <script src="<?= $baseUrl ?>/assets/js/groups.js?v=<?= $version ?>"></script>
 <?php } ?>
 <script type="text/javascript">
 

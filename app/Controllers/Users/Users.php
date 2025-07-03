@@ -9,6 +9,7 @@ use App\Libraries\Routing;
 class Users extends LoadController {
 
     protected $usersModel;
+    protected $adminAction = false;
 
     public function __construct()
     {
@@ -21,13 +22,13 @@ class Users extends LoadController {
      * 
      * @return array
      */
-    public function index()
+    public function list()
     {
-        $page = (int)($this->request->getGet('page') ?? 1);
-        $limit = (int)($this->request->getGet('limit') ?? 10);
-        $search = $this->request->getGet('search') ?? '';
-        $status = $this->request->getGet('status') ?? 'all';
-        $role = $this->request->getGet('role') ?? 'all';
+        $page = (int)($this->payload['page'] ?? 1);
+        $limit = (int)($this->payload['limit'] ?? 10);
+        $search = $this->payload['search'] ?? '';
+        $status = $this->payload['status'] ?? 'all';
+        $role = $this->payload['role'] ?? 'all';
 
         // Build filters
         $filters = [];
@@ -73,10 +74,9 @@ class Users extends LoadController {
      * @param int $userId
      * @return array
      */
-    public function show($userId)
+    public function view()
     {
-        $user = $this->usersModel->getUserById($userId);
-        
+        $user = $this->usersModel->getUserById($this->payload['user_id']);
         if (!$user) {
             return Routing::error('User not found', 404);
         }
@@ -120,56 +120,14 @@ class Users extends LoadController {
     }
 
     /**
-     * Update user (Admin)
-     * 
-     * @param int $userId
-     * @return array
-     */
-    public function updateUser($userId)
-    {
-        $user = $this->usersModel->getUserById($userId);
-        
-        if (!$user) {
-            return Routing::error('User not found', 404);
-        }
-
-        $data = [
-            'full_name' => $this->payload['fullName'] ?? $user['full_name'],
-            'username' => $this->payload['username'] ?? $user['username'],
-            'email' => $this->payload['email'] ?? $user['email'],
-            'role' => $this->payload['role'] ?? $user['role'],
-            'status' => $this->payload['status'] ?? $user['status']
-        ];
-
-        // Check if password is provided
-        if (!empty($this->payload['password'])) {
-            $data['password'] = $this->payload['password'];
-        }
-
-        // Check if username or email already exists (excluding current user)
-        if ($this->usersModel->userExists($data['username'], $data['email'], $userId)) {
-            return Routing::error('Username or email already exists');
-        }
-
-        $success = $this->usersModel->updateUser($userId, $data);
-        
-        if ($success) {
-            return Routing::success([], 'User updated successfully');
-        } else {
-            return Routing::error('Failed to update user');
-        }
-    }
-
-    /**
      * Delete user
      * 
      * @param int $userId
      * @return array
      */
-    public function delete($userId)
+    public function delete()
     {
-        $user = $this->usersModel->getUserById($userId);
-        
+        $user = $this->usersModel->getUserById($this->payload['user_id']);
         if (!$user) {
             return Routing::error('User not found', 404);
         }
@@ -179,13 +137,11 @@ class Users extends LoadController {
             return Routing::error('Cannot delete admin users');
         }
 
-        $success = $this->usersModel->deleteUser($userId);
-        
-        if ($success) {
-            return Routing::success([], 'User deleted successfully');
-        } else {
-            return Routing::error('Failed to delete user');
-        }
+        // set the admin action
+        $this->adminAction = $this->payload['user_id'];
+
+        // delete the user
+        return $this->goodbye();
     }
 
     /**
@@ -194,8 +150,13 @@ class Users extends LoadController {
      * @param int $userId
      * @return array
      */
-    public function updateStatus($userId)
+    public function status()
     {
+
+        // get the user id
+        $userId = $this->payload['user_id'];
+
+        // get the user
         $user = $this->usersModel->getUserById($userId);
         
         if (!$user) {
@@ -204,7 +165,7 @@ class Users extends LoadController {
 
         $status = $this->payload['status'] ?? '';
         
-        if (!in_array($status, ['active', 'blocked', 'pending'])) {
+        if (!in_array($status, ['active', 'blocked', 'pending', 'suspended', 'inactive'])) {
             return Routing::error('Invalid status');
         }
 
@@ -259,10 +220,10 @@ class Users extends LoadController {
      */
     public function export()
     {
-        $search = $this->request->getGet('search') ?? '';
-        $status = $this->request->getGet('status') ?? 'all';
-        $role = $this->request->getGet('role') ?? 'all';
-        $format = $this->request->getGet('format') ?? 'json';
+        $search = $this->payload['search'] ?? '';
+        $status = $this->payload['status'] ?? 'all';
+        $role = $this->payload['role'] ?? 'all';
+        $format = $this->payload['format'] ?? 'json';
 
         // Build filters
         $filters = [];
@@ -378,14 +339,19 @@ class Users extends LoadController {
      */
     public function goodbye() {
     
+        // get the user id
+        $userId = $this->adminAction ? $this->adminAction : $this->currentUser['user_id'];
+
         // delete the cache
-        $this->cacheObject->dbObject->query("DELETE FROM cache WHERE account_id = ?", [$this->currentUser['user_id']]);
+        $this->cacheObject->dbObject->query("DELETE FROM cache WHERE account_id = ?", [$userId]);
 
         // delete the user
-        $this->usersModel->deleteAccount($this->currentUser['user_id']);
+        $this->usersModel->deleteAccount($userId);
 
         // destroy the session
-        session()->destroy();
+        if(!$this->adminAction) {
+            session()->destroy();
+        }
 
         // return the success message
         return Routing::success('Account deleted successfully');
@@ -461,7 +427,12 @@ class Users extends LoadController {
     public function update() {
 
         // get the user id
-        $userId = $this->payload['userId'] ?? $this->currentUser['user_id'];
+        $userId = $this->payload['userId'];
+
+        // if the user is admin and the user_id is provided, update the user id
+        if(!empty($this->payload['user_id']) && is_admin($this->currentUser)) {
+            $userId = $this->payload['user_id'];
+        }
 
         // Handle profile image upload
         if (!empty($this->payload['file_uploads']['profile_image'])) {
@@ -527,6 +498,7 @@ class Users extends LoadController {
         // set the fullname
         $this->payload['full_name'] = $this->payload['name'] ?? ($this->payload['full_name'] ?? null);
 
+        // update the user gender, full name, and location
         foreach(['gender', 'full_name', 'location'] as $item) {
             // update the user gender
             if(!empty($this->payload[$item])) {
@@ -534,11 +506,24 @@ class Users extends LoadController {
             }
         }
 
+        // if the user is admin and the user_type is provided, update the user type
+        if(is_admin($this->currentUser)) {
+            if(!empty($this->payload['user_type'])) {
+                $payload['user_type'] = $this->payload['user_type'];
+            }
+            if(!empty($this->payload['status'])) {
+                $payload['status'] = $this->payload['status'];
+            }
+        }
+        
         if(!empty($payload)) {
             $this->usersModel->updateProfile($userId, $payload);
         }
+        
+        // set the user id
+        $this->payload['userId'] = $userId;
 
-        return Routing::created(['data' => 'Profile updated successfully', 'record' => $this->profile()['data']]);
+        return Routing::created(['data' => 'Profile updated successfully', 'record' => $this->profile($userId)['data']]);
     }
 
     /**

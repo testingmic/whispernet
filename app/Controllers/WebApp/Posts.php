@@ -13,7 +13,7 @@ class Posts extends WebAppController {
      * @return array
      */
     public function index() {
-        return $this->templateObject->loadPage('feed', ['pageTitle' => 'Feed']);
+        return $this->templateObject->loadPage('feed', ['pageTitle' => 'Feed', 'loadFeed' => true]);
     }
 
     /**

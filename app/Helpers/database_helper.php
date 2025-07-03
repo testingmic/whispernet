@@ -35,6 +35,7 @@ $databases = [
         location TEXT DEFAULT NULL,
         two_factor_setup BOOLEAN DEFAULT 0,
         profile_image TEXT,
+        status TEXT DEFAULT 'active',
         is_verified BOOLEAN DEFAULT 0,
         is_active BOOLEAN DEFAULT 1,
         last_login DATETIME,
@@ -303,7 +304,7 @@ $databases = [
 
 // alter tables
 $alterTables = [
-    // "ALTER TABLE users ADD COLUMN user_type TEXT DEFAULT 'user'",
+    // "ALTER TABLE users ADD COLUMN status TEXT DEFAULT 'active'",
 ];
 
 $votesTables = [

@@ -72,8 +72,8 @@
                         </svg>
                     </div>
                     <div class="ml-4">
-                        <p class="text-sm font-medium text-gray-600 dark:text-gray-400">Blocked Users</p>
-                        <p class="text-2xl font-bold text-gray-900 dark:text-white" id="blockedUsers">0</p>
+                        <p class="text-sm font-medium text-gray-600 dark:text-gray-400">Suspended</p>
+                        <p class="text-2xl font-bold text-gray-900 dark:text-white" id="suspendedUsers">0</p>
                     </div>
                 </div>
             </div>
@@ -116,7 +116,7 @@
                     <select id="statusFilter" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white">
                         <option value="all">All Users</option>
                         <option value="active">Active</option>
-                        <option value="blocked">Blocked</option>
+                        <option value="suspended">Suspended</option>
                         <option value="pending">Pending</option>
                     </select>
                 </div>
@@ -219,6 +219,34 @@
     </div>
 </div>
 
+<!-- Suspend Modal Confirmation Modal -->
+<div id="suspendModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+    <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-xl max-w-md w-full mx-4">
+        <div class="p-6">
+            <div class="flex items-center mb-4">
+                <div class="w-12 h-12 bg-red-100 dark:bg-red-900 rounded-full flex items-center justify-center">
+                    <svg class="w-6 h-6 text-red-600 dark:text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"></path>
+                    </svg>
+                </div>
+                <div class="ml-4">
+                    <h3 class="text-lg font-semibold text-gray-900 dark:text-white" id="suspendTitle">Suspend User</h3>
+                    <p class="text-sm text-gray-600 dark:text-gray-400">You can modify their status at any point in time.</p>
+                </div>
+            </div>
+            <p class="text-gray-700 dark:text-gray-300 mb-6" id="suspendMessage"></p>
+            <div class="flex items-center justify-end space-x-3">
+                <button onclick="UserManager.closeSuspendModal()"
+                        class="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-700 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600">
+                    Cancel
+                </button>
+                <button onclick="UserManager.confirmSuspend()" id="suspendButton"
+                        class="px-4 py-2 text-sm font-medium text-white bg-red-600 rounded-lg hover:bg-red-700"></button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <!-- Add/Edit User Modal -->
 <div id="userModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
     <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-xl max-w-md w-full mx-4 max-h-[90vh] overflow-y-auto">
@@ -237,7 +265,7 @@
                 
                 <div>
                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Full Name</label>
-                    <input type="text" id="fullName" name="fullName" required
+                    <input type="text" id="full_name" name="full_name" required
                            class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white">
                 </div>
 
@@ -253,7 +281,7 @@
                            class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white">
                 </div>
 
-                <div>
+                <div id="passwordField">
                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Password</label>
                     <input type="password" id="password" name="password"
                            class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white">
@@ -262,7 +290,7 @@
 
                 <div>
                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Role</label>
-                    <select id="role" name="role" required
+                    <select id="user_type" name="user_type" required
                             class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white">
                         <option value="user">User</option>
                         <option value="moderator">Moderator</option>
@@ -275,7 +303,8 @@
                     <select id="status" name="status" required
                             class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white">
                         <option value="active">Active</option>
-                        <option value="blocked">Blocked</option>
+                        <option value="inactive">Inactive</option>
+                        <option value="suspended">Suspended</option>
                         <option value="pending">Pending</option>
                     </select>
                 </div>
@@ -324,7 +353,7 @@
         </div>
     </div>
 </div>
-
+<div class="h-20"></div>
 <!-- Loading Overlay -->
 <div id="loadingOverlay" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
     <div class="bg-white dark:bg-gray-800 rounded-2xl p-6 flex items-center space-x-4">

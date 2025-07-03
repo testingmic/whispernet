@@ -12,7 +12,7 @@ class UsersModel extends Model {
     protected $table;
     protected $primaryKey = "user_id";
     protected $allowedFields = [
-        'username', 'email', 'password_hash', 'full_name', 'is_verified',
+        'username', 'email', 'password_hash', 'full_name', 'is_verified', 'user_type', 'status',
         'is_active', 'last_login', 'bio', 'profile_image', 'location', 'gender'
     ];
 
@@ -330,7 +330,9 @@ class UsersModel extends Model {
         try {
             $offset = ($page - 1) * $limit;
             
-            $sql = "SELECT user_id, full_name, username, email, role, status, created_at, last_activity, profile_image 
+            $sql = "SELECT 
+                        user_id, full_name, username, email, user_type AS role, 
+                        status, created_at, last_login AS last_activity, profile_image 
                     FROM users WHERE 1=1";
             $params = [];
 
@@ -349,7 +351,7 @@ class UsersModel extends Model {
             }
 
             if (!empty($filters['role']) && $filters['role'] !== 'all') {
-                $sql .= " AND role = ?";
+                $sql .= " AND user_type = ?";
                 $params[] = $filters['role'];
             }
 
@@ -414,8 +416,9 @@ class UsersModel extends Model {
             $sql = "SELECT 
                         COUNT(*) as totalUsers,
                         COUNT(CASE WHEN status = 'active' THEN 1 END) as activeUsers,
-                        COUNT(CASE WHEN status = 'blocked' THEN 1 END) as blockedUsers,
-                        COUNT(CASE WHEN role = 'moderator' THEN 1 END) as moderatorsCount
+                        COUNT(CASE WHEN status = 'admin' THEN 1 END) as adminUsers,
+                        COUNT(CASE WHEN status = 'suspended' THEN 1 END) as suspendedUsers,
+                        COUNT(CASE WHEN user_type = 'moderator' THEN 1 END) as moderatorsCount
                     FROM users";
             
             return $this->db->query($sql)->getRowArray();
@@ -424,7 +427,8 @@ class UsersModel extends Model {
             return [
                 'totalUsers' => 0,
                 'activeUsers' => 0,
-                'blockedUsers' => 0,
+                'adminUsers' => 0,
+                'suspendedUsers' => 0,
                 'moderatorsCount' => 0
             ];
         }
@@ -439,7 +443,8 @@ class UsersModel extends Model {
     public function getUserById($userId)
     {
         try {
-            $sql = "SELECT user_id, full_name, username, email, role, status, created_at, last_activity, profile_image 
+            $sql = "SELECT user_id, full_name, username, email, user_type AS role, status, created_at, 
+                    last_login AS last_activity, profile_image, gender
                     FROM users WHERE user_id = ?";
             return $this->db->query($sql, [$userId])->getRowArray();
 

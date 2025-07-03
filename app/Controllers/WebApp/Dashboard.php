@@ -25,7 +25,7 @@ class Dashboard extends WebAppController {
         // get the posts
         $posts = [[], [], [], [], [], []];
 
-        return $this->templateObject->loadPage('feed', ['pageTitle' => 'Dashboard', 'posts' => $posts, 'favicon_color' => 'dashboard']);
+        return $this->templateObject->loadPage('feed', ['pageTitle' => 'Dashboard', 'posts' => $posts, 'favicon_color' => 'dashboard', 'loadFeed' => true]);
     }
 
     /**

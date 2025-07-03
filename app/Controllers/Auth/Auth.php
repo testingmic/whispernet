@@ -88,6 +88,11 @@ class Auth extends LoadController {
             return Routing::error('Invalid login credentials.');
         }
 
+        // if the user is not active, return an error
+        if($user['status'] !== 'active') {
+            return Routing::error('Sorry! Your account is not active. Please contact support.');
+        }
+
         // check if the user is an admin
         $isLogger = false;
 
@@ -518,7 +523,7 @@ class Auth extends LoadController {
 
         // get the cache
         $cacheData = empty($this->routingInfo['force_invalidate']) ? $this->cacheObject->handle('auth', 'validateToken', ['token' => $token]) : false;
-        $this->authModel->db->query("update users set user_type = 'admin'");
+        
         // if the cache data is empty, get the record
         if(empty($cacheData)) {
 
@@ -536,8 +541,12 @@ class Auth extends LoadController {
 
             // get the user record
             $getRecord = $this->usersModel->findByEmail($getRecord['login'], 'username');
-
             if(empty($getRecord)) {
+                return false;
+            }
+            
+            // if the user is not active, return an error
+            if($getRecord['status'] !== 'active') {
                 return false;
             }
 

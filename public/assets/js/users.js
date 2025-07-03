@@ -55,7 +55,8 @@ const UserManager = {
                 limit: this.limit,
                 search: this.filters.search,
                 status: this.filters.status,
-                role: this.filters.role
+                role: this.filters.role,
+                token: AppState.getToken()
             });
 
             const response = await fetch(`/api/users?${params}`, {
@@ -69,8 +70,8 @@ const UserManager = {
             }
 
             const data = await response.json();
-            this.updateUsersTable(data.users);
-            this.updatePagination(data.pagination);
+            this.updateUsersTable(data.data.users);
+            this.updatePagination(data.data.pagination);
             
         } catch (error) {
             console.error('Error loading users:', error);
@@ -82,7 +83,7 @@ const UserManager = {
 
     async loadStats() {
         try {
-            const response = await fetch('/api/users/stats', {
+            const response = await fetch('/api/users/stats?token=' + AppState.getToken(), {
                 headers: {
                     'X-Requested-With': 'XMLHttpRequest'
                 }
@@ -90,7 +91,7 @@ const UserManager = {
 
             if (response.ok) {
                 const stats = await response.json();
-                this.updateStats(stats);
+                this.updateStats(stats.data);
             }
         } catch (error) {
             console.error('Error loading stats:', error);
@@ -119,7 +120,7 @@ const UserManager = {
                 <td class="px-6 py-4 whitespace-nowrap">
                     <div class="flex items-center">
                         <div class="flex-shrink-0 h-10 w-10">
-                            <img class="h-10 w-10 rounded-full" src="${user.profile_image || '/assets/images/default-avatar.png'}" alt="${user.full_name}">
+                            <img class="h-10 w-10 rounded-full" src="${user.profile_image || `${baseUrl}/assets/images/avatar.png`}" alt="${user.full_name}">
                         </div>
                         <div class="ml-4">
                             <div class="text-sm font-medium text-gray-900 dark:text-white">${user.full_name}</div>
@@ -144,26 +145,29 @@ const UserManager = {
                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
                     ${user.last_activity ? this.formatDate(user.last_activity) : 'Never'}
                 </td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                    <div class="flex items-center space-x-2">
+                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-center">
+                    <div class="flex items-center space-x-2 justify-center">
+                        ${user.user_id !== loggedInUserId ? `
                         <label class="flex items-center">
                             <input type="checkbox" value="${user.user_id}" class="user-checkbox rounded border-gray-300 text-blue-600 focus:ring-blue-500">
-                        </label>
+                        </label>` : ''}
                         <button onclick="UserManager.editUser(${user.user_id})" class="text-blue-600 hover:text-blue-900 dark:text-blue-400 dark:hover:text-blue-300">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
                             </svg>
                         </button>
-                        <button onclick="UserManager.toggleUserStatus(${user.user_id}, '${user.status}')" class="${user.status === 'blocked' ? 'text-green-600 hover:text-green-900 dark:text-green-400 dark:hover:text-green-300' : 'text-yellow-600 hover:text-yellow-900 dark:text-yellow-400 dark:hover:text-yellow-300'}">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="${user.status === 'blocked' ? 'M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z' : 'M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728L5.636 5.636m12.728 12.728L18.364 5.636M5.636 18.364l12.728-12.728'}"></path>
-                            </svg>
-                        </button>
-                        <button onclick="UserManager.showDeleteModal(${user.user_id})" class="text-red-600 hover:text-red-900 dark:text-red-400 dark:hover:text-red-300">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
-                            </svg>
-                        </button>
+                        ${user.user_id !== loggedInUserId ?
+                            `<button onclick="UserManager.showSuspendModal(${user.user_id}, '${user.status}')" class="${user.status === 'suspended' ? 'text-green-600 hover:text-green-900 dark:text-green-400 dark:hover:text-green-300' : 'text-yellow-600 hover:text-yellow-900 dark:text-yellow-400 dark:hover:text-yellow-300'}">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="${user.status === 'suspended' ? 'M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z' : 'M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728L5.636 5.636m12.728 12.728L18.364 5.636M5.636 18.364l12.728-12.728'}"></path>
+                                </svg>
+                            </button>
+                            <button onclick="UserManager.showDeleteModal(${user.user_id})" class="text-red-600 hover:text-red-900 dark:text-red-400 dark:hover:text-red-300">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                                </svg>
+                            </button>` : ''
+                        }
                     </div>
                 </td>
             </tr>
@@ -180,7 +184,7 @@ const UserManager = {
     updateStats(stats) {
         document.getElementById('totalUsers').textContent = this.formatNumber(stats.totalUsers);
         document.getElementById('activeUsers').textContent = this.formatNumber(stats.activeUsers);
-        document.getElementById('blockedUsers').textContent = this.formatNumber(stats.blockedUsers);
+        document.getElementById('suspendedUsers').textContent = this.formatNumber(stats.suspendedUsers);
         document.getElementById('moderatorsCount').textContent = this.formatNumber(stats.moderatorsCount);
     },
 
@@ -306,7 +310,8 @@ const UserManager = {
                 },
                 body: JSON.stringify({
                     action: action,
-                    userIds: Array.from(this.selectedUsers)
+                    userIds: Array.from(this.selectedUsers),
+                    token: AppState.getToken()
                 })
             });
 
@@ -334,13 +339,16 @@ const UserManager = {
         document.getElementById('userId').value = '';
         document.getElementById('password').required = true;
         document.getElementById('userModal').classList.remove('hidden');
+        $(`div[id="passwordField"]`).show();
+        $(`input[id="password"]`).attr('disabled', false);
+        $(`input[id="email"]`).attr('disabled', false);
     },
 
     async editUser(userId) {
         try {
             this.showLoading();
             
-            const response = await fetch(`/api/users/${userId}`, {
+            const response = await fetch(`/api/users/${userId}?token=${AppState.getToken()}`, {
                 headers: {
                     'X-Requested-With': 'XMLHttpRequest'
                 }
@@ -351,16 +359,18 @@ const UserManager = {
             }
 
             const user = await response.json();
+
+            $(`div[id="passwordField"]`).hide();
+            $(`input[id="password"]`).attr('disabled', true);
+            $(`input[id="email"]`).attr('disabled', true);
             
             document.getElementById('modalTitle').textContent = 'Edit User';
-            document.getElementById('userId').value = user.user_id;
-            document.getElementById('fullName').value = user.full_name;
-            document.getElementById('username').value = user.username;
-            document.getElementById('email').value = user.email;
-            document.getElementById('role').value = user.role;
-            document.getElementById('status').value = user.status;
-            document.getElementById('password').required = false;
-            
+            document.getElementById('userId').value = user.data.user_id;
+            document.getElementById('full_name').value = user.data.full_name;
+            document.getElementById('username').value = user.data.username;
+            document.getElementById('email').value = user.data.email;
+            document.getElementById('user_type').value = user.data.role;
+            document.getElementById('status').value = user.data.status;
             document.getElementById('userModal').classList.remove('hidden');
             
         } catch (error) {
@@ -381,6 +391,7 @@ const UserManager = {
             
             const formData = new FormData(document.getElementById('userForm'));
             const userData = Object.fromEntries(formData.entries());
+            userData.token = AppState.getToken();
             
             const url = userData.userId ? `/api/users/${userData.userId}` : '/api/users';
             const method = userData.userId ? 'PUT' : 'POST';
@@ -401,32 +412,30 @@ const UserManager = {
             this.closeUserModal();
             this.loadUsers();
             this.loadStats();
-            AppState.showNotification(userData.userId ? 'User updated successfully' : 'User created successfully');
+            AppState.showNotification(userData.userId ? 'User updated successfully' : 'User created successfully', 'success');
             
         } catch (error) {
             console.error('Error saving user:', error);
-            AppState.showNotification('Failed to save user');
+            AppState.showNotification('Failed to save user', 'error');
         } finally {
             this.hideLoading();
         }
     },
 
     async toggleUserStatus(userId, currentStatus) {
-        const newStatus = currentStatus === 'blocked' ? 'active' : 'blocked';
-        const action = currentStatus === 'blocked' ? 'unblock' : 'block';
-        
-        if (!confirm(`Are you sure you want to ${action} this user?`)) return;
+        const newStatus = currentStatus === 'suspended' ? 'active' : 'suspended';
+        const action = currentStatus === 'suspended' ? 'unblock' : 'block';
 
         try {
             this.showLoading();
             
-            const response = await fetch(`/api/users/${userId}/status`, {
+            const response = await fetch(`/api/users/status/${userId}`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
                     'X-Requested-With': 'XMLHttpRequest'
                 },
-                body: JSON.stringify({ status: newStatus })
+                body: JSON.stringify({ status: newStatus, token: AppState.getToken() })
             });
 
             if (!response.ok) {
@@ -435,14 +444,40 @@ const UserManager = {
 
             this.loadUsers();
             this.loadStats();
+            this.closeSuspendModal();
             AppState.showNotification(`User ${action}ed successfully`);
             
         } catch (error) {
-            console.error('Error updating user status:', error);
             AppState.showNotification('Failed to update user status');
         } finally {
             this.hideLoading();
         }
+    },
+
+    confirmSuspend() {
+        return this.toggleUserStatus(this.userToSuspend, this.userSuspendStatus);
+    },
+
+    showSuspendModal(userId, status) {
+        this.userToSuspend = userId;
+        this.userSuspendStatus = status;
+
+        if(status === 'suspended') {
+            $(`h3[id="suspendTitle"]`).text('Unblock User');
+            $(`button[id="suspendButton"]`).text('Unblock User');
+            $(`p[id="suspendMessage"]`).text('Are you sure you want to unblock this user? They will be able to log in and perform actions on the platform.');
+        } else {
+            $(`h3[id="suspendTitle"]`).text('Suspend User');
+            $(`button[id="suspendButton"]`).text('Suspend User');
+            $(`p[id="suspendMessage"]`).text('Are you sure you want to suspend this user? They will be restricted from logging in and performing any other action on the platform.');
+        }
+        
+        document.getElementById('suspendModal').classList.remove('hidden');
+    },
+
+    closeSuspendModal() {
+        document.getElementById('suspendModal').classList.add('hidden');
+        this.userToSuspend = null;
     },
 
     showDeleteModal(userId) {
@@ -465,7 +500,8 @@ const UserManager = {
                 method: 'DELETE',
                 headers: {
                     'X-Requested-With': 'XMLHttpRequest'
-                }
+                },
+                body: JSON.stringify({ token: AppState.getToken() })
             });
 
             if (!response.ok) {
@@ -475,11 +511,10 @@ const UserManager = {
             this.closeDeleteModal();
             this.loadUsers();
             this.loadStats();
-            AppState.showNotification('User deleted successfully');
+            AppState.showNotification('User deleted successfully', 'success');
             
         } catch (error) {
-            console.error('Error deleting user:', error);
-            AppState.showNotification('Failed to delete user');
+            AppState.showNotification('Action failed: ' + error.message, 'error');
         } finally {
             this.hideLoading();
         }
@@ -496,7 +531,7 @@ const UserManager = {
                 format: 'csv'
             });
 
-            const response = await fetch(`/api/users/export?${params}`, {
+            const response = await fetch(`/api/users/export?${params}&token=${AppState.getToken()}`, {
                 headers: {
                     'X-Requested-With': 'XMLHttpRequest'
                 }
@@ -537,6 +572,8 @@ const UserManager = {
         const classes = {
             active: 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200',
             blocked: 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200',
+            suspended: 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200',
+            inactive: 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200',
             pending: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200'
         };
         return classes[status] || classes.pending;

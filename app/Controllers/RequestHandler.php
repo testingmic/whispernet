@@ -206,6 +206,9 @@ class RequestHandler extends BaseController
                 if(!empty($routes[$method]['is_moderator']) && !is_admin_or_moderator($userToken)) {
                     return Routing::denied('You do not have permission to access this resource.');
                 }
+                if(!empty($routes[$method]['id_admin']) && !is_admin($userToken)) {
+                    return Routing::denied('You do not have permission to access this resource.');
+                }
             }
 
             // Forcefully set must login to false

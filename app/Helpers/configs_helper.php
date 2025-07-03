@@ -39,7 +39,7 @@ if (!function_exists('configs')) {
             'testing_mode' => config('General')?->testing_mode,
             'app_url' => getenv('APP_URL'),
             'is_local' => config('Database')?->defaultGroup == 'tests',
-            'login_attempts' => 5,
+            'login_attempts' => 10,
 
             // get the security config
             'algo' => config('Security')?->algo,
