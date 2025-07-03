@@ -42,8 +42,8 @@ class Analytics extends LoadController {
         $activeUsers = $this->analyticsModel->getActiveUsers();
 
         return Routing::success([
-            'labels' => $realtimeData['labels'],
-            'values' => $realtimeData['values'],
+            'labels' => $realtimeData['labels'] ?? [],
+            'values' => $realtimeData['values'] ?? [],
             'activeUsers' => $activeUsers
         ]);
     }

@@ -62,10 +62,10 @@ const AnalyticsManager = {
         document.getElementById('totalTags').textContent = this.formatNumber(metrics.totalTags);
 
         // Update growth indicators
-        document.getElementById('usersGrowth').textContent = `${metrics.usersGrowth >= 0 ? '+' : ''}${metrics.usersGrowth}% from last period`;
-        document.getElementById('postsGrowth').textContent = `${metrics.postsGrowth >= 0 ? '+' : ''}${metrics.postsGrowth}% from last period`;
-        document.getElementById('commentsGrowth').textContent = `${metrics.commentsGrowth >= 0 ? '+' : ''}${metrics.commentsGrowth}% from last period`;
-        document.getElementById('votesGrowth').textContent = `${metrics.votesGrowth >= 0 ? '+' : ''}${metrics.votesGrowth}% from last period`;
+        document.getElementById('usersGrowth').textContent = `${metrics.totalUsersGrowth >= 0 ? '+' : ''}${metrics.totalUsersGrowth}% from last period`;
+        document.getElementById('postsGrowth').textContent = `${metrics.totalPostsGrowth >= 0 ? '+' : ''}${metrics.totalPostsGrowth}% from last period`;
+        document.getElementById('commentsGrowth').textContent = `${metrics.totalCommentsGrowth >= 0 ? '+' : ''}${metrics.totalCommentsGrowth}% from last period`;
+        document.getElementById('votesGrowth').textContent = `${metrics.totalVotesGrowth >= 0 ? '+' : ''}${metrics.totalVotesGrowth}% from last period`;
 
         // Update growth colors
         const growthElements = ['usersGrowth', 'postsGrowth', 'commentsGrowth', 'votesGrowth'];

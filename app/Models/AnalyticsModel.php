@@ -42,27 +42,6 @@ class AnalyticsModel extends Model {
     }
 
     /**
-     * Get timeframe condition
-     * 
-     * @param string $timeframe
-     * @return string
-     */
-    private function getTimeframeCondition($timeframe) {
-        switch ($timeframe) {
-            case '1h':
-                return "created_at >= '".date('Y-m-d H:i:s', strtotime('-1 HOUR'))."'";
-            case '24h':
-                return "created_at >= '".date('Y-m-d H:i:s', strtotime('-24 HOUR'))."'";
-            case '7d':
-                return "created_at >= '".date('Y-m-d H:i:s', strtotime('-7 DAY'))."'";
-            case '30d':
-                return "created_at >= '".date('Y-m-d H:i:s', strtotime('-30 DAY'))."'";
-            default:
-                return "created_at >= '".date('Y-m-d H:i:s', strtotime('-24 HOUR'))."'";
-        }
-    }
-
-    /**
      * Get comprehensive metrics for a time range
      * 
      * @param string $timeRange
@@ -98,11 +77,12 @@ class AnalyticsModel extends Model {
                         (SELECT COUNT(*) FROM users WHERE created_at >= {$dateFilter}) as totalUsers,
                         (SELECT COUNT(*) FROM posts WHERE created_at >= {$dateFilter}) as totalPosts,
                         (SELECT COUNT(*) FROM comments WHERE created_at >= {$dateFilter}) as totalComments,
-                        (SELECT COUNT(*) FROM votes WHERE created_at >= {$dateFilter}) as totalVotes,
+                        (SELECT SUM(upvotes + downvotes) FROM posts WHERE created_at >= {$dateFilter}) as totalPostVotes,
+                        (SELECT SUM(upvotes + downvotes) FROM comments WHERE created_at >= {$dateFilter}) as totalCommentVotes,
                         (SELECT SUM(views) FROM posts WHERE created_at >= {$dateFilter}) as totalPageViews,
                         (SELECT COUNT(*) FROM users WHERE last_login >= '{$oneHourAgo}') as activeUsers,
                         (SELECT COUNT(*) FROM users WHERE user_type = 'moderator') as moderatorsCount,
-                        (SELECT COUNT(*) FROM tags) as totalTags";
+                        (SELECT COUNT(*) FROM hashtags) as totalTags";
             
             $result = $this->db->query($sql)->getRowArray();
             
@@ -110,7 +90,9 @@ class AnalyticsModel extends Model {
                 'totalUsers' => (int)$result['totalUsers'],
                 'totalPosts' => (int)$result['totalPosts'],
                 'totalComments' => (int)$result['totalComments'],
-                'totalVotes' => (int)$result['totalVotes'],
+                'totalVotes' => (int)$result['totalPostVotes'] + (int)$result['totalCommentVotes'],
+                'totalPostVotes' => (int)$result['totalPostVotes'],
+                'totalCommentVotes' => (int)$result['totalCommentVotes'],
                 'totalPageViews' => (int)$result['totalPageViews'],
                 'activeUsers' => (int)$result['activeUsers'],
                 'moderatorsCount' => (int)$result['moderatorsCount'],
@@ -136,7 +118,8 @@ class AnalyticsModel extends Model {
                         (SELECT COUNT(*) FROM users WHERE created_at >= {$dateFilter}) as totalUsers,
                         (SELECT COUNT(*) FROM posts WHERE created_at >= {$dateFilter}) as totalPosts,
                         (SELECT COUNT(*) FROM comments WHERE created_at >= {$dateFilter}) as totalComments,
-                        (SELECT COUNT(*) FROM votes WHERE created_at >= {$dateFilter}) as totalVotes";
+                        (SELECT SUM(upvotes + downvotes) FROM posts WHERE created_at >= {$dateFilter}) as totalPostVotes,
+                        (SELECT SUM(upvotes + downvotes) FROM comments WHERE created_at >= {$dateFilter}) as totalCommentVotes";
             
             $result = $this->db->query($sql)->getRowArray();
             
@@ -144,7 +127,9 @@ class AnalyticsModel extends Model {
                 'totalUsers' => (int)$result['totalUsers'],
                 'totalPosts' => (int)$result['totalPosts'],
                 'totalComments' => (int)$result['totalComments'],
-                'totalVotes' => (int)$result['totalVotes']
+                'totalVotes' => (int)$result['totalPostVotes'] + (int)$result['totalCommentVotes'],
+                'totalPostVotes' => (int)$result['totalPostVotes'],
+                'totalCommentVotes' => (int)$result['totalCommentVotes'],
             ];
         } catch(DatabaseException $e) {
             return [];
@@ -331,30 +316,29 @@ class AnalyticsModel extends Model {
     public function getRealtimeData()
     {
         try {
-            $twentyFourHoursAgo = date('Y-m-d H:i:s', strtotime('-24 hours'));
+            $twentyFourHoursAgo = date('Y-m-d H:i:s', strtotime('-24 hour'));
             $sql = "SELECT 
-                        HOUR(created_at) as hour,
-                        COUNT(*) as count
+                        created_at, COUNT(*) as count
                     FROM posts 
                     WHERE created_at >= '{$twentyFourHoursAgo}'
-                    GROUP BY HOUR(created_at)
-                    ORDER BY hour";
+                    GROUP BY created_at
+                    ORDER BY created_at";
             
             $result = $this->db->query($sql)->getResultArray();
-            
-            $labels = [];
-            $values = [];
+
+            $regroupData = [];
+            foreach($result as $row) {
+                $hour = date('H', strtotime($row['created_at']));
+                if(!isset($regroupData[$hour])) {
+                    $regroupData[$hour] = 0;
+                }
+                $regroupData[$hour] += $row['count'];
+            }
             
             // Initialize 24 hours
             for ($i = 0; $i < 24; $i++) {
                 $labels[] = sprintf('%02d:00', $i);
-                $values[] = 0;
-            }
-        
-            // Fill in actual data
-            foreach ($result as $row) {
-                $hour = (int)$row['hour'];
-                $values[$hour] = (int)$row['count'];
+                $values[$i] = $regroupData[$i] ?? 0;
             }
             
             return ['labels' => $labels, 'values' => $values];
@@ -373,8 +357,7 @@ class AnalyticsModel extends Model {
         try {
             
             $oneHourAgo = date('Y-m-d H:i:s', strtotime('-1 HOUR'));
-            $sql = "SELECT COUNT(*) as count FROM users WHERE last_login >= '{$oneHourAgo}'";
-            $result = $this->db->query($sql)->getRowArray();
+            $result = $this->db->query("SELECT COUNT(*) as count FROM users WHERE last_login >= '{$oneHourAgo}'")->getRowArray();
             
             return (int)$result['count'];
 
@@ -495,15 +478,34 @@ class AnalyticsModel extends Model {
     public function getHourlyActivity()
     {
         try {
+
+            $sevenDaysAgo = date('Y-m-d H:i:s', strtotime('-7 days'));
+
             $sql = "SELECT 
-                    HOUR(created_at) as hour,
-                    COUNT(*) as count
+                    created_at, COUNT(*) as count
                 FROM posts 
-                WHERE created_at >= DATE_SUB(NOW(), INTERVAL 7 DAY)
-                GROUP BY HOUR(created_at)
-                ORDER BY hour";
+                WHERE created_at >= '{$sevenDaysAgo}'
+                GROUP BY created_at
+                ORDER BY created_at";
+            $result = $this->db->query($sql)->getResultArray();
+
+            $regroupData = [];
+            foreach($result as $row) {
+                $hour = date('H', strtotime($row['created_at']));
+                if(!isset($regroupData[$hour])) {
+                    $regroupData[$hour] = 0;
+                }
+                $regroupData[$hour] += $row['count'];
+            }
+
+            foreach($regroupData as $hour => $value) {
+                $finalResult[] = [
+                    'hour' => $hour,
+                    'count' => $value
+                ];
+            }
         
-            return $this->db->query($sql)->getResultArray();
+            return $finalResult ?? [];
         } catch(DatabaseException $e) {
             return [];
         }

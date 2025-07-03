@@ -562,6 +562,7 @@ class PostsModel extends Model {
                     ->join('users u', 'p.user_id = u.user_id')
                     ->join('media m', 'p.post_id = m.record_id AND m.section = "posts"', 'left')
                     ->where('p.created_at >=', date('Y-m-d H:i:s', strtotime("-{$hours} hours")))
+                    ->where('p.is_hidden', 0)
                     ->orderBy('score DESC, p.created_at DESC');
 
         $hiddenPosts = $this->hiddenPostByUserId($this->payload['userId']);
@@ -645,6 +646,7 @@ class PostsModel extends Model {
                         ->join('media m', 'p.post_id = m.record_id AND m.section = "posts"', 'left')
                         ->join('bookmarks b', 'p.post_id = b.post_id AND b.user_id = ' . $this->payload['userId'], 'left')
                         ->where("{$whereClause} <= ", $this->payload['radius'])
+                        ->where('p.is_hidden', 0)
                         ->orderBy('p.post_id DESC')
                         ->limit($this->payload['limit'])
                         ->offset($offset);
