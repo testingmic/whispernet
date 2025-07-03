@@ -331,7 +331,7 @@ class UsersModel extends Model {
             $offset = ($page - 1) * $limit;
             
             $sql = "SELECT 
-                        user_id, full_name, username, email, user_type AS role, 
+                        user_id, full_name, username, email, user_type AS role, gender,
                         status, created_at, last_login AS last_activity, profile_image 
                     FROM users WHERE 1=1";
             $params = [];
@@ -353,6 +353,11 @@ class UsersModel extends Model {
             if (!empty($filters['role']) && $filters['role'] !== 'all') {
                 $sql .= " AND user_type = ?";
                 $params[] = $filters['role'];
+            }
+
+            if (!empty($filters['gender']) && $filters['gender'] !== 'all') {
+                $sql .= " AND gender = ?";
+                $params[] = $filters['gender'];
             }
 
             $sql .= " ORDER BY created_at DESC LIMIT ? OFFSET ?";
@@ -387,6 +392,11 @@ class UsersModel extends Model {
                 $params[] = $searchTerm;
             }
 
+            if (!empty($filters['gender']) && $filters['gender'] !== 'all') {
+                $sql .= " AND gender = ?";
+                $params[] = $filters['gender'];
+            }
+
             if (!empty($filters['status']) && $filters['status'] !== 'all') {
                 $sql .= " AND status = ?";
                 $params[] = $filters['status'];
@@ -417,6 +427,8 @@ class UsersModel extends Model {
                         COUNT(*) as totalUsers,
                         COUNT(CASE WHEN status = 'active' THEN 1 END) as activeUsers,
                         COUNT(CASE WHEN status = 'admin' THEN 1 END) as adminUsers,
+                        COUNT(CASE WHEN gender = 'Male' THEN 1 END) as maleUsers,
+                        COUNT(CASE WHEN gender = 'Female' THEN 1 END) as femaleUsers,
                         COUNT(CASE WHEN status = 'suspended' THEN 1 END) as suspendedUsers,
                         COUNT(CASE WHEN user_type = 'moderator' THEN 1 END) as moderatorsCount
                     FROM users";
@@ -428,6 +440,8 @@ class UsersModel extends Model {
                 'totalUsers' => 0,
                 'activeUsers' => 0,
                 'adminUsers' => 0,
+                'maleUsers' => 0,
+                'femaleUsers' => 0,
                 'suspendedUsers' => 0,
                 'moderatorsCount' => 0
             ];
@@ -664,7 +678,7 @@ class UsersModel extends Model {
     public function getUsersForExport($filters = [])
     {
         try {
-            $sql = "SELECT user_id, full_name, username, email, role, status, created_at, last_activity 
+            $sql = "SELECT user_id, full_name, username, gender, email, user_type AS role, status, created_at, last_login AS last_activity 
                     FROM users WHERE 1=1";
             $params = [];
 
@@ -677,13 +691,18 @@ class UsersModel extends Model {
                 $params[] = $searchTerm;
             }
 
+            if (!empty($filters['gender']) && $filters['gender'] !== 'all') {
+                $sql .= " AND gender = ?";
+                $params[] = $filters['gender'];
+            }
+
             if (!empty($filters['status']) && $filters['status'] !== 'all') {
                 $sql .= " AND status = ?";
                 $params[] = $filters['status'];
             }
 
             if (!empty($filters['role']) && $filters['role'] !== 'all') {
-                $sql .= " AND role = ?";
+                $sql .= " AND user_type = ?";
                 $params[] = $filters['role'];
             }
 
@@ -692,6 +711,8 @@ class UsersModel extends Model {
             return $this->db->query($sql, $params)->getResultArray();
 
         } catch (DatabaseException $e) {
+            print_r($e->getMessage());
+            exit;
             return [];
         }
     }

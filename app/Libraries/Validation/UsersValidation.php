@@ -53,6 +53,12 @@ class UsersValidation {
                 'value' => 'max_length[100]',
             ]
         ],
+        'export' => [
+            'method' => 'GET',
+            'authenticate' => true,
+            'is_admin' => true,
+            'payload' => []
+        ],
         'status:user_id' => [
             'method' => 'PUT',
             'authenticate' => true,

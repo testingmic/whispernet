@@ -29,6 +29,7 @@ class Users extends LoadController {
         $search = $this->payload['search'] ?? '';
         $status = $this->payload['status'] ?? 'all';
         $role = $this->payload['role'] ?? 'all';
+        $gender = $this->payload['gender'] ?? 'all';
 
         // Build filters
         $filters = [];
@@ -40,6 +41,9 @@ class Users extends LoadController {
         }
         if ($role !== 'all') {
             $filters['role'] = $role;
+        }
+        if ($gender !== 'all') {
+            $filters['gender'] = $gender;
         }
 
         // Get users with pagination
@@ -270,6 +274,7 @@ class Users extends LoadController {
             'Full Name',
             'Username',
             'Email',
+            'Gender',
             'Role',
             'Status',
             'Created At',
@@ -283,6 +288,7 @@ class Users extends LoadController {
                 $user['full_name'],
                 $user['username'],
                 $user['email'],
+                $user['gender'],
                 $user['role'],
                 $user['status'],
                 $user['created_at'],

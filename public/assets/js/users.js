@@ -13,6 +13,7 @@ const UserManager = {
         this.setupEventListeners();
         this.loadUsers();
         this.loadStats();
+        this.canDelete = $(`div[id="deleteModal"]`).length;
     },
 
     setupEventListeners() {
@@ -35,9 +36,11 @@ const UserManager = {
         });
 
         // Select all checkbox
-        document.getElementById('selectAll').addEventListener('change', (e) => {
-            this.toggleSelectAll(e.target.checked);
-        });
+        if($(`input[id="selectAll"]`).length) {
+            document.getElementById('selectAll').addEventListener('change', (e) => {
+                this.toggleSelectAll(e.target.checked);
+            });
+        }
 
         // User form submission
         document.getElementById('userForm').addEventListener('submit', (e) => {
@@ -147,7 +150,7 @@ const UserManager = {
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-center">
                     <div class="flex items-center space-x-2 justify-center">
-                        ${user.user_id !== loggedInUserId ? `
+                        ${user.user_id !== loggedInUserId && $(`input[id="selectAll"]`).length ? `
                         <label class="flex items-center">
                             <input type="checkbox" value="${user.user_id}" class="user-checkbox rounded border-gray-300 text-blue-600 focus:ring-blue-500">
                         </label>` : ''}
@@ -162,11 +165,13 @@ const UserManager = {
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="${user.status === 'suspended' ? 'M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z' : 'M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728L5.636 5.636m12.728 12.728L18.364 5.636M5.636 18.364l12.728-12.728'}"></path>
                                 </svg>
                             </button>
+                            ${this.canDelete ? `
                             <button onclick="UserManager.showDeleteModal(${user.user_id})" class="text-red-600 hover:text-red-900 dark:text-red-400 dark:hover:text-red-300">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
                                 </svg>
                             </button>` : ''
+                            }` : ''
                         }
                     </div>
                 </td>
@@ -252,6 +257,7 @@ const UserManager = {
     },
 
     toggleSelectAll(checked) {
+        if(!$(`input[id="selectAll"]`).length) return;
         const checkboxes = document.querySelectorAll('.user-checkbox');
         checkboxes.forEach(checkbox => {
             checkbox.checked = checked;
@@ -331,17 +337,6 @@ const UserManager = {
         } finally {
             this.hideLoading();
         }
-    },
-
-    showAddUserModal() {
-        document.getElementById('modalTitle').textContent = 'Add User';
-        document.getElementById('userForm').reset();
-        document.getElementById('userId').value = '';
-        document.getElementById('password').required = true;
-        document.getElementById('userModal').classList.remove('hidden');
-        $(`div[id="passwordField"]`).show();
-        $(`input[id="password"]`).attr('disabled', false);
-        $(`input[id="email"]`).attr('disabled', false);
     },
 
     async editUser(userId) {
@@ -482,10 +477,12 @@ const UserManager = {
 
     showDeleteModal(userId) {
         this.userToDelete = userId;
+        if(!$(`div[id="deleteModal"]`).length) return;
         document.getElementById('deleteModal').classList.remove('hidden');
     },
 
     closeDeleteModal() {
+        if(!$(`div[id="deleteModal"]`).length) return;
         document.getElementById('deleteModal').classList.add('hidden');
         this.userToDelete = null;
     },
