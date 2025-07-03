@@ -62,9 +62,7 @@ class ReportsModel extends Model {
             $params[] = $filters['reason'];
         }
         
-        $sql .= " GROUP BY r.report_id ORDER BY r.created_at DESC LIMIT ? OFFSET ?";
-        $params[] = $limit;
-        $params[] = $offset;
+        $sql .= " GROUP BY r.report_id ORDER BY r.created_at DESC LIMIT {$limit} OFFSET {$offset}";
         
         $reports = $this->db->query($sql, $params)->getResultArray();
         

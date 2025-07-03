@@ -16,7 +16,7 @@ class Reports extends LoadController
     public function list()
     {
         // Get reports with pagination
-        $reports = $this->reportsModel->getReports($this->payload, $this->payload['offset'], $this->payload['limit']);
+        $reports = $this->reportsModel->getReports($this->payload, (int)$this->payload['offset'], (int)$this->payload['limit']);
         $total = $this->reportsModel->getReportsCount($this->payload);
 
         return Routing::success([
