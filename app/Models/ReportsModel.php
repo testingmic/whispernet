@@ -68,6 +68,9 @@ class ReportsModel extends Model {
         
         // Get content previews
         foreach ($reports as &$report) {
+            $report['upvotes'] = (int)$report['upvotes'];
+            $report['downvotes'] = (int)$report['downvotes'];
+            $report['user_has_voted'] = (int)$report['user_has_voted'];
             $report['content_preview'] = $this->getContentPreview($report['reported_type'], $report['reported_id']);
         }
         
