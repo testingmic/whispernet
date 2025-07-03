@@ -483,8 +483,8 @@ const AnalyticsManager = {
 
             if (response.ok) {
                 const data = await response.json();
-                this.updateRealtimeChart(data);
-                this.updateActiveUsers(data.activeUsers);
+                this.updateRealtimeChart(data.data);
+                this.updateActiveUsers(data.data.activeUsers);
             }
         } catch (error) {
             console.error('Error updating real-time data:', error);
