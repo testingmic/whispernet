@@ -419,136 +419,205 @@ $favicon_color = $favicon_color ?? 'dashboard';
                 x-transition:leave-start="transform opacity-100 scale-100 translate-y-0"
                 x-transition:leave-end="transform opacity-0 scale-95 translate-y-2"
                 id="menuHelper"
-                class="absolute right-0 top-12 w-64 rounded-xl shadow-2xl bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 backdrop-blur-sm bg-opacity-95 dark:bg-opacity-95 z-50 overflow-hidden">
+                class="absolute right-0 top-12 w-64 rounded-xl shadow-2xl bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 backdrop-blur-sm bg-opacity-95 dark:bg-opacity-95 z-50 overflow-hidden max-h-[80vh] overflow-y-auto">
 
                 <!-- Header Section -->
-                <div class="bg-gradient-to-r from-blue-500 to-purple-600 px-4 py-4">
-                  <div class="flex items-center space-x-3">
-                    <div class="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center">
-                      <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <div class="bg-gradient-to-r from-blue-500 to-purple-600 px-3 py-3">
+                  <div class="flex items-center space-x-2">
+                    <div class="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center">
+                      <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                       </svg>
                     </div>
                     <div class="flex-1 min-w-0">
-                      <p class="text-sm font-medium text-white">Welcome back</p>
+                      <p class="text-xs font-medium text-white">Welcome back</p>
                       <p class="text-xs text-blue-100 truncate"><?= session()->get('userData')['full_name'] ?? 'User' ?></p>
                     </div>
                   </div>
                 </div>
 
                 <!-- Menu Items -->
-                <div class="py-2">
+                <div class="py-1">
                   <!-- Profile Section -->
-                  <div class="px-3">
+                  <div class="px-2">
                     <a href="<?= $baseUrl ?>/profile"
-                      class="group flex items-center px-3 py-2.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-blue-50 dark:hover:bg-gray-700 rounded-lg transition-all duration-200 hover:translate-x-1">
-                      <div class="w-8 h-8 bg-blue-100 dark:bg-blue-900/30 rounded-lg flex items-center justify-center mr-3 group-hover:bg-blue-200 dark:group-hover:bg-blue-800/50 transition-colors duration-200">
-                        <svg class="w-4 h-4 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      class="group flex items-center px-2 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-blue-50 dark:hover:bg-gray-700 rounded-lg transition-all duration-200 hover:translate-x-1">
+                      <div class="w-6 h-6 bg-blue-100 dark:bg-blue-900/30 rounded-lg flex items-center justify-center mr-2 group-hover:bg-blue-200 dark:group-hover:bg-blue-800/50 transition-colors duration-200">
+                        <svg class="w-3 h-3 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                         </svg>
                       </div>
                       <div>
-                        <p class="font-medium">Your Profile</p>
+                        <p class="font-medium text-sm">Your Profile</p>
                         <p class="text-xs text-gray-500 dark:text-gray-400">View and edit your profile</p>
                       </div>
                     </a>
                   </div>
 
                   <!-- Settings -->
-                  <div class="px-3">
+                  <div class="px-2">
                     <a href="<?= $baseUrl ?>/profile/edit"
-                      class="group flex items-center px-3 py-2.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-green-50 dark:hover:bg-gray-700 rounded-lg transition-all duration-200 hover:translate-x-1">
-                      <div class="w-8 h-8 bg-green-100 dark:bg-green-900/30 rounded-lg flex items-center justify-center mr-3 group-hover:bg-green-200 dark:group-hover:bg-green-800/50 transition-colors duration-200">
-                        <svg class="w-4 h-4 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      class="group flex items-center px-2 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-green-50 dark:hover:bg-gray-700 rounded-lg transition-all duration-200 hover:translate-x-1">
+                      <div class="w-6 h-6 bg-green-100 dark:bg-green-900/30 rounded-lg flex items-center justify-center mr-2 group-hover:bg-green-200 dark:group-hover:bg-green-800/50 transition-colors duration-200">
+                        <svg class="w-3 h-3 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
                           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                         </svg>
                       </div>
                       <div>
-                        <p class="font-medium">Settings</p>
+                        <p class="font-medium text-sm">Settings</p>
                         <p class="text-xs text-gray-500 dark:text-gray-400">Customize your experience</p>
                       </div>
                     </a>
                   </div>
 
                   <!-- Saved Items -->
-                  <div class="px-3">
+                  <div class="px-2">
                     <a href="<?= $baseUrl ?>/profile/saved"
-                      class="group flex items-center px-3 py-2.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-yellow-50 dark:hover:bg-gray-700 rounded-lg transition-all duration-200 hover:translate-x-1">
-                      <div class="w-8 h-8 bg-yellow-100 dark:bg-yellow-900/30 rounded-lg flex items-center justify-center mr-3 group-hover:bg-yellow-200 dark:group-hover:bg-yellow-800/50 transition-colors duration-200">
-                        <svg class="w-4 h-4 text-yellow-600 dark:text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      class="group flex items-center px-2 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-yellow-50 dark:hover:bg-gray-700 rounded-lg transition-all duration-200 hover:translate-x-1">
+                      <div class="w-6 h-6 bg-yellow-100 dark:bg-yellow-900/30 rounded-lg flex items-center justify-center mr-2 group-hover:bg-yellow-200 dark:group-hover:bg-yellow-800/50 transition-colors duration-200">
+                        <svg class="w-3 h-3 text-yellow-600 dark:text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
                         </svg>
                       </div>
                       <div>
-                        <p class="font-medium">Saved Items</p>
+                        <p class="font-medium text-sm">Saved Items</p>
                         <p class="text-xs text-gray-500 dark:text-gray-400">Your bookmarked content</p>
                       </div>
                     </a>
                   </div>
 
                   <!-- Install Guide -->
-                  <div class="px-3">
+                  <div class="px-2">
                     <a href="<?= $baseUrl ?>/install"
-                      class="group flex items-center px-3 py-2.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-purple-50 dark:hover:bg-gray-700 rounded-lg transition-all duration-200 hover:translate-x-1">
-                      <div class="w-8 h-8 bg-purple-100 dark:bg-purple-900/30 rounded-lg flex items-center justify-center mr-3 group-hover:bg-purple-200 dark:group-hover:bg-purple-800/50 transition-colors duration-200">
-                        <svg class="w-4 h-4 text-purple-600 dark:text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      class="group flex items-center px-2 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-purple-50 dark:hover:bg-gray-700 rounded-lg transition-all duration-200 hover:translate-x-1">
+                      <div class="w-6 h-6 bg-purple-100 dark:bg-purple-900/30 rounded-lg flex items-center justify-center mr-2 group-hover:bg-purple-200 dark:group-hover:bg-purple-800/50 transition-colors duration-200">
+                        <svg class="w-3 h-3 text-purple-600 dark:text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M7 10l5 5m0 0l5-5m-5 5V4" />
                         </svg>
                       </div>
                       <div>
-                        <p class="font-medium">How to Install</p>
+                        <p class="font-medium text-sm">How to Install</p>
                         <p class="text-xs text-gray-500 dark:text-gray-400">Add to home screen</p>
                       </div>
                     </a>
                   </div>
 
                   <!-- What's New -->
-                  <div class="px-3">
+                  <div class="px-2">
                     <a href="<?= $baseUrl ?>/updates"
-                      class="group flex items-center px-3 py-2.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-orange-50 dark:hover:bg-gray-700 rounded-lg transition-all duration-200 hover:translate-x-1">
-                      <div class="w-8 h-8 bg-orange-100 dark:bg-orange-900/30 rounded-lg flex items-center justify-center mr-3 group-hover:bg-orange-200 dark:group-hover:bg-orange-800/50 transition-colors duration-200">
-                        <svg class="w-4 h-4 text-orange-600 dark:text-orange-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      class="group flex items-center px-2 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-orange-50 dark:hover:bg-gray-700 rounded-lg transition-all duration-200 hover:translate-x-1">
+                      <div class="w-6 h-6 bg-orange-100 dark:bg-orange-900/30 rounded-lg flex items-center justify-center mr-2 group-hover:bg-orange-200 dark:group-hover:bg-orange-800/50 transition-colors duration-200">
+                        <svg class="w-3 h-3 text-orange-600 dark:text-orange-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
                         </svg>
                       </div>
                       <div>
-                        <p class="font-medium">What's New</p>
+                        <p class="font-medium text-sm">What's New</p>
                         <p class="text-xs text-gray-500 dark:text-gray-400">Latest updates</p>
                       </div>
                     </a>
                   </div>
 
+                  <?php if (!empty($isAdminOrModerator)) { ?>
+                  <!-- Admin Dashboard Section -->
+                  <div class="border-t border-gray-200 dark:border-gray-700 mx-2 my-1"></div>
+                  
+                  <!-- Admin Dashboard Header -->
+                  <div class="px-2 py-1">
+                    <div class="flex items-center px-2 py-1">
+                      <div class="w-6 h-6 bg-red-100 dark:bg-red-900/30 rounded-lg flex items-center justify-center mr-2">
+                        <svg class="w-3 h-3 text-red-600 dark:text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
+                        </svg>
+                      </div>
+                      <div>
+                        <p class="text-xs font-semibold text-red-600 dark:text-red-400 uppercase tracking-wide">Admin Panel</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Analytics -->
+                  <div class="px-2">
+                    <a href="<?= $baseUrl ?>/admin/analytics"
+                      class="group flex items-center px-2 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-blue-50 dark:hover:bg-gray-700 rounded-lg transition-all duration-200 hover:translate-x-1">
+                      <div class="w-6 h-6 bg-blue-100 dark:bg-blue-900/30 rounded-lg flex items-center justify-center mr-2 group-hover:bg-blue-200 dark:group-hover:bg-blue-800/50 transition-colors duration-200">
+                        <svg class="w-3 h-3 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                        </svg>
+                      </div>
+                      <div>
+                        <p class="font-medium text-sm">Analytics</p>
+                        <p class="text-xs text-gray-500 dark:text-gray-400">Platform insights</p>
+                      </div>
+                    </a>
+                  </div>
+
+                  <!-- Reports -->
+                  <div class="px-2">
+                    <a href="<?= $baseUrl ?>/admin/reports"
+                      class="group flex items-center px-2 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-yellow-50 dark:hover:bg-gray-700 rounded-lg transition-all duration-200 hover:translate-x-1">
+                      <div class="w-6 h-6 bg-yellow-100 dark:bg-yellow-900/30 rounded-lg flex items-center justify-center mr-2 group-hover:bg-yellow-200 dark:group-hover:bg-yellow-800/50 transition-colors duration-200">
+                        <svg class="w-3 h-3 text-yellow-600 dark:text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                        </svg>
+                      </div>
+                      <div>
+                        <p class="font-medium text-sm">Reports</p>
+                        <p class="text-xs text-gray-500 dark:text-gray-400">User reports</p>
+                      </div>
+                    </a>
+                  </div>
+
+                  <!-- Users Management -->
+                  <div class="px-2">
+                    <a href="<?= $baseUrl ?>/admin/users"
+                      class="group flex items-center px-2 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-green-50 dark:hover:bg-gray-700 rounded-lg transition-all duration-200 hover:translate-x-1">
+                      <div class="w-6 h-6 bg-green-100 dark:bg-green-900/30 rounded-lg flex items-center justify-center mr-2 group-hover:bg-green-200 dark:group-hover:bg-green-800/50 transition-colors duration-200">
+                        <svg class="w-3 h-3 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                        </svg>
+                      </div>
+                      <div>
+                        <p class="font-medium text-sm">Users</p>
+                        <p class="text-xs text-gray-500 dark:text-gray-400">Manage users</p>
+                      </div>
+                    </a>
+                  </div>
+
+                  <div class="border-t border-gray-200 dark:border-gray-700 mx-2 my-1"></div>
+                  <?php } ?>
+
                   <!-- Help Center (Hidden) -->
-                  <div class="px-3 py-2">
+                  <div class="px-2 py-1">
                     <a href="<?= $baseUrl ?>/support"
-                      class="group flex items-center px-3 py-2.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-indigo-50 dark:hover:bg-gray-700 rounded-lg transition-all duration-200 hover:translate-x-1">
-                      <div class="w-8 h-8 bg-indigo-100 dark:bg-indigo-900/30 rounded-lg flex items-center justify-center mr-3 group-hover:bg-indigo-200 dark:group-hover:bg-indigo-800/50 transition-colors duration-200">
-                        <svg class="w-4 h-4 text-indigo-600 dark:text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      class="group flex items-center px-2 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-indigo-50 dark:hover:bg-gray-700 rounded-lg transition-all duration-200 hover:translate-x-1">
+                      <div class="w-6 h-6 bg-indigo-100 dark:bg-indigo-900/30 rounded-lg flex items-center justify-center mr-2 group-hover:bg-indigo-200 dark:group-hover:bg-indigo-800/50 transition-colors duration-200">
+                        <svg class="w-3 h-3 text-indigo-600 dark:text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                         </svg>
                       </div>
                       <div>
-                        <p class="font-medium">Help Center</p>
+                        <p class="font-medium text-sm">Help Center</p>
                         <p class="text-xs text-gray-500 dark:text-gray-400">Get support</p>
                       </div>
                     </a>
                   </div>
 
                   <!-- Divider -->
-                  <div class="border-t border-gray-200 dark:border-gray-700 mx-3 my-2"></div>
+                  <div class="border-t border-gray-200 dark:border-gray-700 mx-2 my-1"></div>
 
                   <!-- Logout -->
-                  <div class="px-3">
+                  <div class="px-2">
                     <button onclick="return AppState.logout()"
-                      class="group w-full flex items-center px-3 py-1 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-all duration-200 hover:translate-x-1">
-                      <div class="w-8 h-8 bg-red-100 dark:bg-red-900/30 rounded-lg flex items-center justify-center mr-3 group-hover:bg-red-200 dark:group-hover:bg-red-800/50 transition-colors duration-200">
-                        <svg class="w-4 h-4 text-red-600 dark:text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      class="group w-full flex items-center px-2 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-all duration-200 hover:translate-x-1">
+                      <div class="w-6 h-6 bg-red-100 dark:bg-red-900/30 rounded-lg flex items-center justify-center mr-2 group-hover:bg-red-200 dark:group-hover:bg-red-800/50 transition-colors duration-200">
+                        <svg class="w-3 h-3 text-red-600 dark:text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
                         </svg>
                       </div>
                       <div>
-                        <p class="font-medium">Sign out</p>
+                        <p class="font-medium text-sm">Sign out</p>
                       </div>
                     </button>
                   </div>
