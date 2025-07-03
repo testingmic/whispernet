@@ -15,6 +15,9 @@ class Reports extends LoadController
      */
     public function list()
     {
+        // set the payload to the reports model
+        $this->reportsModel->payload = $this->payload;
+
         // Get reports with pagination
         $reports = $this->reportsModel->getReports($this->payload, (int)$this->payload['offset'], (int)$this->payload['limit']);
         $total = $this->reportsModel->getReportsCount($this->payload);

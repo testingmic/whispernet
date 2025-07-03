@@ -40,8 +40,8 @@ class ReportsModel extends Model {
                        COUNT(CASE WHEN v.vote_type = -1 THEN 1 END) as downvotes,
                        CASE WHEN mv.report_id IS NOT NULL THEN 1 ELSE 0 END as user_has_voted
                 FROM reports r
-                LEFT JOIN report_votes v ON r.report_id = v.report_id
-                LEFT JOIN report_votes mv ON r.report_id = mv.report_id AND mv.moderator_id = ?
+                    LEFT JOIN report_votes v ON r.report_id = v.report_id
+                    LEFT JOIN report_votes mv ON r.report_id = mv.report_id AND mv.moderator_id = ?
                 WHERE 1=1";
         
         $params = [$this->payload['userId'] ?? 0];
