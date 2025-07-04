@@ -666,7 +666,8 @@ const PostManager = {
         const postId = postContainer.getAttribute('data-posts-id');
         const postUUID = postContainer.getAttribute('data-post-uuid');
         if(!postId) return;
-        PostCommentManager.postId = postId;
+        PostCommentManager.postId = parseInt(postId);
+        PostManager.postId = parseInt(postId);
 
         // set the postWasFound to false
         const requestPath = postUUID ? `${baseUrl}/api/posts/shared/${postId}/${postUUID}` : `${baseUrl}/api/posts/view/${postId}`;
@@ -779,7 +780,7 @@ const PostManager = {
                 </div>
             </div>
             <p class="text-gray-800 mb-3 dark:text-white whitespace-pre-wrap text-sm">${comment.content}</p>
-            <div class="flex items-center justify-between">
+            <div class="flex items-center justify-between" data-comment-actions="${comment.comment_id}">
                 <div class="flex items-center space-x-4">
                     <button class="flex text-sm items-center space-x-1 text-gray-500 hover:text-blue-500" data-comments-id="${comment.comment_id}" onclick="return PostManager.handleVote('comments', ${comment.comment_id}, 'up', ${comment.user_id})">
                         <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -1140,7 +1141,7 @@ const PostManager = {
                 <!-- Media Preview Section -->
                 <div id="postMediaPreview" class="media-display-container mb-3"></div>` : ''
             }
-            <div class="flex items-center justify-between">
+            <div class="flex items-center justify-between" data-post-actions="${post.post_id}">
                 <div class="flex items-center space-x-4">
                     <button ${!single ? `onclick="return PostManager.changeDirection(${post.post_id})"` : ''} class="flex items-center space-x-1 text-gray-500 hover:text-blue-500 dark:text-gray-800 dark:hover:text-blue-400 transition-colors" onclick="event.stopPropagation();" data-posts-id="${post.post_id}">
                         <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -1409,8 +1410,13 @@ const PostManager = {
             AppState.showNotification(data.message || 'Post deleted successfully', 'success');
             
             // Remove post from DOM
-            $(`[data-${field}-id="${postId}"]`).remove();
-            
+            if(!PostManager.postId) {
+                $(`[data-${field}-id="${postId}"]`).remove();
+            } else {
+                $(`[data-${field}-id="${postId}"] div[class~="post-content-clickable"]`).html(`<div class="text-gray-500">Post deleted</div>`);
+                $(`div[id="commentsSectionContainer"]`).remove();
+                $(`div[data-post-actions="${postId}"]`).remove();
+            }
             this.hideContextMenu();
         } catch (error) {
             AppState.showNotification('Failed to delete post', 'error');
@@ -2810,7 +2816,7 @@ const TagsManager = {
                             <div class="flex flex-wrap gap-2 mb-3">
                                 ${hashtagsData}
                             </div>
-                            <div class="flex items-center justify-between">
+                            <div class="flex items-center justify-between" data-post-actions="${post.post_id}">
                                 <div class="flex items-center space-x-4 text-sm text-gray-500 dark:text-gray-400">
                                     <span class="flex items-center">
                                         <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
