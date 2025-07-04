@@ -8,7 +8,7 @@ function app_features() {
     return [
         'login' => [
             'title' => 'Welcome to TalkLowKey',
-            'caption' => 'Connect with your community through secure, private messaging. Share thoughts, ideas, and experiences in a safe environment where your privacy is our priority.',
+            'caption' => 'Share thoughts, ideas, and experiences in a safe environment where your privacy is our priority. Connect with your community through secure, private messaging.',
             'features' => [
                 'Group & Individual' => 'Chat one-on-one or create group conversations',
                 'Media Sharing' => 'Share images and media with your conversations',
@@ -16,7 +16,7 @@ function app_features() {
         ],
         'signup' => [
             'title' => 'Join TalkLowKey',
-            'caption' => 'Start your journey with secure, private messaging. Connect with your community, share your thoughts, and build meaningful conversations in a safe environment.',
+            'caption' => 'Connect with your community, share your thoughts, and build meaningful conversations in a safe environment. Start your journey with secure, private messaging.',
             'features' => [
                 'Tags' => 'Add tags to your posts to make them more discoverable',
                 'Instant Setup' => 'No need to wait for approval, your account is ready to use immediately',
