@@ -266,11 +266,12 @@ class PostsModel extends Model {
     public function create() {
         try {
 
-            $sql = "INSERT INTO posts (user_id, content, city, country, media_url, media_type, latitude, longitude) 
-                    VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+            $sql = "INSERT INTO posts (user_id, content, post_uuid, city, country, media_url, media_type, latitude, longitude) 
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
             $this->db->query($sql, [
                 $this->payload['userId'], 
                 $this->payload['content'], 
+                $this->payload['post_uuid'] ?? null,
                 $this->payload['city'] ?? null,
                 $this->payload['country'] ?? null,
                 $this->payload['mediaUrl'] ?? null, 
