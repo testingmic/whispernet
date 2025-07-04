@@ -76,7 +76,7 @@
             </div>
 
             <!-- Enhanced Comments List -->
-            <div class="p-6">
+            <div class="p-2">
                 <div class="space-y-4" id="commentsList"></div>
             </div>
         </div>

@@ -65,7 +65,7 @@
                 </div>
 
                 <!-- Post Content Area -->
-                <div class="p-6">
+                <div class="p-2">
                     <?= loadingSkeleton(1, false); ?>
                 </div>
             </div>
