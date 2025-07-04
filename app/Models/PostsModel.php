@@ -707,14 +707,7 @@ class PostsModel extends Model {
 
             $query = $posts->get();
 
-            $all = $query->getResultArray();
-
-            foreach($all as $key => $post) {
-                $all[$key]['post_uuid'] = random_string('alnum', 18);
-                $this->db->query("UPDATE posts SET post_uuid = ? WHERE post_id = ?", [$all[$key]['post_uuid'], $post['post_id']]);
-            }
-
-            return $all;
+            return $query->getResultArray();
             
         } catch (DatabaseException $e) {
             return $e->getMessage();
