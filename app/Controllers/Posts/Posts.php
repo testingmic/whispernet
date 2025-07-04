@@ -37,7 +37,7 @@ class Posts extends LoadController {
     public function create() {
 
         // append a uuid to the payload
-        $this->payload['post_uuid'] = random_string('alnum', 18);
+        $this->payload['post_uuid'] = random_string('alnum', 8);
 
         // set the payload to the posts model
         $this->postsModel->payload = $this->payload;
