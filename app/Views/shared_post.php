@@ -100,7 +100,7 @@
         </div>
 
         <!-- Comments Section -->
-        <div id="commentsSectionContainer" class="mt-6 bg-white dark:bg-gray-800 rounded-2xl shadow-xl border border-gray-200 dark:border-gray-700 overflow-hidden mb-24">
+        <div id="commentsSectionContainer" class="mt-6 bg-white dark:bg-gray-800 rounded-2xl shadow-xl border border-gray-200 dark:border-gray-700 overflow-hidden">
             <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700 bg-gradient-to-r from-gray-50 to-blue-50 dark:from-gray-700 dark:to-gray-800">
                 <h3 class="text-xl text-gray-900 dark:text-white flex items-center">
                     <div class="w-8 h-8 bg-blue-100 dark:bg-blue-900/30 rounded-lg flex items-center justify-center mr-3">
@@ -135,7 +135,7 @@
     <!-- Enhanced Fixed Comment Input -->
     <div id="commentFormContainer" class="fixed bottom-0 left-0 right-0 bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 shadow-2xl backdrop-blur-sm">
         <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-            <form id="commentForm" class="flex items-center space-x-4">
+            <form id="commentForm" class="flex items-center space-x-2">
                 <div class="flex-1 relative">
                     <textarea
                         maxlength="300"
@@ -169,7 +169,7 @@
 
 <!-- Enhanced Full View Modal -->
 <?= full_view_modal() ?>
-<div id="additionalHeight" class="h-20"></div>
+<div id="" class="h-24"></div>
 
 <!-- Share Context Menu -->
 <div id="shareContextMenu" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 backdrop-blur-sm hidden" role="dialog" aria-modal="true">
