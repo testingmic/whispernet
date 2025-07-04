@@ -48,7 +48,7 @@ function formatPosts($posts = [], $single = false, $userId = null) {
             'post_uuid' => $post['post_uuid'],
             'pageviews' => $post['pageviews'] ?? 0,
             'views' => $post['views'] ?? 0,
-            'name' => empty($post['full_name']) ? $username : trim(explode(' ', $post['full_name'])[0]),
+            // 'name' => empty($post['full_name']) ? $username : trim(explode(' ', $post['full_name'])[0]),
             'username' => $username,
             'ago' => formatTimeAgo($post['created_at']),
             'comments_count' => $post['comments_count'] ?? 0,
