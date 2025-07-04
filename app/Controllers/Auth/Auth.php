@@ -138,24 +138,7 @@ class Auth extends LoadController {
 
         // if the webapp is true, set the session
         if(!empty($this->payload['webapp']) || $this->internal) {
-            $sessionObject = session();
-            $sessionObject->set('user_token', $response['token']);
-            $sessionObject->set('user_id', $user['user_id']);
-            $sessionObject->set('user_loggedin', true);
-            $sessionObject->set('user_type', $user['user_type']);
-
-            // if the longitude and latitude are provided, set the session
-            if(!empty($payload['longitude']) && !empty($payload['latitude'])) {
-                $sessionObject->set('userLongitude', $payload['longitude'] ?? '');
-                $sessionObject->set('userLatitude', $payload['latitude'] ?? '');
-            }
-
-            // set the user type
-            $user['isAdmin'] = ($user['user_type'] == 'admin');
-            $user['isModerator'] = ($user['user_type'] == 'moderator');
-            $user['isAdminOrModerator'] = ($user['user_type'] == 'admin') || ($user['user_type'] == 'moderator');
-
-            $sessionObject->set('userData', $user);
+            $this->setSession($response['token'], $user, $this->payload);
         }
 
         // delete the login logs
@@ -168,6 +151,34 @@ class Auth extends LoadController {
             'success' => true
         ];
 
+    }
+
+    /**
+     * Set the session
+     * 
+     * @param string $token
+     * @param array $user
+     * @return void
+     */
+    private function setSession($token, $user, $payload = []) {
+        $sessionObject = session();
+        $sessionObject->set('user_token', $token);
+        $sessionObject->set('user_id', $user['user_id']);
+        $sessionObject->set('user_loggedin', true);
+        $sessionObject->set('user_type', $user['user_type']);
+
+        // if the longitude and latitude are provided, set the session
+        if(!empty($payload['longitude']) && !empty($payload['latitude'])) {
+            $sessionObject->set('userLongitude', $payload['longitude'] ?? '');
+            $sessionObject->set('userLatitude', $payload['latitude'] ?? '');
+        }
+
+        // set the user type
+        $user['isAdmin'] = ($user['user_type'] == 'admin');
+        $user['isModerator'] = ($user['user_type'] == 'moderator');
+        $user['isAdminOrModerator'] = ($user['user_type'] == 'admin') || ($user['user_type'] == 'moderator');
+
+        $sessionObject->set('userData', $user);
     }
 
     /**
@@ -184,10 +195,7 @@ class Auth extends LoadController {
         
         // if the webapp is true, set the session
         if(!empty($this->payload['webapp'])) {
-            $sessionObject = session();
-            $sessionObject->set('user_token', $this->payload['token']);
-            $sessionObject->set('user_id', $this->currentUser['user_id']);
-            $sessionObject->set('user_loggedin', true);
+            $this->setSession($this->payload['token'], $this->currentUser, $this->payload);
         }
 
         return [

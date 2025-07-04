@@ -10,6 +10,12 @@ class AuthValidation {
             'authenticate' => true,
             'payload' => []
         ],
+        'pin' => [
+            'method' => 'POST',
+            'payload' => [
+                'pin' => 'required|max_length[6]|numeric'
+            ]
+        ],
         'register' => [
             'method' => 'POST',
             'payload' => [
