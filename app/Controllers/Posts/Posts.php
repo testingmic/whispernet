@@ -35,6 +35,9 @@ class Posts extends LoadController {
      */
     public function create() {
 
+        // append a uuid to the payload
+        $this->payload['post_uuid'] = random_string('alnum', 18);
+
         // set the payload to the posts model
         $this->postsModel->payload = $this->payload;
         
@@ -88,6 +91,41 @@ class Posts extends LoadController {
         // return the post id
         return Routing::created(['data' => 'Post created successfully', 'record' => $this->view()['data']]);
 
+    }
+
+    /**
+     * View a sharable post
+     * 
+     * @return array
+     */
+    public function sharable() {
+
+        // get the post id from the url
+        if(empty($this->payload['postId'])) {
+            return Routing::error('Post ID is required');
+        }
+
+        // set the payload to the posts model
+        $this->postsModel->payload = $this->payload;
+        
+        // make the call to the posts model
+        $post = $this->postsModel->sharable();
+
+        if(empty($post)) {
+            return Routing::notFound();
+        }
+
+        $urlPath = rtrim(configs('baseUrl'), '/') . "/shared/posts/{$post['post_id']}/{$post['post_uuid']}";
+
+        $result = [
+            'sharable' => $urlPath,
+            'facebook' => "https://www.facebook.com/sharer/sharer.php?u=" . urlencode($urlPath),
+            'twitter' => "https://x.com/intent/tweet?text=" . urlencode($post['content']) . "&url=" . urlencode($urlPath),
+            'whatsapp' => "https://wa.me/?text=" . urlencode($post['content']) . " " . urlencode($urlPath),
+            'post_id' => $post['post_id'],
+        ];
+
+        return Routing::success($result);
     }
 
     /**

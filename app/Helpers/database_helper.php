@@ -126,6 +126,7 @@ $databases = [
         pageviews INTEGER DEFAULT 1,
         comments_count INTEGER DEFAULT 0,
         country TEXT,
+        post_uuid TEXT,
         views INTEGER DEFAULT 0,
         upvotes INTEGER DEFAULT 0,
         downvotes INTEGER DEFAULT 0,
@@ -304,7 +305,7 @@ $databases = [
 
 // alter tables
 $alterTables = [
-    // "ALTER TABLE users ADD COLUMN status TEXT DEFAULT 'active'",
+    // "ALTER TABLE posts ADD COLUMN post_uuid TEXT",
 ];
 
 $votesTables = [

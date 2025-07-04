@@ -77,7 +77,7 @@ class Posts extends WebAppController {
         $this->verifyLogin();
 
         // get the post
-        return $this->templateObject->loadPage('post', ['pageTitle' => 'Feed', 'postId' => $postId, 'footerHidden' => true]);
+        return $this->templateObject->loadPage('post', ['pageTitle' => 'Feed', 'postId' => $postId, 'footerHidden' => true, 'loadFeed' => true]);
     }
 
 }

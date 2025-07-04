@@ -19,6 +19,12 @@ class PostsValidation {
                 'postId' => 'required|numeric|max_length[10]',
             ]
         ],
+        'sharable:postId' => [
+            'method' => 'GET',
+            'payload' => [
+                'postId' => 'required|numeric|max_length[12]',
+            ]
+        ],
         'mark_as_seen' => [
             'method' => 'POST',
             'authenticate' => true,

@@ -139,7 +139,7 @@ const FeedContext = {
     },
 
     socialMediaShare(platform, text, post_id) {
-        const postUrl = `${window.location.origin}/posts/view/${post_id}/shared`;
+        const postUrl = `${window.location.origin}/shared/posts/${post_id}`;
         let shareUrl = '';
         switch(platform) {
             case 'whatsapp':
@@ -161,7 +161,7 @@ const FeedContext = {
     },
 
     copyPostLink(post_id) {
-        const postUrl = `${window.location.origin}/posts/view/${post_id}/shared`;
+        const postUrl = `${window.location.origin}/shared/posts/${post_id}`;
         navigator.clipboard.writeText(postUrl).then(function() {
             AppState.showNotification('Post link has been copied to clipboard', 'success');
         }).catch(function(err) { });

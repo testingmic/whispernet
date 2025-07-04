@@ -164,6 +164,20 @@ class PostsModel extends Model {
     }
 
     /**
+     * View a sharable post
+     * 
+     * @return array
+     */
+    public function sharable() {
+        try {
+            $post = $this->db->query("SELECT post_id, post_uuid, content FROM posts WHERE post_id = ?", [$this->payload['postId']])->getRowArray();
+            return $post;
+        } catch (DatabaseException $e) {
+            return $e->getMessage();
+        }
+    }
+
+    /**
      * Hide a post
      * 
      * @param int $userId
@@ -693,7 +707,14 @@ class PostsModel extends Model {
 
             $query = $posts->get();
 
-            return $query->getResultArray();
+            $all = $query->getResultArray();
+
+            foreach($all as $key => $post) {
+                $all[$key]['post_uuid'] = random_string('alnum', 18);
+                $this->db->query("UPDATE posts SET post_uuid = ? WHERE post_id = ?", [$all[$key]['post_uuid'], $post['post_id']]);
+            }
+
+            return $all;
             
         } catch (DatabaseException $e) {
             return $e->getMessage();

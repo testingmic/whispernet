@@ -85,6 +85,7 @@ CREATE TABLE IF NOT EXISTS posts (
     longitude DECIMAL(11, 8) NOT NULL,
     city VARCHAR(100),
     country VARCHAR(100),
+    post_uuid VARCHAR(32) DEFAULT NULL,
     comments_count INT UNSIGNED DEFAULT 0,
     views INT UNSIGNED DEFAULT 0,
     upvotes INT UNSIGNED DEFAULT 0,
