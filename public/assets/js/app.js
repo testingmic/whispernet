@@ -57,6 +57,10 @@ const AppState = {
     logout() {
         let token = localStorage.getItem('token');
         this.clearLocationData();
+        if(!token) {
+            window.location.href = `${baseUrl}`;
+            return;
+        }
         $.post(`${baseUrl}/api/auth/logout`, {
             token: token,
             webapp: true,
