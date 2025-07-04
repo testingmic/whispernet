@@ -1,55 +1,8 @@
-<!-- Post View Container -->
-<style>
-  /* Custom scrollbar styles for textarea */
-  #commentInput::-webkit-scrollbar {
-    width: 6px;
-  }
-  
-  #commentInput::-webkit-scrollbar-track {
-    background: transparent;
-    border-radius: 3px;
-  }
-  
-  #commentInput::-webkit-scrollbar-thumb {
-    background: #d1d5db;
-    border-radius: 3px;
-    transition: background-color 0.2s ease;
-  }
-  
-  #commentInput::-webkit-scrollbar-thumb:hover {
-    background: #9ca3af;
-  }
-  
-  /* Dark mode scrollbar */
-  .dark #commentInput::-webkit-scrollbar-thumb {
-    background: #4b5563;
-  }
-  
-  .dark #commentInput::-webkit-scrollbar-thumb:hover {
-    background: #6b7280;
-  }
-  
-  /* Firefox scrollbar */
-  #commentInput {
-    scrollbar-width: thin;
-    scrollbar-color: #d1d5db transparent;
-  }
-  
-  .dark #commentInput {
-    scrollbar-color: #4b5563 transparent;
-  }
-  
-  /* Smooth scrolling */
-  #commentInput {
-    scroll-behavior: smooth;
-  }
-</style>
-
-<div class="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
+<div class="min-h-[calc(100vh-100px)] bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
     <!-- Main Content -->
     <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 pt-4 pb-10">
         <!-- Back Navigation -->
-        <div class="mb-4">
+        <div class="mb-4" id="backToFeed">
             <a href="<?= $baseUrl ?>/dashboard" class="inline-flex items-center px-6 py-3 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 font-semibold rounded-xl hover:bg-gray-50 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transform transition-all duration-200 hover:scale-105 shadow-lg border border-gray-200 dark:border-gray-700">
                 <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
@@ -59,7 +12,11 @@
         </div>
 
         <!-- Post Container -->
-        <div id="postContainer" class="singlePostContainer shadow-lg rounded-lg bg-gradient-to-br from-red-200 via-green-200 to-blue-200 p-2 rounded-xl shadow-md border border-gray-200 dark:border-gray-700 mb-4" data-posts-id="<?= $postId ?>">
+        <div id="postContainer" class="singlePostContainer shadow-lg rounded-lg bg-gradient-to-br from-red-200 
+            via-green-200 to-blue-200 p-2 rounded-xl shadow-md border border-gray-200 dark:border-gray-700 mb-4" 
+            data-posts-id="<?= $postId ?>"
+            data-post-uuid="<?= $postUUID ?? '' ?>"
+        >
             <?= loadingSkeleton(1, false); ?>
         </div>
 
@@ -97,7 +54,7 @@
     </div>
 
     <!-- Enhanced Fixed Comment Input -->
-    <div class="fixed bottom-0 left-0 right-0 bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 shadow-2xl backdrop-blur-sm">
+    <div id="commentFormContainer" class="fixed bottom-0 left-0 right-0 bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 shadow-2xl backdrop-blur-sm">
         <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
             <form id="commentForm" class="flex items-center space-x-3">
                 <div class="flex-1 relative">
@@ -135,4 +92,4 @@
 
 <!-- Enhanced Full View Modal -->
 <?= full_view_modal() ?>
-<div class="h-20"></div>
+<div id="additionalHeight" class="h-20"></div>

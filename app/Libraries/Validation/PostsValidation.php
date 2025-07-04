@@ -25,6 +25,13 @@ class PostsValidation {
                 'postId' => 'required|numeric|max_length[12]',
             ]
         ],
+        'shared:postId:postUUID' => [
+            'method' => 'GET',
+            'payload' => [
+                'postId' => 'required|numeric|max_length[12]',
+                'postUUID' => 'required|string|max_length[32]',
+            ]
+        ],
         'mark_as_seen' => [
             'method' => 'POST',
             'authenticate' => true,

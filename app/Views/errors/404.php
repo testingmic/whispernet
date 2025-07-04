@@ -9,9 +9,9 @@
 
         <!-- Error Message -->
         <h1 class="text-6xl font-bold text-gray-900 dark:text-white mb-4">404</h1>
-        <h2 class="text-2xl font-semibold text-gray-700 dark:text-gray-300 mb-4">Oops! Page Not Found</h2>
+        <h2 class="text-2xl font-semibold text-gray-700 dark:text-gray-300 mb-4">Oops! <?= $item ?> Not Found</h2>
         <p class="text-gray-600 dark:text-gray-400 mb-8">
-            The page you're looking for seems to have vanished into thin air. 
+            The <?= strtolower($item) ?> you're looking for seems to have vanished into thin air. 
             Maybe it's exploring the local area?
         </p>
 
@@ -36,9 +36,14 @@
         <div class="mt-12 text-sm text-gray-500 dark:text-gray-400">
             <p>Need help? Try these options:</p>
             <div class="mt-4 space-x-4">
-                <a href="<?= $baseUrl ?>/dashboard" class="hover:text-blue-500 dark:hover:text-blue-400">Browse Feed</a>
-                <a href="<?= $baseUrl ?>/posts/create" class="hover:text-blue-500 dark:hover:text-blue-400">Create Post</a>
-                <a href="<?= $baseUrl ?>/chat" class="hover:text-blue-500 dark:hover:text-blue-400">Open Chat</a>
+                <?php if(!$shouldLogin) { ?>
+                    <a href="<?= $baseUrl ?>/dashboard" class="hover:text-blue-500 dark:hover:text-blue-400">Browse Feed</a>
+                    <a href="<?= $baseUrl ?>/posts" class="hover:text-blue-500 dark:hover:text-blue-400">Create Post</a>
+                    <a href="<?= $baseUrl ?>/chat" class="hover:text-blue-500 dark:hover:text-blue-400">Open Chat</a>
+                <?php } else { ?>
+                    <a href="<?= $baseUrl ?>/login" class="hover:text-blue-500 dark:hover:text-blue-400">Login</a>
+                    <a href="<?= $baseUrl ?>/signup" class="hover:text-blue-500 dark:hover:text-blue-400">Create Account</a>
+                <?php } ?>
             </div>
         </div>
     </div>

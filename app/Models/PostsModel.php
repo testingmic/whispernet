@@ -425,14 +425,21 @@ class PostsModel extends Model {
      * 
      * @return array
      */
-    public function view() {
+    public function view($postId = null) {
         try {
+
+            // if the post id is not provided, use the payload post id
+            $postId = !empty($postId) ? $postId : $this->payload['postId'];
+
+            // get the post
             $sql = "SELECT p.*, u.username, u.profile_image, m.media as post_media
                     FROM posts p 
                     INNER JOIN users u ON p.user_id = u.user_id 
                     LEFT JOIN media m ON p.post_id = m.record_id AND m.section = 'posts'
                     WHERE p.post_id = ?";
-            $post = $this->db->query($sql, [$this->payload['postId']])->getRowArray();
+
+            // get the post
+            $post = $this->db->query($sql, [$postId])->getRowArray();
 
             if (!$post) {
                 return false;

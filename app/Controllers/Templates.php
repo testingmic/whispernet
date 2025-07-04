@@ -158,8 +158,10 @@ class Templates extends BaseController
      * 
      * @return void
      */
-    public function load404Page() {
+    public function load404Page($item = 'Page', $shouldLogin = false) {
         $data['topMargin'] = 0;
+        $data['item'] = $item;
+        $data['shouldLogin'] = $shouldLogin;
 
         // merge the global variables with the data
         $data = array_merge($this->globalVariables(), $data);

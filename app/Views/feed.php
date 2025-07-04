@@ -1,4 +1,4 @@
-<div class="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
+<div class="min-h-[calc(100vh-100px)] bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
 
     <!-- Location Header Card -->
     <div class="max-w-4xl mx-auto mt-0 sm:px-6 lg:px-8 mb-4">
@@ -229,7 +229,7 @@
         </div>
     </div>
 </div>
-<div class="h-20"></div>
+<div id="additionalHeight" class="h-20"></div>
 <script>
     // Enhanced Location Modal Management
     document.addEventListener('DOMContentLoaded', function() {

@@ -10,6 +10,7 @@ class Posts extends LoadController {
 
     public $addComments = true;
     public $justCreated = false;
+    public $byPassLogin = false;
 
     /**
      * List posts
@@ -446,11 +447,20 @@ class Posts extends LoadController {
             $post['comments'] = $this->postsModel->viewComments($post['post_id']);
             foreach($post['comments'] as $key => $comment) {
                 $post['comments'][$key]['content'] = linkifyContent($comment['content']);
-                $post['comments'][$key]['manage'] = [
-                    'delete' => (bool)($comment['user_id'] == $this->payload['userId']),
-                    'report' => (bool)($comment['user_id'] !== $this->payload['userId']),
-                    'save' => (bool)($comment['user_id'] !== $this->payload['userId']),
-                ];
+
+                if(!$this->byPassLogin) {
+                    $post['comments'][$key]['manage'] = [
+                        'delete' => (bool)($comment['user_id'] == $this->payload['userId']),
+                        'report' => (bool)($comment['user_id'] !== $this->payload['userId']),
+                        'save' => (bool)($comment['user_id'] !== $this->payload['userId']),
+                    ];
+                } else {
+                    $post['comments'][$key]['manage'] = [
+                        'delete' => false,
+                        'report' => false,
+                        'save' => false,
+                    ];
+                }
                 $post['comments'][$key]['comment_id'] = (int)$comment['comment_id'];
                 $post['comments'][$key]['ago'] = formatTimeAgo($comment['created_at']);
                 if(!empty($comment['reference_id'])) {
@@ -469,22 +479,30 @@ class Posts extends LoadController {
             // connect to the votes database
             $this->postsModel->connectToDb('views');
 
-            // check if the user has already viewed the post
-            $view = $this->postsModel->checkViews($post['post_id'], $this->payload['userId'], 'posts');
-            if(empty($view)) {
-                // record the view
-                $this->postsModel->recordView($post['post_id'], $this->payload['userId'], 'posts');
+            if(!empty($this->payload['userId'])) {
+                // check if the user has already viewed the post
+                $view = $this->postsModel->checkViews($post['post_id'], $this->payload['userId'], 'posts');
+                if(empty($view)) {
+                    // record the view
+                    $this->postsModel->recordView($post['post_id'], $this->payload['userId'], 'posts');
 
-                // increment the views count
-                $post['views'] = $post['views'] + 1;
+                    // increment the views count
+                    $post['views'] = $post['views'] + 1;
+                }
             }
         }
 
         // get the votes for the posts
-        $post = (new \App\Controllers\Votes\Votes())->getVotes([$post], $this->payload['userId'], 'posts');
+        if(!$this->byPassLogin) {
+            $post = (new \App\Controllers\Votes\Votes())->getVotes([$post], $this->payload['userId'], 'posts');
+        }
+
+        if($this->byPassLogin) {
+            $post = [$post];
+        }
 
         // return the posts
-        return Routing::success(formatPosts($post, true, $this->payload['userId']));
+        return Routing::success(formatPosts($post, true, $this->payload['userId'] ?? 0));
         
     }
 
@@ -544,6 +562,16 @@ class Posts extends LoadController {
         // make the call to the posts model
         return $this->postsModel->updateRecord();
 
+    }
+
+    /**
+     * View a shared post
+     * 
+     * @return array
+     */
+    public function shared() {
+        $this->byPassLogin = true;
+        return $this->view();
     }
 
     /**

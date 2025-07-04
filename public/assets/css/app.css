@@ -23,6 +23,50 @@ html {
     background: #555;
 }
 
+ /* Custom scrollbar styles for textarea */
+ #commentInput::-webkit-scrollbar {
+    width: 6px;
+  }
+  
+  #commentInput::-webkit-scrollbar-track {
+    background: transparent;
+    border-radius: 3px;
+  }
+  
+  #commentInput::-webkit-scrollbar-thumb {
+    background: #d1d5db;
+    border-radius: 3px;
+    transition: background-color 0.2s ease;
+  }
+  
+  #commentInput::-webkit-scrollbar-thumb:hover {
+    background: #9ca3af;
+  }
+  
+  /* Dark mode scrollbar */
+  .dark #commentInput::-webkit-scrollbar-thumb {
+    background: #4b5563;
+  }
+  
+  .dark #commentInput::-webkit-scrollbar-thumb:hover {
+    background: #6b7280;
+  }
+  
+  /* Firefox scrollbar */
+  #commentInput {
+    scrollbar-width: thin;
+    scrollbar-color: #d1d5db transparent;
+  }
+  
+  .dark #commentInput {
+    scrollbar-color: #4b5563 transparent;
+  }
+  
+  /* Smooth scrolling */
+  #commentInput {
+    scroll-behavior: smooth;
+  }
+
 /* .singlePostContainer .post-card {
     background: linear-gradient(135deg, #fca5a5, #bbf7d0, #bfdbfe);;
     color: #fff;

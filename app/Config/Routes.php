@@ -1,6 +1,7 @@
 <?php
 
 use CodeIgniter\Router\RouteCollection;
+use App\Controllers\Api;
 
 $routes->setAutoRoute(true);
 
@@ -17,9 +18,10 @@ $routes->set404Override(function() {
 });
 
 $routes->get("/dashboard/install", "WebApp\Dashboard::install");
+$routes->get("/shared/posts/(:segment)/(:segment)", "WebApp\Shared::posts/$1/$2");
 
 // Dashboard routes
-foreach(['dashboard', 'report', 'privacy', 'terms', 'updates', 'install', 'support'] as $route) {
+foreach(['dashboard', 'report', 'privacy', 'terms', 'updates', 'install', 'support', 'shared'] as $route) {
     $routes->get("/{$route}", "WebApp\Dashboard::{$route}");
 }
 
@@ -42,9 +44,6 @@ foreach(['profile', 'chat', 'notifications'] as $route) {
 $routes->get("/login", "Landing::load/login");
 $routes->get("/signup", "Landing::load/signup");
 $routes->get("/forgot-password", "Landing::load/forgot-password");
-
-
-use App\Controllers\Api;
 
 // request to api routing
 $routes->get("/api", [Api::class, "index"]);

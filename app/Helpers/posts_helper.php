@@ -25,7 +25,11 @@ function formatPosts($posts = [], $single = false, $userId = null) {
             continue;
         }
 
-        $username = strpos($post['username'], 'user') !== false ? configs('annon_name') : $post['username'];
+        $username = 'Nimbus';
+
+        if(!empty($post['username'])) {
+            $username = strpos($post['username'], 'user') !== false ? configs('annon_name') : $post['username'];
+        }
 
         $formattedPosts[$key] = [
             'post_id' => $post['post_id'],

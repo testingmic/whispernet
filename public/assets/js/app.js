@@ -635,6 +635,8 @@ const PostManager = {
     tinyPostContent: {},
     radioButtons: [],
     descriptionDiv: null,
+    postWasFound: false,
+    isSharedPost: false,
     init() {
         // Handle radio button selection to show description
         this.loadInitialFeed();
@@ -658,15 +660,43 @@ const PostManager = {
         const postContainer = document.getElementById('postContainer');
         if (!postContainer) return;
         const postId = postContainer.getAttribute('data-posts-id');
+        const postUUID = postContainer.getAttribute('data-post-uuid');
         if(!postId) return;
         PostCommentManager.postId = postId;
-        $.get(`${baseUrl}/api/posts/view/${postId}`, {
-            token: AppState.getToken(),
-            longitude,
-            latitude,
-            userUUID
-        }).then(data => {
+
+        // set the postWasFound to false
+        const requestPath = postUUID ? `${baseUrl}/api/posts/shared/${postId}/${postUUID}` : `${baseUrl}/api/posts/view/${postId}`;
+
+        // if postUUID is set, then it is a shared post
+        if(postUUID) {
+            this.isSharedPost = true;
+        }
+
+        let payload = {};
+
+        if(AppState.getToken()) {
+            payload.token = AppState.getToken();
+        }
+
+        if(latitude) {
+            payload.latitude = latitude;
+        }
+        if(longitude) {
+            payload.longitude = longitude;
+        }
+        if(userUUID) {
+            payload.userUUID = userUUID;
+        }
+
+        if(this.isSharedPost) {
+            $(`div[id="backToFeed"]`).remove();
+            $(`div[id="commentFormContainer"]`).remove();
+            $(`div[id="additionalHeight"]`).remove();
+        }
+
+        $.get(requestPath, payload).then(data => {
             if(data.status == 'success') {
+                this.postWasFound = true;
                 postContainer.innerHTML = '';
                 postContainer.appendChild(this.createPostElement(data.data, true));
                 MediaManager.renderMedia(data.data.post_media);
@@ -685,6 +715,12 @@ const PostManager = {
                 }
             } else {
                 AppState.showNotification(data.message, 'error');
+            }
+        }).catch(error => {
+            error = error.responseJSON;
+            if(error.status == 'error') {
+                $(`div[id="commentFormContainer"]`).remove();
+                $(`div[id="additionalHeight"]`).remove();
             }
         });
     },
@@ -964,6 +1000,7 @@ const PostManager = {
                 ago: post.ago,
                 city: post.city,
                 views: post.views,
+                post_uuid: post.post_uuid,
                 comments: post.comments_count,
                 created_at: post.created_at,
                 post_id: post.post_id,
@@ -2530,7 +2567,7 @@ const PostCommentManager = {
         this.getCommentsList();
     },
     getCommentsFromServer() {
-        if(this.sendingComment) {
+        if(this.sendingComment || !PostManager.postWasFound || PostManager.isSharedPost) {
             return;
         }
         $.get(`${baseUrl}/api/posts/comments`, {
