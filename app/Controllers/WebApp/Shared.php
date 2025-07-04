@@ -56,6 +56,7 @@ class Shared extends WebAppController {
         return $this->templateObject->loadPage('shared_post', [
             'pageTitle' => 'Shared Post', 
             'sharedPost' => true,
+            'pgDesc' => $post['content'],
             'postUUID' => $post_uuid,
             'postId' => $post_id, 
             'footerHidden' => true, 

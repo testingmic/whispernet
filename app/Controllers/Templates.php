@@ -128,7 +128,7 @@ class Templates extends BaseController
         $data = array_merge($this->globalVariables(), $data);
 
         // get the page description
-        $data['pgDesc'] = $this->pgDesc($page);
+        $data['pgDesc'] = !empty($data['pgDesc']) ? $data['pgDesc'] : $this->pgDesc($page);
 
         if(!empty($data['userLoggedIn'])) {
             $data['firebaseConfig'] = [
