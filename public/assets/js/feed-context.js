@@ -174,5 +174,46 @@ const FeedContext = {
         $('div[id="sharePostModal"]').addClass('hidden');
         $(`#backToTopBtn`).removeClass('hidden');
         document.body.style.overflow = 'auto';
+    },
+
+    // Shared post specific methods
+    shareToWhatsApp() {
+        const postUrl = window.location.href;
+        const text = 'Check out this shared post!';
+        const shareUrl = `https://wa.me/?text=${encodeURIComponent(text + ' ' + postUrl)}`;
+        window.open(shareUrl, '_blank', 'width=600,height=400');
+        this.closeShareContextMenu();
+    },
+
+    shareToTelegram() {
+        const postUrl = window.location.href;
+        const text = 'Check out this shared post!';
+        const shareUrl = `https://t.me/share/url?url=${encodeURIComponent(postUrl)}&text=${encodeURIComponent(text)}`;
+        window.open(shareUrl, '_blank', 'width=600,height=400');
+        this.closeShareContextMenu();
+    },
+
+    copyShareLink() {
+        const postUrl = window.location.href;
+        navigator.clipboard.writeText(postUrl).then(() => {
+            AppState.showNotification('Post link copied to clipboard!', 'success');
+        }).catch(() => {
+            AppState.showNotification('Failed to copy link', 'error');
+        });
+        this.closeShareContextMenu();
+    },
+
+    closeShareContextMenu() {
+        const modal = document.getElementById('shareContextMenu');
+        if (modal) {
+            modal.classList.add('hidden');
+        }
+    },
+
+    openShareContextMenu() {
+        const modal = document.getElementById('shareContextMenu');
+        if (modal) {
+            modal.classList.remove('hidden');
+        }
     }
 }

@@ -53,7 +53,7 @@ class Shared extends WebAppController {
         }
 
         // get the post
-        return $this->templateObject->loadPage('post', [
+        return $this->templateObject->loadPage('shared_post', [
             'pageTitle' => 'Shared Post', 
             'sharedPost' => true,
             'postUUID' => $post_uuid,

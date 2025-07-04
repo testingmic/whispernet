@@ -688,7 +688,7 @@ const PostManager = {
             payload.userUUID = userUUID;
         }
 
-        if(this.isSharedPost) {
+        if(this.isSharedPost && !loggedInUserId && !userLoggedIn) {
             $(`div[id="backToFeed"]`).remove();
             $(`div[id="commentFormContainer"]`).remove();
             $(`div[id="additionalHeight"]`).remove();
@@ -710,7 +710,7 @@ const PostManager = {
                         });
                         $(`span[id="commentCount"]`).html(`(${data.data.comments.length})`);
                     } else {
-                        commentsContainer.innerHTML = '<p class="text-gray-500 dark:text-gray-800" id="commentsLoading">No replies yet</p>';
+                        commentsContainer.innerHTML = this.noCommentsContainer();
                     }
                 }
             } else {
@@ -719,10 +719,30 @@ const PostManager = {
         }).catch(error => {
             error = error.responseJSON;
             if(error.status == 'error') {
+                $(`div[id="commentsSectionContainer"]`).remove();
                 $(`div[id="commentFormContainer"]`).remove();
                 $(`div[id="additionalHeight"]`).remove();
             }
         });
+    },
+    noCommentsContainer() {
+        return `
+        <div id="noCommentsContainer" class="flex items-center justify-center py-12">
+            <div class="text-center">
+                <div class="w-20 h-20 bg-gradient-to-br from-blue-100 to-purple-100 dark:from-blue-900/30 dark:to-purple-900/30 rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg">
+                    <svg class="w-10 h-10 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path>
+                    </svg>
+                </div>
+                <h4 class="text-lg font-semibold text-gray-900 dark:text-white mb-2" id="commentsLoading">Loading comments...</h4>
+                <p class="text-sm text-gray-500 dark:text-gray-400 mb-4">Be the first to share your thoughts</p>
+                <div class="flex items-center justify-center space-x-2">
+                    <div class="w-2 h-2 bg-blue-500 rounded-full animate-bounce"></div>
+                    <div class="w-2 h-2 bg-purple-500 rounded-full animate-bounce" style="animation-delay: 0.1s"></div>
+                    <div class="w-2 h-2 bg-indigo-500 rounded-full animate-bounce" style="animation-delay: 0.2s"></div>
+                </div>
+            </div>
+        </div>`;
     },
     createCommentElement(comment) {
         const div = document.createElement('div');
@@ -1031,6 +1051,8 @@ const PostManager = {
                         </div>
                     </div>
                 </div>
+
+                ${!this.isSharedPost || (this.isSharedPost && loggedInUserId && userLoggedIn) ? `
                 <div class="relative text-right">
                     <button class="post-menu-button text-gray-400 hover:bg-blue-500 hover:text-white dark:text-gray-500 dark:hover:text-gray-400 p-1 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
                         <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -1084,6 +1106,7 @@ const PostManager = {
                         ` : ''}
                     </div>
                 </div>
+                ` : ''}
             </div>
             <div class="post-content-clickable text-gray-800 dark:text-gray-900 mb-3 text-sm leading-relaxed">${post.content}</div>
             ${post.has_media ? `
@@ -1169,6 +1192,7 @@ const PostManager = {
     },
     async handleVote(section, recordId, direction, ownerId) {
         try {
+            if(this.isSharedPost && !loggedInUserId && !userLoggedIn) return;
             const response = await fetch(`${baseUrl}/api/posts/vote`, {
                 method: 'POST',
                 headers: {
@@ -2537,6 +2561,7 @@ const PostCommentManager = {
                 if(commentsLoading) {
                     commentsLoading.innerHTML = '';
                 }
+                $(`div[id="noCommentsContainer"]`).remove();
 
                 const commentsContainer = document.getElementById('commentsList');
                 commentsContainer.appendChild(PostManager.createCommentElement(data.record));
