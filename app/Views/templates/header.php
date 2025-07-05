@@ -640,7 +640,7 @@ $favicon_color = $favicon_color ?? 'dashboard';
           <?php } ?>
         </div>
       </div>
-  </div>
+    </nav>
   </div>
 
   <main class="flex-grow pt-<?= $topMargin ?? 16 ?> bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">

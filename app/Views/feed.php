@@ -1,7 +1,7 @@
 <div class="min-h-[calc(100vh-100px)] bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
 
     <!-- Enhanced Location Header Card -->
-    <div class="max-w-4xl mx-auto mt-0 sm:px-6 lg:px-8 mb-4 sticky top-0 z-40">
+    <div class="max-w-4xl mx-auto mt-0 sm:px-6 lg:px-8 mb-4 sticky top-16 z-40">
         <div class="bg-white dark:bg-gray-800 shadow-2xl border border-gray-200 dark:border-gray-700 p-4 relative overflow-hidden">
             <!-- Gradient Background Overlay -->
             <div class="absolute inset-0 bg-gradient-to-r from-blue-50/50 via-purple-50/30 to-indigo-50/50 dark:from-blue-900/10 dark:via-purple-900/10 dark:to-indigo-900/10 pointer-events-none"></div>
