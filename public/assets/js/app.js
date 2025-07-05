@@ -1075,10 +1075,14 @@ const PostManager = {
                             <span>View Post</span>
                         </a>` : ''}
                         <button onclick="return FeedContext.hidePost(${post.post_id}, ${single})" class="w-full text-red-600 hover:bg-green-100 text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 dark:hover:bg-gray-700 flex items-center space-x-2" onclick="event.stopPropagation(); FeedContext.shareFeed(${post})">
-                            <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
-                            </svg>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                    stroke-linecap="round" stroke-linejoin="round" class="feather feather-eye-off">
+                                <path d="M17.94 17.94A10.94 10.94 0 0112 20c-5.05 0-9.29-3.14-11-8a11.07 11.07 0 012.06-3.33"/>
+                                <path d="M1 1l22 22"/>
+                                <path d="M9.53 9.53a3.5 3.5 0 004.95 4.95"/>
+                                <path d="M14.47 14.47L9.53 9.53"/>
+                                <path d="M12 4a10.94 10.94 0 018.94 4.06"/>
+                                </svg>
                             <span>Hide This Post</span>
                         </button>
                         ${post?.user_id !== AppState?.user?.user_id ? `
