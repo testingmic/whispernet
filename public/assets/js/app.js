@@ -1016,7 +1016,7 @@ const PostManager = {
     },
     createPostElement(post, single = false) {
         const div = document.createElement('div');
-        div.className = `post-card bg-white border rounded-2xl shadow-sm p-2 ${single ? 'dark:bg-gray-800 shadow-2xl border border-blue-200 dark:border-blue-700' : ' mb-2 hover:bg-gradient-to-r hover:from-blue-50 hover:to-indigo-50 hover:border-blue-400'} cursor-pointer hover:shadow-md transition-all duration-300 relative`;
+        div.className = `post-card bg-white border rounded-lg shadow-sm p-2 ${single ? 'dark:bg-gray-800 shadow-2xl border border-blue-200 dark:border-blue-700' : ' mb-2 hover:bg-gradient-to-r hover:from-blue-50 hover:to-indigo-50 hover:border-blue-400'} cursor-pointer hover:shadow-md transition-all duration-300 relative`;
         div.setAttribute('data-post-id', post.post_id);
 
         if(post.post_id) {
