@@ -1,5 +1,6 @@
 // Microphone Permission Manager
 var longitude = '', latitude = '', radius = 35, userUUID = '';
+
 const MicrophoneManager = {
     permissionState: null,
     stream: null,
@@ -362,7 +363,7 @@ const MediaManager = {
     },
     renderMedia(mediaFiles = [], returnData = false) {
         let html = '<div class="media-display-container space-y-4 mt-3">';
-        html += '<div class="media-grid grid grid-cols-3 gap-2">';
+        html += `<div class="media-grid grid grid-cols-${PostManager.postWasFound ? '3' : '3'} gap-2">`;
         if(typeof mediaFiles.images !== 'undefined') {
             if(mediaFiles.images?.files.length > 0) {
                 mediaFiles.images?.files.forEach((img, key) => {
@@ -1034,7 +1035,7 @@ const PostManager = {
             };
         }
         div.innerHTML = `
-            <div class="flex items-center grid grid-cols-2 grid-cols-[80%_20%] items-center mb-2">
+            <div class="flex items-center grid grid-cols-2 grid-cols-[90%_10%] items-center mb-2">
                 <div class="flex items-center space-x-2 post-header-clickable">
                     <div class="w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center">
                         <span class="text-sm font-semibold text-white">${post.username[0].toUpperCase()}${post.username[1].toUpperCase()}</span>

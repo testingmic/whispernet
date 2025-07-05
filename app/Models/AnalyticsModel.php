@@ -176,6 +176,30 @@ class AnalyticsModel extends Model {
     }
 
     /**
+     * Regroup data by hour
+     * 
+     * @param array $result
+     * @return array
+     */
+    private function regroupData($result, $groupBy) {
+        $finalResult = [];
+        $regroupData = [];
+        foreach($result as $row) {
+            $hour = date($groupBy, strtotime($row['created_at']));
+            if(!isset($regroupData[$hour])) {
+                $regroupData[$hour] = 0;
+            }
+            $value = $regroupData[$hour] + $row['count'];
+            $finalResult[] = [
+                'date' => $row['created_at'],
+                'count' => $value
+            ];
+        }
+        unset($result);
+        return $finalResult;
+    }
+
+    /**
      * Get user growth data
      * 
      * @param string $timeRange
@@ -183,26 +207,43 @@ class AnalyticsModel extends Model {
      */
     public function getUserGrowth($timeRange = 'month')
     {
-        $dateFilter = $this->getDateFilter($timeRange);
-        $groupBy = $this->getGroupBy($timeRange);
+        try {
+
+            $dateFilter = $this->getDateFilter($timeRange);
+            $groupBy = $this->getGroupBy($timeRange);
+
+            $groupByQuery = false;
+            if($groupBy == 'HOUR(created_at)') {
+                $groupByQuery = true;
+                $groupBy = "DATE(created_at)";
+            }
+            
+            $sql = "SELECT DATE(created_at) as date, created_at, COUNT(*) as count 
+                    FROM users 
+                    WHERE created_at >= {$dateFilter}
+                    GROUP BY {$groupBy} 
+                    ORDER BY date";
+            
+            $result = $this->db->query($sql)->getResultArray();
+            
+            $labels = [];
+            $values = [];
+
+            // regroup data if it is grouped by hour
+            if($groupByQuery) {
+                $result = $this->regroupData($result, 'H');
+            }
         
-        $sql = "SELECT DATE(created_at) as date, COUNT(*) as count 
-                FROM users 
-                WHERE created_at >= ? 
-                GROUP BY {$groupBy} 
-                ORDER BY date";
-        
-        $result = $this->db->query($sql, [$dateFilter])->getResultArray();
-        
-        $labels = [];
-        $values = [];
-        
-        foreach ($result as $row) {
-            $labels[] = $this->formatDate($row['date'], $timeRange);
-            $values[] = (int)$row['count'];
+            foreach ($result as $row) {
+                $labels[] = $this->formatDate($row['date'], $timeRange);
+                $values[] = (int)$row['count'];
+            }
+            
+            return ['labels' => $labels, 'values' => $values];
+
+        } catch(DatabaseException $e) {
+            return [];
         }
-        
-        return ['labels' => $labels, 'values' => $values];
     }
 
     /**
@@ -213,26 +254,40 @@ class AnalyticsModel extends Model {
      */
     public function getPostsActivity($timeRange = 'month')
     {
-        $dateFilter = $this->getDateFilter($timeRange);
-        $groupBy = $this->getGroupBy($timeRange);
-        
-        $sql = "SELECT DATE(created_at) as date, COUNT(*) as count 
-                FROM posts 
-                WHERE created_at >= ? 
-                GROUP BY {$groupBy} 
-                ORDER BY date";
-        
-        $result = $this->db->query($sql, [$dateFilter])->getResultArray();
-        
-        $labels = [];
-        $values = [];
-        
-        foreach ($result as $row) {
-            $labels[] = $this->formatDate($row['date'], $timeRange);
-            $values[] = (int)$row['count'];
+        try {
+            $dateFilter = $this->getDateFilter($timeRange);
+            $groupBy = $this->getGroupBy($timeRange);
+
+            $groupByQuery = false;
+            if($groupBy == 'HOUR(created_at)') {
+                $groupByQuery = true;
+                $groupBy = "DATE(created_at)";
+            }
+            
+            $sql = "SELECT DATE(created_at) as date, created_at, COUNT(*) as count 
+                    FROM posts 
+                    WHERE created_at >= {$dateFilter}
+                    GROUP BY {$groupBy} 
+                    ORDER BY date";
+            
+            $result = $this->db->query($sql)->getResultArray();
+            
+            $labels = [];
+            $values = [];
+
+            if($groupByQuery) {
+                $result = $this->regroupData($result, 'H');
+            }
+            
+            foreach ($result as $row) {
+                $labels[] = $this->formatDate($row['date'], $timeRange);
+                $values[] = (int)$row['count'];
+            }
+            
+            return ['labels' => $labels, 'values' => $values];
+        } catch(DatabaseException $e) {
+            return [];
         }
-        
-        return ['labels' => $labels, 'values' => $values];
     }
 
     /**
