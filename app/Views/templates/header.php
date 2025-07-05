@@ -208,165 +208,174 @@ $favicon_color = $favicon_color ?? 'dashboard';
   </div>
 
   <!-- Post Creation Form -->
-  <?php if(empty($singlePost)) { ?>
-  <div id="postCreationForm" class="fixed inset-0 top-8 z-50 hidden">
-    <!-- Overlay -->
-    <div class="absolute inset-0 bg-black bg-opacity-50 backdrop-blur-sm mt-8"></div>
+  <?php if (empty($singlePost)) { ?>
+    <div id="postCreationForm" class="fixed inset-0 top-8 z-50 hidden">
+      <!-- Overlay -->
+      <div class="absolute inset-0 bg-black bg-opacity-50 backdrop-blur-sm mt-8"></div>
 
-    <!-- Form Container -->
-    <div class="relative bg-white dark:bg-gray-800 shadow-2xl max-w-2xl mx-auto mt-8 overflow-hidden">
-      <div class="bg-gradient-to-r from-blue-500 to-purple-600 px-4 sm:px-6 py-3 sm:py-4">
-        <div class="flex items-center justify-between">
-          <div class="flex items-center space-x-2 sm:space-x-3">
-            <div class="w-8 h-8 sm:w-10 sm:h-10 bg-white/20 rounded-full flex items-center justify-center">
-              <svg class="w-4 h-4 sm:w-5 sm:h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path>
+      <!-- Form Container -->
+      <div class="relative bg-white dark:bg-gray-800 shadow-2xl max-w-2xl mx-auto mt-8 overflow-hidden">
+        <div class="bg-gradient-to-r from-blue-500 to-purple-600 px-4 sm:px-6 py-3 sm:py-4">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center space-x-2 sm:space-x-3">
+              <div class="w-8 h-8 sm:w-10 sm:h-10 bg-white/20 rounded-full flex items-center justify-center">
+                <svg class="w-4 h-4 sm:w-5 sm:h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path>
+                </svg>
+              </div>
+              <div>
+                <h2 class="text-lg sm:text-xl font-bold text-white">Create Post</h2>
+                <p class="text-blue-100 text-xs sm:text-sm">Share with your community</p>
+              </div>
+            </div>
+            <button type="button" onclick="return PostManager.closeCreateModal()" class="text-white hover:text-blue-100 transition-colors">
+              <svg class="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
               </svg>
-            </div>
-            <div>
-              <h2 class="text-lg sm:text-xl font-bold text-white">Create Post</h2>
-              <p class="text-blue-100 text-xs sm:text-sm">Share with your community</p>
-            </div>
+            </button>
           </div>
-          <button type="button" onclick="return PostManager.closeCreateModal()" class="text-white hover:text-blue-100 transition-colors">
-            <svg class="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-            </svg>
-          </button>
         </div>
-      </div>
-      <div class="p-2">
+        <div class="p-2">
 
 
-        <div class="max-w-2xl mx-auto">
-          <div class="bg-white rounded-lg p-2">
+          <div class="max-w-2xl mx-auto">
+            <div class="bg-white rounded-lg p-2">
 
-            <form id="createPostFormUnique" class="space-y-2" onsubmit="return false;">
-              <!-- Textarea Section -->
-              <div class="space-y-2">
-                <div class="relative">
-                  <textarea
-                    id="content"
-                    name="content"
-                    rows="4"
-                    data-textarea-input="post"
-                    class="w-full outline-none font-medium text-xl px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none transition-all duration-200"
-                    placeholder="Share your thoughts and experiences with users in a 30km radius..."></textarea>
-                  <div class="absolute bottom-3 sm:bottom-4 right-3 sm:right-4 flex items-center space-x-1 sm:space-x-2">
-                    <div class="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-green-500 rounded-full animate-pulse"></div>
-                    <span id="charCount" class="text-xs sm:text-sm font-medium text-gray-500 dark:text-gray-400">0</span>/<span id="charCountMax"></span>
+              <form id="createPostFormUnique" class="space-y-2" onsubmit="return false;">
+                <!-- Textarea Section -->
+                <div class="space-y-2">
+                  <div class="relative">
+                    <textarea
+                      id="content"
+                      name="content"
+                      rows="4"
+                      data-textarea-input="post"
+                      class="w-full outline-none font-medium text-xl px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none transition-all duration-200"
+                      placeholder="Share your thoughts and experiences with users in a 30km radius..."></textarea>
+                    <div class="absolute bottom-3 sm:bottom-4 right-3 sm:right-4 flex items-center space-x-1 sm:space-x-2">
+                      <div class="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-green-500 rounded-full animate-pulse"></div>
+                      <span id="charCount" class="text-xs sm:text-sm font-medium text-gray-500 dark:text-gray-400">0</span>/<span id="charCountMax"></span>
+                    </div>
                   </div>
                 </div>
-              </div>
 
-              <!-- Media Upload Section -->
-              <div class="flex gap-2">
+                <!-- Media Upload Section -->
+                <div class="flex gap-2">
 
-                <div class="flex items-center hidden">
-                  <!-- Emoji Selector -->
+                  <div class="flex items-center hidden">
+                    <!-- Emoji Selector -->
+                    <div class="flex items-center space-x-4">
+                      <button type="button" id="emojiBtn" class="flex items-center space-x-2 sm:space-x-3 px-3 sm:px-4 py-2.5 sm:py-3 bg-gradient-to-r from-yellow-50 to-orange-50 dark:from-yellow-900/20 dark:to-orange-900/20 rounded-lg sm:rounded-xl transition-all duration-200 hover:from-yellow-100 hover:to-orange-100 dark:hover:from-yellow-900/30 dark:hover:to-orange-900/30 border-2 border-dashed border-yellow-300 dark:border-yellow-700 hover:border-yellow-400 dark:hover:border-yellow-600">
+                        <div class="w-8 h-8 sm:w-10 sm:h-10 bg-yellow-100 dark:bg-yellow-900/30 rounded-lg flex items-center justify-center">
+                          <svg class="w-4 h-4 sm:w-5 sm:h-5 text-yellow-600 dark:text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.828 14.828a4 4 0 01-5.656 0M9 10h1m4 0h1m-6 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                          </svg>
+                        </div>
+                        <div>
+                          <p class="font-medium text-sm sm:text-base text-gray-700 dark:text-gray-300">Add Emoji</p>
+                          <p class="text-xs sm:text-sm text-gray-500 dark:text-gray-400">Express yourself</p>
+                        </div>
+                      </button>
+                    </div>
+                  </div>
+
+                  <!-- File Upload -->
                   <div class="flex items-center space-x-4">
-                    <button type="button" id="emojiBtn" class="flex items-center space-x-2 sm:space-x-3 px-3 sm:px-4 py-2.5 sm:py-3 bg-gradient-to-r from-yellow-50 to-orange-50 dark:from-yellow-900/20 dark:to-orange-900/20 rounded-lg sm:rounded-xl transition-all duration-200 hover:from-yellow-100 hover:to-orange-100 dark:hover:from-yellow-900/30 dark:hover:to-orange-900/30 border-2 border-dashed border-yellow-300 dark:border-yellow-700 hover:border-yellow-400 dark:hover:border-yellow-600">
-                      <div class="w-8 h-8 sm:w-10 sm:h-10 bg-yellow-100 dark:bg-yellow-900/30 rounded-lg flex items-center justify-center">
-                        <svg class="w-4 h-4 sm:w-5 sm:h-5 text-yellow-600 dark:text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.828 14.828a4 4 0 01-5.656 0M9 10h1m4 0h1m-6 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    <label for="fileUpload" class="flex items-center space-x-2 sm:space-x-3 px-3 sm:px-4 py-2.5 sm:py-3 bg-gradient-to-r from-gray-50 to-blue-50 dark:from-gray-700 dark:to-gray-600 rounded-lg sm:rounded-xl cursor-pointer transition-all duration-200 hover:from-blue-50 hover:to-purple-50 dark:hover:from-gray-600 dark:hover:to-gray-500 border-2 border-dashed border-gray-300 dark:border-gray-600 hover:border-blue-400 dark:hover:border-blue-500">
+                      <div class="w-8 h-8 sm:w-10 sm:h-10 bg-blue-100 dark:bg-blue-900/30 rounded-lg flex items-center justify-center">
+                        <svg class="w-4 h-4 sm:w-5 sm:h-5 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"></path>
                         </svg>
                       </div>
                       <div>
-                        <p class="font-medium text-sm sm:text-base text-gray-700 dark:text-gray-300">Add Emoji</p>
-                        <p class="text-xs sm:text-sm text-gray-500 dark:text-gray-400">Express yourself</p>
+                        <p class="font-medium text-sm sm:text-base text-gray-700 dark:text-gray-300">Add Media</p>
+                        <p class="text-xs sm:text-sm text-gray-500 dark:text-gray-400">Images &amp; Videos</p>
                       </div>
-                    </button>
+                      <input type="file" id="fileUpload" name="media[]" accept="image/*,video/*" multiple="" class="hidden">
+                    </label>
+                  </div>
+
+                  <!-- Audio Recording -->
+                  <div class="flex items-center space-x-4">
+                    <div class="items-center flex flex-center gap-2 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg p-2">
+                      <button type="button" id="audioRecordBtn" class="flex items-center justify-center w-12 h-12 bg-red-100 hover:bg-red-200 rounded-lg transition-colors duration-200">
+                        <svg class="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"></path>
+                        </svg>
+                      </button>
+                      <span id="audioStatus" class="text-sm text-gray-600"></span>
+                      <span id="audioTimer" class="text-sm text-red-600 hidden">00:00</span>
+                      <button type="button" id="audioPauseBtn" class="hidden flex items-center justify-center w-8 h-8 bg-yellow-100 hover:bg-yellow-200 rounded-lg transition-colors duration-200">
+                        <svg class="w-4 h-4 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 9v6m4-6v6m7-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                      </button>
+                    </div>
                   </div>
                 </div>
 
-                <!-- File Upload -->
-                <div class="flex items-center space-x-4">
-                  <label for="fileUpload" class="flex items-center space-x-2 sm:space-x-3 px-3 sm:px-4 py-2.5 sm:py-3 bg-gradient-to-r from-gray-50 to-blue-50 dark:from-gray-700 dark:to-gray-600 rounded-lg sm:rounded-xl cursor-pointer transition-all duration-200 hover:from-blue-50 hover:to-purple-50 dark:hover:from-gray-600 dark:hover:to-gray-500 border-2 border-dashed border-gray-300 dark:border-gray-600 hover:border-blue-400 dark:hover:border-blue-500">
-                    <div class="w-8 h-8 sm:w-10 sm:h-10 bg-blue-100 dark:bg-blue-900/30 rounded-lg flex items-center justify-center">
-                      <svg class="w-4 h-4 sm:w-5 sm:h-5 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"></path>
-                      </svg>
-                    </div>
-                    <div>
-                      <p class="font-medium text-sm sm:text-base text-gray-700 dark:text-gray-300">Add Media</p>
-                      <p class="text-xs sm:text-sm text-gray-500 dark:text-gray-400">Images &amp; Videos</p>
-                    </div>
-                    <input type="file" id="fileUpload" name="media[]" accept="image/*,video/*" multiple="" class="hidden">
-                  </label>
-                </div>
+                <div id="imagePreviewGrid" class="hidden grid grid-cols-4 gap-2 mt-4"></div>
 
-                <!-- Audio Recording -->
-                <div class="flex items-center space-x-4">
-                  <div class="items-center flex flex-center gap-2 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg p-2">
-                    <button type="button" id="audioRecordBtn" class="flex items-center justify-center w-12 h-12 bg-red-100 hover:bg-red-200 rounded-lg transition-colors duration-200">
-                      <svg class="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"></path>
-                      </svg>
-                    </button>
-                    <span id="audioStatus" class="text-sm text-gray-600"></span>
-                    <span id="audioTimer" class="text-sm text-red-600 hidden">00:00</span>
-                    <button type="button" id="audioPauseBtn" class="hidden flex items-center justify-center w-8 h-8 bg-yellow-100 hover:bg-yellow-200 rounded-lg transition-colors duration-200">
-                      <svg class="w-4 h-4 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 9v6m4-6v6m7-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                <!-- Emoji Picker (Hidden by default) -->
+                <div id="emojiPicker" class="hidden bg-gray-50 rounded-lg p-4 mt-2 border">
+                  <div class="grid grid-cols-8 gap-2">
+                    <?= imoji_list(); ?>
+                  </div>
+                </div>
+            </div>
+
+            <!-- Preview Section -->
+            <div id="mediaPreview" class="hidden space-y-2">
+              <label class="block text-sm font-medium text-gray-700">Preview</label>
+              <div id="previewContainer" class="bg-gray-50 rounded-lg p-4 min-h-[100px] flex items-center justify-center">
+                <span class="text-gray-400">Media preview will appear here</span>
+              </div>
+            </div>
+
+            <!-- Audio Preview -->
+            <div id="audioPreview" class="hidden space-y-2">
+              <label class="block text-sm font-medium text-gray-700">Audio Preview</label>
+              <div class="bg-gray-50 rounded-lg p-2">
+                <div class="flex items-center justify-between gap-2">
+                  <audio id="audioPlayer" controls class="w-full"></audio>
+                  <div onclick="return ImprovedPostCreationForm.deleteAudio()" class="flex items-center justify-center w-10 h-10 cursor-pointer hover:bg-red-50 dark:hover:bg-red-900/20 bg-gray-100 border border-gray-300">
+                    <button type="button" id="audioDeleteBtn" class="text-red-600 hover:text-red-700 transition-colors duration-200">
+                      <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                       </svg>
                     </button>
                   </div>
                 </div>
               </div>
-
-              <div id="imagePreviewGrid" class="hidden grid grid-cols-4 gap-2 mt-4"></div>
-
-              <!-- Emoji Picker (Hidden by default) -->
-              <div id="emojiPicker" class="hidden bg-gray-50 rounded-lg p-4 mt-2 border">
-                <div class="grid grid-cols-8 gap-2">
-                  <?= imoji_list(); ?>
-                </div>
-              </div>
-          </div>
-
-          <!-- Preview Section -->
-          <div id="mediaPreview" class="hidden space-y-2">
-            <label class="block text-sm font-medium text-gray-700">Preview</label>
-            <div id="previewContainer" class="bg-gray-50 rounded-lg p-4 min-h-[100px] flex items-center justify-center">
-              <span class="text-gray-400">Media preview will appear here</span>
             </div>
-          </div>
 
-          <!-- Audio Preview -->
-          <div id="audioPreview" class="hidden space-y-2">
-            <label class="block text-sm font-medium text-gray-700">Audio Preview</label>
-            <div class="bg-gray-50 rounded-lg p-4">
-              <audio id="audioPlayer" controls class="w-full"></audio>
-            </div>
-          </div>
-
-          <!-- Submit Button -->
-          <div class="flex items-center justify-between pt-2 border-t border-gray-200">
-            <div class="flex items-center space-x-2 text-sm text-gray-500">
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
-              </svg>
-              <span>Your current location.</span>
-            </div>
-            <button
-              type="submit"
-              id="submitBtn"
-              class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed">
-              <span class="flex items-center space-x-2">
+            <!-- Submit Button -->
+            <div class="flex items-center justify-between pt-2 border-t border-gray-200">
+              <div class="flex items-center space-x-2 text-sm text-gray-500">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path>
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
                 </svg>
-                <span>Post</span>
-              </span>
-            </button>
+                <span>Your current location.</span>
+              </div>
+              <button
+                type="submit"
+                id="submitBtn"
+                class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed">
+                <span class="flex items-center space-x-2">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path>
+                  </svg>
+                  <span>Post</span>
+                </span>
+              </button>
+            </div>
+            </form>
           </div>
-          </form>
         </div>
-      </div>
 
+      </div>
     </div>
-  </div>
   <?php } ?>
 
   <div id="app" class="flex flex-col">
@@ -524,72 +533,72 @@ $favicon_color = $favicon_color ?? 'dashboard';
                   </div>
 
                   <?php if (!empty($isAdminOrModerator)) { ?>
-                  <!-- Admin Dashboard Section -->
-                  <div class="border-t border-gray-200 dark:border-gray-700 mx-2 my-1"></div>
-                  
-                  <!-- Admin Dashboard Header -->
-                  <div class="px-2 py-1">
-                    <div class="flex items-center px-2 py-1">
-                      <div class="w-6 h-6 bg-red-100 dark:bg-red-900/30 rounded-lg flex items-center justify-center mr-2">
-                        <svg class="w-3 h-3 text-red-600 dark:text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
-                        </svg>
-                      </div>
-                      <div>
-                        <p class="text-xs font-semibold text-red-600 dark:text-red-400 uppercase tracking-wide">Admin Panel</p>
+                    <!-- Admin Dashboard Section -->
+                    <div class="border-t border-gray-200 dark:border-gray-700 mx-2 my-1"></div>
+
+                    <!-- Admin Dashboard Header -->
+                    <div class="px-2 py-1">
+                      <div class="flex items-center px-2 py-1">
+                        <div class="w-6 h-6 bg-red-100 dark:bg-red-900/30 rounded-lg flex items-center justify-center mr-2">
+                          <svg class="w-3 h-3 text-red-600 dark:text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
+                          </svg>
+                        </div>
+                        <div>
+                          <p class="text-xs font-semibold text-red-600 dark:text-red-400 uppercase tracking-wide">Admin Panel</p>
+                        </div>
                       </div>
                     </div>
-                  </div>
 
-                  <!-- Analytics -->
-                  <div class="px-2">
-                    <a href="<?= $baseUrl ?>/admin/analytics"
-                      class="group flex items-center px-2 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-blue-50 dark:hover:bg-gray-700 rounded-lg transition-all duration-200 hover:translate-x-1">
-                      <div class="w-6 h-6 bg-blue-100 dark:bg-blue-900/30 rounded-lg flex items-center justify-center mr-2 group-hover:bg-blue-200 dark:group-hover:bg-blue-800/50 transition-colors duration-200">
-                        <svg class="w-3 h-3 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
-                        </svg>
-                      </div>
-                      <div>
-                        <p class="font-medium text-sm">Analytics</p>
-                        <p class="text-xs text-gray-500 dark:text-gray-400">Platform insights</p>
-                      </div>
-                    </a>
-                  </div>
+                    <!-- Analytics -->
+                    <div class="px-2">
+                      <a href="<?= $baseUrl ?>/admin/analytics"
+                        class="group flex items-center px-2 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-blue-50 dark:hover:bg-gray-700 rounded-lg transition-all duration-200 hover:translate-x-1">
+                        <div class="w-6 h-6 bg-blue-100 dark:bg-blue-900/30 rounded-lg flex items-center justify-center mr-2 group-hover:bg-blue-200 dark:group-hover:bg-blue-800/50 transition-colors duration-200">
+                          <svg class="w-3 h-3 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                          </svg>
+                        </div>
+                        <div>
+                          <p class="font-medium text-sm">Analytics</p>
+                          <p class="text-xs text-gray-500 dark:text-gray-400">Platform insights</p>
+                        </div>
+                      </a>
+                    </div>
 
-                  <!-- Reports -->
-                  <div class="px-2">
-                    <a href="<?= $baseUrl ?>/admin/reports"
-                      class="group flex items-center px-2 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-yellow-50 dark:hover:bg-gray-700 rounded-lg transition-all duration-200 hover:translate-x-1">
-                      <div class="w-6 h-6 bg-yellow-100 dark:bg-yellow-900/30 rounded-lg flex items-center justify-center mr-2 group-hover:bg-yellow-200 dark:group-hover:bg-yellow-800/50 transition-colors duration-200">
-                        <svg class="w-3 h-3 text-yellow-600 dark:text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
-                        </svg>
-                      </div>
-                      <div>
-                        <p class="font-medium text-sm">Reports</p>
-                        <p class="text-xs text-gray-500 dark:text-gray-400">User reports</p>
-                      </div>
-                    </a>
-                  </div>
+                    <!-- Reports -->
+                    <div class="px-2">
+                      <a href="<?= $baseUrl ?>/admin/reports"
+                        class="group flex items-center px-2 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-yellow-50 dark:hover:bg-gray-700 rounded-lg transition-all duration-200 hover:translate-x-1">
+                        <div class="w-6 h-6 bg-yellow-100 dark:bg-yellow-900/30 rounded-lg flex items-center justify-center mr-2 group-hover:bg-yellow-200 dark:group-hover:bg-yellow-800/50 transition-colors duration-200">
+                          <svg class="w-3 h-3 text-yellow-600 dark:text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                          </svg>
+                        </div>
+                        <div>
+                          <p class="font-medium text-sm">Reports</p>
+                          <p class="text-xs text-gray-500 dark:text-gray-400">User reports</p>
+                        </div>
+                      </a>
+                    </div>
 
-                  <!-- Users Management -->
-                  <div class="px-2">
-                    <a href="<?= $baseUrl ?>/admin/users"
-                      class="group flex items-center px-2 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-green-50 dark:hover:bg-gray-700 rounded-lg transition-all duration-200 hover:translate-x-1">
-                      <div class="w-6 h-6 bg-green-100 dark:bg-green-900/30 rounded-lg flex items-center justify-center mr-2 group-hover:bg-green-200 dark:group-hover:bg-green-800/50 transition-colors duration-200">
-                        <svg class="w-3 h-3 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
-                        </svg>
-                      </div>
-                      <div>
-                        <p class="font-medium text-sm">Users</p>
-                        <p class="text-xs text-gray-500 dark:text-gray-400">Manage users</p>
-                      </div>
-                    </a>
-                  </div>
+                    <!-- Users Management -->
+                    <div class="px-2">
+                      <a href="<?= $baseUrl ?>/admin/users"
+                        class="group flex items-center px-2 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-green-50 dark:hover:bg-gray-700 rounded-lg transition-all duration-200 hover:translate-x-1">
+                        <div class="w-6 h-6 bg-green-100 dark:bg-green-900/30 rounded-lg flex items-center justify-center mr-2 group-hover:bg-green-200 dark:group-hover:bg-green-800/50 transition-colors duration-200">
+                          <svg class="w-3 h-3 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                          </svg>
+                        </div>
+                        <div>
+                          <p class="font-medium text-sm">Users</p>
+                          <p class="text-xs text-gray-500 dark:text-gray-400">Manage users</p>
+                        </div>
+                      </a>
+                    </div>
 
-                  <div class="border-t border-gray-200 dark:border-gray-700 mx-2 my-1"></div>
+                    <div class="border-t border-gray-200 dark:border-gray-700 mx-2 my-1"></div>
                   <?php } ?>
 
                   <!-- Help Center (Hidden) -->

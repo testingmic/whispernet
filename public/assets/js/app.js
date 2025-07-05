@@ -1921,7 +1921,7 @@ const ImprovedPostCreationForm = {
             this.audioRecordBtn.classList.remove('bg-red-500', 'bg-gray-500', 'text-white');
             this.audioRecordBtn.classList.add('bg-red-100', 'text-red-600');
             document.getElementById('audioPauseBtn').classList.add('hidden');
-            this.audioStatus.textContent = 'Record new audio';
+            this.audioStatus.textContent = 'Record Audio';
             this.audioTimer.classList.add('hidden');
             
             clearInterval(this.recordingTimer);
@@ -2049,6 +2049,11 @@ const ImprovedPostCreationForm = {
                 </span>
             `;
         });
+    },
+
+    deleteAudio() {
+        this.audioPlayer.src = '';
+        this.audioPreview.classList.add('hidden');
     },
 
     resetForm(inputField) {
