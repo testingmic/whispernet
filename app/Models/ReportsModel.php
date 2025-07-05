@@ -279,16 +279,27 @@ class ReportsModel extends Model {
             case 'post':
                 $sql = "SELECT content FROM posts WHERE post_id = ?";
                 $result = $this->db->query($sql, [$id])->getRowArray();
-                return $result ? substr($result['content'], 0, 200) . '...' : 'Content not available';
+                if(empty($result)) {
+                    return 'Post has been deleted.';
+                }
+                $string = strlen($result['content']) > 200 ? substr($result['content'], 0, 200) . '...' : $result['content'];
+                return $result ? $string : 'Content not available';
                 
             case 'comment':
                 $sql = "SELECT content FROM comments WHERE comment_id = ?";
                 $result = $this->db->query($sql, [$id])->getRowArray();
-                return $result ? substr($result['content'], 0, 200) . '...' : 'Content not available';
+                if(empty($result)) {
+                    return 'Comment has been deleted.';
+                }
+                $string = strlen($result['content']) > 200 ? substr($result['content'], 0, 200) . '...' : $result['content'];
+                return $result ? $string : 'Content not available';
                 
             case 'user':
                 $sql = "SELECT username FROM users WHERE user_id = ?";
                 $result = $this->db->query($sql, [$id])->getRowArray();
+                if(empty($result)) {
+                    return 'User account has already been deleted.';
+                }
                 return $result ? "User: " . $result['username'] : 'User not available';
                 
             default:
