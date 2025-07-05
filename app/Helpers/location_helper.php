@@ -30,6 +30,8 @@ function manageUserLocation($payload, $cacheObject) {
 
     $locationFound = false;
 
+    
+
     // if the longitude and latitude are not set or if set and no location was found
     if((!empty($payload['longitude']) && !empty($payload['latitude']))) {
 
@@ -57,7 +59,9 @@ function manageUserLocation($payload, $cacheObject) {
 
             // get the city
             $theCity = $dataToUse[$value['key']][0][$value['data']]['city'] ?? (
-                $dataToUse[$value['key']][0][$value['data']]['town'] ?? null
+                $dataToUse[$value['key']][0][$value['data']]['town'] ?? (
+                    $dataToUse[$value['key']][0][$value['data']]['suburb'] ?? null
+                )
             );
 
             // check if the city is set
