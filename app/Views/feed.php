@@ -1,24 +1,37 @@
 <div class="min-h-[calc(100vh-100px)] bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
 
-    <!-- Location Header Card -->
-    <div class="max-w-4xl mx-auto mt-0 sm:px-6 lg:px-8 mb-4">
-        <div class="bg-white dark:bg-gray-800 shadow-xl border border-gray-200 dark:border-gray-700 p-3">
-            <div class="flex items-center justify-between">
+    <!-- Enhanced Location Header Card -->
+    <div class="max-w-4xl mx-auto mt-0 sm:px-6 lg:px-8 mb-6">
+        <div class="bg-white dark:bg-gray-800 shadow-2xl border border-gray-200 dark:border-gray-700 rounded-2xl p-4 relative overflow-hidden">
+            <!-- Gradient Background Overlay -->
+            <div class="absolute inset-0 bg-gradient-to-r from-blue-50/50 via-purple-50/30 to-indigo-50/50 dark:from-blue-900/10 dark:via-purple-900/10 dark:to-indigo-900/10 pointer-events-none"></div>
+            
+            <!-- Decorative Elements -->
+            <div class="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-blue-400/10 to-purple-400/10 rounded-full -translate-y-16 translate-x-16"></div>
+            <div class="absolute bottom-0 left-0 w-24 h-24 bg-gradient-to-tr from-indigo-400/10 to-blue-400/10 rounded-full translate-y-12 -translate-x-12"></div>
+            
+            <div class="relative flex items-center justify-between">
                 <div class="flex items-center space-x-4">
-                    <div class="w-6 h-6 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl flex items-center justify-center">
-                        <svg class="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <div class="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-600 rounded-2xl flex items-center justify-center shadow-lg transform hover:scale-105 transition-transform duration-200">
+                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
                         </svg>
                     </div>
                     <div>
-                        <h3 class="text-lg font-semibold text-gray-900 dark:text-white location-display">Loading location...</h3>
-                        <p class="text-sm text-gray-600 dark:text-gray-400">
-                            Showing posts within your location.
+                        <h3 class="text-xl font-bold text-gray-900 dark:text-white location-display flex items-center">
+                            <span class="animate-pulse mr-2">📍</span>
+                            Loading location...
+                        </h3>
+                        <p class="text-sm text-gray-600 dark:text-gray-400 flex items-center">
+                            <svg class="w-4 h-4 mr-1 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                            </svg>
+                            Showing posts within your location
                         </p>
                     </div>
                 </div>
-                <button id="changeLocationBtn" class="hidden inline-flex items-center px-4 py-2 bg-gradient-to-r from-blue-500 to-purple-600 text-white font-semibold rounded-xl hover:from-blue-600 hover:to-purple-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transform transition-all duration-200 hover:scale-105">
+                <button id="changeLocationBtn" class="hidden inline-flex items-center px-6 py-3 bg-gradient-to-r from-blue-500 to-purple-600 text-white font-semibold rounded-xl hover:from-blue-600 hover:to-purple-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transform transition-all duration-200 hover:scale-105 shadow-lg">
                     <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
@@ -94,21 +107,30 @@
 
     <!-- Feed Content -->
     <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 pb-2">
-        <!-- Unread Posts Notification -->
+        <!-- Enhanced Unread Posts Notification -->
         <div id="unreadPostsCountContainer" class="hidden mb-6">
-            <div class="bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-2xl shadow-xl p-4 cursor-pointer transform transition-all duration-200 hover:scale-105" onclick="return PostManager.showUnreadPosts()">
-                <div class="flex items-center justify-center space-x-3">
-                    <div class="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div class="bg-gradient-to-r from-blue-500 via-purple-500 to-indigo-600 text-white rounded-2xl shadow-2xl p-6 cursor-pointer transform transition-all duration-300 hover:scale-105 relative overflow-hidden" onclick="return PostManager.showUnreadPosts()">
+                <!-- Animated Background Elements -->
+                <div class="absolute top-0 right-0 w-24 h-24 bg-white/10 rounded-full -translate-y-12 translate-x-12 animate-pulse"></div>
+                <div class="absolute bottom-0 left-0 w-16 h-16 bg-white/10 rounded-full translate-y-8 -translate-x-8 animate-pulse" style="animation-delay: 1s;"></div>
+                
+                <div class="relative flex items-center justify-center space-x-4">
+                    <div class="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center shadow-lg transform hover:scale-110 transition-transform duration-200">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
                         </svg>
                     </div>
-                    <span class="font-semibold">
-                        <span id="unreadPostsCount" class="text-lg">0</span> new posts available
-                    </span>
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
-                    </svg>
+                    <div class="text-center">
+                        <span class="font-bold text-xl">
+                            <span id="unreadPostsCount" class="text-2xl">0</span> new posts
+                        </span>
+                        <p class="text-sm opacity-90">Tap to view latest updates</p>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <div class="w-2 h-2 bg-white rounded-full animate-bounce"></div>
+                        <div class="w-2 h-2 bg-white rounded-full animate-bounce" style="animation-delay: 0.1s;"></div>
+                        <div class="w-2 h-2 bg-white rounded-full animate-bounce" style="animation-delay: 0.2s;"></div>
+                    </div>
                 </div>
             </div>
         </div>
