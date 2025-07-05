@@ -110,6 +110,23 @@ CREATE TABLE IF NOT EXISTS hidden_posts (
     INDEX idx_post_id (post_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+CREATE TABLE IF NOT EXISTS feedback (
+    id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    user_id BIGINT UNSIGNED NOT NULL,
+    feedback_type VARCHAR(255) NOT NULL,
+    priority VARCHAR(255) NOT NULL,
+    subject VARCHAR(255) NOT NULL,
+    description TEXT NOT NULL,
+    contact_preference VARCHAR(255) NOT NULL,
+    status VARCHAR(255) NOT NULL,
+    user_agent TEXT NOT NULL,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    INDEX idx_user_id (user_id),
+    INDEX idx_feedback_type (feedback_type),
+    INDEX idx_priority (priority),
+    INDEX idx_status (status)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
 CREATE TABLE IF NOT EXISTS hashtags (
     id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(100) UNIQUE

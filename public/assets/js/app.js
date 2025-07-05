@@ -117,7 +117,7 @@ const AppState = {
         return this.user?.user_id || 0;
     },
     loadTheme() {
-        const theme = 'light'; //localStorage.getItem('theme') || 'light';
+        const theme = 'light';
         this.setTheme(theme);
     },
     setTheme(theme) {

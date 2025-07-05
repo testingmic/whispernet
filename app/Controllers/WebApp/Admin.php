@@ -33,5 +33,14 @@ class Admin extends WebAppController {
         return $this->templateObject->loadPage('admin/analytics', ['pageTitle' => 'Analytics']);
     }
 
+    public function feedback() {
+
+        // verify if the user is logged in
+        $this->verifyLogin();
+
+        // get the feedback data
+        return $this->templateObject->loadPage('admin/feedback', ['pageTitle' => 'Feedback Management']);
+    }
+
 }
 ?>

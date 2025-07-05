@@ -516,18 +516,18 @@ $favicon_color = $favicon_color ?? 'dashboard';
                     </a>
                   </div>
 
-                  <!-- What's New -->
+                  <!-- Feedback -->
                   <div class="px-2">
-                    <a href="<?= $baseUrl ?>/updates"
-                      class="group flex items-center px-2 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-orange-50 dark:hover:bg-gray-700 rounded-lg transition-all duration-200 hover:translate-x-1">
-                      <div class="w-6 h-6 bg-orange-100 dark:bg-orange-900/30 rounded-lg flex items-center justify-center mr-2 group-hover:bg-orange-200 dark:group-hover:bg-orange-800/50 transition-colors duration-200">
-                        <svg class="w-3 h-3 text-orange-600 dark:text-orange-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                    <a href="<?= $baseUrl ?>/feedback"
+                      class="group flex items-center px-2 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-green-50 dark:hover:bg-gray-700 rounded-lg transition-all duration-200 hover:translate-x-1">
+                      <div class="w-6 h-6 bg-green-100 dark:bg-green-900/30 rounded-lg flex items-center justify-center mr-2 group-hover:bg-green-200 dark:group-hover:bg-green-800/50 transition-colors duration-200">
+                        <svg class="w-3 h-3 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path>
                         </svg>
                       </div>
                       <div>
-                        <p class="font-medium text-sm">What's New</p>
-                        <p class="text-xs text-gray-500 dark:text-gray-400">Latest updates</p>
+                        <p class="font-medium text-sm">Feedback</p>
+                        <p class="text-xs text-gray-500 dark:text-gray-400">Share your thoughts</p>
                       </div>
                     </a>
                   </div>
@@ -598,24 +598,24 @@ $favicon_color = $favicon_color ?? 'dashboard';
                       </a>
                     </div>
 
+                    <!-- Feedback Management -->
+                    <div class="px-2">
+                      <a href="<?= $baseUrl ?>/admin/feedback"
+                        class="group flex items-center px-2 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-green-50 dark:hover:bg-gray-700 rounded-lg transition-all duration-200 hover:translate-x-1">
+                        <div class="w-6 h-6 bg-green-100 dark:bg-green-900/30 rounded-lg flex items-center justify-center mr-2 group-hover:bg-green-200 dark:group-hover:bg-green-800/50 transition-colors duration-200">
+                          <svg class="w-3 h-3 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path>
+                          </svg>
+                        </div>
+                        <div>
+                          <p class="font-medium text-sm">Feedback</p>
+                          <p class="text-xs text-gray-500 dark:text-gray-400">Manage feedback</p>
+                        </div>
+                      </a>
+                    </div>
+
                     <div class="border-t border-gray-200 dark:border-gray-700 mx-2 my-1"></div>
                   <?php } ?>
-
-                  <!-- Help Center (Hidden) -->
-                  <div class="px-2 py-1">
-                    <a href="<?= $baseUrl ?>/support"
-                      class="group flex items-center px-2 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-indigo-50 dark:hover:bg-gray-700 rounded-lg transition-all duration-200 hover:translate-x-1">
-                      <div class="w-6 h-6 bg-indigo-100 dark:bg-indigo-900/30 rounded-lg flex items-center justify-center mr-2 group-hover:bg-indigo-200 dark:group-hover:bg-indigo-800/50 transition-colors duration-200">
-                        <svg class="w-3 h-3 text-indigo-600 dark:text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                        </svg>
-                      </div>
-                      <div>
-                        <p class="font-medium text-sm">Help Center</p>
-                        <p class="text-xs text-gray-500 dark:text-gray-400">Get support</p>
-                      </div>
-                    </a>
-                  </div>
 
                   <!-- Divider -->
                   <div class="border-t border-gray-200 dark:border-gray-700 mx-2 my-1"></div>

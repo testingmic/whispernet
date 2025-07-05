@@ -87,6 +87,15 @@ class Dashboard extends WebAppController {
      * 
      * @return void
      */
+    public function feedback() {
+        return $this->templateObject->loadPage('feedback', ['pageTitle' => 'Feedback', 'noInstallation' => true]);
+    }
+    
+    /**
+     * Report page
+     * 
+     * @return void
+     */
     public function shared() {
         return $this->templateObject->loadPage('shared_post', ['pageTitle' => 'Shared', 'noInstallation' => true, 'footerHidden' => true]);
     }

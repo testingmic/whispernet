@@ -14,6 +14,24 @@ $databases = [
         updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     );
     CREATE UNIQUE INDEX IF NOT EXISTS user_id ON settings (user_id);",
+
+    "CREATE TABLE IF NOT EXISTS feedback (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        user_id INTEGER NOT NULL,
+        feedback_type TEXT NOT NULL,
+        priority TEXT NOT NULL,
+        subject TEXT NOT NULL,
+        description TEXT NOT NULL,
+        contact_preference TEXT NOT NULL,
+        status TEXT NOT NULL,
+        user_agent TEXT NOT NULL,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    );
+    CREATE INDEX IF NOT EXISTS user_id ON feedback (user_id);
+    CREATE INDEX IF NOT EXISTS feedback_type ON feedback (feedback_type);
+    CREATE INDEX IF NOT EXISTS priority ON feedback (priority);
+    CREATE INDEX IF NOT EXISTS status ON feedback (status);",
+
     "CREATE TABLE IF NOT EXISTS hidden_posts (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         user_id INTEGER NOT NULL,

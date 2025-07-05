@@ -152,13 +152,9 @@
                                     <select id="subject" name="subject" required 
                                         class="w-full pl-10 pr-4 py-3 border-2 border-gray-200 dark:border-gray-600 text-gray-900 dark:text-white rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 sm:text-sm dark:bg-gray-700/50 transition-all duration-200">
                                         <option value="">Select a subject</option>
-                                        <option value="general">General Inquiry</option>
-                                        <option value="support">Technical Support</option>
-                                        <option value="bug">Bug Report</option>
-                                        <option value="feature">Feature Request</option>
-                                        <option value="billing">Billing Question</option>
-                                        <option value="security">Security Concern</option>
-                                        <option value="other">Other</option>
+                                        <?php foreach(contact_form_selection('contact') as $key => $value) { ?>
+                                            <option value="<?= $key; ?>"><?= $value; ?></option>
+                                        <?php } ?>
                                     </select>
                                 </div>
                             </div>
