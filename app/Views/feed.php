@@ -45,8 +45,8 @@
     <!-- Feed Content -->
     <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 pb-2">
         <!-- Enhanced Unread Posts Notification -->
-        <div id="unreadPostsCountContainer" class="hidden mb-6">
-            <div class="bg-gradient-to-r from-blue-500 via-purple-500 to-indigo-600 text-white rounded-2xl shadow-2xl p-6 cursor-pointer transform transition-all duration-300 hover:scale-105 relative overflow-hidden" onclick="return PostManager.showUnreadPosts()">
+        <div id="unreadPostsCountContainer" class="hidden mb-4">
+            <div class="bg-gradient-to-r from-blue-500 via-purple-500 to-indigo-600 text-white rounded-2xl shadow-2xl p-4 cursor-pointer transform transition-all duration-300 hover:scale-105 relative overflow-hidden" onclick="return PostManager.showUnreadPosts()">
                 <!-- Animated Background Elements -->
                 <div class="absolute top-0 right-0 w-24 h-24 bg-white/10 rounded-full -translate-y-12 translate-x-12 animate-pulse"></div>
                 <div class="absolute bottom-0 left-0 w-16 h-16 bg-white/10 rounded-full translate-y-8 -translate-x-8 animate-pulse" style="animation-delay: 1s;"></div>
