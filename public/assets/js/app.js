@@ -417,7 +417,7 @@ const MediaManager = {
             if(mediaFiles.audio?.files.length > 0) {
                 mediaFiles.audio?.files.forEach((audio, key) => {
                     html += `
-                    <audio controls class="bg-gradient-to-r from-blue-50 to-purple-50 rounded-lg p-4 border border-gray-200" download=false>
+                    <audio controls class="bg-gradient-to-r w-full from-blue-50 to-purple-50 rounded-lg p-4 border border-gray-200" download=false>
                         <source src="${baseUrl}/assets/uploads/${audio}" type="audio/mpeg">
                         Your browser does not support the audio element.
                     </audio>`;
@@ -1488,7 +1488,7 @@ const ImprovedPostCreationForm = {
     recordingStartTime: null,
     uploadedFiles: [],
     MAX_RECORDING_TIME: 30, // 30 seconds
-    MAX_IMAGE_SIZE: 5 * 1024 * 1024, // 2MB in bytes
+    MAX_IMAGE_SIZE: 3 * 1024 * 1024, // 3MB in bytes
     isRecording: false,
     isPaused: false,
     totalRecordingTime: 0,
@@ -1548,7 +1548,7 @@ const ImprovedPostCreationForm = {
             const files = Array.from(e.target.files);
             
             // Check if adding these files would exceed the limit
-            if (ImprovedPostCreationForm.uploadedFiles?.length + files?.length > 4) {
+            if (ImprovedPostCreationForm.uploadedFiles?.length + files?.length > 6) {
                 AppState.showNotification('You can only upload up to 4 files. Please remove some files first.', 'error');
                 return;
             }
@@ -1562,7 +1562,7 @@ const ImprovedPostCreationForm = {
 
                 // Check file size based on type
                 if (file.type.startsWith('image/') && file.size > ImprovedPostCreationForm.MAX_IMAGE_SIZE) {
-                    AppState.showNotification(`Image "${file.name}" is too large. Maximum size is 5MB.`, 'error');
+                    AppState.showNotification(`Image "${file.name}" is too large. Maximum size is 3MB.`, 'error');
                     return;
                 }
 

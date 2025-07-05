@@ -163,8 +163,6 @@ class Media extends LoadController {
             return $uploadedList;
 
         } catch (Exception $e) {
-            print_r($e->getMessage());
-            exit;
             return $e->getMessage();
         }
     }
@@ -176,7 +174,7 @@ class Media extends LoadController {
      * @param int $width
      * @param int $height
      */
-    public function createImageThumbnail($sourcePath, $thumbPath, $width = 300, $height = 300)
+    public function createImageThumbnail($sourcePath, $thumbPath, $width = 250, $height = 250)
     {
         $image = \Config\Services::image()
             ->withFile($sourcePath)
