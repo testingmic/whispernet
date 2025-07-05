@@ -448,10 +448,14 @@ class AnalyticsModel extends Model {
         $result = $this->db->query($sql)->getResultArray();
         
         return array_map(function($row) {
+            // Clean and validate UTF-8 content
+            $content = $this->cleanUtf8String($row['content'] ?? '');
+            $author = $this->cleanUtf8String($row['author'] ?? '');
+            
             return [
                 'id' => $row['post_id'],
-                'title' => substr($row['content'], 0, 50) . '...',
-                'author' => $row['author'],
+                'title' => mb_substr($content, 0, 50, 'UTF-8') . '...',
+                'author' => $author,
                 'votes' => (int)$row['votes'],
                 'comments' => (int)$row['comments'],
                 'views' => (int)$row['views']
@@ -485,8 +489,8 @@ class AnalyticsModel extends Model {
         
         return array_map(function($row) {
             return [
-                'city' => trim($row['location'] ?? 'Unknown'),
-                'country' => trim($row['country'] ?? ''),
+                'city' => $this->cleanUtf8String($row['location'] ?? 'Unknown'),
+                'country' => $this->cleanUtf8String($row['country'] ?? ''),
                 'posts' => (int)$row['posts']
             ];
         }, $result);
@@ -518,7 +522,7 @@ class AnalyticsModel extends Model {
         
         return array_map(function($row) {
             return [
-                'name' => $row['name'],
+                'name' => $this->cleanUtf8String($row['name']),
                 'posts' => (int)$row['posts'],
                 'usage' => (int)$row['ausage']
             ];
@@ -768,5 +772,31 @@ class AnalyticsModel extends Model {
             default:
                 return date('M j', strtotime($date));
         }
+    }
+
+    /**
+     * Clean and validate UTF-8 string
+     * 
+     * @param string $string
+     * @return string
+     */
+    private function cleanUtf8String($string)
+    {
+        if (empty($string)) {
+            return '';
+        }
+
+        // Remove invalid UTF-8 characters
+        $string = iconv('UTF-8', 'UTF-8//IGNORE', $string);
+        
+        // Remove null bytes and other control characters
+        $string = preg_replace('/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/', '', $string);
+        
+        // Ensure proper UTF-8 encoding
+        if (!mb_check_encoding($string, 'UTF-8')) {
+            $string = mb_convert_encoding($string, 'UTF-8', 'UTF-8');
+        }
+        
+        return trim($string);
     }
 }

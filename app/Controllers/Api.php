@@ -133,6 +133,9 @@ class Api extends BaseController
             $handler['location'] = $this->userLocation;
         }
 
+        // Clean UTF-8 data before response
+        $handler = $this->cleanResponseData($handler);
+        
         // return the response
         return $this->fromBaseRoute ? $handler : $this->respond($handler, $this->statusCode);
     }
@@ -161,6 +164,54 @@ class Api extends BaseController
             'user_agent' => $_SERVER['HTTP_USER_AGENT'] ?? '',
             'accept_language' => $_SERVER['HTTP_ACCEPT_LANGUAGE'] ?? ''
         ];
+    }
+
+    /**
+     * Clean response data to ensure valid UTF-8 encoding
+     * 
+     * @param mixed $data
+     * @return mixed
+     */
+    private function cleanResponseData($data)
+    {
+        if (is_array($data)) {
+            foreach ($data as $key => $value) {
+                $data[$key] = $this->cleanResponseData($value);
+            }
+            return $data;
+        }
+        
+        if (is_string($data)) {
+            return $this->cleanUtf8String($data);
+        }
+        
+        return $data;
+    }
+
+    /**
+     * Clean and validate UTF-8 string
+     * 
+     * @param string $string
+     * @return string
+     */
+    private function cleanUtf8String($string)
+    {
+        if (empty($string)) {
+            return '';
+        }
+
+        // Remove invalid UTF-8 characters
+        $string = iconv('UTF-8', 'UTF-8//IGNORE', $string);
+        
+        // Remove null bytes and other control characters
+        $string = preg_replace('/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/', '', $string);
+        
+        // Ensure proper UTF-8 encoding
+        if (!mb_check_encoding($string, 'UTF-8')) {
+            $string = mb_convert_encoding($string, 'UTF-8', 'UTF-8');
+        }
+        
+        return trim($string);
     }
 
     /**
