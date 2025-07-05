@@ -732,7 +732,7 @@ const PostManager = {
     },
     noCommentsContainer() {
         return `
-        <div id="noCommentsContainer" class="flex items-center justify-center py-12">
+        <div id="noCommentsContainer" class="flex items-center justify-center py-8">
             <div class="text-center">
                 <div class="w-20 h-20 bg-gradient-to-br from-blue-100 to-purple-100 dark:from-blue-900/30 dark:to-purple-900/30 rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg">
                     <svg class="w-10 h-10 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -1115,31 +1115,32 @@ const PostManager = {
             </div>
             <div class="post-content-clickable text-gray-800 dark:text-gray-900 mb-3 text-sm leading-relaxed">${post.content}</div>
             ${post.has_media ? `
-                <div class="post-content-clickable flex flex-wrap gap-2 text-sm text-gray-500 mb-2">
+                <!-- Enhanced Media Type Badges -->
+                <div class="post-content-clickable flex flex-wrap gap-3 mb-4">
                     ${post.media_types.includes('images') ? `
-                    <span class="inline-flex items-center px-2 py-1 bg-blue-100 text-blue-800 dark:bg-blue-500 dark:text-white rounded-full">
-                        <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 24 24">
+                    <span class="inline-flex items-center px-3 py-2 bg-gradient-to-r from-blue-100 to-blue-200 dark:from-blue-900/30 dark:to-blue-800/30 text-blue-800 dark:text-blue-200 rounded-xl font-medium shadow-sm">
+                        <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 24 24">
                             <path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/>
                         </svg>
                         Images
                     </span>` : ''}
                     ${post.media_types.includes('video') ? `
-                    <span class="inline-flex items-center px-2 py-1 bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300 rounded-full">
-                        <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 24 24">
+                    <span class="inline-flex items-center px-3 py-2 bg-gradient-to-r from-green-100 to-green-200 dark:from-green-900/30 dark:to-green-800/30 text-green-800 dark:text-green-200 rounded-xl font-medium shadow-sm">
+                        <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 24 24">
                             <path d="M17 10.5V7c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1v10c0 .55.45 1 1 1h12c.55 0 1-.45 1-1v-3.5l4 4v-11l-4 4z"/>
                         </svg>
                         Videos
                     </span>` : ''}
                     ${post.media_types.includes('audio') ? `
-                    <span class="inline-flex items-center px-2 py-1 bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-300 rounded-full">
-                        <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <span class="inline-flex items-center px-3 py-2 bg-gradient-to-r from-purple-100 to-purple-200 dark:from-purple-900/30 dark:to-purple-800/30 text-purple-800 dark:text-purple-200 rounded-xl font-medium shadow-sm">
+                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3"></path>
                         </svg>
                         Audio
                     </span>` : ''}
                 </div>
                 <!-- Media Preview Section -->
-                <div id="postMediaPreview" class="media-display-container mb-3"></div>` : ''
+                <div id="postMediaPreview" class="media-display-container mb-4"></div>` : ''
             }
             <div class="flex items-center justify-between" data-post-actions="${post.post_id}">
                 <div class="flex items-center space-x-4">
