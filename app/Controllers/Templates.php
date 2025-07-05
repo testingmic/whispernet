@@ -57,7 +57,7 @@ class Templates extends BaseController
 
         return [
             'baseUrl' => $urlPath,
-            'version' => '1.3.24',
+            'version' => '1.3.25',
             'privacyVersion' => '1.0',
             'postRadius' => $this->defaultRadius,
             'privacyUpdatedDate' => 'June 20, 2025',

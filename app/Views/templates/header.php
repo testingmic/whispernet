@@ -208,6 +208,7 @@ $favicon_color = $favicon_color ?? 'dashboard';
   </div>
 
   <!-- Post Creation Form -->
+  <?php if(empty($singlePost)) { ?>
   <div id="postCreationForm" class="fixed inset-0 top-8 z-50 hidden">
     <!-- Overlay -->
     <div class="absolute inset-0 bg-black bg-opacity-50 backdrop-blur-sm mt-8"></div>
@@ -248,12 +249,12 @@ $favicon_color = $favicon_color ?? 'dashboard';
                     id="content"
                     name="content"
                     rows="4"
-                    maxlength="300"
+                    data-textarea-input="post"
                     class="w-full outline-none font-medium text-xl px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none transition-all duration-200"
                     placeholder="Share your thoughts and experiences with users in a 30km radius..."></textarea>
                   <div class="absolute bottom-3 sm:bottom-4 right-3 sm:right-4 flex items-center space-x-1 sm:space-x-2">
                     <div class="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-green-500 rounded-full animate-pulse"></div>
-                    <span id="charCount" class="text-xs sm:text-sm font-medium text-gray-500 dark:text-gray-400">0/300</span>
+                    <span id="charCount" class="text-xs sm:text-sm font-medium text-gray-500 dark:text-gray-400">0</span>/<span id="charCountMax"></span>
                   </div>
                 </div>
               </div>
@@ -364,6 +365,7 @@ $favicon_color = $favicon_color ?? 'dashboard';
 
     </div>
   </div>
+  <?php } ?>
 
   <div id="app" class="flex flex-col">
     <!-- Top Navigation -->

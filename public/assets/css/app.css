@@ -110,6 +110,10 @@ html {
     100% { transform: rotate(360deg); }
 }
 
+#charCountMax {
+    margin-left: 0px;
+}
+
 /* Toast notifications */
 .toast {
     position: fixed;

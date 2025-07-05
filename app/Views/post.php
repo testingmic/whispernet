@@ -89,7 +89,7 @@
             <form id="commentForm" class="flex items-center space-x-4">
                 <div class="flex-1 relative">
                     <textarea
-                        maxlength="300"
+                        data-textarea-input="comment"
                         name=""
                         id="commentInput"
                         rows="2"
@@ -99,7 +99,7 @@
 
                     <!-- Character Counter -->
                     <div class="absolute bottom-2 right-2 text-xs text-gray-400 dark:text-gray-500">
-                        <span id="charCounter">0</span>/300
+                        <span id="charCount">0</span>/<span id="charCountMax"></span>
                     </div>
 
                 </div>

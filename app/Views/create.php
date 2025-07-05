@@ -16,7 +16,7 @@
                     ></textarea>
                     <div class="absolute bottom-2 right-2 flex items-center space-x-2">
                         <!-- Character Counter -->
-                        <span id="charCount" class="text-xs text-gray-400">0/1000</span>
+                        <span id="charCount" class="text-xs text-gray-400">0</span>/<span id="charCountMax">1000</span>
                     </div>
                 </div>
             </div>

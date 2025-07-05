@@ -647,12 +647,13 @@ const PostManager = {
         this.setupPostInteractions();
         this.loadPost();
         this.setupReportModal();
+        $(`span[id="charCountMax"]`).html(ImprovedPostCreationForm.maximumContentLength);
     },
     closeCreateModal() {
         $(`#backToTopBtn`).removeClass('hidden');
         $('#postCreationForm')?.addClass('hidden');
         document?.getElementById('createPostForm')?.reset();
-        ImprovedPostCreationForm.resetForm();
+        ImprovedPostCreationForm.resetForm('post');
     },
     openCreateModal() {
         $(`#backToTopBtn`).addClass('hidden');
@@ -1488,12 +1489,11 @@ const ImprovedPostCreationForm = {
     isPaused: false,
     totalRecordingTime: 0,
     stream: null,
-    max_content_length: 300,
+    maximumContentLength: 300,
 
     init() {
         this.form = document.getElementById('createPostFormUnique');
         this.textarea = document.getElementById('content');
-        this.charCount = document.getElementById('charCount');
         this.fileUpload = document.getElementById('fileUpload');
         this.audioRecordBtn = document.getElementById('audioRecordBtn');
         this.audioStatus = document.getElementById('audioStatus');
@@ -1509,18 +1509,35 @@ const ImprovedPostCreationForm = {
 
         this.formSetup();
     },
-    formSetup() {
+    setupInputCharacterCounter(inputField) {
+
+        // Get the textarea element
+        let textarea = $(`textarea[data-textarea-input="${inputField}"]`);
+        textarea.attr('maxlength', this.maximumContentLength);
+
+        // If no textarea element is found, return
+        if(!textarea.length) return;
+        
+        // Get the character counter element
+        let charCount = document.getElementById('charCount');
+
         // Character counter
-        this.textarea.addEventListener('input', function() {
+        textarea[0].addEventListener('input', function() {
             const length = this.value.length;
-            charCount.textContent = `${length}/${ImprovedPostCreationForm.max_content_length}`;
-            
-            if (length > ImprovedPostCreationForm.max_content_length) {
+            charCount.textContent = `${length}`;
+            if (length > ImprovedPostCreationForm.maximumContentLength) {
                 charCount.classList.add('text-red-500');
             } else {
                 charCount.classList.remove('text-red-500');
             }
         });
+    },
+    formSetup() {
+
+        if(!$(`textarea[data-textarea-input="post"]`).length) return;
+        
+        // Setup character counter for post textarea
+        ImprovedPostCreationForm.setupInputCharacterCounter('post');
 
         // File upload preview
         this.fileUpload.addEventListener('change', function(e) {
@@ -1994,7 +2011,7 @@ const ImprovedPostCreationForm = {
 
                 // Show success message
                 AppState.showNotification('Post created successfully!', 'success');
-                ImprovedPostCreationForm.resetForm();
+                ImprovedPostCreationForm.resetForm('post');
 
                 // then add the post to the feed
                 const feedContainer = document.getElementById('feedContainer');
@@ -2030,11 +2047,13 @@ const ImprovedPostCreationForm = {
         });
     },
 
-    resetForm() {
+    resetForm(inputField) {
         // Reset form fields
         this.form.reset();
         this.textarea.value = '';
-        this.charCount.textContent = `0/${this.max_content_length}`;
+
+        let charCount = document.getElementById('charCount');
+        charCount.textContent = `0`;
         
         // Clear uploaded files
         this.uploadedFiles = [];
@@ -2523,6 +2542,8 @@ const PostCommentManager = {
     setupCommentForm() {
         const commentForm = document.getElementById('commentForm');
         if (!commentForm) return;
+
+        ImprovedPostCreationForm.setupInputCharacterCounter('comment');
 
         const commentInput = commentForm.querySelector('textarea[id="commentInput"]');
         const submitButton = commentForm.querySelector('button[type="submit"]');

@@ -143,8 +143,8 @@
             <form id="commentForm" class="flex items-center space-x-2">
                 <div class="flex-1 relative">
                     <textarea
-                        maxlength="300"
                         name=""
+                        data-textarea-input="comment"
                         id="commentInput"
                         rows="2"
                         class="w-full px-4 py-4 border border-gray-300 dark:border-gray-600 rounded-2xl focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white text-base resize-none outline-none transition-all duration-200 min-h-[60px] max-h-32 scrollbar-thin scrollbar-thumb-gray-300 dark:scrollbar-thumb-gray-600 scrollbar-track-transparent hover:scrollbar-thumb-gray-400 dark:hover:scrollbar-thumb-gray-500"
@@ -153,7 +153,7 @@
 
                     <!-- Character Counter -->
                     <div class="absolute bottom-2 right-2 text-xs text-gray-400 dark:text-gray-500">
-                        <span id="charCounter">0</span>/300
+                        <span id="charCount">0</span>/<span id="charCountMax"></span>
                     </div>
 
                 </div>

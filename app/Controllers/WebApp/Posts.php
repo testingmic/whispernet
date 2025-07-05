@@ -13,7 +13,7 @@ class Posts extends WebAppController {
      * @return array
      */
     public function index() {
-        return $this->templateObject->loadPage('feed', ['pageTitle' => 'Feed', 'loadFeed' => true]);
+        return $this->templateObject->loadPage('feed', ['pageTitle' => 'Feed', 'loadFeed' => true, 'singlePost' => true]);
     }
 
     /**
@@ -77,7 +77,13 @@ class Posts extends WebAppController {
         $this->verifyLogin();
 
         // get the post
-        return $this->templateObject->loadPage('post', ['pageTitle' => 'Feed', 'postId' => $postId, 'footerHidden' => true, 'loadFeed' => true]);
+        return $this->templateObject->loadPage('post', [
+            'pageTitle' => 'Feed', 
+            'postId' => $postId, 
+            'footerHidden' => true, 
+            'loadFeed' => true,
+            'singlePost' => true
+        ]);
     }
 
 }
