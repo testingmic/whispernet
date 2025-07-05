@@ -11,6 +11,7 @@ class Posts extends LoadController {
     public $addComments = true;
     public $justCreated = false;
     public $byPassLogin = false;
+    public $globalContainer = [];
 
     /**
      * List posts
@@ -628,9 +629,10 @@ class Posts extends LoadController {
         // get the user id
         $userId = $this->currentUser['user_id'];
         $section = $this->payload['section'];
+        $recordId = $this->payload['recordId'];
 
         // get the votes
-        $votes = $this->postsModel->getVotes($this->payload['recordId'], $userId, $section);
+        $votes = !empty($this->globalContainer['vote']) ? $this->globalContainer['vote'] : $this->postsModel->getVotes($recordId, $userId, $section);
 
         if(empty($votes)) {
             // if the user has not voted, return an error
@@ -638,17 +640,23 @@ class Posts extends LoadController {
         }
 
         // make the call to the posts model
-        $this->postsModel->removeVote($this->payload['recordId'], $userId, $section);
+        $this->postsModel->removeVote($recordId, $userId, $section);
 
         // get the column
         $column = $section == "posts" ? "post_id" : "comment_id";
         $direction = $votes['direction'] == 'up' ? 'upvotes' : 'downvotes';
 
         // record the vote
-        $this->postsModel->reduceVotes($this->payload['recordId'], $section, $direction, $column);
+        $this->postsModel->reduceVotes($recordId, $section, $direction, $column);
 
         // get the post votes
-        return Routing::success('Vote removed successfully on the ' . substr($section, 0, -1));
+        $votes = $this->postsModel->db->query("SELECT downvotes, upvotes FROM {$section} WHERE {$column} = ?", [$recordId])->getRowArray();
+
+        // get the post votes
+        return Routing::created([
+            'data' => 'Vote removed successfully on the ' . substr($section, 0, -1),
+            'record' => $votes
+        ]);
     }
 
     /**
@@ -696,7 +704,8 @@ class Posts extends LoadController {
 
             $firstTime = false;
             if($vote['direction'] == $this->payload['direction']) {
-                return Routing::error("You have already voted in the {$this->payload['direction']} direction");
+                $this->globalContainer['vote'] = $vote;
+                return $this->removevote();
             }
             $this->postsModel->deleteVotes($vote['vote_id']);
 

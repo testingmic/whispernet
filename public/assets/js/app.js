@@ -1015,7 +1015,7 @@ const PostManager = {
     },
     createPostElement(post, single = false) {
         const div = document.createElement('div');
-        div.className = `post-card bg-white border rounded-lg shadow-sm p-2 ${single ? '' : ' mb-2 hover:bg-gradient-to-r hover:from-blue-50 hover:to-indigo-50 rounded-lg hover:border-blue-400'} cursor-pointer hover:shadow-md transition-all duration-300 relative`;
+        div.className = `post-card bg-white border rounded-2xl shadow-sm p-2 ${single ? 'dark:bg-gray-800 shadow-2xl border border-blue-200 dark:border-blue-700' : ' mb-2 hover:bg-gradient-to-r hover:from-blue-50 hover:to-indigo-50 hover:border-blue-400'} cursor-pointer hover:shadow-md transition-all duration-300 relative`;
         div.setAttribute('data-post-id', post.post_id);
 
         if(post.post_id) {
@@ -1064,7 +1064,7 @@ const PostManager = {
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z"/>
                         </svg>
                     </button>
-                    <div class="post-context-menu hidden absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 z-50 py-1">
+                    <div class="post-context-menu hidden absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-200 dark:border-gray-700 z-50 py-1">
                         ${!single ? `
                         <a class="w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-green-100 dark:hover:bg-gray-700 flex items-center space-x-2" href="${baseUrl}/posts/view/${post.post_id}">
                             <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -1073,7 +1073,7 @@ const PostManager = {
                             </svg>
                             <span>View Post</span>
                         </a>` : ''}
-                        <button onclick="return FeedContext.hidePost(${post.post_id})" class="w-full text-red-600 hover:bg-green-100 text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 dark:hover:bg-gray-700 flex items-center space-x-2" onclick="event.stopPropagation(); FeedContext.shareFeed(${post})">
+                        <button onclick="return FeedContext.hidePost(${post.post_id}, ${single})" class="w-full text-red-600 hover:bg-green-100 text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 dark:hover:bg-gray-700 flex items-center space-x-2" onclick="event.stopPropagation(); FeedContext.shareFeed(${post})">
                             <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
@@ -1413,7 +1413,8 @@ const PostManager = {
             if(!PostManager.postId) {
                 $(`[data-${field}-id="${postId}"]`).remove();
             } else {
-                $(`[data-${field}-id="${postId}"] div[class~="post-content-clickable"]`).html(`<div class="text-gray-500">Post deleted</div>`);
+                $(`[data-${field}-id="${postId}"] div[class~="post-content-clickable"]`)
+                        .html(`<div class="text-gray-500">${field === 'post' ? 'Post' : 'Comment'} deleted</div>`);
                 $(`div[id="commentsSectionContainer"]`).remove();
                 $(`div[data-post-actions="${postId}"]`).remove();
             }

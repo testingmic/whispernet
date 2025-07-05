@@ -9,7 +9,7 @@ const FeedContext = {
         this.doneShare = document.getElementById('doneShare');
     },
 
-    async hidePost(postId) {
+    async hidePost(postId, singlePost = false) {
         try {
             $(`div[data-post-id="${postId}"]`).remove();
             AppState.showNotification('Post hidden successfully', 'success');
@@ -17,6 +17,9 @@ const FeedContext = {
                 method: 'POST',
                 body: JSON.stringify({ token: AppState.getToken(), postId })
             });
+            if(singlePost) {
+                window.location.href = `${baseUrl}`;
+            }
         } catch (error) {
             AppState.showNotification('Error hiding post', 'error');
         }

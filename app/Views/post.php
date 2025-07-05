@@ -30,7 +30,7 @@
     <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 pb-10">
 
         <div class="relative">
-            <div id="postContainer" class="relative bg-white dark:bg-gray-800 rounded-2xl shadow-2xl border-2 border-blue-200 dark:border-blue-700"
+            <div id="postContainer" class="relative"
                 data-posts-id="<?= $postId ?>"
                 data-post-uuid="<?= $postUUID ?? '' ?>">
                 <!-- Post Gradient Border -->
