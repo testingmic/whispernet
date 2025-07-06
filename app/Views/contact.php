@@ -34,7 +34,7 @@
                                         </svg>
                                     </div>
                                     <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">Email Support</h3>
-                                    <p class="text-gray-600 dark:text-gray-400 text-sm">hi@<?= strtolower(str_replace(' ', '', $appName)) ?>.com</p>
+                                    <p class="text-gray-600 dark:text-gray-400 text-sm">support@<?= strtolower(str_replace(' ', '', $appName)) ?>.com</p>
                                 </div>
                                 
                                 <div class="bg-white dark:bg-gray-800/50 backdrop-blur-sm rounded-xl p-4 border border-white/20 dark:border-gray-700/30 hover:scale-105 transition-all duration-300">
