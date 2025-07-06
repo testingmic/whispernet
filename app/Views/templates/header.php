@@ -49,6 +49,7 @@ $favicon_color = $favicon_color ?? 'dashboard';
       localStorage.setItem('token', '<?= $_GET['auth_token'] ?>');
     <?php } ?>
   </script>
+  <script src="<?= $baseUrl ?>/assets/js/app.js?v=<?= $version ?>" defer></script>
   <link rel="stylesheet" href="<?= $baseUrl ?>/assets/css/app.css">
   <style>
     /* Ensure loader doesn't affect page layout */

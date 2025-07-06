@@ -101,7 +101,6 @@ $classPosition = "absolute -top-1 -right-1 w-3 h-3 bg-blue-500 rounded-full anim
 
 </div>
 <!-- Enhanced Scripts -->
-<script src="<?= $baseUrl ?>/assets/js/app.js?v=<?= $version ?>" defer></script>
 <?php if(!empty($sharedPost) && empty($userLoggedIn)) { ?>
   <script src="<?= $baseUrl ?>/assets/js/feed-context.js?v=<?= $version ?>" defer></script>
 <?php } ?>

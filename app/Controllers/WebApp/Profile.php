@@ -133,6 +133,19 @@ class Profile extends WebAppController
         return $this->templateObject->loadPage('my_saved', ['pageTitle' => 'My Saved', 'favicon_color' => 'profile', 'bookmarkedPosts' => $bookmarkedPosts]);
     }
 
+    /**
+     * Remove a post from the user's saved posts
+     * 
+     * @return string
+     */
+    public function remove() {
+        return $this->templateObject->loadPage('delete_account', [
+            'pageTitle' => 'Delete Account', 
+            'favicon_color' => 'profile',
+            'footerHidden' => true
+        ]);
+    }
+
     private function getPostCount($statistics)
     {
         return $statistics['posts'] ?? 0;

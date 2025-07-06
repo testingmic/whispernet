@@ -339,6 +339,37 @@ class Users extends LoadController {
     }
 
     /**
+     * Remove user account
+     * 
+     * @return array
+     */
+    public function removeme() {
+
+        // find the email address
+        $email = $this->payload['email'];
+
+        // find the user by email
+        $user = $this->usersModel->findByEmail($email);
+        if(empty($user)) {
+            return Routing::error('User not found');
+        }
+
+        // Verify password
+        if(!password_verify(md5($this->payload['password']), $user['password_hash'])) {
+            return Routing::error('We could not verify your password. Please try again.');
+        }
+
+        // delete the user cache
+        $this->cacheObject->dbObject->query("DELETE FROM cache WHERE account_id = ?", [$user['user_id']]);
+
+        // delete the user settings
+        $this->usersModel->deleteAccount($user['user_id']);
+
+        // if the user is found, return the user
+        return Routing::success('Your account has been deleted successfully.');
+    }
+
+    /**
      * Delete user account
      * 
      * @return array

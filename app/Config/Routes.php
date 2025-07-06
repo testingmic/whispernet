@@ -21,6 +21,9 @@ $routes->get("/", "Landing::index");
 $routes->get("/dashboard/install", "WebApp\Dashboard::install");
 $routes->get("/shared/posts/(:segment)/(:segment)", "WebApp\Shared::posts/$1/$2");
 
+// add the remove account route
+$routes->get("/profile/remove", "WebApp\Profile::remove");
+
 // Dashboard routes
 foreach(['dashboard', 'report', 'privacy', 'terms', 'updates', 'install', 'support', 'shared', 'feedback'] as $route) {
     $routes->get("/{$route}", "WebApp\Dashboard::{$route}");

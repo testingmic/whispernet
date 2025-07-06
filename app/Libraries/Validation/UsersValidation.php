@@ -81,6 +81,15 @@ class UsersValidation {
             'authenticate' => true,
             'payload' => []
         ],
+        'removeme' => [
+            'method' => 'POST',
+            'payload' => [
+                'email' => 'required|valid_email|max_length[100]',
+                'password' => 'required|valid_password|min_length[8]|max_length[32]',
+                'reason' => 'permit_empty|string|max_length[100]',
+                'comments' => 'permit_empty|string|max_length[100]',
+            ]
+        ],
         'profile' => [
             'method' => 'GET',
             'authenticate' => true,
