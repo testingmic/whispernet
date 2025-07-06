@@ -12,7 +12,6 @@ class FeedbackValidation {
         ],
         'submit' => [
             'method' => 'POST',
-            'authenticate' => true,
             'payload' => [
                 'feedback_type' => 'required|string',
                 'priority' => 'required|string',

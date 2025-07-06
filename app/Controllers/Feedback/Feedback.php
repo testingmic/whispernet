@@ -36,7 +36,7 @@ class Feedback extends LoadController {
 
         // Sanitize and validate input
         $feedbackData = [
-            'user_id' => $this->currentUser['user_id'] ?? 0,
+            'user_id' => $this->payload['user_id'] ?? 0,
             'feedback_type' => $this->cleanUtf8String($this->payload['feedback_type']),
             'priority' => $this->cleanUtf8String($this->payload['priority']),
             'subject' => $this->cleanUtf8String($this->payload['subject']),

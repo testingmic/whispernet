@@ -350,7 +350,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 priority: formData.get('priority'),
                 subject: formData.get('subject'),
                 description: formData.get('description'),
-                contact_preference: formData.get('contact_preference')
+                contact_preference: formData.get('contact_preference'),
+                user_id: loggedInUserId,
+                token: localStorage.getItem('token')
             };
 
             const response = await fetch('/api/feedback/submit', {
