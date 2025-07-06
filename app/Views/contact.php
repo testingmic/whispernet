@@ -107,7 +107,7 @@
                             <!-- Name Field -->
                             <div class="relative">
                                 <label for="name" class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
-                                    <span class="text-blue-600 dark:text-blue-400">●</span> Full Name
+                                    <span class="text-blue-600 dark:text-blue-400">●</span> Name
                                 </label>
                                 <div class="relative">
                                     <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -117,7 +117,7 @@
                                     </div>
                                     <input id="name" name="name" type="text" required 
                                         class="w-full pl-10 pr-4 py-3 border-2 border-gray-200 dark:border-gray-600 placeholder-gray-500 dark:placeholder-gray-400 text-gray-900 dark:text-white rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 sm:text-sm dark:bg-gray-700/50 transition-all duration-200"
-                                        placeholder="Enter your full name">
+                                        placeholder="Enter name">
                                 </div>
                             </div>
 

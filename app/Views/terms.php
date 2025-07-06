@@ -100,6 +100,7 @@
                         </p>
                         <ul class="list-disc list-inside text-gray-700 dark:text-gray-300 space-y-2 ml-4">
                             <li>Post content that is illegal, harmful, threatening, abusive, or defamatory</li>
+                            <li>Post nudity, violence, or other content that is not appropriate for a family-friendly platform</li>
                             <li>Harass, bully, or intimidate other users</li>
                             <li>Share personal information of others without consent</li>
                             <li>Post spam, advertisements, or commercial content without permission</li>
