@@ -83,13 +83,6 @@ class Api extends BaseController
             $payload['file_uploads'] = $this->request->getFiles();
         }
 
-        // generate a user fingerprint
-        $fingerprint = $this->generateFingerprint();
-        $payload['ipaddress'] = $fingerprint['ipaddress'];
-        $payload['user_agent'] = $fingerprint['user_agent'];
-
-        $payload['fingerprint'] = md5(json_encode($fingerprint));
-
         // set the request method
         $this->requestMethod = !empty($this->requestMethod) ? $this->requestMethod : $this->request->getMethod();
         $this->requestMethod = strtoupper($this->requestMethod);
@@ -146,7 +139,7 @@ class Api extends BaseController
      * @param string $ipaddress
      * @return string
      */
-    private function generateFingerprint() {
+    private function generateFingerprint($payload, $cacheObject) {
         // get the user agent
         $string = $_SERVER['HTTP_USER_AGENT'] ?? '';
 
@@ -154,7 +147,7 @@ class Api extends BaseController
         $string .= $_SERVER['HTTP_ACCEPT_LANGUAGE'] ?? '';
 
         // get the ip address
-        $ipAddress = getUserIpaddress();
+        $ipAddress = getUserIpaddress($cacheObject, $payload);
 
         // get the server info
         $string .= $ipAddress;
@@ -301,6 +294,14 @@ class Api extends BaseController
 
         // create the cache object
         $cacheObject = !empty($classObject->cacheObject) ? $classObject->cacheObject : new Caching();
+
+        // generate a user fingerprint
+        $fingerprint = $this->generateFingerprint($payload, $cacheObject);
+        $payload['ipaddress'] = $fingerprint['ipaddress'];
+        $payload['user_agent'] = $fingerprint['user_agent'];
+
+        // set the fingerprint
+        $payload['fingerprint'] = md5(json_encode($fingerprint));
 
         // manage the user location
         if(empty($payload['noloc'])) {

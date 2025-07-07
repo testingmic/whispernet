@@ -1,4 +1,44 @@
 <?php
+global $userIpaddress;
+/**
+ * Get the user IP address
+ * 
+ * @return string
+ */
+function getUserIpaddress($cacheObject, $payload) {
+    // get the ip address
+    if (!empty($_SERVER['HTTP_CLIENT_IP'])) {
+        $ipaddress = $_SERVER['HTTP_CLIENT_IP'];
+    } elseif (!empty($_SERVER['HTTP_X_FORWARDED_FOR'])) {
+        $ipaddress = explode(',', $_SERVER['HTTP_X_FORWARDED_FOR'])[0];
+    } else {
+        $ipaddress = $_SERVER['REMOTE_ADDR'];
+    }
+
+    // if the ip address is localhost or empty, get the external ip address
+    if(($ipaddress == '::1') || empty($ipaddress)) {
+        try {
+            // get the location cache values
+            $ipk = create_cache_key('user', 'ipaddress', ['user_id' => $payload['userUUID'] ?? '']);
+            $ip = $cacheObject->get($ipk);
+
+            // if the ip address is set, return it
+            if(!empty($ip)) return $ip;
+
+            // get the external ip address
+            $externalIp = file_get_contents('https://ifconfig.me');
+
+            // Use regex to extract a valid IPv4 address
+            if (preg_match('/\b\d{1,3}(?:\.\d{1,3}){3}\b/', $externalIp, $matches)) {
+                $ipaddress = $matches[0];
+                $cacheObject->save($ipk, $ipaddress, 'user.ipaddress', null, 60 * 10);
+            }
+        } catch (\Exception $e) {}
+    }
+
+    return $ipaddress;
+}
+
 /**
  * Manage the user location
  * 
@@ -8,10 +48,13 @@
  * @return array
  */
 function manageUserLocation($payload, $cacheObject) {
-    
+
+    global $userIpaddress;
+    $userIpaddress = getUserIpaddress($cacheObject, $payload);
 
     // set the final location to an empty array
     $payload['finalLocation'] = [];
+    $payload['ipaddress'] = $userIpaddress;
 
     if(empty($payload['userUUID']) && empty($payload['fingerprint'])) {
         return $payload;
@@ -29,8 +72,6 @@ function manageUserLocation($payload, $cacheObject) {
     }
 
     $locationFound = false;
-
-    
 
     // if the longitude and latitude are not set or if set and no location was found
     if((!empty($payload['longitude']) && !empty($payload['latitude']))) {
@@ -86,7 +127,7 @@ function manageUserLocation($payload, $cacheObject) {
     if(empty($payload['longitude']) && empty($payload['latitude']) || !$locationFound) {
 
         // get the location cache values
-        $cacheKey = create_cache_key('user', 'location', ['user_id' => $payload['userUUID'].getUserIpaddress()]);
+        $cacheKey = create_cache_key('user', 'location', ['user_id' => $payload['userUUID'].$payload['ipaddress']]);
         $locationInfo = $cacheObject->get($cacheKey);
 
         // get the data to use
@@ -107,6 +148,7 @@ function manageUserLocation($payload, $cacheObject) {
 
     $final = [
         'mode' => $usage,
+        'ipaddress' => $payload['ipaddress'],
         'city' => $payload['city'] ?? '',
         'district' => $payload['district'] ?? '',
         'country' => $payload['country'] ?? '',
@@ -126,11 +168,7 @@ function manageUserLocation($payload, $cacheObject) {
  */
 function getLocationByIP($longitude = null, $latitude = null, $useGeocode = false) {
 
-    // get the user ip address
-    $userIpaddress = $_SERVER['REMOTE_ADDR'] ?? '';
-    if(empty($userIpaddress) || strlen($userIpaddress) < 6) {
-        $userIpaddress = '';
-    }
+    global $userIpaddress;
 
     // get the ipinfo and opencage keys
     $ipInfoKey = explode(';', configs('ipinfo'));
@@ -167,7 +205,6 @@ function getLocationByIP($longitude = null, $latitude = null, $useGeocode = fals
     if ($response !== false) {
         $data = json_decode($response, true);
         $data['api_url'] = $urlPath;
-        $data['ip'] = !empty($userIpaddress) ? $userIpaddress : $_SERVER['HTTP_HOST'];
         return $data;
     }
 }

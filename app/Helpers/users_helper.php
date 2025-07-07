@@ -1,18 +1,5 @@
 <?php
 /**
- * Get the user IP address
- * 
- * @return string
- */
-function getUserIpaddress() {
-    $userIpaddress = $_SERVER['REMOTE_ADDR'] ?? '';
-    if(empty($userIpaddress) || strlen($userIpaddress) < 6) {
-        $userIpaddress = $_SERVER['HTTP_HOST'];
-    }
-    return $userIpaddress;
-}
-
-/**
  * Format the user settings
  * 
  * @param array $settings
