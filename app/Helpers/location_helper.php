@@ -148,7 +148,6 @@ function manageUserLocation($payload, $cacheObject) {
 
     $final = [
         'mode' => $usage,
-        'ipaddress' => $payload['ipaddress'],
         'city' => $payload['city'] ?? '',
         'district' => $payload['district'] ?? '',
         'country' => $payload['country'] ?? '',
