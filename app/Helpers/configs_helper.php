@@ -16,6 +16,7 @@ if (!function_exists('configs')) {
             'ipinfo' => getenv('IPINFO'),
             'opencage' => getenv('OPENCAGE'),
             'geocode' => getenv('GEOCODE'),
+            'proip' => getenv('PROIP'),
 
             // get the vapid keys
             'vapid_private' => getenv('VAPID_PRIVATE'),

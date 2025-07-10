@@ -135,12 +135,12 @@ function manageUserLocation($payload, $cacheObject) {
 
         if(!empty($dataToUse)) {
             $usage = 'ipaddress';
-            $locs = explode(',', $dataToUse['loc']);
+            $locs = !empty($dataToUse['loc']) ? explode(',', $dataToUse['loc']) : [$dataToUse['lat'], $dataToUse['lon']];
             $payload['latitude'] = $locs[0];
             $payload['longitude'] = $locs[1];
             $payload['city'] = $dataToUse['city'];
             $payload['country'] = $dataToUse['country'];
-            $payload['district'] = $dataToUse['region'];
+            $payload['district'] = $dataToUse['regionName'] ?? $dataToUse['region'];
             $cacheObject->save($cacheKey, $dataToUse, 'user.location', null, 60 * 60);
         }
 
@@ -170,12 +170,15 @@ function getLocationByIP($longitude = null, $latitude = null, $useGeocode = fals
     global $userIpaddress;
 
     // get the ipinfo and opencage keys
-    $ipInfoKey = explode(';', configs('ipinfo'));
+    // $ipInfoKey = explode(';', configs('ipinfo'));
     $opencageKey = explode(';', configs('opencage'));
     $geocodeKey = explode(';', configs('geocode'));
+    $proIpKey = explode(';', configs('proip'));
 
     // Fetch location data from ipapi.co
-    $url = "https://ipinfo.io/{$userIpaddress}?token=" . trim($ipInfoKey[0]);
+    // $url = "https://ipinfo.io/{$userIpaddress}?token=" . trim($ipInfoKey[0]);
+    $url = "http://ip-api.com/json/{$userIpaddress}";
+    $proIpUrl = "https://pro.ip-api.com/json/{$userIpaddress}?key=" . trim($proIpKey[0]);
     $reverseUrl = "https://api.opencagedata.com/geocode/v1/json?q={$latitude},{$longitude}&pretty=1&key=" . trim($opencageKey[0]);
     $geocodeUrl = "https://api.geoapify.com/v1/geocode/reverse?lat={$latitude}&lon={$longitude}&apiKey=" . trim($geocodeKey[0]);
     $backupUrl = "https://nominatim.openstreetmap.org/reverse?format=json&lat={$latitude}&lon={$longitude}&addressdetails=1&zoom=10";
